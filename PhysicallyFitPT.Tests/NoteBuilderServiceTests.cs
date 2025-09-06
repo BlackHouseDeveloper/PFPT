@@ -16,15 +16,13 @@ public class NoteBuilderServiceTests
     public async Task CreateEvalNote_Then_Sign_Works()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite("DataSource=:memory:")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        await using var db = new ApplicationDbContext(options);
-        await db.Database.OpenConnectionAsync();
-        await db.Database.EnsureCreatedAsync();
-
-        var factory = new PooledDbContextFactory<ApplicationDbContext>(options);
+        var factory = new TestDbContextFactory(options);
         INoteBuilderService svc = new NoteBuilderService(factory);
+
+        await using var db = factory.CreateDbContext();
 
         var patient = new Patient { FirstName = "Eval", LastName = "Patient" };
         db.Patients.Add(patient);

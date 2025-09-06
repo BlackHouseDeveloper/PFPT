@@ -6,10 +6,6 @@ using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
-
-// and if you use AddPooledDbContextFactory in test DI:
-using Microsoft.Extensions.DependencyInjection;
-
 using Xunit;
 
 namespace PhysicallyFitPT.Tests;
@@ -20,16 +16,13 @@ public class AppointmentServiceTests
     public async Task ScheduleAndCancel_Works_With_EmptyDb()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite("DataSource=:memory:")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        await using var db = new ApplicationDbContext(options);
-        await db.Database.OpenConnectionAsync();
-        await db.Database.EnsureCreatedAsync();
-
-        var factory = new PooledDbContextFactory<ApplicationDbContext>(options);
+        var factory = new TestDbContextFactory(options);
         IAppointmentService svc = new AppointmentService(factory);
 
+        await using var db = factory.CreateDbContext();
         var patient = new Patient { FirstName = "A", LastName = "B" };
         db.Patients.Add(patient);
         await db.SaveChangesAsync();

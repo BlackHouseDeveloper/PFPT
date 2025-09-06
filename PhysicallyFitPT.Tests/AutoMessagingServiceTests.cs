@@ -16,14 +16,10 @@ public class AutoMessagingServiceTests
     public async Task Enqueue_Adds_Log_Row()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite("DataSource=:memory:")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        await using var db = new ApplicationDbContext(options);
-        await db.Database.OpenConnectionAsync();
-        await db.Database.EnsureCreatedAsync();
-
-        var factory = new PooledDbContextFactory<ApplicationDbContext>(options);
+        var factory = new TestDbContextFactory(options);
         IAutoMessagingService svc = new AutoMessagingService(factory);
 
         var log = await svc.EnqueueCheckInAsync(Guid.NewGuid(), Guid.NewGuid(), VisitType.Eval, QuestionnaireType.Eval, DeliveryMethod.SMS, DateTimeOffset.UtcNow.AddHours(1));
