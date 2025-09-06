@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build_test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install .NET 9 SDK (with NuGet cache)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          include-prerelease: true
+          cache: true
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Enforce Code Formatting
+        run: |
+          dotnet tool update -g dotnet-format || dotnet tool install -g dotnet-format
+          dotnet format --verify-no-changes --no-restore
+          
+      - name: Build & Test
+        run: dotnet test --nologo --configuration Release

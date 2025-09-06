@@ -1,0 +1,14 @@
+:root{
+  --pfp-color-lime:#9BE000;
+  --pfp-color-black:#000000;
+  --pfp-color-gray:#6B7280;
+  --pfp-color-white:#FFFFFF;
+  --pfp-color-navy:#0B2545;
+  --pfp-radius:12px;
+  --pfp-shadow:0 8px 20px rgba(0,0,0,.08);
+  --pfp-font:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+body{ font-family: var(--pfp-font); color:#111; background:#fafafa; }
+.pfp-card{ background:var(--pfp-color-white); border-radius:var(--pfp-radius); box-shadow:var(--pfp-shadow); padding:1rem; }
+.pfp-btn{ background:var(--pfp-color-lime); color:var(--pfp-color-black); border:none; padding:.5rem .75rem; border-radius:10px; cursor:pointer; }
+.mt-3{ margin-top:1rem }

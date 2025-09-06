@@ -1,0 +1,37 @@
+@page "/patients"
+@inject IPatientService Patients
+
+<h3>Patients</h3>
+<input @bind="search" placeholder="Search by name…" />
+<button class="pfp-btn mt-3" @onclick="DoSearch">Search</button>
+
+@if (results is null)
+{
+  <p class="mt-3">Enter a name to search.</p>
+}
+else if (results.Count == 0)
+{
+  <p class="mt-3">No matches.</p>
+}
+else
+{
+  <div class="mt-3">
+    @foreach (var p in results)
+    {
+      <div class="pfp-card" style="margin-bottom:.5rem">
+        <strong>@p.LastName, @p.FirstName</strong>
+        <div style="color:#6B7280">MRN: @p.MRN</div>
+      </div>
+    }
+  </div>
+}
+
+@code {
+  string? search;
+  List<PhysicallyFitPT.Domain.Patient> results = new();
+
+  async Task DoSearch()
+  {
+    results = (await Patients.SearchAsync(search ?? "", 100)).ToList();
+  }
+}

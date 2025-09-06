@@ -1,0 +1,33 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Infrastructure.Data;
+using PhysicallyFitPT.Infrastructure.Services;
+using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+using Xunit;
+
+namespace PhysicallyFitPT.Tests;
+
+public class AutoMessagingServiceTests
+{
+    [Fact]
+    public async Task Enqueue_Adds_Log_Row()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite("DataSource=:memory:")
+            .Options;
+
+        await using var db = new ApplicationDbContext(options);
+        await db.Database.OpenConnectionAsync();
+        await db.Database.EnsureCreatedAsync();
+
+        var factory = new PooledDbContextFactory<ApplicationDbContext>(options);
+        IAutoMessagingService svc = new AutoMessagingService(factory);
+
+        var log = await svc.EnqueueCheckInAsync(Guid.NewGuid(), Guid.NewGuid(), VisitType.Eval, QuestionnaireType.Eval, DeliveryMethod.SMS, DateTimeOffset.UtcNow.AddHours(1));
+        log.Id.Should().NotBeEmpty();
+        (await svc.GetLogAsync(null, 10)).Should().ContainSingle();
+    }
+}
