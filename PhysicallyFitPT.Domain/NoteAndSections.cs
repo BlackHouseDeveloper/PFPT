@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using PhysicallyFitPT.Domain.Validation;
+
 namespace PhysicallyFitPT.Domain;
 
 public class Note : Entity
@@ -23,6 +26,7 @@ public class SubjectiveSection
   public string? ChiefComplaint { get; set; }
   public string? HistoryOfPresentIllness { get; set; }
   public string? PainLocationsCsv { get; set; }
+  [PainScale]
   public string? PainSeverity0to10 { get; set; }
   public string? AggravatingFactors { get; set; }
   public string? EasingFactors { get; set; }
@@ -45,7 +49,9 @@ public class RomMeasure
   public string Joint { get; set; } = "Knee";
   public string Movement { get; set; } = "Flexion";
   public Side Side { get; set; } = Side.NA;
+  [AngleMeasurement]
   public int? MeasuredDegrees { get; set; }
+  [AngleMeasurement]
   public int? NormalDegrees { get; set; }
   public bool WithPain { get; set; }
   public string? Notes { get; set; }
@@ -75,6 +81,7 @@ public class OutcomeMeasureScore
   public Guid Id { get; set; } = Guid.NewGuid();
   public string Instrument { get; set; } = "LEFS";
   public int? RawScore { get; set; }
+  [PercentageRange]
   public double? Percent { get; set; }
   public DateTime? CollectedOn { get; set; }
 }

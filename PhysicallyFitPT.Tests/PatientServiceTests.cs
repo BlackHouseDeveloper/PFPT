@@ -18,7 +18,8 @@ public class PatientServiceTests
             .Options;
 
         var factory = new TestDbContextFactory(options);
-        IPatientService svc = new PatientService(factory);
+        var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PatientService>();
+        IPatientService svc = new PatientService(factory, mockLogger);
 
         var results = await svc.SearchAsync("john", 10);
         results.Should().BeEmpty();

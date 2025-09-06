@@ -20,7 +20,8 @@ public class AppointmentServiceTests
             .Options;
 
         var factory = new TestDbContextFactory(options);
-        IAppointmentService svc = new AppointmentService(factory);
+        var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<AppointmentService>();
+        IAppointmentService svc = new AppointmentService(factory, mockLogger);
 
         await using var db = factory.CreateDbContext();
         var patient = new Patient { FirstName = "A", LastName = "B" };
