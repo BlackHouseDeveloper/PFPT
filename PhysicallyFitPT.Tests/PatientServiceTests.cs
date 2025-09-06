@@ -14,15 +14,12 @@ public class PatientServiceTests
     public async Task SearchAsync_Returns_Empty_On_Empty_DB()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite("DataSource=:memory:")
+            .UseInMemoryDatabase(databaseName: System.Guid.NewGuid().ToString())
             .Options;
 
-        await using var db = new ApplicationDbContext(options);
-        await db.Database.OpenConnectionAsync();
-        await db.Database.EnsureCreatedAsync();
-
-        var factory = new PooledDbContextFactory<ApplicationDbContext>(options);
-        IPatientService svc = new PatientService(factory);
+        var factory = new TestDbContextFactory(options);
+        var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PatientService>();
+        IPatientService svc = new PatientService(factory, mockLogger);
 
         var results = await svc.SearchAsync("john", 10);
         results.Should().BeEmpty();
