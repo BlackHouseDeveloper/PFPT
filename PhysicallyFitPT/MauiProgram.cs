@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.Maui.Storage;
+using Microsoft.AspNetCore.Components.WebView.Maui;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,8 +11,8 @@ using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection; // needed for AddHttpClient ext method
 
 
-
 namespace PhysicallyFitPT;
+
 public static class MauiProgram
 {
   public static MauiApp CreateMauiApp()
@@ -45,6 +46,14 @@ public static class MauiProgram
     builder.Services.AddHttpClient(); // if you just need the default factory
     builder.Services.AddHttpClient("integrations");
     builder.Services.AddMauiBlazorWebView();
+
+    builder.Logging.AddDebug();
+    builder.Logging.AddFilter("Microsoft.AspNetCore.Components.WebView", LogLevel.Debug);
+
+#if DEBUG
+    builder.Services.AddBlazorWebViewDeveloperTools();
+#endif
+
 
     return builder.Build();
   }

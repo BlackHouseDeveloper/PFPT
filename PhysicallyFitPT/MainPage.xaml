@@ -10,5 +10,6 @@
             <RootComponent Selector="#app" ComponentType="{x:Type components:Routes}" />
         </BlazorWebView.RootComponents>
     </BlazorWebView>
+    
 
 </ContentPage>

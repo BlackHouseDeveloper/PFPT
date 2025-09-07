@@ -2,23 +2,28 @@ name: ci
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
   build_test:
     runs-on: macos-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install .NET 9 SDK (with NuGet cache)
+      - name: Setup .NET SDK 8.0.x (with NuGet cache)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
-          include-prerelease: true
+          dotnet-version: "8.0.403"
           cache: true
+
+      - name: Show .NET info
+        run: dotnet --info
 
       - name: Install MAUI workload
         run: dotnet workload install maui
@@ -30,6 +35,20 @@ jobs:
         run: |
           dotnet tool update -g dotnet-format || dotnet tool install -g dotnet-format
           dotnet format --verify-no-changes --no-restore
-          
-      - name: Build & Test
-        run: dotnet test --nologo --configuration Release
+
+      - name: Prepare artifacts directory
+        run: mkdir -p artifacts
+
+      - name: Build Android (Release)
+        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f net8.0-android -bl:artifacts/build-android.binlog
+
+      - name: Test (unit tests only)
+        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/test-results.trx"
+
+      - name: Upload build/test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          path: |
+            artifacts/**

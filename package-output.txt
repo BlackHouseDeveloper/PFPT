@@ -1,0 +1,197 @@
+Project 'PhysicallyFitPT' has the following package references
+   [net8.0-android34.0]: 
+   Top-level Package                                      Requested        Resolved      
+   > Microsoft.AspNetCore.Components.WebView.Maui         8.0.3            8.0.3         
+   > Microsoft.Extensions.Http                            8.0.8            9.0.0         
+   > Microsoft.Extensions.Logging.Debug                   8.0.5            9.0.0         
+   > Microsoft.NET.ILLink.Tasks                     (A)   [8.0.19, )       8.0.19        
+   > Microsoft.SourceLink.GitHub                          8.0.0            8.0.0         
+   > Roslynator.Analyzers                                 4.12.4           4.12.4        
+   > SQLitePCLRaw.bundle_e_sqlite3                        2.1.8            2.1.8         
+   > StyleCop.Analyzers                                   1.2.0-beta.556   1.2.0-beta.556
+
+   Transitive Package                                           Resolved 
+   > Microsoft.AspNetCore.Authorization                         8.0.0    
+   > Microsoft.AspNetCore.Components                            8.0.0    
+   > Microsoft.AspNetCore.Components.Analyzers                  8.0.0    
+   > Microsoft.AspNetCore.Components.Forms                      8.0.0    
+   > Microsoft.AspNetCore.Components.Web                        8.0.0    
+   > Microsoft.AspNetCore.Components.WebView                    8.0.0    
+   > Microsoft.AspNetCore.Metadata                              8.0.0    
+   > Microsoft.Build.Tasks.Git                                  8.0.0    
+   > Microsoft.Data.Sqlite.Core                                 8.0.8    
+   > Microsoft.EntityFrameworkCore                              8.0.8    
+   > Microsoft.EntityFrameworkCore.Abstractions                 8.0.8    
+   > Microsoft.EntityFrameworkCore.Analyzers                    8.0.8    
+   > Microsoft.EntityFrameworkCore.Relational                   8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite                       8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite.Core                  8.0.8    
+   > Microsoft.Extensions.Caching.Abstractions                  8.0.0    
+   > Microsoft.Extensions.Caching.Memory                        8.0.0    
+   > Microsoft.Extensions.Configuration                         9.0.0    
+   > Microsoft.Extensions.Configuration.Abstractions            9.0.0    
+   > Microsoft.Extensions.Configuration.Binder                  9.0.0    
+   > Microsoft.Extensions.Configuration.FileExtensions          8.0.0    
+   > Microsoft.Extensions.Configuration.Json                    8.0.0    
+   > Microsoft.Extensions.DependencyInjection                   9.0.0    
+   > Microsoft.Extensions.DependencyInjection.Abstractions      9.0.0    
+   > Microsoft.Extensions.DependencyModel                       8.0.1    
+   > Microsoft.Extensions.Diagnostics                           9.0.0    
+   > Microsoft.Extensions.Diagnostics.Abstractions              9.0.0    
+   > Microsoft.Extensions.FileProviders.Abstractions            8.0.0    
+   > Microsoft.Extensions.FileProviders.Composite               8.0.0    
+   > Microsoft.Extensions.FileProviders.Embedded                8.0.0    
+   > Microsoft.Extensions.FileProviders.Physical                8.0.0    
+   > Microsoft.Extensions.FileSystemGlobbing                    8.0.0    
+   > Microsoft.Extensions.Logging                               9.0.0    
+   > Microsoft.Extensions.Logging.Abstractions                  9.0.0    
+   > Microsoft.Extensions.Options                               9.0.0    
+   > Microsoft.Extensions.Options.ConfigurationExtensions       9.0.0    
+   > Microsoft.Extensions.Primitives                            9.0.0    
+   > Microsoft.JSInterop                                        8.0.0    
+   > Microsoft.SourceLink.Common                                8.0.0    
+   > QuestPDF                                                   2024.3.0 
+   > SkiaSharp                                                  2.88.7   
+   > SkiaSharp.NativeAssets.Android                             2.88.7   
+   > SQLitePCLRaw.core                                          2.1.8    
+   > SQLitePCLRaw.lib.e_sqlite3.android                         2.1.8    
+   > SQLitePCLRaw.provider.e_sqlite3                            2.1.8    
+   > StyleCop.Analyzers.Unstable                                1.2.0.556
+   > System.Buffers                                             4.4.0    
+   > System.Diagnostics.DiagnosticSource                        9.0.0    
+   > System.IO.Pipelines                                        8.0.0    
+   > System.Memory                                              4.5.3    
+   > System.Runtime.CompilerServices.Unsafe                     4.5.2    
+   > System.Text.Encodings.Web                                  8.0.0    
+   > System.Text.Json                                           8.0.4    
+
+   [net8.0-ios18.0]: 
+   Top-level Package                                      Requested        Resolved      
+   > Microsoft.AspNetCore.Components.WebView.Maui         8.0.3            8.0.3         
+   > Microsoft.Extensions.Http                            8.0.8            9.0.0         
+   > Microsoft.Extensions.Logging.Debug                   8.0.5            9.0.0         
+   > Microsoft.NET.ILLink.Tasks                     (A)   [8.0.19, )       8.0.19        
+   > Microsoft.SourceLink.GitHub                          8.0.0            8.0.0         
+   > Roslynator.Analyzers                                 4.12.4           4.12.4        
+   > SQLitePCLRaw.bundle_e_sqlite3                        2.1.8            2.1.8         
+   > StyleCop.Analyzers                                   1.2.0-beta.556   1.2.0-beta.556
+
+   Transitive Package                                           Resolved 
+   > Microsoft.AspNetCore.Authorization                         8.0.0    
+   > Microsoft.AspNetCore.Components                            8.0.0    
+   > Microsoft.AspNetCore.Components.Analyzers                  8.0.0    
+   > Microsoft.AspNetCore.Components.Forms                      8.0.0    
+   > Microsoft.AspNetCore.Components.Web                        8.0.0    
+   > Microsoft.AspNetCore.Components.WebView                    8.0.0    
+   > Microsoft.AspNetCore.Metadata                              8.0.0    
+   > Microsoft.Build.Tasks.Git                                  8.0.0    
+   > Microsoft.Data.Sqlite.Core                                 8.0.8    
+   > Microsoft.EntityFrameworkCore                              8.0.8    
+   > Microsoft.EntityFrameworkCore.Abstractions                 8.0.8    
+   > Microsoft.EntityFrameworkCore.Analyzers                    8.0.8    
+   > Microsoft.EntityFrameworkCore.Relational                   8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite                       8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite.Core                  8.0.8    
+   > Microsoft.Extensions.Caching.Abstractions                  8.0.0    
+   > Microsoft.Extensions.Caching.Memory                        8.0.0    
+   > Microsoft.Extensions.Configuration                         9.0.0    
+   > Microsoft.Extensions.Configuration.Abstractions            9.0.0    
+   > Microsoft.Extensions.Configuration.Binder                  9.0.0    
+   > Microsoft.Extensions.Configuration.FileExtensions          8.0.0    
+   > Microsoft.Extensions.Configuration.Json                    8.0.0    
+   > Microsoft.Extensions.DependencyInjection                   9.0.0    
+   > Microsoft.Extensions.DependencyInjection.Abstractions      9.0.0    
+   > Microsoft.Extensions.DependencyModel                       8.0.1    
+   > Microsoft.Extensions.Diagnostics                           9.0.0    
+   > Microsoft.Extensions.Diagnostics.Abstractions              9.0.0    
+   > Microsoft.Extensions.FileProviders.Abstractions            8.0.0    
+   > Microsoft.Extensions.FileProviders.Composite               8.0.0    
+   > Microsoft.Extensions.FileProviders.Embedded                8.0.0    
+   > Microsoft.Extensions.FileProviders.Physical                8.0.0    
+   > Microsoft.Extensions.FileSystemGlobbing                    8.0.0    
+   > Microsoft.Extensions.Logging                               9.0.0    
+   > Microsoft.Extensions.Logging.Abstractions                  9.0.0    
+   > Microsoft.Extensions.Options                               9.0.0    
+   > Microsoft.Extensions.Options.ConfigurationExtensions       9.0.0    
+   > Microsoft.Extensions.Primitives                            9.0.0    
+   > Microsoft.JSInterop                                        8.0.0    
+   > Microsoft.SourceLink.Common                                8.0.0    
+   > QuestPDF                                                   2024.3.0 
+   > SkiaSharp                                                  2.88.7   
+   > SkiaSharp.NativeAssets.iOS                                 2.88.7   
+   > SQLitePCLRaw.core                                          2.1.8    
+   > SQLitePCLRaw.lib.e_sqlite3.ios                             2.1.8    
+   > SQLitePCLRaw.provider.internal                             2.1.8    
+   > StyleCop.Analyzers.Unstable                                1.2.0.556
+   > System.Diagnostics.DiagnosticSource                        9.0.0    
+   > System.IO.Pipelines                                        8.0.0    
+   > System.Memory                                              4.5.3    
+   > System.Runtime.InteropServices.NFloat.Internal             6.0.1    
+   > System.Text.Encodings.Web                                  8.0.0    
+   > System.Text.Json                                           8.0.4    
+
+   [net8.0-maccatalyst18.0]: 
+   Top-level Package                                      Requested        Resolved      
+   > Microsoft.AspNetCore.Components.WebView.Maui         8.0.3            8.0.3         
+   > Microsoft.Extensions.Http                            8.0.8            9.0.0         
+   > Microsoft.Extensions.Logging.Debug                   8.0.5            9.0.0         
+   > Microsoft.NET.ILLink.Tasks                     (A)   [8.0.19, )       8.0.19        
+   > Microsoft.SourceLink.GitHub                          8.0.0            8.0.0         
+   > Roslynator.Analyzers                                 4.12.4           4.12.4        
+   > SQLitePCLRaw.bundle_e_sqlite3                        2.1.8            2.1.8         
+   > StyleCop.Analyzers                                   1.2.0-beta.556   1.2.0-beta.556
+
+   Transitive Package                                           Resolved 
+   > Microsoft.AspNetCore.Authorization                         8.0.0    
+   > Microsoft.AspNetCore.Components                            8.0.0    
+   > Microsoft.AspNetCore.Components.Analyzers                  8.0.0    
+   > Microsoft.AspNetCore.Components.Forms                      8.0.0    
+   > Microsoft.AspNetCore.Components.Web                        8.0.0    
+   > Microsoft.AspNetCore.Components.WebView                    8.0.0    
+   > Microsoft.AspNetCore.Metadata                              8.0.0    
+   > Microsoft.Build.Tasks.Git                                  8.0.0    
+   > Microsoft.Data.Sqlite.Core                                 8.0.8    
+   > Microsoft.EntityFrameworkCore                              8.0.8    
+   > Microsoft.EntityFrameworkCore.Abstractions                 8.0.8    
+   > Microsoft.EntityFrameworkCore.Analyzers                    8.0.8    
+   > Microsoft.EntityFrameworkCore.Relational                   8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite                       8.0.8    
+   > Microsoft.EntityFrameworkCore.Sqlite.Core                  8.0.8    
+   > Microsoft.Extensions.Caching.Abstractions                  8.0.0    
+   > Microsoft.Extensions.Caching.Memory                        8.0.0    
+   > Microsoft.Extensions.Configuration                         9.0.0    
+   > Microsoft.Extensions.Configuration.Abstractions            9.0.0    
+   > Microsoft.Extensions.Configuration.Binder                  9.0.0    
+   > Microsoft.Extensions.Configuration.FileExtensions          8.0.0    
+   > Microsoft.Extensions.Configuration.Json                    8.0.0    
+   > Microsoft.Extensions.DependencyInjection                   9.0.0    
+   > Microsoft.Extensions.DependencyInjection.Abstractions      9.0.0    
+   > Microsoft.Extensions.DependencyModel                       8.0.1    
+   > Microsoft.Extensions.Diagnostics                           9.0.0    
+   > Microsoft.Extensions.Diagnostics.Abstractions              9.0.0    
+   > Microsoft.Extensions.FileProviders.Abstractions            8.0.0    
+   > Microsoft.Extensions.FileProviders.Composite               8.0.0    
+   > Microsoft.Extensions.FileProviders.Embedded                8.0.0    
+   > Microsoft.Extensions.FileProviders.Physical                8.0.0    
+   > Microsoft.Extensions.FileSystemGlobbing                    8.0.0    
+   > Microsoft.Extensions.Logging                               9.0.0    
+   > Microsoft.Extensions.Logging.Abstractions                  9.0.0    
+   > Microsoft.Extensions.Options                               9.0.0    
+   > Microsoft.Extensions.Options.ConfigurationExtensions       9.0.0    
+   > Microsoft.Extensions.Primitives                            9.0.0    
+   > Microsoft.JSInterop                                        8.0.0    
+   > Microsoft.SourceLink.Common                                8.0.0    
+   > QuestPDF                                                   2024.3.0 
+   > SkiaSharp                                                  2.88.7   
+   > SkiaSharp.NativeAssets.MacCatalyst                         2.88.7   
+   > SQLitePCLRaw.core                                          2.1.8    
+   > SQLitePCLRaw.lib.e_sqlite3                                 2.1.8    
+   > SQLitePCLRaw.provider.e_sqlite3                            2.1.8    
+   > StyleCop.Analyzers.Unstable                                1.2.0.556
+   > System.Diagnostics.DiagnosticSource                        9.0.0    
+   > System.IO.Pipelines                                        8.0.0    
+   > System.Memory                                              4.5.3    
+   > System.Text.Encodings.Web                                  8.0.0    
+   > System.Text.Json                                           8.0.4    
+
+(A) : Auto-referenced package.
