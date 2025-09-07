@@ -482,3 +482,40 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+### MAUI / Mobile platform extras
+
+# Android build artifacts & local config
+**/Platforms/Android/*.apk
+**/Platforms/Android/*.aab
+**/Platforms/Android/*.ap_        # packaged resources
+**/Platforms/Android/captures/
+**/local.properties               # Android SDK path (Android Studio)
+.gradle/
+**/*.keystore
+**/*.jks
+
+# iOS / Mac Catalyst artifacts & signing
+**/*.ipa
+**/*.xcarchive
+**/*.dSYM
+**/*.dsym
+**/*.mobileprovision
+**/*.provisionprofile
+**/*.p12
+**/*.cer
+**/*.developerprofile
+**/*.entitlements                 # if you export these separately
+
+# Xcode user state & derived data
+**/*.xcodeproj/project.xcworkspace/xcuserdata/
+**/*.xcodeproj/xcuserdata/
+**/*.xcworkspace/xcuserdata/
+DerivedData/
+
+# Mac app bundles (extra safety; bin/obj already ignored)
+*.app
+
+# Misc IDEs
+.fleet/
