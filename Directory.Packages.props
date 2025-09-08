@@ -49,7 +49,7 @@
     <PackageVersion Include="SQLitePCLRaw.core" Version="2.1.8" />
 
 
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.3" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.80" />
     <PackageVersion Include="SkiaSharp.Views.Maui.Controls" Version="2.88.7" />
 
 

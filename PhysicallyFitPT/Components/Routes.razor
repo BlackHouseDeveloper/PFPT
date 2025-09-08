@@ -1,10 +1,13 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using PhysicallyFitPT.Components.Layout
+
+<Router AppAssembly="@typeof(MauiProgram).Assembly" PreferExactMatches="true">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <LayoutView Layout="@typeof(Components.Layout.MainLayout)">
+        <LayoutView Layout="@typeof(MainLayout)">
           <p>Not found.</p>
         </LayoutView>
   </NotFound>
