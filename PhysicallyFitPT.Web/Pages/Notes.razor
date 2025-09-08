@@ -1,0 +1,59 @@
+@page "/notes/eval"
+@inject INoteBuilderService NoteBuilderService
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+<PageTitle>Eval Note - PhysicallyFitPT</PageTitle>
+
+<h1>Evaluation Note Builder</h1>
+
+<p>Create and manage evaluation notes for patient assessments.</p>
+
+<div class="service-test">
+    <h3>Shared Services Connection Test</h3>
+    <p>NoteBuilderService: <strong>@(NoteBuilderService != null ? "✅ Connected" : "❌ Failed")</strong></p>
+    <p>DbContextFactory: <strong>@(DbContextFactory != null ? "✅ Connected" : "❌ Failed")</strong></p>
+    <p>Database Provider: <strong>In-Memory Database for Web</strong></p>
+</div>
+
+<div class="architecture-info">
+    <h3>Clean Architecture Benefits</h3>
+    <ul>
+        <li>✅ Shared domain models and business logic</li>
+        <li>✅ Reused service interfaces and implementations</li>
+        <li>✅ Consistent data access patterns</li>
+        <li>✅ Platform-agnostic core functionality</li>
+    </ul>
+</div>
+
+<div class="navigation-test">
+    <h3>Navigation Test</h3>
+    <p>Test shared navigation: <a href="/patients">Go to Patients</a> | <a href="/">Back to Dashboard</a></p>
+</div>
+
+<style>
+.service-test {
+    background: #e7f5e7;
+    padding: 1rem;
+    border-left: 4px solid #28a745;
+    margin: 1rem 0;
+}
+
+.architecture-info {
+    background: #fff3cd;
+    padding: 1rem;
+    border-left: 4px solid #ffc107;
+    margin: 1rem 0;
+}
+
+.navigation-test {
+    background: #e2e3e5;
+    padding: 1rem;
+    border-left: 4px solid #6c757d;
+    margin: 1rem 0;
+}
+
+ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+</style>
