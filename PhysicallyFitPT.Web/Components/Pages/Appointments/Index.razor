@@ -1,5 +1,8 @@
 @page "/appointments"
 @attribute [Authorize]
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject IAppointmentService AppointmentService
 
 <PageTitle>Appointments - PhysicallyFit PT</PageTitle>
 
@@ -7,13 +10,197 @@
 
 <div class="card">
     <div class="card-header">Appointment Management</div>
-    <p>Appointment scheduling and management functionality will be implemented here.</p>
-    <p>This page will include:</p>
-    <ul>
-        <li>List of upcoming appointments</li>
-        <li>Schedule new appointment dialog</li>
-        <li>Filter and search capabilities</li>
-        <li>Integration with patient records</li>
-    </ul>
-    <p><em>Coming soon in Phase 4...</em></p>
+    
+    <div class="mb-2">
+        <button @onclick="ShowScheduleDialog" class="btn btn-primary">📅 Schedule New Appointment</button>
+    </div>
+    
+    @if (isLoading)
+    {
+        <p>Loading appointments...</p>
+    }
+    else if (appointments.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Patient</th>
+                    <th>Visit Type</th>
+                    <th>Location</th>
+                    <th>Clinician</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var appointment in appointments.OrderBy(a => a.ScheduledStart))
+                {
+                    <tr>
+                        <td>@appointment.ScheduledStart.ToString("MM/dd/yyyy HH:mm")</td>
+                        <td>
+                            @if (appointment.Patient != null)
+                            {
+                                <a href="/patients/@appointment.PatientId">@appointment.Patient.FirstName @appointment.Patient.LastName</a>
+                            }
+                            else
+                            {
+                                <span>Patient ID: @appointment.PatientId</span>
+                            }
+                        </td>
+                        <td>@appointment.VisitType</td>
+                        <td>@appointment.Location</td>
+                        <td>@appointment.ClinicianName</td>
+                        <td>
+                            <a href="/notes/@appointment.Id" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                Note
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No appointments scheduled.</p>
+    }
 </div>
+
+@if (showScheduleDialog)
+{
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div class="card" style="width: 500px; max-width: 90vw;">
+            <div class="card-header">
+                Schedule New Appointment
+                <button @onclick="HideScheduleDialog" style="float: right; background: none; border: none; font-size: 1.5rem;">&times;</button>
+            </div>
+            
+            <EditForm Model="newAppointment" OnValidSubmit="ScheduleAppointment">
+                <div class="form-field">
+                    <label>Patient ID</label>
+                    <input @bind="newAppointment.PatientId" type="text" placeholder="Enter patient GUID" />
+                </div>
+                <div class="form-field">
+                    <label>Date & Time</label>
+                    <input @bind="newAppointment.ScheduledStart" type="datetime-local" />
+                </div>
+                <div class="form-field">
+                    <label>Visit Type</label>
+                    <select @bind="newAppointment.VisitType">
+                        @foreach (VisitType visitType in Enum.GetValues<VisitType>())
+                        {
+                            <option value="@visitType">@visitType</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Location</label>
+                    <input @bind="newAppointment.Location" placeholder="e.g., Room 101" />
+                </div>
+                <div class="form-field">
+                    <label>Clinician Name</label>
+                    <input @bind="newAppointment.ClinicianName" placeholder="e.g., Dr. Smith" />
+                </div>
+                
+                @if (!string.IsNullOrEmpty(scheduleError))
+                {
+                    <div style="color: red; margin-bottom: 1rem;">
+                        @scheduleError
+                    </div>
+                }
+                
+                <div style="text-align: right;">
+                    <button type="button" @onclick="HideScheduleDialog" class="btn btn-secondary" style="margin-right: 0.5rem;">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Appointment> appointments = new();
+    private bool isLoading = true;
+    private bool showScheduleDialog = false;
+    private NewAppointmentModel newAppointment = new();
+    private string scheduleError = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        isLoading = true;
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            
+            var now = DateTimeOffset.UtcNow;
+            appointments = await db.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.ScheduledStart >= now.AddDays(-7)) // Show appointments from 7 days ago
+                .OrderBy(a => a.ScheduledStart)
+                .Take(50)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading appointments: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ShowScheduleDialog()
+    {
+        newAppointment = new NewAppointmentModel();
+        scheduleError = "";
+        showScheduleDialog = true;
+    }
+
+    private void HideScheduleDialog()
+    {
+        showScheduleDialog = false;
+    }
+
+    private async Task ScheduleAppointment()
+    {
+        try
+        {
+            if (!Guid.TryParse(newAppointment.PatientId, out var patientId))
+            {
+                scheduleError = "Invalid Patient ID format. Please enter a valid GUID.";
+                return;
+            }
+
+            var appointment = await AppointmentService.ScheduleAsync(
+                patientId,
+                newAppointment.ScheduledStart,
+                newAppointment.ScheduledStart.AddHours(1), // Default 1-hour duration
+                newAppointment.VisitType,
+                newAppointment.Location,
+                newAppointment.ClinicianName
+            );
+
+            showScheduleDialog = false;
+            await LoadAppointments();
+        }
+        catch (Exception ex)
+        {
+            scheduleError = $"Error scheduling appointment: {ex.Message}";
+        }
+    }
+
+    public class NewAppointmentModel
+    {
+        public string PatientId { get; set; } = "";
+        public DateTimeOffset ScheduledStart { get; set; } = DateTimeOffset.Now.AddDays(1);
+        public VisitType VisitType { get; set; } = VisitType.Eval;
+        public string Location { get; set; } = "";
+        public string ClinicianName { get; set; } = "";
+    }
+}

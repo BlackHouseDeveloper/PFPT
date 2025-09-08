@@ -42,8 +42,16 @@ jobs:
       - name: Build Android (Release)
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f net8.0-android -bl:artifacts/build-android.binlog
 
-      - name: Test (unit tests only)
-        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/test-results.trx"
+      - name: Build Web App (Release)
+        run: dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -bl:artifacts/build-web.binlog
+
+      - name: Test (unit tests)
+        run: |
+          dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/test-results.trx"
+          dotnet test ./PhysicallyFitPT.Web.Tests/PhysicallyFitPT.Web.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/web-test-results.trx"
+
+      - name: Publish Web App
+        run: dotnet publish ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -o artifacts/web-publish --no-build
 
       - name: Upload build/test artifacts
         if: always()

@@ -1,0 +1,322 @@
+@page "/notes/{appointmentId:guid}"
+@attribute [Authorize]
+@inject INoteBuilderService NoteService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>SOAP Note Builder - PhysicallyFit PT</PageTitle>
+
+<h1>SOAP Note Builder</h1>
+
+@if (note == null)
+{
+    <p>Loading note...</p>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            Note for Appointment: @AppointmentId
+            <div style="float: right;">
+                @if (note.IsSigned)
+                {
+                    <span style="color: green; font-weight: 600;">✅ Signed by @note.SignedBy on @note.SignedAt?.ToString("yyyy-MM-dd")</span>
+                }
+                else
+                {
+                    <button @onclick="ExportToPdf" class="btn btn-secondary" style="margin-right: 0.5rem;">📄 Export PDF</button>
+                    <button @onclick="SignNote" class="btn btn-primary">✍️ Sign Note</button>
+                }
+            </div>
+        </div>
+
+        <!-- Tabs for SOAP sections -->
+        <div style="border-bottom: 1px solid #ddd; margin-bottom: 1rem;">
+            <button class="tab-button @(activeTab == "subjective" ? "active" : "")" @onclick='() => SetActiveTab("subjective")'>
+                Subjective
+            </button>
+            <button class="tab-button @(activeTab == "objective" ? "active" : "")" @onclick='() => SetActiveTab("objective")'>
+                Objective
+            </button>
+            <button class="tab-button @(activeTab == "assessment" ? "active" : "")" @onclick='() => SetActiveTab("assessment")'>
+                Assessment
+            </button>
+            <button class="tab-button @(activeTab == "plan" ? "active" : "")" @onclick='() => SetActiveTab("plan")'>
+                Plan
+            </button>
+        </div>
+
+        <!-- Subjective Section -->
+        @if (activeTab == "subjective")
+        {
+            <div class="soap-section">
+                <h3>Subjective</h3>
+                <div class="form-field">
+                    <label>Chief Complaint</label>
+                    <textarea @bind="note.Subjective.ChiefComplaint" rows="3" placeholder="Patient's primary complaint..."></textarea>
+                </div>
+                <div class="form-field">
+                    <label>History of Present Illness</label>
+                    <textarea @bind="note.Subjective.HistoryOfPresentIllness" rows="4" placeholder="How did the problem start?"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-field">
+                        <label>Pain Locations (CSV)</label>
+                        <input @bind="note.Subjective.PainLocationsCsv" placeholder="e.g., Knee, Lower back" />
+                    </div>
+                    <div class="form-field">
+                        <label>Pain Severity (0-10)</label>
+                        <input @bind="note.Subjective.PainSeverity0to10" placeholder="0-10 scale" />
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-field">
+                        <label>Aggravating Factors</label>
+                        <textarea @bind="note.Subjective.AggravatingFactors" rows="2" placeholder="What makes it worse?"></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label>Easing Factors</label>
+                        <textarea @bind="note.Subjective.EasingFactors" rows="2" placeholder="What makes it better?"></textarea>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Functional Limitations</label>
+                    <textarea @bind="note.Subjective.FunctionalLimitations" rows="3" placeholder="What can't the patient do?"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Patient Goals</label>
+                    <textarea @bind="note.Subjective.PatientGoalsNarrative" rows="3" placeholder="What does the patient want to achieve?"></textarea>
+                </div>
+            </div>
+        }
+
+        <!-- Objective Section -->
+        @if (activeTab == "objective")
+        {
+            <div class="soap-section">
+                <h3>Objective</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h4>Range of Motion (ROM)</h4>
+                        @foreach (var rom in note.Objective.Rom)
+                        {
+                            <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <input @bind="rom.Joint" placeholder="Joint" />
+                                    <input @bind="rom.Movement" placeholder="Movement" />
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                                    <select @bind="rom.Side">
+                                        @foreach (Side side in Enum.GetValues<Side>())
+                                        {
+                                            <option value="@side">@side</option>
+                                        }
+                                    </select>
+                                    <input type="number" @bind="rom.MeasuredDegrees" placeholder="Measured°" />
+                                    <input type="number" @bind="rom.NormalDegrees" placeholder="Normal°" />
+                                </div>
+                                <div style="margin-top: 0.5rem;">
+                                    <label><input type="checkbox" @bind="rom.WithPain" /> With Pain</label>
+                                    <input @bind="rom.Notes" placeholder="Notes..." style="margin-left: 1rem; flex: 1;" />
+                                </div>
+                            </div>
+                        }
+                        <button @onclick="AddRomMeasure" class="btn btn-secondary">+ Add ROM</button>
+                    </div>
+                    
+                    <div>
+                        <h4>Manual Muscle Testing (MMT)</h4>
+                        @foreach (var mmt in note.Objective.Mmt)
+                        {
+                            <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <input @bind="mmt.MuscleGroup" placeholder="Muscle Group" />
+                                    <select @bind="mmt.Side">
+                                        @foreach (Side side in Enum.GetValues<Side>())
+                                        {
+                                            <option value="@side">@side</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; margin-top: 0.5rem;">
+                                    <input @bind="mmt.Grade" placeholder="Grade (e.g., 4+)" />
+                                    <label><input type="checkbox" @bind="mmt.WithPain" /> With Pain</label>
+                                </div>
+                                <input @bind="mmt.Notes" placeholder="Notes..." style="margin-top: 0.5rem; width: 100%;" />
+                            </div>
+                        }
+                        <button @onclick="AddMmtMeasure" class="btn btn-secondary">+ Add MMT</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Assessment Section -->
+        @if (activeTab == "assessment")
+        {
+            <div class="soap-section">
+                <h3>Assessment</h3>
+                <div class="form-field">
+                    <label>Clinical Impression</label>
+                    <textarea @bind="note.Assessment.ClinicalImpression" rows="4" placeholder="Clinical findings and interpretation..."></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Rehabilitation Potential</label>
+                    <textarea @bind="note.Assessment.RehabPotential" rows="2" placeholder="Good, Fair, Poor with rationale..."></textarea>
+                </div>
+                
+                <h4>Goals</h4>
+                @foreach (var goal in note.Assessment.Goals)
+                {
+                    <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px;">
+                        <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 0.5rem; align-items: center;">
+                            <label><input type="checkbox" @bind="goal.IsLongTerm" /> Long-term</label>
+                            <input @bind="goal.Description" placeholder="Goal description..." />
+                            <select @bind="goal.Status">
+                                @foreach (GoalStatus status in Enum.GetValues<GoalStatus>())
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+                        @if (goal.TargetDate != null)
+                        {
+                            <input type="date" @bind="goal.TargetDate" style="margin-top: 0.5rem;" />
+                        }
+                    </div>
+                }
+                <button @onclick="AddGoal" class="btn btn-secondary">+ Add Goal</button>
+            </div>
+        }
+
+        <!-- Plan Section -->
+        @if (activeTab == "plan")
+        {
+            <div class="soap-section">
+                <h3>Plan</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-field">
+                        <label>Frequency</label>
+                        <input @bind="note.Plan.Frequency" placeholder="e.g., 3x/week" />
+                    </div>
+                    <div class="form-field">
+                        <label>Duration</label>
+                        <input @bind="note.Plan.Duration" placeholder="e.g., 4-6 weeks" />
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Planned Interventions (CSV)</label>
+                    <textarea @bind="note.Plan.PlannedInterventionsCsv" rows="3" placeholder="Therapeutic exercise, manual therapy, etc."></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Next Visit Focus</label>
+                    <textarea @bind="note.Plan.NextVisitFocus" rows="2" placeholder="What will be the focus of the next visit?"></textarea>
+                </div>
+
+                <h4>Home Exercise Program (HEP)</h4>
+                @foreach (var exercise in note.Plan.Hep)
+                {
+                    <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px;">
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem;">
+                            <input @bind="exercise.Name" placeholder="Exercise name" />
+                            <input @bind="exercise.Dosage" placeholder="Sets x Reps" />
+                        </div>
+                        <input @bind="exercise.Notes" placeholder="Special instructions..." style="margin-top: 0.5rem; width: 100%;" />
+                    </div>
+                }
+                <button @onclick="AddExercise" class="btn btn-secondary">+ Add Exercise</button>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .tab-button {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        margin-right: 0.25rem;
+    }
+    
+    .tab-button.active {
+        background: var(--pfpt-lime);
+        color: var(--pfpt-black);
+        font-weight: 600;
+    }
+    
+    .soap-section {
+        padding: 1rem 0;
+    }
+</style>
+
+@code {
+    [Parameter] public Guid AppointmentId { get; set; }
+    
+    private Note? note;
+    private string activeTab = "subjective";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // For now, create a new note if one doesn't exist
+            // In a real implementation, you'd check if a note exists for this appointment
+            note = await NoteService.CreateEvalNoteAsync(Guid.NewGuid(), AppointmentId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading note: {ex.Message}");
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    private void AddRomMeasure()
+    {
+        note?.Objective.Rom.Add(new RomMeasure());
+    }
+
+    private void AddMmtMeasure()
+    {
+        note?.Objective.Mmt.Add(new MmtMeasure());
+    }
+
+    private void AddGoal()
+    {
+        note?.Assessment.Goals.Add(new Goal { Description = "" });
+    }
+
+    private void AddExercise()
+    {
+        note?.Plan.Hep.Add(new ExercisePrescription { Name = "" });
+    }
+
+    private async Task SignNote()
+    {
+        if (note != null)
+        {
+            var success = await NoteService.SignAsync(note.Id, "Administrator");
+            if (success)
+            {
+                note.IsSigned = true;
+                note.SignedBy = "Administrator";
+                note.SignedAt = DateTimeOffset.UtcNow;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ExportToPdf()
+    {
+        if (note != null)
+        {
+            var url = $"/api/notes/{note.Id}/pdf";
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        }
+    }
+}

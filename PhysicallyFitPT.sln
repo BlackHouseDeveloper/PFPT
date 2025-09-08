@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicallyFitPT.Seeder", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicallyFitPT.Web", "PhysicallyFitPT.Web\PhysicallyFitPT.Web.csproj", "{5A7A13DB-CED3-40F9-994D-172F1A5B81CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicallyFitPT.Web.Tests", "PhysicallyFitPT.Web.Tests\PhysicallyFitPT.Web.Tests.csproj", "{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{5A7A13DB-CED3-40F9-994D-172F1A5B81CC}.Release|x64.Build.0 = Release|Any CPU
 		{5A7A13DB-CED3-40F9-994D-172F1A5B81CC}.Release|x86.ActiveCfg = Release|Any CPU
 		{5A7A13DB-CED3-40F9-994D-172F1A5B81CC}.Release|x86.Build.0 = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|x64.Build.0 = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|x64.ActiveCfg = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|x64.Build.0 = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB1AF87E-9D85-4E3A-95A6-0153C6600EB0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

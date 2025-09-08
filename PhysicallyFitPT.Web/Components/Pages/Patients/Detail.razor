@@ -1,0 +1,196 @@
+@page "/patients/{patientId:guid}"
+@attribute [Authorize]
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<PageTitle>Patient Detail - PhysicallyFit PT</PageTitle>
+
+@if (patient == null)
+{
+    <p>Loading patient...</p>
+}
+else
+{
+    <h1>@patient.FirstName @patient.LastName</h1>
+    
+    <!-- Patient Info Card -->
+    <div class="card">
+        <div class="card-header">Patient Information</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div><strong>MRN:</strong> @patient.MRN</div>
+            <div><strong>DOB:</strong> @patient.DateOfBirth?.ToString("MM/dd/yyyy")</div>
+            <div><strong>Email:</strong> @patient.Email</div>
+            <div><strong>Phone:</strong> @patient.MobilePhone</div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div style="border-bottom: 1px solid #ddd; margin: 1rem 0;">
+        <button class="tab-button @(activeTab == "overview" ? "active" : "")" @onclick='() => SetActiveTab("overview")'>
+            Overview
+        </button>
+        <button class="tab-button @(activeTab == "appointments" ? "active" : "")" @onclick='() => SetActiveTab("appointments")'>
+            Appointments
+        </button>
+        <button class="tab-button @(activeTab == "questionnaires" ? "active" : "")" @onclick='() => SetActiveTab("questionnaires")'>
+            Questionnaires
+        </button>
+        <button class="tab-button @(activeTab == "notes" ? "active" : "")" @onclick='() => SetActiveTab("notes")'>
+            Notes
+        </button>
+    </div>
+
+    <!-- Tab Content -->
+    @if (activeTab == "overview")
+    {
+        <div class="card">
+            <div class="card-header">Patient Overview</div>
+            <p>Complete patient overview with medical history, current conditions, and treatment summary.</p>
+            <p><em>Detailed overview implementation coming soon...</em></p>
+        </div>
+    }
+    
+    @if (activeTab == "appointments")
+    {
+        <div class="card">
+            <div class="card-header">Appointments</div>
+            @if (appointments.Any())
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in appointments.OrderByDescending(a => a.ScheduledStart))
+                        {
+                            <tr>
+                                <td>@appointment.ScheduledStart.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>@appointment.VisitType</td>
+                                <td>@(appointment.ScheduledStart > DateTimeOffset.Now ? "Scheduled" : "Completed")</td>
+                                <td>
+                                    <a href="/notes/@appointment.Id" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                        View Note
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No appointments found for this patient.</p>
+            }
+        </div>
+    }
+    
+    @if (activeTab == "questionnaires")
+    {
+        <div class="card">
+            <div class="card-header">Questionnaire Responses</div>
+            <p>Patient questionnaire responses and intake forms will be displayed here.</p>
+            <p><em>Questionnaire viewer implementation coming soon...</em></p>
+        </div>
+    }
+    
+    @if (activeTab == "notes")
+    {
+        <div class="card">
+            <div class="card-header">Clinical Notes</div>
+            @if (notes.Any())
+            {
+                @foreach (var note in notes.OrderByDescending(n => n.CreatedAt))
+                {
+                    <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong>@note.VisitType Note - @note.CreatedAt.ToString("MM/dd/yyyy")</strong>
+                            @if (note.IsSigned)
+                            {
+                                <span style="color: green;">✅ Signed</span>
+                            }
+                            else
+                            {
+                                <span style="color: orange;">📝 Unsigned</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(note.Subjective.ChiefComplaint))
+                        {
+                            <p><strong>Chief Complaint:</strong> @note.Subjective.ChiefComplaint</p>
+                        }
+                        <div style="text-align: right;">
+                            <a href="/notes/@note.AppointmentId" class="btn btn-primary">Edit Note</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No clinical notes found for this patient.</p>
+            }
+        </div>
+    }
+}
+
+<style>
+    .tab-button {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        margin-right: 0.25rem;
+    }
+    
+    .tab-button.active {
+        background: var(--pfpt-lime);
+        color: var(--pfpt-black);
+        font-weight: 600;
+    }
+</style>
+
+@code {
+    [Parameter] public Guid PatientId { get; set; }
+    
+    private Patient? patient;
+    private List<Appointment> appointments = new();
+    private List<Note> notes = new();
+    private string activeTab = "overview";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            
+            patient = await db.Patients
+                .FirstOrDefaultAsync(p => p.Id == PatientId);
+            
+            if (patient != null)
+            {
+                appointments = await db.Appointments
+                    .Where(a => a.PatientId == PatientId)
+                    .OrderByDescending(a => a.ScheduledStart)
+                    .ToListAsync();
+                
+                notes = await db.Notes
+                    .Where(n => n.PatientId == PatientId)
+                    .OrderByDescending(n => n.CreatedAt)
+                    .ToListAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading patient: {ex.Message}");
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+    }
+}
