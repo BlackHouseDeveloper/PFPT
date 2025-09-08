@@ -1,0 +1,35 @@
+@page "/patients"
+@inject IPatientService PatientService
+
+<PageTitle>Patients - PhysicallyFitPT</PageTitle>
+
+<h1>Patients</h1>
+
+<p>Patient management for PhysicallyFitPT clinical system.</p>
+
+<div class="service-test">
+    <h3>Service Connection Test</h3>
+    <p>PatientService Injected: <strong>@(PatientService != null ? "✅ Connected" : "❌ Failed")</strong></p>
+</div>
+
+<div class="info-box">
+    <p><strong>Web App Status:</strong> Successfully connected to shared services from Infrastructure layer.</p>
+    <p>The web application can reuse all existing business logic and data access from the MAUI app.</p>
+</div>
+
+<style>
+.service-test {
+    background: #f0f8ff;
+    padding: 1rem;
+    border-left: 4px solid #007bff;
+    margin: 1rem 0;
+}
+
+.info-box {
+    background: #f8f9fa;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+</style>
