@@ -51,6 +51,10 @@
 
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.80" />
     <PackageVersion Include="SkiaSharp.Views.Maui.Controls" Version="2.88.7" />
+    
+    <!-- Blazor WebAssembly packages -->
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.19" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.19" />
 
 
   </ItemGroup>
