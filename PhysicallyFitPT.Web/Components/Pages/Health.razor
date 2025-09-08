@@ -1,0 +1,59 @@
+@page "/health"
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<PageTitle>Health Check - PhysicallyFit PT</PageTitle>
+
+<div class="card">
+    <div class="card-header">System Health Check</div>
+    
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem; align-items: center;">
+        <strong>Status:</strong>
+        <span style="color: @(isHealthy ? "green" : "red"); font-weight: 600;">
+            @(isHealthy ? "✅ Healthy" : "❌ Unhealthy")
+        </span>
+        
+        <strong>Timestamp:</strong>
+        <span>@DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>
+        
+        <strong>Database:</strong>
+        <span style="color: @(dbConnected ? "green" : "red");">
+            @(dbConnected ? "✅ Connected" : "❌ Connection Failed")
+        </span>
+        
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <strong>Error:</strong>
+            <span style="color: red;">@errorMessage</span>
+        }
+    </div>
+</div>
+
+@code {
+    private bool isHealthy = false;
+    private bool dbConnected = false;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            
+            // Test database connectivity
+            await db.Database.CanConnectAsync();
+            dbConnected = true;
+            
+            // Test basic query
+            var patientCount = await db.Patients.CountAsync();
+            
+            isHealthy = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            isHealthy = false;
+            dbConnected = false;
+        }
+    }
+}

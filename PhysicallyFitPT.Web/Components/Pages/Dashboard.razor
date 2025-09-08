@@ -1,0 +1,75 @@
+@page "/"
+@attribute [Authorize]
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<PageTitle>Dashboard - PhysicallyFit PT</PageTitle>
+
+<h1>Dashboard</h1>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <span class="stat-number">@todayPatientsCount</span>
+        <div class="stat-label">Today's Patients</div>
+    </div>
+    
+    <div class="stat-card">
+        <span class="stat-number">@pendingQuestionnaires</span>
+        <div class="stat-label">Pending Questionnaires</div>
+    </div>
+    
+    <div class="stat-card">
+        <span class="stat-number">@unsignedNotes</span>
+        <div class="stat-label">Unsigned Notes</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Recent Activity</div>
+    <p>Welcome to PhysicallyFit PT Web Portal!</p>
+    <p>Use the navigation menu to:</p>
+    <ul>
+        <li>View and manage <a href="/patients">Patients</a></li>
+        <li>Schedule and manage <a href="/appointments">Appointments</a></li>
+        <li>Configure <a href="/admin/check-in">Check-in Settings</a></li>
+        <li>Check system <a href="/health">Health</a></li>
+    </ul>
+</div>
+
+@code {
+    private int todayPatientsCount = 0;
+    private int pendingQuestionnaires = 0;
+    private int unsignedNotes = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var todayStart = today.ToDateTime(TimeOnly.MinValue);
+            var todayEnd = today.ToDateTime(TimeOnly.MaxValue);
+            
+            // Count today's appointments (approximate for patients today)
+            todayPatientsCount = await db.Appointments
+                .Where(a => a.ScheduledStart >= todayStart && a.ScheduledStart <= todayEnd)
+                .CountAsync();
+            
+            // Count pending questionnaires (approximation - questionnaires without responses)
+            var totalQuestionnaires = await db.QuestionnaireDefinitions.CountAsync();
+            var completedResponses = await db.QuestionnaireResponses.CountAsync();
+            pendingQuestionnaires = Math.Max(0, totalQuestionnaires - completedResponses);
+            
+            // Count unsigned notes
+            unsignedNotes = await db.Notes
+                .Where(n => string.IsNullOrEmpty(n.SignedBy))
+                .CountAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't crash the dashboard
+            Console.WriteLine($"Error loading dashboard stats: {ex.Message}");
+        }
+    }
+}

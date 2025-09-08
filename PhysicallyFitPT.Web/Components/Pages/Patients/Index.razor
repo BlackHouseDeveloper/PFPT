@@ -1,0 +1,104 @@
+@page "/patients"
+@attribute [Authorize]
+@inject IPatientService PatientService
+
+<PageTitle>Patients - PhysicallyFit PT</PageTitle>
+
+<h1>Patients</h1>
+
+<div class="card">
+    <div class="card-header">Patient Search & Management</div>
+    
+    <div class="mb-2">
+        <input type="text" @bind="searchQuery" @onkeypress="HandleKeyPress" placeholder="Search patients..." class="form-field" style="width: 300px; display: inline-block;" />
+        <button @onclick="SearchPatients" class="btn btn-primary" style="margin-left: 0.5rem;">Search</button>
+        <button @onclick="ClearSearch" class="btn btn-secondary" style="margin-left: 0.5rem;">Clear</button>
+    </div>
+    
+    @if (isLoading)
+    {
+        <p>Loading patients...</p>
+    }
+    else if (patients.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>MRN</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var patient in patients)
+                {
+                    <tr>
+                        <td>@patient.FirstName @patient.LastName</td>
+                        <td>@patient.MRN</td>
+                        <td>@patient.Email</td>
+                        <td>@patient.MobilePhone</td>
+                        <td>
+                            <a href="/patients/@patient.Id" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (!string.IsNullOrEmpty(searchQuery))
+    {
+        <p>No patients found matching "@searchQuery".</p>
+    }
+    else
+    {
+        <p>Enter a search term to find patients.</p>
+    }
+</div>
+
+@code {
+    private string searchQuery = "";
+    private List<Patient> patients = new();
+    private bool isLoading = false;
+
+    private async Task SearchPatients()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            patients.Clear();
+            return;
+        }
+
+        isLoading = true;
+        try
+        {
+            var results = await PatientService.SearchAsync(searchQuery, 50);
+            patients = results.ToList();
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't crash the page
+            Console.WriteLine($"Error searching patients: {ex.Message}");
+            patients.Clear();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchPatients();
+        }
+    }
+
+    private void ClearSearch()
+    {
+        searchQuery = "";
+        patients.Clear();
+    }
+}

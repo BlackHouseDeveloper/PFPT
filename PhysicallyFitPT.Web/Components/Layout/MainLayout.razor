@@ -1,20 +1,30 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <div class="main-layout">
+                <nav class="nav-sidebar">
+                    <NavMenu />
+                </nav>
+                <main class="main-content">
+                    <div class="top-bar">
+                        <div class="logo">PhysicallyFit PT</div>
+                        <div>
+                            Welcome, @context.User.Identity?.Name 
+                            <a href="/logout" class="btn btn-secondary" style="margin-left: 1rem;">Logout</a>
+                        </div>
+                    </div>
+                    @Body
+                </main>
+            </div>
+        </Authorized>
+        <NotAuthorized>
             @Body
-        </article>
-    </main>
-</div>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.

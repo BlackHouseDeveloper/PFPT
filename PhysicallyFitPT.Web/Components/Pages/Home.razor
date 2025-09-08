@@ -1,7 +1,10 @@
-﻿@page "/"
+@* Redirect to Dashboard - this file can be removed later *@
+@page "/home"
+@inject NavigationManager Navigation
 
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

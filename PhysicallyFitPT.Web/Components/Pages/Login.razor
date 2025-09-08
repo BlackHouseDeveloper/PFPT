@@ -1,0 +1,90 @@
+@page "/login"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Login - PhysicallyFit PT</PageTitle>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">PhysicallyFit PT</div>
+        
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
+            <div class="form-field">
+                <label for="pin">Admin PIN</label>
+                <InputText @bind-Value="loginModel.Pin" type="password" id="pin" placeholder="Enter PIN" />
+            </div>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div style="color: red; margin-bottom: 1rem; text-align: center;">
+                    @errorMessage
+                </div>
+            }
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Login
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // If already authenticated, redirect to home
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext?.User?.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        var configuredPin = Configuration["Authentication:AdminPin"] ?? "123456";
+        
+        if (loginModel.Pin == configuredPin)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "Administrator"),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            var httpContext = HttpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            }
+            
+            var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+            if (returnUrl.Contains("login"))
+            {
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                Navigation.NavigateTo(returnUrl);
+            }
+        }
+        else
+        {
+            errorMessage = "Invalid PIN. Please try again.";
+        }
+    }
+
+    public class LoginModel
+    {
+        public string Pin { get; set; } = "";
+    }
+}
