@@ -19,9 +19,10 @@ jobs:
       - name: Setup .NET SDK 8.0.x (with NuGet cache)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.403"
+          dotnet-version: "8.0.x"
           cache: true
-
+          cache-dependency-path: '**/package-lock.json'
+          
       - name: Show .NET info
         run: dotnet --info
 
