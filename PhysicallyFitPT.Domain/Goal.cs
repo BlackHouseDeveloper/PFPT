@@ -51,6 +51,9 @@ public sealed class Goal
     public bool IsLongTerm { get; set; }
 
     // 500-char max enforced in DB; Domain is annotation-free by design.
+    /// <summary>
+    /// Gets or sets the description of the goal.
+    /// </summary>
     public string Description { get; set; } = string.Empty;
 
     /// <summary>
@@ -63,9 +66,18 @@ public sealed class Goal
     /// </summary>
     public string? BaselineValue { get; set; }
 
+    /// <summary>
+    /// Gets or sets the target value for the goal (optional).
+    /// </summary>
     public string? TargetValue { get; set; }
 
+    /// <summary>
+    /// Gets or sets the target completion date for the goal (optional).
+    /// </summary>
     public DateTime? TargetDate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the current status of the goal.
+    /// </summary>
     public GoalStatus Status { get; set; } = GoalStatus.NotStarted;
 }
