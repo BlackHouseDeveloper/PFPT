@@ -131,12 +131,12 @@ namespace PhysicallyFitPT.Infrastructure.Services
 
         static SpecialTestResult ToSpecialTestResult(int value)
         {
-            if (!Enum.IsDefined(typeof(SpecialTestResult), value))
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), $"Invalid SpecialTestResult value: {value}");
-            }
+          if (!Enum.IsDefined(typeof(SpecialTestResult), value))
+          {
+            throw new ArgumentOutOfRangeException(nameof(value), $"Invalid SpecialTestResult value: {value}");
+          }
 
-            return (SpecialTestResult)value;
+          return (SpecialTestResult)value;
         }
 
         // Update ROM measures in place

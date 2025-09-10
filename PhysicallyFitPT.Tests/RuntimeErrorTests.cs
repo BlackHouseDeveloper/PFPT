@@ -181,7 +181,7 @@ public class RuntimeErrorTests
 
     // Potential issue in UpdateObjectiveAsync if note.Objective is null:
     // note.Objective.Rom = rom?.ToList() ?? note.Objective.Rom;
-     Assert.True(true); // Placeholder - actual test would require complex setup
+    Assert.True(true); // Placeholder - actual test would require complex setup
   }
 }
 
