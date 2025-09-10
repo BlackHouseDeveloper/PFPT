@@ -4,57 +4,73 @@ set -euo pipefail
 # ---- safety & env ----------------------------------------------------------------
 # refuse to run as root (prevents sudo-caused permission mess)
 if [ "$EUID" -eq 0 ]; then
-  echo "✋ Do not run this script with sudo. Fix permissions instead."; exit 1
+  echo "✋ Do not run this script with sudo. Fix file permissions instead."; exit 1
+fi
+
+# ensure .NET SDK is installed
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "❌ .NET 8 SDK is not installed or not on PATH. Please install .NET 8.0 SDK."; exit 1
 fi
 
 # Use user-local caches if Homebrew SDK is detected (or if unset)
 if dotnet --info 2>/dev/null | grep -qi 'homebrew'; then
-  echo "⚠️  Homebrew-managed .NET detected; using user-local caches."
+  echo "⚠️  Homebrew-managed .NET detected; using user-local NuGet/cache dirs."
   export DOTNET_CLI_HOME="${DOTNET_CLI_HOME:-$HOME/.dotnet}"
   export NUGET_PACKAGES="${NUGET_PACKAGES:-$HOME/.nuget/packages}"
 fi
 # ------------------------------------------------------------------------------
 
-
 # ---------------------------------------------
-# Physically Fit PT – Blazor (MAUI) v4 scaffold (macOS)
-# Clean architecture, services, CI, tests, seed, shared clinical libs
+# Physically Fit PT – Blazor (MAUI) scaffold (macOS, .NET 8)
+# Clean architecture: domain, services, CI, tests, seed data, shared libs
 # Flags:
-#   --create-migration   Generate Initial migration and update DB
-#   --seed               Seed a local dev DB (uses PFP_DB_PATH or ./dev.physicallyfitpt.db)
+#   --create-migration   Generate initial EF Core migration and update DB
+#   --seed               Seed the local dev DB (uses PFP_DB_PATH or ./dev.physicallyfitpt.db)
+#   -h, --help           Show this help/usage information
 # ---------------------------------------------
+# This script bootstraps or updates the PhysicallyFitPT solution. It is safe to re-run:
+# if projects exist, it will normalize Target Frameworks to .NET 8 and ensure all references,
+# packages, and baseline code are in place (without duplicating content).
+# Do NOT run with sudo; ensure proper permissions for all created files.
 
 CREATE_MIGRATION=false
 SEED_DATA=false
-while [[ $# -gt 0 ]]; do
+if [[ $# -gt 0 ]]; then
   case "$1" in
-    --create-migration) CREATE_MIGRATION=true; shift ;;
-    --seed)             SEED_DATA=true; shift ;;
-    *) echo "Unknown arg: $1"; exit 1 ;;
+    --create-migration) CREATE_MIGRATION=true ;;
+    --seed)            SEED_DATA=true ;;
+    -h|--help)
+      echo "Usage: $0 [--create-migration] [--seed]"
+      echo "Bootstraps (or updates) the PhysicallyFitPT solution and optional dev database."
+      echo "    --create-migration   Create initial EF Core migration and update the database."
+      echo "    --seed               Seed the dev SQLite database with sample data."
+      exit 0 ;;
+    *) echo "Unknown option: $1"; exit 1 ;;
   esac
-done
+fi
 
 SOLUTION="PhysicallyFitPT"
-APP="$SOLUTION"                   # .NET MAUI Blazor app
-DOMAIN="$SOLUTION.Domain"         # Pure POCOs (no EF attributes)
-INFRA="$SOLUTION.Infrastructure"  # EF Core, DbContext, Services, PDF
-SHARED="$SOLUTION.Shared"         # DTOs / shared clinical libs
-TESTS="$SOLUTION.Tests"           # xUnit tests
+APP="$SOLUTION"                   # .NET MAUI Blazor app (multi-target)
+DOMAIN="$SOLUTION.Domain"         # Domain entities (POCOs, no EF attributes)
+INFRA="$SOLUTION.Infrastructure"  # Infrastructure (EF Core DbContext, Services, PDF renderer)
+SHARED="$SOLUTION.Shared"         # Shared DTOs / clinical libraries
+TESTS="$SOLUTION.Tests"           # XUnit test project
 SEEDER="$SOLUTION.Seeder"         # Console app to seed EF data
+WEB="$SOLUTION.Web"               # Blazor WebAssembly client (browser app)
 
-echo "🚀 Scaffolding $SOLUTION (MAUI Blazor + Clean Architecture)…"
+echo "🚀 Scaffolding $SOLUTION solution (MAUI Blazor + Clean Architecture)…"
 
-# 0) Ensure MAUI workloads (safe/idempotent)
+# 0) Ensure .NET MAUI workloads (safe/idempotent)
 if ! dotnet workload list | grep -Eiq '(^|[[:space:]])maui([[:space:]]|$)'; then
   echo "• Installing .NET MAUI workloads…"
   dotnet workload install maui
 else
-  echo "• MAUI workloads already installed."
+  echo "• .NET MAUI workloads already installed."
 fi
 
-# 1) Base files (SDK pin, ignores, analyzers, styles)
+# 1) Base files (SDK version pin, ignores, editor settings)
 [[ -f global.json ]] || cat > global.json <<'EOF'
-{ "sdk": { "version": "9.0.100", "rollForward": "latestFeature" } }
+{ "sdk": { "version": "8.0.100", "rollForward": "latestFeature" } }
 EOF
 
 [[ -f .gitignore ]] || dotnet new gitignore >/dev/null
@@ -96,17 +112,16 @@ EOF
     <PackageReference Include="Roslynator.Analyzers" Version="4.10.0" PrivateAssets="all" />
   </ItemGroup>
   <PropertyGroup>
-  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-  <EmbedUntrackedSources>true</EmbedUntrackedSources>
-</PropertyGroup>
-
-<ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-</ItemGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 </Project>
 EOF
 
-# 2) Solution + projects
+# 2) Solution + Projects (create if not exists)
 [[ -f "$SOLUTION.sln" ]] || dotnet new sln -n "$SOLUTION"
 [[ -d "$APP"    ]] || dotnet new maui-blazor -n "$APP"
 [[ -d "$DOMAIN" ]] || dotnet new classlib   -n "$DOMAIN"
@@ -114,9 +129,10 @@ EOF
 [[ -d "$SHARED" ]] || dotnet new classlib   -n "$SHARED"
 [[ -d "$TESTS"  ]] || dotnet new xunit      -n "$TESTS"
 [[ -d "$SEEDER" ]] || dotnet new console    -n "$SEEDER"
+[[ -d "$WEB"    ]] || dotnet new blazorwasm -n "$WEB"
 
 # --- TFM Normalizer: enforce supported frameworks (macOS-safe) ----------------
-echo "• Normalizing TargetFramework/TargetFrameworks to .NET 9…"
+echo "• Normalizing TargetFramework settings to .NET 8…"
 
 # helper: replace (or insert) a single-TFM <TargetFramework> in a csproj
 ensure_single_tfm() {
@@ -137,10 +153,10 @@ ensure_single_tfm() {
   fi
 }
 
-# helper: force MAUI multi-TFM
+# helper: force MAUI multi-target TFMs
 ensure_maui_tfms() {
   local file="$1"
-  local tfms="net9.0-android;net9.0-ios;net9.0-maccatalyst"
+  local tfms="net8.0-android;net8.0-ios;net8.0-maccatalyst"
   if grep -q "<TargetFrameworks>" "$file"; then
     sed -i '' -E "s|<TargetFrameworks>[^<]+</TargetFrameworks>|<TargetFrameworks>${tfms}</TargetFrameworks>|" "$file"
   elif grep -q "<TargetFramework>" "$file"; then
@@ -152,86 +168,81 @@ ensure_maui_tfms() {
       /<PropertyGroup>/ && inserted==0 {print "    <TargetFrameworks>" TFMS "</TargetFrameworks>"; inserted=1}
     ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
   fi
-}
-
-# 1) Normalize MAUI app to multi-target net9
+# 2.1) Normalize MAUI app to multi-target .NET 8
 ensure_maui_tfms "$APP/$APP.csproj"
 
 # 2) Normalize libs/tests/tools to net9.0 single TFM
-for proj in \
-  "$DOMAIN/$DOMAIN.csproj" \
-  "$INFRA/$INFRA.csproj" \
-  "$SHARED/$SHARED.csproj" \
-  "$TESTS/$TESTS.csproj" \
-  "$SEEDER/$SEEDER.csproj"
+# 2.2) Normalize class libraries, tests, tools, and Web to net8.0 single TFM
+for proj in "$DOMAIN/$DOMAIN.csproj" "$INFRA/$INFRA.csproj" "$SHARED/$SHARED.csproj" \
+            "$TESTS/$TESTS.csproj" "$SEEDER/$SEEDER.csproj" "$WEB/$WEB.csproj"
 do
-  ensure_single_tfm "$proj" "net9.0"
+  ensure_single_tfm "$proj" "net8.0"
 done
 
-# 3) Sanity report (shows any leftover 7/8)
-FOUND_OLD=$(grep -R --line-number -E "<TargetFramework(s)?>.*net[78]\.0" . || true)
+# 2.3) Sanity report: warn if any unexpected TFMs remain (net7.0 or net9.0)
+FOUND_OLD=$(grep -R --line-number -E "<TargetFramework(s)?>.*net(7|9)\.0" . || true)
 if [[ -n "$FOUND_OLD" ]]; then
-  echo "⚠️  WARNING: Found residual net7.0/net8.0 references:"
+  echo "⚠️  WARNING: Found residual net7.0/net9.0 references in some project files:"
   echo "$FOUND_OLD"
-  echo "   Please review the files above; they may have custom configurations."
+  echo "   Please review and adjust the above files if needed."
 else
-  echo "• All project TFMs set to .NET 9 successfully."
+  echo "• All project TargetFrameworks set to .NET 8 successfully."
 fi
 # ------------------------------------------------------------------------------
 
 
-# Add to solution (idempotent-ish)
+# 3) Add projects to solution (idempotent)
 dotnet sln add "$APP/$APP.csproj"       2>/dev/null || true
 dotnet sln add "$DOMAIN/$DOMAIN.csproj" 2>/dev/null || true
 dotnet sln add "$INFRA/$INFRA.csproj"   2>/dev/null || true
 dotnet sln add "$SHARED/$SHARED.csproj" 2>/dev/null || true
 dotnet sln add "$TESTS/$TESTS.csproj"   2>/dev/null || true
 dotnet sln add "$SEEDER/$SEEDER.csproj" 2>/dev/null || true
+dotnet sln add "$WEB/$WEB.csproj"       2>/dev/null || true
 
-# 3) Project references (clean layering)
-dotnet add "$APP/$APP.csproj"        reference "$DOMAIN/$DOMAIN.csproj" "$INFRA/$INFRA.csproj" "$SHARED/$SHARED.csproj" 2>/dev/null || true
-dotnet add "$INFRA/$INFRA.csproj"    reference "$DOMAIN/$DOMAIN.csproj" "$SHARED/$SHARED.csproj"                         2>/dev/null || true
-dotnet add "$TESTS/$TESTS.csproj"    reference "$INFRA/$INFRA.csproj" "$DOMAIN/$DOMAIN.csproj"                            2>/dev/null || true
-dotnet add "$SEEDER/$SEEDER.csproj"  reference "$INFRA/$INFRA.csproj" "$DOMAIN/$DOMAIN.csproj"                            2>/dev/null || true
+# 4) Project references (enforce clean layering)
+dotnet add "$APP/$APP.csproj" reference \
+  "$DOMAIN/$DOMAIN.csproj" "$INFRA/$INFRA.csproj" "$SHARED/$SHARED.csproj" 2>/dev/null || true
+dotnet add "$WEB/$WEB.csproj" reference \
+  "$DOMAIN/$DOMAIN.csproj" "$INFRA/$INFRA.csproj" "$SHARED/$SHARED.csproj" 2>/dev/null || true
+dotnet add "$INFRA/$INFRA.csproj" reference \
+  "$DOMAIN/$DOMAIN.csproj" "$SHARED/$SHARED.csproj" 2>/dev/null || true
+dotnet add "$TESTS/$TESTS.csproj" reference \
+  "$INFRA/$INFRA.csproj" "$DOMAIN/$DOMAIN.csproj" 2>/dev/null || true
+dotnet add "$SEEDER/$SEEDER.csproj" reference \
+  "$INFRA/$INFRA.csproj" "$DOMAIN/$DOMAIN.csproj" 2>/dev/null || true
 
-# 4) NuGet packages
-# Infrastructure: EF Core + Sqlite + Design + PDF + Skia (render)
-dotnet add "$INFRA/$INFRA.csproj" \
- package Microsoft.EntityFrameworkCore
-dotnet add "$INFRA/$INFRA.csproj" \
- package Microsoft.EntityFrameworkCore.Sqlite
-dotnet add "$INFRA/$INFRA.csproj" \
- package Microsoft.EntityFrameworkCore.Design
-dotnet add "$INFRA/$INFRA.csproj" \
- package QuestPDF
-dotnet add "$INFRA/$INFRA.csproj" \
- package SkiaSharp
-dotnet add "$INFRA/$INFRA.csproj" \
- package SQLitePCLRaw.bundle_e_sqlite3
+# 5) NuGet packages
+# Infrastructure: EF Core + SQLite + Design tools + QuestPDF + SkiaSharp (PDF rendering support)
+dotnet add "$INFRA/$INFRA.csproj" package Microsoft.EntityFrameworkCore
+dotnet add "$INFRA/$INFRA.csproj" package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add "$INFRA/$INFRA.csproj" package Microsoft.EntityFrameworkCore.Design
+dotnet add "$INFRA/$INFRA.csproj" package QuestPDF
+dotnet add "$INFRA/$INFRA.csproj" package SkiaSharp
+dotnet add "$INFRA/$INFRA.csproj" package SQLitePCLRaw.bundle_e_sqlite3
 
-# App: MAUI + Http + SQLite native assets for mobile
-dotnet add "$APP/$APP.csproj" \
- package SQLitePCLRaw.bundle_e_sqlite3
-dotnet add "$APP/$APP.csproj" \
- package SkiaSharp.Views.Maui.Controls
+# App (MAUI): SQLite native assets for mobile + SkiaSharp views for Maui
+dotnet add "$APP/$APP.csproj" package SQLitePCLRaw.bundle_e_sqlite3
+dotnet add "$APP/$APP.csproj" package SkiaSharp.Views.Maui.Controls
 
-# Tests: assertions + EF Core bits
-dotnet add "$TESTS/$TESTS.csproj" \
- package FluentAssertions
-dotnet add "$TESTS/$TESTS.csproj" \
- package Microsoft.EntityFrameworkCore
-dotnet add "$TESTS/$TESTS.csproj" \
- package Microsoft.EntityFrameworkCore.Sqlite
+# Web: In-memory EF for browser + HTTP client support
+dotnet add "$WEB/$WEB.csproj" package Microsoft.EntityFrameworkCore.InMemory
+dotnet add "$WEB/$WEB.csproj" package Microsoft.Extensions.Http
+
+# Tests: FluentAssertions + EF Core (with SQLite for in-memory use)
+dotnet add "$TESTS/$TESTS.csproj" package FluentAssertions
+dotnet add "$TESTS/$TESTS.csproj" package Microsoft.EntityFrameworkCore
+dotnet add "$TESTS/$TESTS.csproj" package Microsoft.EntityFrameworkCore.Sqlite
 
 
-# ---- EF local tool & design-time factory ---------------------------------------
-# install/update local dotnet-ef tool (checked into repo)
+# ---- EF Core local tools & design-time context factory -----------------------
+# Ensure dotnet-ef tool is available (local tool manifest)
 if [ ! -f .config/dotnet-tools.json ]; then
   dotnet new tool-manifest --force
 fi
 dotnet tool update dotnet-ef || dotnet tool install dotnet-ef
 
-# add a design-time factory so migrations don't need the MAUI app to run
+# Add a design-time DbContext factory so `dotnet ef` commands don't require launching the MAUI app
 DTF="$INFRA/Data/DesignTimeDbContextFactory.cs"
 if [ ! -f "$DTF" ]; then
   mkdir -p "$INFRA/Data"
@@ -1469,7 +1480,7 @@ cat > "$APP/docs/ui-mapping.md" <<'EOF'
 > Expand this table as Figma evolves; prefer shared Razor components as you identify repetition.
 EOF
 
-# 12) CI (GitHub Actions): includes MAUI workload
+# 11) CI (GitHub Actions) – Initialize basic build/test workflow
 mkdir -p .github/workflows
 [[ -f .github/workflows/build.yml ]] || cat > .github/workflows/build.yml <<'EOF'
 name: ci
@@ -1482,84 +1493,98 @@ on:
 jobs:
   build_test:
     runs-on: macos-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install .NET 9 SDK (with NuGet cache)
+      - name: Setup .NET SDK 8.0.x (with NuGet cache)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
-          include-prerelease: true
+          dotnet-version: "8.0.x"
           cache: true
 
-      - name: Install MAUI workload
+      - name: Show .NET info
+        run: dotnet --info
+
+      - name: Install .NET MAUI workload
         run: dotnet workload install maui
 
-      - name: Restore
-        run: dotnet restore
+      - name: Restore NuGet packages
+        run: dotnet restore --use-lock-file
 
       - name: Enforce Code Formatting
         run: |
           dotnet tool update -g dotnet-format || dotnet tool install -g dotnet-format
           dotnet format --verify-no-changes --no-restore
-          
-      - name: Build & Test
-        run: dotnet test --nologo --configuration Release
+
+      - name: Prepare artifacts directory
+        run: mkdir -p artifacts
+
+      - name: Build Android (Release)
+        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f net8.0-android -bl:artifacts/build-android.binlog
+
+      - name: Build Web (Release)
+        run: dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -bl:artifacts/build-web.binlog
+
+      - name: Test (unit tests only)
+        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/test-results.trx"
+
+      - name: Upload build/test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          path: |
+            artifacts/**
 EOF
 
-# 13) Optional: create initial migration & seed
+# 12) (Optional) Create initial migration & update DB
 if $CREATE_MIGRATION; then
-  echo "• Creating initial EF Core migration…"
+  echo "• Ensuring initial EF Core migration is created and applied…"
   dotnet tool install --global dotnet-ef >/dev/null 2>&1 || true
-  dotnet ef migrations add Initial --project "$INFRA" --startup-project "$APP" || true
-  dotnet ef database update      --project "$INFRA" --startup-project "$APP" || true
+  if ls "$INFRA"/Data/Migrations/*_Initial*.cs >/dev/null 2>&1; then
+    echo "• Initial migration already exists; skipping creation."
+  else
+    dotnet ef migrations add Initial --project "$INFRA" --startup-project "$APP"
+  fi
+  # Always attempt to apply database update (this will create the SQLite DB if not exists)
+  dotnet ef database update --project "$INFRA" --startup-project "$APP"
 fi
 
+# 13) (Optional) Seed database with sample data
 if $SEED_DATA; then
   DB_FILE="$(pwd)/dev.physicallyfitpt.db"
   export PFP_DB_PATH="$DB_FILE"
-  echo "• Seeding DB at: $PFP_DB_PATH"
-  dotnet run --project "$SEEDER/$SEEDER.csproj"
-  echo "• Seeded. App will use this DB when PFP_DB_PATH is set."
-fi
-
-# ---- Optional: create/apply the initial migration -------------------------------
-if [ "${PFPT_RUN_MIGRATIONS:-0}" = "1" ]; then
-  echo "• Running EF migrations (Infrastructure as startup)..."
-  if ! ls "$INFRA"/Data/Migrations/*_Initial*.cs >/dev/null 2>&1; then
-    dotnet tool run dotnet-ef migrations add Initial \
-      --project "$INFRA" \
-      --startup-project "$INFRA" \
-      --output-dir Data/Migrations
+  if [ -f "$DB_FILE" ]; then
+    echo "• Using existing dev DB at $DB_FILE (will add missing seed data)."
   else
-    echo "• Initial migration already exists; skipping add."
+    echo "• Creating new dev database at $DB_FILE and seeding initial data…"
   fi
-
-  dotnet tool run dotnet-ef database update \
-    --project "$INFRA" \
-    --startup-project "$INFRA"
-else
-  echo "• Skipping migrations (set PFPT_RUN_MIGRATIONS=1 to enable)."
+  dotnet run --project "$SEEDER/$SEEDER.csproj"
+  echo "• Seeding complete. The app will use this DB when PFP_DB_PATH is set."
 fi
-# ------------------------------------------------------------------------------
-
 
 echo
 echo "✅ Scaffold complete."
-echo
+echo 
 echo "Next steps:"
-echo "1) Open the solution in VS Code:"
+echo "1) Open the solution in VS Code (or IDE) to explore the projects:"
 echo "   code $SOLUTION.sln"
-echo
-echo "2) (Optional) Create migration & update DB:"
-echo "   ./scaffold_physicallyfitpt_v4_mac.sh --create-migration"
-echo
-echo "3) (Optional) Seed data (and use at runtime):"
-echo "   ./scaffold_physicallyfitpt_v4_mac.sh --seed"
+echo 
+echo "2) (Optional) Create initial migration & update DB:"
+echo "   ./PFPT-Foundry.sh --create-migration"
+echo 
+echo "3) (Optional) Seed sample data (and use it at runtime):"
+echo "   ./PFPT-Foundry.sh --seed"
 echo "   export PFP_DB_PATH=\"$(pwd)/dev.physicallyfitpt.db\""
+echo 
+echo "4) Run the MAUI app (Mac Catalyst):"
+echo "   dotnet build -t:Run -f net8.0-maccatalyst $APP/$APP.csproj"
+echo 
+echo "5) Run the Blazor Web app in a browser:"
+echo "   dotnet run --project $WEB/$WEB.csproj"
 echo
-echo "4) Run MAUI (Mac Catalyst):"
-echo "   dotnet build -t:Run -f net9.0-maccatalyst $APP/$APP.csproj"
-
