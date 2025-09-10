@@ -46,5 +46,4 @@ namespace PhysicallyFitPT.Infrastructure.Services.Interfaces
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     Task<QuestionnaireResponseDto> SubmitResponseAsync(Guid patientId, Guid appointmentId, Guid questionnaireDefinitionId, string answersJson, CancellationToken cancellationToken = default);
   }
-
 }

@@ -20,7 +20,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
 
   public class NoteBuilderService : BaseService, INoteBuilderService
   {
-    private readonly IDbContextFactory<ApplicationDbContext> _factory;
+    private readonly IDbContextFactory<ApplicationDbContext> factory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NoteBuilderService"/> class.
@@ -30,7 +30,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     public NoteBuilderService(IDbContextFactory<ApplicationDbContext> factory, ILogger<NoteBuilderService> logger)
         : base(logger)
     {
-      _factory = factory;
+      this.factory = factory;
     }
 
     /// <inheritdoc/>
@@ -38,7 +38,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
 
         // Create a new evaluation note (VisitType.Eval) for given patient and appointment
         var note = new Note
@@ -67,7 +67,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
 
         // Include related data for full detail (sections and their collections)
         var note = await db.Notes
@@ -102,7 +102,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
         var note = await db.Notes
             .Include(n => n.Objective).ThenInclude(o => o.Rom)
             .Include(n => n.Objective).ThenInclude(o => o.Mmt)
@@ -351,7 +351,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
         var note = await db.Notes.FindAsync(new object?[] { noteId }, cancellationToken);
         if (note == null)
         {
