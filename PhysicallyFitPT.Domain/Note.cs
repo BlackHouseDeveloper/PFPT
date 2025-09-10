@@ -106,46 +106,99 @@ public sealed class Note
   public bool IsDeleted { get; set; }
 }
 
-// S
+/// <summary>
+/// Represents the subjective section of a clinical note containing patient-reported information.
+/// </summary>
 public sealed class SubjectiveSection
 {
+  /// <summary>
+  /// Gets or sets the primary complaint or reason for the patient's visit.
+  /// </summary>
   public string? ChiefComplaint { get; set; }
 
+  /// <summary>
+  /// Gets or sets the detailed history of the patient's current condition.
+  /// </summary>
   public string? HistoryOfPresentIllness { get; set; }
 
-  // Keep as CSV to match current migration and DTOs
+  /// <summary>
+  /// Gets or sets the pain locations as comma-separated values.
+  /// Keep as CSV to match current migration and DTOs.
+  /// </summary>
   public string? PainLocationsCsv { get; set; }
 
   // We use a string for flexibility (single or composite “X/10” inputs)
+  /// <summary>
+  /// Gets or sets the pain severity rating on a scale of 0 to 10.
+  /// We use a string for flexibility (single or composite "X/10" inputs).
+  /// </summary>
   public string? PainSeverity0to10 { get; set; }
 
   public string? AggravatingFactors { get; set; }
 
+  /// <summary>
+  /// Gets or sets factors that worsen or aggravate the patient's symptoms.
+  /// </summary>
   public string? EasingFactors { get; set; }
 
+  /// <summary>
+  /// Gets or sets factors that relieve or ease the patient's symptoms.
+  /// </summary>
   public string? FunctionalLimitations { get; set; }
 
+  /// <summary>
+  /// Gets or sets the functional limitations experienced by the patient.
+  /// </summary>
   public string? PatientGoalsNarrative { get; set; }
 }
+  /// <summary>
+  /// Gets or sets the narrative description of the patient's goals for treatment.
+  /// </summary>
 
-// O
+/// <summary>
+/// Represents the objective section of a clinical note containing measurable physical findings.
+/// </summary>
 public sealed class ObjectiveSection
 {
+  /// <summary>
+  /// Gets or sets the range of motion measurements for the patient.
+  /// </summary>
   public List<RomMeasure> Rom { get; set; } = new();
 
+  /// <summary>
+  /// Gets or sets the manual muscle test measurements for the patient.
+  /// </summary>
   public List<MmtMeasure> Mmt { get; set; } = new();
 
+  /// <summary>
+  /// Gets or sets the special tests performed during the evaluation.
+  /// </summary>
   public List<SpecialTest> SpecialTests { get; set; } = new();
 
+  /// <summary>
+  /// Gets or sets the outcome measures and scores collected during the visit.
+  /// </summary>
   public List<OutcomeMeasureScore> OutcomeMeasures { get; set; } = new();
 
+  /// <summary>
+  /// Gets or sets the interventions provided during the treatment session.
+  /// </summary>
   public List<ProvidedIntervention> ProvidedInterventions { get; set; } = new();
 }
 
+/// <summary>
+/// Represents a range of motion measurement for a specific joint and movement.
+/// </summary>
 public sealed class RomMeasure
 {
+  /// <summary>
+  /// Gets or sets the unique identifier for this ROM measurement.
+  /// </summary>
   public Guid Id { get; set; }
 
+  /// <summary>
+  /// Gets or sets the joint being measured (e.g., "Knee").
+  /// </summary>
   public string Joint { get; set; } = string.Empty;     // e.g., “Knee”
 
   public string Movement { get; set; } = string.Empty;  // e.g., “Flexion”
