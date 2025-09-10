@@ -12,5 +12,12 @@ using PhysicallyFitPT.Shared;
 
 public interface IPatientService
 {
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="query"></param>
+  /// <param name="take"></param>
+  /// <param name="cancellationToken"></param>
+  /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   Task<IEnumerable<PatientDto>> SearchAsync(string query, int take = 50, CancellationToken cancellationToken = default);
 }

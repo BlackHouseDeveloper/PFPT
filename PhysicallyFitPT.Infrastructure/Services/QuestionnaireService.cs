@@ -20,6 +20,11 @@ namespace PhysicallyFitPT.Infrastructure.Services
   {
     private readonly IDbContextFactory<ApplicationDbContext> _factory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestionnaireService"/> class.
+    /// </summary>
+    /// <param name="factory"></param>
+    /// <param name="logger"></param>
     public QuestionnaireService(IDbContextFactory<ApplicationDbContext> factory, ILogger<QuestionnaireService> logger)
         : base(logger)
     {

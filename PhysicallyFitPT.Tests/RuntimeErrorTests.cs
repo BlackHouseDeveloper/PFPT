@@ -31,6 +31,10 @@ public class RuntimeErrorTests
        .WithMessage("*InvalidBodyPart*");
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task PatientService_HandlesNullQuery_Gracefully()
   {
@@ -48,6 +52,10 @@ public class RuntimeErrorTests
     results.Should().BeEmpty();
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task DatabaseService_ThrowsOnConnectionFailure()
   {
@@ -142,6 +150,10 @@ public class RuntimeErrorTests
     goal.Description.Should().BeNullOrWhiteSpace();
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task NoteBuilderService_CouldThrowNullReference_OnNullObjective()
   {
@@ -161,6 +173,10 @@ public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
 {
   private readonly DbContextOptions<ApplicationDbContext> options;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="TestDbContextFactory"/> class.
+  /// </summary>
+  /// <param name="options"></param>
   public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options)
   {
     this.options = options;
@@ -174,6 +190,10 @@ public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
     return context;
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   public async Task<ApplicationDbContext> CreateDbContextAsync()
   {
     var context = new ApplicationDbContext(this.options);

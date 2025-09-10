@@ -17,7 +17,11 @@ namespace PhysicallyFitPT.Tests
 
   public class AppointmentServiceTests
     {
-        [Fact]
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Fact]
         public async Task ScheduleAndCancel_Works_With_EmptyDb()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()

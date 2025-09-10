@@ -16,19 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK 8.0.x (with NuGet cache)
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
-          
-      - name: Show .NET info
-        run: dotnet --info
-
-      - name: Install MAUI workload
-        run: dotnet workload install maui
-      
       - name: Dotnet Workload Restore
         run: dotnet workload restore
 
@@ -60,6 +47,21 @@ jobs:
       - name: Restore NuGet packages - Tests
         working-directory: ./PhysicallyFitPT.Tests
         run: dotnet restore PhysicallyFitPT.Tests.csproj --use-lock-file
+
+      - name: Setup .NET SDK 8.0.x (with NuGet cache)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+          
+      - name: Show .NET info
+        run: dotnet --info
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+      
+
 
       - name: Enforce Code Formatting
         run: |

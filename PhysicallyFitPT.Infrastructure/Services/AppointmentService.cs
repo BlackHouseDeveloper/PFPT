@@ -21,6 +21,11 @@ public class AppointmentService : BaseService, IAppointmentService
 {
   private readonly IDbContextFactory<ApplicationDbContext> factory;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AppointmentService"/> class.
+  /// </summary>
+  /// <param name="factory"></param>
+  /// <param name="logger"></param>
   public AppointmentService(IDbContextFactory<ApplicationDbContext> factory, ILogger<AppointmentService> logger)
       : base(logger)
   {

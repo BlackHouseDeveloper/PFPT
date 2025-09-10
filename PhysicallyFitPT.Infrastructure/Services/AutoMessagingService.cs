@@ -13,6 +13,10 @@ public class AutoMessagingService : IAutoMessagingService
 {
   private readonly IDbContextFactory<ApplicationDbContext> factory;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AutoMessagingService"/> class.
+  /// </summary>
+  /// <param name="factory"></param>
   public AutoMessagingService(IDbContextFactory<ApplicationDbContext> factory) => this.factory = factory;
 
   /// <inheritdoc/>

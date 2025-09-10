@@ -14,6 +14,10 @@ using Xunit;
 
 public class PatientServiceTests
 {
+  /// <summary>
+  ///
+  /// </summary>
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task SearchAsync_Returns_Empty_On_Empty_DB()
   {

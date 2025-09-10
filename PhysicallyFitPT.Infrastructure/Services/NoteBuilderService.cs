@@ -22,6 +22,11 @@ namespace PhysicallyFitPT.Infrastructure.Services
   {
     private readonly IDbContextFactory<ApplicationDbContext> _factory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NoteBuilderService"/> class.
+    /// </summary>
+    /// <param name="factory"></param>
+    /// <param name="logger"></param>
     public NoteBuilderService(IDbContextFactory<ApplicationDbContext> factory, ILogger<NoteBuilderService> logger)
         : base(logger)
     {

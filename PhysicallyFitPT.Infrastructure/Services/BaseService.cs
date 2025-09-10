@@ -13,11 +13,23 @@ public abstract class BaseService
 {
   protected readonly ILogger Logger;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="BaseService"/> class.
+  /// </summary>
+  /// <param name="logger"></param>
   protected BaseService(ILogger logger)
   {
     this.Logger = logger;
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
+  /// <param name="operation"></param>
+  /// <param name="operationName"></param>
+  /// <param name="defaultValue"></param>
+  /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   protected async Task<T> ExecuteWithErrorHandlingAsync<T>(Func<Task<T>> operation, string operationName, T? defaultValue = default)
   {
     try
@@ -37,6 +49,12 @@ public abstract class BaseService
     }
   }
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="operation"></param>
+  /// <param name="operationName"></param>
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   protected async Task ExecuteWithErrorHandlingAsync(Func<Task> operation, string operationName)
   {
     try

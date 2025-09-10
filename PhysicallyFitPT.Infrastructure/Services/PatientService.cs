@@ -21,6 +21,11 @@ public class PatientService : BaseService, IPatientService
 {
   private readonly IDbContextFactory<ApplicationDbContext> dbFactory;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="PatientService"/> class.
+  /// </summary>
+  /// <param name="dbFactory"></param>
+  /// <param name="logger"></param>
   public PatientService(IDbContextFactory<ApplicationDbContext> dbFactory, ILogger<PatientService> logger)
       : base(logger)
   {

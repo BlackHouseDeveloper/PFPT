@@ -17,7 +17,11 @@ namespace PhysicallyFitPT.Tests
 
   public class NoteBuilderServiceTests
     {
-        [Fact]
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Fact]
         public async Task CreateEvalNote_Then_Sign_Works()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()

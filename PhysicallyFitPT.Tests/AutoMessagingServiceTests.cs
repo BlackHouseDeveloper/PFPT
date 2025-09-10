@@ -16,6 +16,7 @@ using Xunit;
 
 public class AutoMessagingServiceTests
 {
+  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task Enqueue_Adds_Log_Row()
   {
