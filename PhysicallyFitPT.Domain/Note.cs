@@ -201,19 +201,40 @@ public sealed class RomMeasure
   /// </summary>
   public string Joint { get; set; } = string.Empty;     // e.g., “Knee”
 
+  /// <summary>
+  /// Gets or sets the movement being measured (e.g., "Flexion").
+  /// </summary>
   public string Movement { get; set; } = string.Empty;  // e.g., “Flexion”
 
   public Side Side { get; set; } = Side.NA;
+  /// <summary>
+  /// Gets or sets the side of the body being measured.
+  /// </summary>
 
   public int? MeasuredDegrees { get; set; }
+  /// <summary>
+  /// Gets or sets the measured range of motion in degrees.
+  /// </summary>
 
   public int? NormalDegrees { get; set; }
+  /// <summary>
+  /// Gets or sets the normal range of motion in degrees for comparison.
+  /// </summary>
 
   public bool WithPain { get; set; }
+  /// <summary>
+  /// Gets or sets a value indicating whether pain was present during the measurement.
+  /// </summary>
 
   public string? Notes { get; set; }
+  /// <summary>
+  /// Gets or sets additional notes or observations about the measurement.
+  /// </summary>
 }
 
+/// <summary>
+/// Represents a manual muscle test measurement for a specific muscle group.
+/// </summary>
 public sealed class MmtMeasure
 {
   public Guid Id { get; set; }
