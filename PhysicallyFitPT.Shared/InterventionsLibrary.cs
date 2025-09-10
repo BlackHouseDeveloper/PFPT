@@ -1,8 +1,12 @@
+﻿// <copyright file="InterventionsLibrary.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace PhysicallyFitPT.Shared;
 
 public static class InterventionsLibrary
 {
-    public static readonly List<string> TreatmentCategories = new()
+  public static readonly List<string> TreatmentCategories = new()
     {
         "ROM – Active, Passive, AAROM",
         "Joint Mobilization – Grades I–V",
@@ -15,17 +19,17 @@ public static class InterventionsLibrary
         "Manual Therapy",
         "Pelvic Floor Therapy",
         "Pain Neuroscience Education",
-        "HEP Instruction"
+        "HEP Instruction",
     };
 
-    public static readonly Dictionary<string, List<string>> ExerciseLibrary = new()
-    {
-        ["Neck"] = new() { "Chin tucks", "Cervical isometrics", "Scapular retraction with band" },
-        ["Shoulder"] = new() { "Wall slides", "Pendulum swings", "External rotation with band" },
-        ["Lumbar"] = new() { "Bird dog", "Prone press-ups", "Bridges" },
-        ["Hip"] = new() { "Clamshells", "Hip flexor stretch", "Glute bridges" },
-        ["Knee"] = new() { "Step-ups", "Terminal knee extension", "Wall sits" },
-        ["Ankle"] = new() { "Calf raises", "Single-leg balance", "Towel scrunches" },
-        ["Pelvic"] = new() { "Pelvic tilts", "Core-lumbopelvic coordination", "Hip adduction squeeze" }
-    };
+  public static readonly Dictionary<string, List<string>> ExerciseLibrary = new()
+  {
+    ["Neck"] = new() { "Chin tucks", "Cervical isometrics", "Scapular retraction with band" },
+    ["Shoulder"] = new() { "Wall slides", "Pendulum swings", "External rotation with band" },
+    ["Lumbar"] = new() { "Bird dog", "Prone press-ups", "Bridges" },
+    ["Hip"] = new() { "Clamshells", "Hip flexor stretch", "Glute bridges" },
+    ["Knee"] = new() { "Step-ups", "Terminal knee extension", "Wall sits" },
+    ["Ankle"] = new() { "Calf raises", "Single-leg balance", "Towel scrunches" },
+    ["Pelvic"] = new() { "Pelvic tilts", "Core-lumbopelvic coordination", "Hip adduction squeeze" },
+  };
 }

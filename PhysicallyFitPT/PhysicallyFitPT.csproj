@@ -18,9 +18,10 @@
 
     <!-- Platform minimums (let the toolchain pick targets) -->
     <SupportedOSPlatformVersion
-      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'net8.0-ios'">
+      14.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion
-      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'net8.0-maccatalyst'">
       14.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion
       Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -36,6 +37,35 @@
     <IosSimulatorTargetOS>18.2</IosSimulatorTargetOS>
   </PropertyGroup>
 
+  <!-- Fix: QuestPDF ships Lato fonts as native assets, exclude from iOS/MacCatalyst app bundles -->
+  <ItemGroup
+    Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+    <None Remove="$(UserProfile)/.nuget/packages/questpdf/**/LatoFont/*" />
+    <BundleResource Remove="$(UserProfile)/.nuget/packages/questpdf/**/LatoFont/*" />
+    <NativeFileReference Remove="$(UserProfile)/.nuget/packages/questpdf/**/LatoFont/*" />
+    <None Remove="$(Home)/.nuget/packages/questpdf/**/LatoFont/*" />
+    <BundleResource Remove="$(Home)/.nuget/packages/questpdf/**/LatoFont/*" />
+    <NativeFileReference Remove="$(Home)/.nuget/packages/questpdf/**/LatoFont/*" />
+  </ItemGroup>
+
+<Target Name="PFPT_SetPublishFolderType_None_ForQuestPdfLato"
+        BeforeTargets="_ComputePublishLocation"
+        Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+
+  <ItemGroup>
+    <ResolvedFileToPublish Update="@(ResolvedFileToPublish)"
+      Condition="
+        '%(ResolvedFileToPublish.PublishFolderType)' == '' and
+        $([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Contains('questpdf')) and
+        $([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Contains('LatoFont')) ">
+      <PublishFolderType>None</PublishFolderType>
+    </ResolvedFileToPublish>
+  </ItemGroup>
+</Target>
+
+
+
+
 
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg"
@@ -47,6 +77,15 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     <MauiAsset Include="wwwroot\**\*" LogicalName="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+
+      <Target Name="QuestPDF_DoNotIncludeLatoFont_AfterBuild" AfterTargets="Build">
+        <RemoveDir Directories="$(OutDir)/LatoFont" />
+    </Target>
+
+    <Target Name="QuestPDF_DoNotIncludeLatoFont_AfterPublish" AfterTargets="Publish">
+        <RemoveDir Directories="$(PublishDir)/LatoFont" />
+    </Target>
+
 
   <ItemGroup>
     <!-- Keep these aligned to $(MauiVersion) that the SDK supplies -->

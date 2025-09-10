@@ -1,83 +1,96 @@
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
+﻿// <copyright file="SafeJsonHelper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace PhysicallyFitPT.Infrastructure.Utilities;
 
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+
 /// <summary>
-/// Safe JSON operations to prevent runtime errors
+/// Safe JSON operations to prevent runtime errors.
 /// </summary>
 public static class SafeJsonHelper
 {
-    private static readonly JsonSerializerOptions DefaultOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true
-    };
+  private static readonly JsonSerializerOptions DefaultOptions = new()
+  {
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = true,
+  };
 
-    /// <summary>
-    /// Safely deserializes JSON string, returning default value on error
-    /// </summary>
-    public static T? SafeDeserialize<T>(string json, ILogger? logger = null, T? defaultValue = default)
+  /// <summary>
+  /// Safely deserializes JSON string, returning default value on error.
+  /// </summary>
+  /// <returns></returns>
+  public static T? SafeDeserialize<T>(string json, ILogger? logger = null, T? defaultValue = default)
+  {
+    if (string.IsNullOrWhiteSpace(json))
     {
-        if (string.IsNullOrWhiteSpace(json))
-            return defaultValue;
-
-        try
-        {
-            return JsonSerializer.Deserialize<T>(json, DefaultOptions);
-        }
-        catch (JsonException ex)
-        {
-            logger?.LogWarning(ex, "Failed to deserialize JSON: {Json}", json);
-            return defaultValue;
-        }
-        catch (Exception ex)
-        {
-            logger?.LogError(ex, "Unexpected error deserializing JSON: {Json}", json);
-            return defaultValue;
-        }
+      return defaultValue;
     }
 
-    /// <summary>
-    /// Safely serializes object to JSON, returning empty object on error
-    /// </summary>
-    public static string SafeSerialize<T>(T obj, ILogger? logger = null, string defaultValue = "{}")
+    try
     {
-        if (obj is null)
-            return defaultValue;
+      return JsonSerializer.Deserialize<T>(json, DefaultOptions);
+    }
+    catch (JsonException ex)
+    {
+      logger?.LogWarning(ex, "Failed to deserialize JSON: {Json}", json);
+      return defaultValue;
+    }
+    catch (Exception ex)
+    {
+      logger?.LogError(ex, "Unexpected error deserializing JSON: {Json}", json);
+      return defaultValue;
+    }
+  }
 
-        try
-        {
-            return JsonSerializer.Serialize(obj, DefaultOptions);
-        }
-        catch (JsonException ex)
-        {
-            logger?.LogWarning(ex, "Failed to serialize object of type {Type}", typeof(T).Name);
-            return defaultValue;
-        }
-        catch (Exception ex)
-        {
-            logger?.LogError(ex, "Unexpected error serializing object of type {Type}", typeof(T).Name);
-            return defaultValue;
-        }
+  /// <summary>
+  /// Safely serializes object to JSON, returning empty object on error.
+  /// </summary>
+  /// <returns></returns>
+  public static string SafeSerialize<T>(T obj, ILogger? logger = null, string defaultValue = "{}")
+  {
+    if (obj is null)
+    {
+      return defaultValue;
     }
 
-    /// <summary>
-    /// Validates if string is valid JSON
-    /// </summary>
-    public static bool IsValidJson(string json)
+    try
     {
-        if (string.IsNullOrWhiteSpace(json))
-            return false;
-
-        try
-        {
-            JsonDocument.Parse(json);
-            return true;
-        }
-        catch (JsonException)
-        {
-            return false;
-        }
+      return JsonSerializer.Serialize(obj, DefaultOptions);
     }
+    catch (JsonException ex)
+    {
+      logger?.LogWarning(ex, "Failed to serialize object of type {Type}", typeof(T).Name);
+      return defaultValue;
+    }
+    catch (Exception ex)
+    {
+      logger?.LogError(ex, "Unexpected error serializing object of type {Type}", typeof(T).Name);
+      return defaultValue;
+    }
+  }
+
+  /// <summary>
+  /// Validates if string is valid JSON.
+  /// </summary>
+  /// <returns></returns>
+  public static bool IsValidJson(string json)
+  {
+    if (string.IsNullOrWhiteSpace(json))
+    {
+      return false;
+    }
+
+    try
+    {
+      JsonDocument.Parse(json);
+      return true;
+    }
+    catch (JsonException)
+    {
+      return false;
+    }
+  }
 }

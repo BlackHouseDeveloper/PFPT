@@ -1,3 +1,16 @@
-using PhysicallyFitPT.Domain;
+// <copyright file="IPatientService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
-public interface IPatientService { Task<IEnumerable<Patient>> SearchAsync(string query, int take = 50); }
+
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Shared;
+
+public interface IPatientService
+{
+  Task<IEnumerable<PatientDto>> SearchAsync(string query, int take = 50, CancellationToken cancellationToken = default);
+}

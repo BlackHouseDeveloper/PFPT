@@ -1,17 +1,20 @@
+﻿// <copyright file="MauiProgram.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT;
+
 using System.IO;
-using Microsoft.Maui.Storage;
 using Microsoft.AspNetCore.Components.WebView.Maui;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection; // needed for AddHttpClient ext method
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Storage;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
-using Microsoft.Extensions.DependencyInjection; // needed for AddHttpClient ext method
-
-
-namespace PhysicallyFitPT;
 
 public static class MauiProgram
 {
@@ -41,6 +44,7 @@ public static class MauiProgram
     builder.Services.AddScoped<IAppointmentService, AppointmentService>();
     builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
     builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
+    builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
     builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
 
     builder.Services.AddHttpClient(); // if you just need the default factory
@@ -53,7 +57,6 @@ public static class MauiProgram
 #if DEBUG
     builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-
 
     return builder.Build();
   }

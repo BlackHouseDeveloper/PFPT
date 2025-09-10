@@ -1,9 +1,13 @@
+﻿// <copyright file="PdfRenderer.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT.Infrastructure.Services;
+
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
-
-namespace PhysicallyFitPT.Infrastructure.Services;
 
 public interface IPdfRenderer
 {
@@ -12,6 +16,7 @@ public interface IPdfRenderer
 
 public class PdfRenderer : IPdfRenderer
 {
+  /// <inheritdoc/>
   public byte[] RenderSimple(string title, string body)
   {
     return Document.Create(container =>

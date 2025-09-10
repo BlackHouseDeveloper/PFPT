@@ -1,10 +1,23 @@
-using PhysicallyFitPT.Domain;
+// <copyright file="INoteBuilderService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Shared;
 
 public interface INoteBuilderService
 {
-    Task<Note> CreateEvalNoteAsync(Guid patientId, Guid appointmentId);
-    Task<Note?> GetAsync(Guid noteId);
-    Task<bool> UpdateObjectiveAsync(Guid noteId, IEnumerable<RomMeasure>? rom = null, IEnumerable<MmtMeasure>? mmt = null, IEnumerable<SpecialTest>? specialTests = null, IEnumerable<OutcomeMeasureScore>? outcomes = null, IEnumerable<ProvidedIntervention>? interventions = null);
-    Task<bool> SignAsync(Guid noteId, string signedBy);
+  Task<NoteDtoDetail> CreateEvalNoteAsync(Guid patientId, Guid appointmentId, CancellationToken cancellationToken = default);
+
+  Task<NoteDtoDetail?> GetAsync(Guid noteId, CancellationToken cancellationToken = default);
+
+  Task<bool> UpdateObjectiveAsync(Guid noteId, IEnumerable<RomMeasureDto>? rom = null, IEnumerable<MmtMeasureDto>? mmt = null, IEnumerable<SpecialTestDto>? specialTests = null, IEnumerable<OutcomeMeasureScoreDto>? outcomes = null, IEnumerable<ProvidedInterventionDto>? interventions = null, CancellationToken cancellationToken = default);
+
+  Task<bool> SignAsync(Guid noteId, string signedBy, CancellationToken cancellationToken = default);
 }

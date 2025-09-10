@@ -1,32 +1,40 @@
+﻿// <copyright file="DesignTimeDbContextFactory.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT.Infrastructure.Data;
+
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace PhysicallyFitPT.Infrastructure.Data;
-
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
-    public ApplicationDbContext CreateDbContext(string[] args)
+  /// <inheritdoc/>
+  public ApplicationDbContext CreateDbContext(string[] args)
+  {
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseSqlite($"Data Source={ResolveDbPath()}")
+        .Options;
+    return new ApplicationDbContext(options);
+  }
+
+  private static string ResolveDbPath()
+  {
+    var root = FindRepoRoot() ?? Directory.GetCurrentDirectory();
+    return Path.Combine(root, "pfpt.design.sqlite");
+  }
+
+  private static string? FindRepoRoot()
+  {
+    var d = new DirectoryInfo(Directory.GetCurrentDirectory());
+    while (d != null &&
+           !File.Exists(Path.Combine(d.FullName, ".gitignore")) &&
+           !File.Exists(Path.Combine(d.FullName, ".editorconfig")))
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite($"Data Source={ResolveDbPath()}")
-            .Options;
-        return new ApplicationDbContext(options);
+      d = d.Parent;
     }
 
-    static string ResolveDbPath()
-    {
-        var root = FindRepoRoot() ?? Directory.GetCurrentDirectory();
-        return Path.Combine(root, "pfpt.design.sqlite");
-    }
-
-    static string? FindRepoRoot()
-    {
-        var d = new DirectoryInfo(Directory.GetCurrentDirectory());
-        while (d != null &&
-               !File.Exists(Path.Combine(d.FullName, ".gitignore")) &&
-               !File.Exists(Path.Combine(d.FullName, ".editorconfig")))
-            d = d.Parent;
-        return d?.FullName;
-    }
+    return d?.FullName;
+  }
 }

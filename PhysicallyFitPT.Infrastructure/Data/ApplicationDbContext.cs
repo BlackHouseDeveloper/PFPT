@@ -1,32 +1,56 @@
-using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+﻿// <copyright file="ApplicationDbContext.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace PhysicallyFitPT.Infrastructure.Data;
 
+using Microsoft.EntityFrameworkCore;
+using PhysicallyFitPT.Domain;
+
 public class ApplicationDbContext : DbContext
 {
-  public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+  public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : base(options)
+  {
+  }
 
-  public DbSet<Patient> Patients => Set<Patient>();
-  public DbSet<Appointment> Appointments => Set<Appointment>();
-  public DbSet<Note> Notes => Set<Note>();
-  public DbSet<CptCode> CptCodes => Set<CptCode>();
-  public DbSet<Icd10Code> Icd10Codes => Set<Icd10Code>();
-  public DbSet<QuestionnaireDefinition> QuestionnaireDefinitions => Set<QuestionnaireDefinition>();
-  public DbSet<QuestionnaireResponse> QuestionnaireResponses => Set<QuestionnaireResponse>();
-  public DbSet<CheckInMessageLog> CheckInMessageLogs => Set<CheckInMessageLog>();
+  public DbSet<Patient> Patients => this.Set<Patient>();
 
+  public DbSet<Appointment> Appointments => this.Set<Appointment>();
+
+  public DbSet<Note> Notes => this.Set<Note>();
+
+  public DbSet<CptCode> CptCodes => this.Set<CptCode>();
+
+  public DbSet<Icd10Code> Icd10Codes => this.Set<Icd10Code>();
+
+  public DbSet<QuestionnaireDefinition> QuestionnaireDefinitions => this.Set<QuestionnaireDefinition>();
+
+  public DbSet<QuestionnaireResponse> QuestionnaireResponses => this.Set<QuestionnaireResponse>();
+
+  public DbSet<CheckInMessageLog> CheckInMessageLogs => this.Set<CheckInMessageLog>();
+
+  /// <inheritdoc/>
   public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
   {
     var now = DateTimeOffset.UtcNow;
-    foreach (var e in ChangeTracker.Entries<Entity>())
+    foreach (var e in this.ChangeTracker.Entries<Entity>())
     {
-      if (e.State == EntityState.Added)   e.Entity.CreatedAt = now;
-      if (e.State == EntityState.Modified) e.Entity.UpdatedAt = now;
+      if (e.State == EntityState.Added)
+      {
+        e.Entity.CreatedAt = now;
+      }
+
+      if (e.State == EntityState.Modified)
+      {
+        e.Entity.UpdatedAt = now;
+      }
     }
+
     return base.SaveChangesAsync(cancellationToken);
   }
 
+  /// <inheritdoc/>
   protected override void OnModelCreating(ModelBuilder b)
   {
     base.OnModelCreating(b);

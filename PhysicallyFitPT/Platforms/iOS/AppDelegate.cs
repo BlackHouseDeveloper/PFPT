@@ -1,9 +1,14 @@
-﻿using Foundation;
+﻿// <copyright file="AppDelegate.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace PhysicallyFitPT;
+
+using Foundation;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+  /// <inheritdoc/>
+  protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
