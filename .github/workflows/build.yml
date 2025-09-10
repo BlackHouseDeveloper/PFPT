@@ -28,8 +28,15 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui
 
-      - name: Restore NuGet packages
-        run: dotnet restore --use-lock-file
+      - name: Restore Nuget packages for all projects
+        run: |
+          dotnet restore PhysicallyFitPT/PhysicallyFitPT.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          dotnet restore PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
 
       - name: Enforce Code Formatting
         run: |
