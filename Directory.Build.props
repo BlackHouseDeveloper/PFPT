@@ -5,10 +5,10 @@
     <Deterministic>true</Deterministic>
     <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>latest</LangVersion>
-    <!-- Optional: don't fail builds on analyzer warnings during cleanup -->
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <!-- Enable analyzers to see StyleCop warnings during development -->
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

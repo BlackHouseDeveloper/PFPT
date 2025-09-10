@@ -20,5 +20,5 @@ insert_final_newline = true
 
 
 [*.cs]
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
 
