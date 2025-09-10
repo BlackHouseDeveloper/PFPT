@@ -58,6 +58,93 @@ namespace PhysicallyFitPT.Infrastructure.Services
     }
 
     /// <inheritdoc/>
+    public async Task<NoteDtoDetail> CreateDailyNoteAsync(Guid patientId, Guid appointmentId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+
+        // Create a new daily note (VisitType.Daily) for given patient and appointment
+        var note = new Note
+        {
+          PatientId = patientId,
+          AppointmentId = appointmentId,
+          VisitType = VisitType.Daily,
+          Subjective = new SubjectiveSection(),
+          Objective = new ObjectiveSection(),
+          Assessment = new AssessmentSection(),
+          Plan = new PlanSection(),
+        };
+        db.Notes.Add(note);
+        await db.SaveChangesAsync(cancellationToken);
+        return note.ToDetailDto();
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError(ex, "Error executing CreateDailyNoteAsync: {ErrorMessage}", ex.Message);
+        throw;
+      }
+    }
+
+    /// <inheritdoc/>
+    public async Task<NoteDtoDetail> CreateProgressNoteAsync(Guid patientId, Guid appointmentId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+
+        // Create a new progress note (VisitType.Progress) for given patient and appointment
+        var note = new Note
+        {
+          PatientId = patientId,
+          AppointmentId = appointmentId,
+          VisitType = VisitType.Progress,
+          Subjective = new SubjectiveSection(),
+          Objective = new ObjectiveSection(),
+          Assessment = new AssessmentSection(),
+          Plan = new PlanSection(),
+        };
+        db.Notes.Add(note);
+        await db.SaveChangesAsync(cancellationToken);
+        return note.ToDetailDto();
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError(ex, "Error executing CreateProgressNoteAsync: {ErrorMessage}", ex.Message);
+        throw;
+      }
+    }
+
+    /// <inheritdoc/>
+    public async Task<NoteDtoDetail> CreateDischargeNoteAsync(Guid patientId, Guid appointmentId, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+
+        // Create a new discharge note (VisitType.Discharge) for given patient and appointment
+        var note = new Note
+        {
+          PatientId = patientId,
+          AppointmentId = appointmentId,
+          VisitType = VisitType.Discharge,
+          Subjective = new SubjectiveSection(),
+          Objective = new ObjectiveSection(),
+          Assessment = new AssessmentSection(),
+          Plan = new PlanSection(),
+        };
+        db.Notes.Add(note);
+        await db.SaveChangesAsync(cancellationToken);
+        return note.ToDetailDto();
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError(ex, "Error executing CreateDischargeNoteAsync: {ErrorMessage}", ex.Message);
+        throw;
+      }
+    }
+
+    /// <inheritdoc/>
     public async Task<NoteDtoDetail?> GetAsync(Guid noteId, CancellationToken cancellationToken = default)
     {
       try
@@ -294,27 +381,57 @@ namespace PhysicallyFitPT.Infrastructure.Services
           note.Objective.OutcomeMeasures.RemoveAll(x => !omIdsIncoming.Contains(x.Id));
         }
 
-        // Update Provided Interventions in place
+        // Update Provided Interventions in place with CPT code validation
         if (interventions != null)
         {
           var piList = note.Objective.ProvidedInterventions;
           var incomingPi = interventions.ToList();
+          
           foreach (var dto in incomingPi)
           {
+            // Validate CPT code if provided
+            if (!string.IsNullOrEmpty(dto.CptCode))
+            {
+              var validCpt = await db.CptCodes.AsNoTracking()
+                  .FirstOrDefaultAsync(c => c.Code == dto.CptCode, cancellationToken);
+              if (validCpt == null)
+              {
+                throw new ArgumentException($"Invalid CPT code: {dto.CptCode}. Code not found in database.", nameof(interventions));
+              }
+            }
+            
             var existing = piList.FirstOrDefault(x => x.Id == dto.Id);
             if (existing != null)
             {
               existing.CptCode = dto.CptCode;
-              existing.Description = dto.Description;
+              // Auto-fill description from valid CPT codes
+              if (!string.IsNullOrEmpty(dto.CptCode))
+              {
+                var cptInfo = await db.CptCodes.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Code == dto.CptCode, cancellationToken);
+                existing.Description = dto.Description ?? cptInfo?.Description;
+              }
+              else
+              {
+                existing.Description = dto.Description;
+              }
               existing.Units = dto.Units;
               existing.Minutes = dto.Minutes;
             }
             else
             {
+              var description = dto.Description;
+              if (!string.IsNullOrEmpty(dto.CptCode))
+              {
+                var cptInfo = await db.CptCodes.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Code == dto.CptCode, cancellationToken);
+                description = dto.Description ?? cptInfo?.Description;
+              }
+              
               var newPi = new ProvidedIntervention
               {
                 CptCode = dto.CptCode,
-                Description = dto.Description,
+                Description = description,
                 Units = dto.Units,
                 Minutes = dto.Minutes,
               };
@@ -338,6 +455,104 @@ namespace PhysicallyFitPT.Infrastructure.Services
       {
         Logger.LogError(ex, "Error executing UpdateObjectiveAsync: {ErrorMessage}", ex.Message);
         return false;
+      }
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> UpdateAssessmentAsync(Guid noteId, string? clinicalImpression = null, string? rehabPotential = null, IEnumerable<Icd10LinkDto>? icd10Codes = null, CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        var note = await db.Notes
+            .Include(n => n.Assessment).ThenInclude(a => a.Icd10Codes)
+            .FirstOrDefaultAsync(n => n.Id == noteId, cancellationToken);
+        if (note == null)
+        {
+          return false;
+        }
+
+        // Update Assessment fields
+        if (clinicalImpression != null)
+        {
+          note.Assessment.ClinicalImpression = clinicalImpression;
+        }
+        
+        if (rehabPotential != null)
+        {
+          note.Assessment.RehabPotential = rehabPotential;
+        }
+
+        // Update ICD-10 codes with validation
+        if (icd10Codes != null)
+        {
+          var icd10List = note.Assessment.Icd10Codes;
+          var incomingIcd10 = icd10Codes.ToList();
+          
+          foreach (var dto in incomingIcd10)
+          {
+            // Validate ICD-10 code if provided
+            if (!string.IsNullOrEmpty(dto.Code))
+            {
+              var validIcd10 = await db.Icd10Codes.AsNoTracking()
+                  .FirstOrDefaultAsync(c => c.Code == dto.Code, cancellationToken);
+              if (validIcd10 == null)
+              {
+                throw new ArgumentException($"Invalid ICD-10 code: {dto.Code}. Code not found in database.", nameof(icd10Codes));
+              }
+            }
+            
+            var existing = icd10List.FirstOrDefault(x => x.Id == dto.Id);
+            if (existing != null)
+            {
+              existing.Code = dto.Code;
+              // Auto-fill description from valid ICD-10 codes
+              if (!string.IsNullOrEmpty(dto.Code))
+              {
+                var icd10Info = await db.Icd10Codes.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Code == dto.Code, cancellationToken);
+                existing.Description = dto.Description ?? icd10Info?.Description;
+              }
+              else
+              {
+                existing.Description = dto.Description;
+              }
+            }
+            else
+            {
+              var description = dto.Description;
+              if (!string.IsNullOrEmpty(dto.Code))
+              {
+                var icd10Info = await db.Icd10Codes.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Code == dto.Code, cancellationToken);
+                description = dto.Description ?? icd10Info?.Description;
+              }
+              
+              var newIcd10 = new Icd10Link
+              {
+                Code = dto.Code,
+                Description = description,
+              };
+              if (dto.Id != Guid.Empty)
+              {
+                newIcd10.Id = dto.Id;
+              }
+
+              icd10List.Add(newIcd10);
+            }
+          }
+
+          var icd10IdsIncoming = incomingIcd10.Select(d => d.Id).ToHashSet();
+          note.Assessment.Icd10Codes.RemoveAll(x => !icd10IdsIncoming.Contains(x.Id));
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError(ex, "Error executing UpdateAssessmentAsync: {ErrorMessage}", ex.Message);
+        throw;
       }
     }
 
