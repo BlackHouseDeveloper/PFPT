@@ -28,6 +28,10 @@ jobs:
 
       - name: Install MAUI workload
         run: dotnet workload install maui
+      
+      - name: Dotnet Workload Restore
+        run: dotnet workload restore
+
 
       - name: Restore NuGet packages - Main App
         working-directory: ./PhysicallyFitPT
