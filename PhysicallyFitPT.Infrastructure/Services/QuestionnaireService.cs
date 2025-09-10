@@ -18,7 +18,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
 
   public class QuestionnaireService : BaseService, IQuestionnaireService
   {
-    private readonly IDbContextFactory<ApplicationDbContext> _factory;
+    private readonly IDbContextFactory<ApplicationDbContext> factory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestionnaireService"/> class.
@@ -28,7 +28,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     public QuestionnaireService(IDbContextFactory<ApplicationDbContext> factory, ILogger<QuestionnaireService> logger)
         : base(logger)
     {
-      _factory = factory;
+      this.factory = factory;
     }
 
     /// <inheritdoc/>
@@ -36,7 +36,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
         var defs = await db.QuestionnaireDefinitions.AsNoTracking().ToListAsync(cancellationToken);
         return defs.Select(d => d.ToDto()).ToList();
       }
@@ -52,7 +52,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
         var def = await db.QuestionnaireDefinitions.AsNoTracking().FirstOrDefaultAsync(q => q.Id == definitionId, cancellationToken);
         return def?.ToDto();
       }
@@ -68,7 +68,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
         var response = await db.QuestionnaireResponses.AsNoTracking()
             .Where(r => r.AppointmentId == appointmentId)
             .OrderByDescending(r => r.SubmittedAt)
@@ -87,7 +87,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
     {
       try
       {
-        using var db = await _factory.CreateDbContextAsync(cancellationToken);
+        using var db = await this.factory.CreateDbContextAsync(cancellationToken);
 
         // Ensure related entities exist
         bool patientExists = await db.Patients.AnyAsync(p => p.Id == patientId, cancellationToken);

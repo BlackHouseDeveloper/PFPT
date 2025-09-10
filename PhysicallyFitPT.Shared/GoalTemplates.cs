@@ -1,4 +1,4 @@
-﻿// <copyright file="GoalsLibrary.cs" company="PlaceholderCompany">
+﻿// <copyright file="GoalTemplates.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

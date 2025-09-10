@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public abstract class BaseService
 {
-  protected readonly ILogger Logger;
+  private readonly ILogger logger;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="BaseService"/> class.
@@ -19,7 +19,7 @@ public abstract class BaseService
   /// <param name="logger"></param>
   protected BaseService(ILogger logger)
   {
-    this.Logger = logger;
+    this.logger = logger;
   }
 
   /// <summary>
@@ -63,7 +63,7 @@ public abstract class BaseService
     }
     catch (Exception ex)
     {
-      this.Logger.LogError(ex, "Error executing {OperationName}: {ErrorMessage}", operationName, ex.Message);
+      this.logger.LogError(ex, "Error executing {OperationName}: {ErrorMessage}", operationName, ex.Message);
       throw; // Re-throw to let caller handle
     }
   }
@@ -76,7 +76,7 @@ public abstract class BaseService
     }
     catch (Exception ex)
     {
-      this.Logger.LogError(ex, "Error executing {OperationName}: {ErrorMessage}", operationName, ex.Message);
+      this.logger.LogError(ex, "Error executing {OperationName}: {ErrorMessage}", operationName, ex.Message);
 
       if (defaultValue is not null)
       {
