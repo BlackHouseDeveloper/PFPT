@@ -27,5 +27,24 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
                 LivingSituation = patient.LivingSituation,
             };
         }
+
+        public static Patient FromDto(this PatientDto dto)
+        {
+            return new Patient
+            {
+                Id = dto.Id,
+                MRN = dto.MRN,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                DateOfBirth = dto.DateOfBirth,
+                Sex = dto.Sex,
+                Email = dto.Email,
+                MobilePhone = dto.MobilePhone,
+                MedicationsCsv = dto.MedicationsCsv,
+                ComorbiditiesCsv = dto.ComorbiditiesCsv,
+                AssistiveDevicesCsv = dto.AssistiveDevicesCsv,
+                LivingSituation = dto.LivingSituation,
+            };
+        }
     }
 }
