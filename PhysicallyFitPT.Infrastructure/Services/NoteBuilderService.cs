@@ -60,7 +60,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing CreateEvalNoteAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing CreateEvalNoteAsync: {ErrorMessage}", ex.Message);
         throw;
       }
     }
@@ -95,7 +95,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing GetAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing GetAsync: {ErrorMessage}", ex.Message);
         return null;
       }
     }
@@ -131,12 +131,12 @@ namespace PhysicallyFitPT.Infrastructure.Services
 
         static SpecialTestResult ToSpecialTestResult(int value)
         {
-            if (!Enum.IsDefined(typeof(SpecialTestResult), value))
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), $"Invalid SpecialTestResult value: {value}");
-            }
+          if (!Enum.IsDefined(typeof(SpecialTestResult), value))
+          {
+            throw new ArgumentOutOfRangeException(nameof(value), $"Invalid SpecialTestResult value: {value}");
+          }
 
-            return (SpecialTestResult)value;
+          return (SpecialTestResult)value;
         }
 
         // Update ROM measures in place
@@ -344,7 +344,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing UpdateObjectiveAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing UpdateObjectiveAsync: {ErrorMessage}", ex.Message);
         return false;
       }
     }
@@ -369,7 +369,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing SignAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing SignAsync: {ErrorMessage}", ex.Message);
         return false;
       }
     }

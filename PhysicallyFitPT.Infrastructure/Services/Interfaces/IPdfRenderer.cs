@@ -1,4 +1,4 @@
-// <copyright file="IPdfRenderer.cs" company="PlaceholderCompany">
+﻿// <copyright file="IPdfRenderer.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

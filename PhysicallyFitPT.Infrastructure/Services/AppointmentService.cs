@@ -144,7 +144,7 @@ public class AppointmentService : BaseService, IAppointmentService
     }
     catch (Exception ex)
     {
-      Logger.LogError(ex, "Error executing GetUpcomingByPatientAsync: {ErrorMessage}", ex.Message);
+      this.Logger.LogError(ex, "Error executing GetUpcomingByPatientAsync: {ErrorMessage}", ex.Message);
       return Array.Empty<AppointmentDto>();
     }
   }
