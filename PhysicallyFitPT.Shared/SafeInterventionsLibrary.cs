@@ -12,7 +12,8 @@ public static class SafeInterventionsLibrary
   /// <summary>
   /// Safely gets exercises for a body region, returning empty list if not found.
   /// </summary>
-  /// <returns></returns>
+  /// <param name="bodyRegion">The body region to get exercises for.</param>
+  /// <returns>A list of exercise names for the specified body region, or empty list if not found.</returns>
   public static List<string> GetExercises(string bodyRegion)
   {
     if (string.IsNullOrWhiteSpace(bodyRegion))
@@ -28,7 +29,7 @@ public static class SafeInterventionsLibrary
   /// <summary>
   /// Gets all available body regions.
   /// </summary>
-  /// <returns></returns>
+  /// <returns>An enumerable collection of available body region names.</returns>
   public static IEnumerable<string> GetAvailableBodyRegions()
   {
     return InterventionsLibrary.ExerciseLibrary.Keys;
@@ -37,7 +38,8 @@ public static class SafeInterventionsLibrary
   /// <summary>
   /// Checks if a body region has exercises available.
   /// </summary>
-  /// <returns></returns>
+  /// <param name="bodyRegion">The body region to check for available exercises.</param>
+  /// <returns>True if the body region has exercises available; otherwise, false.</returns>
   public static bool HasExercises(string bodyRegion)
   {
     return !string.IsNullOrWhiteSpace(bodyRegion) &&

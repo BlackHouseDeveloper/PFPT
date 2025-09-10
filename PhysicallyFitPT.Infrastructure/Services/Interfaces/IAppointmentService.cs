@@ -11,37 +11,40 @@ using System.Threading.Tasks;
 using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Interface for appointment management services.
+/// </summary>
 public interface IAppointmentService
 {
   /// <summary>
-  ///
+  /// Schedules a new appointment for a patient.
   /// </summary>
-  /// <param name="patientId"></param>
-  /// <param name="start"></param>
-  /// <param name="end"></param>
-  /// <param name="visitType"></param>
-  /// <param name="location"></param>
-  /// <param name="clinicianName"></param>
-  /// <param name="clinicianNpi"></param>
-  /// <param name="cancellationToken"></param>
+  /// <param name="patientId">The unique identifier of the patient.</param>
+  /// <param name="start">The scheduled start time of the appointment.</param>
+  /// <param name="end">The scheduled end time of the appointment.</param>
+  /// <param name="visitType">The type of visit for the appointment.</param>
+  /// <param name="location">The location where the appointment will take place.</param>
+  /// <param name="clinicianName">The name of the clinician conducting the appointment.</param>
+  /// <param name="clinicianNpi">The NPI number of the clinician.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   Task<AppointmentDto> ScheduleAsync(Guid patientId, DateTimeOffset start, DateTimeOffset? end, VisitType visitType, string? location = null, string? clinicianName = null, string? clinicianNpi = null, CancellationToken cancellationToken = default);
 
   /// <summary>
-  ///
+  /// Cancels an existing appointment.
   /// </summary>
-  /// <param name="appointmentId"></param>
-  /// <param name="cancellationToken"></param>
+  /// <param name="appointmentId">The unique identifier of the appointment to cancel.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   Task<bool> CancelAsync(Guid appointmentId, CancellationToken cancellationToken = default);
 
   /// <summary>
-  ///
+  /// Retrieves upcoming appointments for a specific patient.
   /// </summary>
-  /// <param name="patientId"></param>
-  /// <param name="fromUtc"></param>
-  /// <param name="take"></param>
-  /// <param name="cancellationToken"></param>
+  /// <param name="patientId">The unique identifier of the patient.</param>
+  /// <param name="fromUtc">The starting date/time to search from in UTC.</param>
+  /// <param name="take">The maximum number of appointments to return.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
   Task<IReadOnlyList<AppointmentDto>> GetUpcomingByPatientAsync(Guid patientId, DateTimeOffset fromUtc, int take = 50, CancellationToken cancellationToken = default);
 }

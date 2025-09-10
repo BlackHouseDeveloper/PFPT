@@ -9,6 +9,9 @@ using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
+/// <summary>
+/// Service for managing automated messaging functionality including check-in notifications.
+/// </summary>
 public class AutoMessagingService : IAutoMessagingService
 {
   private readonly IDbContextFactory<ApplicationDbContext> factory;
@@ -16,7 +19,7 @@ public class AutoMessagingService : IAutoMessagingService
   /// <summary>
   /// Initializes a new instance of the <see cref="AutoMessagingService"/> class.
   /// </summary>
-  /// <param name="factory"></param>
+  /// <param name="factory">Database context factory for data access.</param>
   public AutoMessagingService(IDbContextFactory<ApplicationDbContext> factory) => this.factory = factory;
 
   /// <inheritdoc/>

@@ -2,89 +2,67 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Shared
+namespace PhysicallyFitPT.Shared;
+
+using System;
+
+/// <summary>
+/// Data transfer object representing a detailed clinical note with all SOAP sections.
+/// </summary>
+public class NoteDtoDetail
 {
-  using System;
-  using System.Collections.Generic;
+    /// <summary>
+    /// Gets or sets the unique identifier of the note.
+    /// </summary>
+    public Guid Id { get; set; }
 
-  public class NoteDtoDetail
-    {
-        public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets the unique identifier of the patient.
+    /// </summary>
+    public Guid PatientId { get; set; }
 
-        public Guid PatientId { get; set; }
+    /// <summary>
+    /// Gets or sets the unique identifier of the appointment.
+    /// </summary>
+    public Guid AppointmentId { get; set; }
 
-        public Guid AppointmentId { get; set; }
+    /// <summary>
+    /// Gets or sets the type of visit.
+    /// </summary>
+    public string VisitType { get; set; } = null!;
 
-        public string VisitType { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets a value indicating whether the note is signed.
+    /// </summary>
+    public bool IsSigned { get; set; }
 
-        public bool IsSigned { get; set; }
+    /// <summary>
+    /// Gets or sets the date and time when the note was signed.
+    /// </summary>
+    public DateTimeOffset? SignedAt { get; set; }
 
-        public DateTimeOffset? SignedAt { get; set; }
+    /// <summary>
+    /// Gets or sets the identifier of the person who signed the note.
+    /// </summary>
+    public string? SignedBy { get; set; }
 
-        public string? SignedBy { get; set; }
+    /// <summary>
+    /// Gets or sets the subjective portion of the note.
+    /// </summary>
+    public SubjectiveDto Subjective { get; set; } = new SubjectiveDto();
 
-        public SubjectiveDto Subjective { get; set; } = new SubjectiveDto();
+    /// <summary>
+    /// Gets or sets the objective portion of the note.
+    /// </summary>
+    public ObjectiveDto Objective { get; set; } = new ObjectiveDto();
 
-        public ObjectiveDto Objective { get; set; } = new ObjectiveDto();
+    /// <summary>
+    /// Gets or sets the assessment portion of the note.
+    /// </summary>
+    public AssessmentDto Assessment { get; set; } = new AssessmentDto();
 
-        public AssessmentDto Assessment { get; set; } = new AssessmentDto();
-
-        public PlanDto Plan { get; set; } = new PlanDto();
-    }
-
-  public class SubjectiveDto
-    {
-        public string? ChiefComplaint { get; set; }
-
-        public string? HistoryOfPresentIllness { get; set; }
-
-        public string? PainLocationsCsv { get; set; }
-
-        public string? PainSeverity0to10 { get; set; }
-
-        public string? AggravatingFactors { get; set; }
-
-        public string? EasingFactors { get; set; }
-
-        public string? FunctionalLimitations { get; set; }
-
-        public string? PatientGoalsNarrative { get; set; }
-    }
-
-  public class ObjectiveDto
-    {
-        public List<RomMeasureDto> Rom { get; set; } = new();
-
-        public List<MmtMeasureDto> Mmt { get; set; } = new();
-
-        public List<SpecialTestDto> SpecialTests { get; set; } = new();
-
-        public List<OutcomeMeasureScoreDto> OutcomeMeasures { get; set; } = new();
-
-        public List<ProvidedInterventionDto> ProvidedInterventions { get; set; } = new();
-    }
-
-  public class AssessmentDto
-    {
-        public string? ClinicalImpression { get; set; }
-
-        public string? RehabPotential { get; set; }
-
-        public List<Icd10LinkDto> Icd10Codes { get; set; } = new();
-
-        public List<GoalDto> Goals { get; set; } = new();
-    }
-
-  public class PlanDto
-    {
-        public string? Frequency { get; set; }
-
-        public string? Duration { get; set; }
-
-        public string? PlannedInterventionsCsv { get; set; }
-
-        public string? NextVisitFocus { get; set; }
-
-        public List<ExercisePrescriptionDto> Hep { get; set; } = new();
-    }
+    /// <summary>
+    /// Gets or sets the plan portion of the note.
+    /// </summary>
+    public PlanDto Plan { get; set; } = new PlanDto();
 }
