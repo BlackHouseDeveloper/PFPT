@@ -12,6 +12,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Enable XML documentation generation to get SA1600 warnings -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- Keep the references, but let Directory.Packages.props set the versions -->
