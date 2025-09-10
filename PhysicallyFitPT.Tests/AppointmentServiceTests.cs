@@ -15,10 +15,13 @@ namespace PhysicallyFitPT.Tests
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using Xunit;
 
+  /// <summary>
+  /// Tests for the AppointmentService class functionality.
+  /// </summary>
   public class AppointmentServiceTests
     {
     /// <summary>
-    ///
+    /// Tests that appointment scheduling and cancellation works correctly with an empty database.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]

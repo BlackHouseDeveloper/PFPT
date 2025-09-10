@@ -16,6 +16,9 @@ namespace PhysicallyFitPT.Infrastructure.Services
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using PhysicallyFitPT.Shared;
 
+  /// <summary>
+  /// Service for managing questionnaire operations including retrieval and submission handling.
+  /// </summary>
   public class QuestionnaireService : BaseService, IQuestionnaireService
   {
     private readonly IDbContextFactory<ApplicationDbContext> factory;
@@ -23,8 +26,8 @@ namespace PhysicallyFitPT.Infrastructure.Services
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestionnaireService"/> class.
     /// </summary>
-    /// <param name="factory"></param>
-    /// <param name="logger"></param>
+    /// <param name="factory">Database context factory for data access.</param>
+    /// <param name="logger">Logger instance for logging operations.</param>
     public QuestionnaireService(IDbContextFactory<ApplicationDbContext> factory, ILogger<QuestionnaireService> logger)
         : base(logger)
     {

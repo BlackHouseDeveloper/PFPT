@@ -14,8 +14,14 @@ using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using Xunit;
 
+/// <summary>
+/// Tests for the AutoMessagingService class functionality.
+/// </summary>
 public class AutoMessagingServiceTests
 {
+  /// <summary>
+  /// Tests that enqueuing a message adds a log row to the database.
+  /// </summary>
   /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
   public async Task Enqueue_Adds_Log_Row()

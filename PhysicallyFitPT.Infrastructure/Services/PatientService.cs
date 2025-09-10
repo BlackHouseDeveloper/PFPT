@@ -17,6 +17,9 @@ using PhysicallyFitPT.Infrastructure.Mappers;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Service for managing patient operations including search, creation, and retrieval.
+/// </summary>
 public class PatientService : BaseService, IPatientService
 {
   private readonly IDbContextFactory<ApplicationDbContext> dbFactory;
@@ -24,8 +27,8 @@ public class PatientService : BaseService, IPatientService
   /// <summary>
   /// Initializes a new instance of the <see cref="PatientService"/> class.
   /// </summary>
-  /// <param name="dbFactory"></param>
-  /// <param name="logger"></param>
+  /// <param name="dbFactory">Database context factory for data access.</param>
+  /// <param name="logger">Logger instance for logging operations.</param>
   public PatientService(IDbContextFactory<ApplicationDbContext> dbFactory, ILogger<PatientService> logger)
       : base(logger)
   {

@@ -15,10 +15,13 @@ namespace PhysicallyFitPT.Tests
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using Xunit;
 
+  /// <summary>
+  /// Tests for the NoteBuilderService class functionality.
+  /// </summary>
   public class NoteBuilderServiceTests
     {
     /// <summary>
-    ///
+    /// Tests that creating an evaluation note and signing it works correctly.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Fact]

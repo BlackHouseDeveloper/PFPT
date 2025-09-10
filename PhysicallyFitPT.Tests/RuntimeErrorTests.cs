@@ -20,6 +20,9 @@ using Xunit;
 /// </summary>
 public class RuntimeErrorTests
 {
+  /// <summary>
+  /// Tests that accessing an invalid key in the interventions library throws a KeyNotFoundException.
+  /// </summary>
   [Fact]
   public void InterventionsLibrary_ThrowsKeyNotFoundException_WhenAccessingInvalidKey()
   {
@@ -32,7 +35,7 @@ public class RuntimeErrorTests
   }
 
   /// <summary>
-  ///
+  /// Tests that the patient service handles null query parameters gracefully.
   /// </summary>
   /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
@@ -53,7 +56,7 @@ public class RuntimeErrorTests
   }
 
   /// <summary>
-  ///
+  /// Tests that database service throws an exception on connection failure.
   /// </summary>
   /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
@@ -73,6 +76,9 @@ public class RuntimeErrorTests
     await act.Should().ThrowAsync<Exception>();
   }
 
+  /// <summary>
+  /// Tests that entity date validation allows invalid dates, demonstrating a potential runtime error.
+  /// </summary>
   [Fact]
   public void Entity_DateValidation_AllowsInvalidDates()
   {
@@ -88,6 +94,9 @@ public class RuntimeErrorTests
     patient.DateOfBirth.Should().BeAfter(DateTime.Now);
   }
 
+  /// <summary>
+  /// Tests that ROM measure validation allows invalid measurements, demonstrating potential runtime errors.
+  /// </summary>
   [Fact]
   public void RomMeasure_AllowsInvalidMeasurements()
   {
@@ -105,6 +114,9 @@ public class RuntimeErrorTests
     romMeasure.NormalDegrees.Should().BeGreaterThan(360);
   }
 
+  /// <summary>
+  /// Tests that outcome measure score validation allows invalid percentage values.
+  /// </summary>
   [Fact]
   public void OutcomeMeasureScore_AllowsInvalidPercentage()
   {
@@ -119,6 +131,9 @@ public class RuntimeErrorTests
     score.Percent.Should().BeGreaterThan(100);
   }
 
+  /// <summary>
+  /// Tests that patient validation allows invalid email formats.
+  /// </summary>
   [Fact]
   public void Patient_AllowsInvalidEmailFormat()
   {
@@ -134,6 +149,10 @@ public class RuntimeErrorTests
     patient.Email.Should().NotContain("@");
   }
 
+  /// <summary>
+  /// Tests that required string fields should not allow empty or whitespace values.
+  /// </summary>
+  /// <param name="value">The string value to test for validation.</param>
   [Theory]
   [InlineData("")]
   [InlineData("   ")]
@@ -151,7 +170,7 @@ public class RuntimeErrorTests
   }
 
   /// <summary>
-  ///
+  /// Tests that NoteBuilderService could throw null reference exceptions on null objective data.
   /// </summary>
   /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
@@ -176,7 +195,7 @@ public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
   /// <summary>
   /// Initializes a new instance of the <see cref="TestDbContextFactory"/> class.
   /// </summary>
-  /// <param name="options"></param>
+  /// <param name="options">Database context options to use for creating contexts.</param>
   public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options)
   {
     this.options = options;

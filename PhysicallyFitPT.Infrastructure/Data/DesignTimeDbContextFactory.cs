@@ -8,6 +8,9 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
+/// <summary>
+/// Factory for creating ApplicationDbContext instances at design time for Entity Framework tooling.
+/// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
   /// <inheritdoc/>

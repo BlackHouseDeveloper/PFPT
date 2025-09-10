@@ -12,10 +12,13 @@ using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using Xunit;
 
+/// <summary>
+/// Tests for the PatientService class functionality.
+/// </summary>
 public class PatientServiceTests
 {
   /// <summary>
-  ///
+  /// Tests that searching for patients returns empty results when the database is empty.
   /// </summary>
   /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]

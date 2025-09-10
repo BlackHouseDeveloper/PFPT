@@ -17,6 +17,9 @@ using PhysicallyFitPT.Infrastructure.Mappers;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Service for managing appointment operations including scheduling, cancellation, and retrieval.
+/// </summary>
 public class AppointmentService : BaseService, IAppointmentService
 {
   private readonly IDbContextFactory<ApplicationDbContext> factory;
@@ -24,8 +27,8 @@ public class AppointmentService : BaseService, IAppointmentService
   /// <summary>
   /// Initializes a new instance of the <see cref="AppointmentService"/> class.
   /// </summary>
-  /// <param name="factory"></param>
-  /// <param name="logger"></param>
+  /// <param name="factory">Database context factory for data access.</param>
+  /// <param name="logger">Logger instance for logging operations.</param>
   public AppointmentService(IDbContextFactory<ApplicationDbContext> factory, ILogger<AppointmentService> logger)
       : base(logger)
   {
@@ -43,7 +46,7 @@ public class AppointmentService : BaseService, IAppointmentService
         throw new ArgumentException("Patient ID cannot be empty", nameof(patientId));
       }
 
-      if (start < DateTimeOffset.UtcNow.AddMinutes(-5)) // Allow 5 minute buffer for past appointments
+      if (start < DateTimeOffset.UtcNow.AddMinutes(-5))
       {
         throw new ArgumentException("Cannot schedule appointments in the past", nameof(start));
       }

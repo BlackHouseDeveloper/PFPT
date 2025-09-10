@@ -8,8 +8,16 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
   using PhysicallyFitPT.Domain;
   using PhysicallyFitPT.Shared;
 
+  /// <summary>
+  /// Extension methods for mapping Note domain objects to DTOs.
+  /// </summary>
   public static class NoteMapperExtensions
     {
+        /// <summary>
+        /// Converts a Note domain object to its corresponding summary DTO.
+        /// </summary>
+        /// <param name="note">The note domain object to convert.</param>
+        /// <returns>A NoteDtoSummary containing the note summary data.</returns>
         public static NoteDtoSummary ToSummaryDto(this Note note)
         {
             return new NoteDtoSummary
@@ -25,6 +33,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             };
         }
 
+        /// <summary>
+        /// Converts a Note domain object to its corresponding detail DTO.
+        /// </summary>
+        /// <param name="note">The note domain object to convert.</param>
+        /// <returns>A NoteDtoDetail containing the comprehensive note data.</returns>
         public static NoteDtoDetail ToDetailDto(this Note note)
         {
             var dto = new NoteDtoDetail
@@ -83,6 +96,12 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
         }
 
         // Extension mappers for nested measure types:
+        
+        /// <summary>
+        /// Converts a ROM measure domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="rom">The ROM measure domain object to convert.</param>
+        /// <returns>A RomMeasureDto containing the ROM measure data.</returns>
         public static RomMeasureDto ToDto(this RomMeasure rom) => new RomMeasureDto
         {
             Id = rom.Id,
@@ -95,6 +114,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Notes = rom.Notes,
         };
 
+        /// <summary>
+        /// Converts an MMT measure domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="mmt">The MMT measure domain object to convert.</param>
+        /// <returns>An MmtMeasureDto containing the MMT measure data.</returns>
         public static MmtMeasureDto ToDto(this MmtMeasure mmt) => new MmtMeasureDto
         {
             Id = mmt.Id,
@@ -105,6 +129,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Notes = mmt.Notes,
         };
 
+        /// <summary>
+        /// Converts a special test domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="st">The special test domain object to convert.</param>
+        /// <returns>A SpecialTestDto containing the special test data.</returns>
         public static SpecialTestDto ToDto(this SpecialTest st) => new SpecialTestDto
         {
             Id = st.Id,
@@ -114,6 +143,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Notes = st.Notes,
         };
 
+        /// <summary>
+        /// Converts an outcome measure score domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="om">The outcome measure score domain object to convert.</param>
+        /// <returns>An OutcomeMeasureScoreDto containing the outcome measure score data.</returns>
         public static OutcomeMeasureScoreDto ToDto(this OutcomeMeasureScore om) => new OutcomeMeasureScoreDto
         {
             Id = om.Id,
@@ -123,6 +157,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             CollectedOn = om.CollectedOn,
         };
 
+        /// <summary>
+        /// Converts a provided intervention domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="pi">The provided intervention domain object to convert.</param>
+        /// <returns>A ProvidedInterventionDto containing the provided intervention data.</returns>
         public static ProvidedInterventionDto ToDto(this ProvidedIntervention pi) => new ProvidedInterventionDto
         {
             Id = pi.Id,
@@ -132,6 +171,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Minutes = pi.Minutes,
         };
 
+        /// <summary>
+        /// Converts an ICD-10 link domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="link">The ICD-10 link domain object to convert.</param>
+        /// <returns>An Icd10LinkDto containing the ICD-10 link data.</returns>
         public static Icd10LinkDto ToDto(this Icd10Link link) => new Icd10LinkDto
         {
             Id = link.Id,
@@ -139,6 +183,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Description = link.Description,
         };
 
+        /// <summary>
+        /// Converts a goal domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="goal">The goal domain object to convert.</param>
+        /// <returns>A GoalDto containing the goal data.</returns>
         public static GoalDto ToDto(this Goal goal) => new GoalDto
         {
             Id = goal.Id,
@@ -151,6 +200,11 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
             Status = goal.Status.ToString(),
         };
 
+        /// <summary>
+        /// Converts an exercise prescription domain object to its corresponding DTO.
+        /// </summary>
+        /// <param name="ex">The exercise prescription domain object to convert.</param>
+        /// <returns>An ExercisePrescriptionDto containing the exercise prescription data.</returns>
         public static ExercisePrescriptionDto ToDto(this ExercisePrescription ex) => new ExercisePrescriptionDto
         {
             Id = ex.Id,

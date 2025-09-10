@@ -7,31 +7,58 @@ namespace PhysicallyFitPT.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Domain;
 
+/// <summary>
+/// Entity Framework database context for the PhysicallyFitPT application.
+/// </summary>
 public class ApplicationDbContext : DbContext
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
   /// </summary>
-  /// <param name="options"></param>
+  /// <param name="options">Database context options.</param>
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : base(options)
   {
   }
 
+  /// <summary>
+  /// Gets the patients entity set.
+  /// </summary>
   public DbSet<Patient> Patients => this.Set<Patient>();
 
+  /// <summary>
+  /// Gets the appointments entity set.
+  /// </summary>
   public DbSet<Appointment> Appointments => this.Set<Appointment>();
 
+  /// <summary>
+  /// Gets the notes entity set.
+  /// </summary>
   public DbSet<Note> Notes => this.Set<Note>();
 
+  /// <summary>
+  /// Gets the CPT codes entity set.
+  /// </summary>
   public DbSet<CptCode> CptCodes => this.Set<CptCode>();
 
+  /// <summary>
+  /// Gets the ICD-10 codes entity set.
+  /// </summary>
   public DbSet<Icd10Code> Icd10Codes => this.Set<Icd10Code>();
 
+  /// <summary>
+  /// Gets the questionnaire definitions entity set.
+  /// </summary>
   public DbSet<QuestionnaireDefinition> QuestionnaireDefinitions => this.Set<QuestionnaireDefinition>();
 
+  /// <summary>
+  /// Gets the questionnaire responses entity set.
+  /// </summary>
   public DbSet<QuestionnaireResponse> QuestionnaireResponses => this.Set<QuestionnaireResponse>();
 
+  /// <summary>
+  /// Gets the check-in message logs entity set.
+  /// </summary>
   public DbSet<CheckInMessageLog> CheckInMessageLogs => this.Set<CheckInMessageLog>();
 
   /// <inheritdoc/>

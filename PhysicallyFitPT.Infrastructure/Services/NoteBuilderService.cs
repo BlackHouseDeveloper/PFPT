@@ -18,6 +18,9 @@ namespace PhysicallyFitPT.Infrastructure.Services
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using PhysicallyFitPT.Shared;
 
+  /// <summary>
+  /// Service for building and managing clinical notes including creation, updating, and signing.
+  /// </summary>
   public class NoteBuilderService : BaseService, INoteBuilderService
   {
     private readonly IDbContextFactory<ApplicationDbContext> factory;
@@ -25,8 +28,8 @@ namespace PhysicallyFitPT.Infrastructure.Services
     /// <summary>
     /// Initializes a new instance of the <see cref="NoteBuilderService"/> class.
     /// </summary>
-    /// <param name="factory"></param>
-    /// <param name="logger"></param>
+    /// <param name="factory">Database context factory for data access.</param>
+    /// <param name="logger">Logger instance for logging operations.</param>
     public NoteBuilderService(IDbContextFactory<ApplicationDbContext> factory, ILogger<NoteBuilderService> logger)
         : base(logger)
     {
