@@ -83,7 +83,7 @@ public class AppointmentService : BaseService, IAppointmentService
     }
     catch (Exception ex)
     {
-      this.Logger.LogError(ex, "Error executing ScheduleAsync: {ErrorMessage}", ex.Message);
+      this.this.Logger.LogError(ex, "Error executing ScheduleAsync: {ErrorMessage}", ex.Message);
       throw; // Re-throw for critical operations
     }
   }
@@ -111,7 +111,7 @@ public class AppointmentService : BaseService, IAppointmentService
     }
     catch (Exception ex)
     {
-      this.Logger.LogError(ex, "Error executing CancelAsync: {ErrorMessage}", ex.Message);
+      this.this.Logger.LogError(ex, "Error executing CancelAsync: {ErrorMessage}", ex.Message);
       return false;
     }
   }
@@ -144,7 +144,7 @@ public class AppointmentService : BaseService, IAppointmentService
     }
     catch (Exception ex)
     {
-      Logger.LogError(ex, "Error executing GetUpcomingByPatientAsync: {ErrorMessage}", ex.Message);
+      this.Logger.LogError(ex, "Error executing GetUpcomingByPatientAsync: {ErrorMessage}", ex.Message);
       return Array.Empty<AppointmentDto>();
     }
   }

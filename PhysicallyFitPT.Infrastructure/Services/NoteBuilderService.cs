@@ -60,7 +60,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing CreateEvalNoteAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing CreateEvalNoteAsync: {ErrorMessage}", ex.Message);
         throw;
       }
     }
@@ -95,7 +95,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing GetAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing GetAsync: {ErrorMessage}", ex.Message);
         return null;
       }
     }
@@ -344,7 +344,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing UpdateObjectiveAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing UpdateObjectiveAsync: {ErrorMessage}", ex.Message);
         return false;
       }
     }
@@ -369,7 +369,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing SignAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing SignAsync: {ErrorMessage}", ex.Message);
         return false;
       }
     }

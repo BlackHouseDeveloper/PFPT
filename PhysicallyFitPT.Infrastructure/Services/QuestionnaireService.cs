@@ -45,7 +45,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing GetAllDefinitionsAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing GetAllDefinitionsAsync: {ErrorMessage}", ex.Message);
         return Array.Empty<QuestionnaireDto>();
       }
     }
@@ -61,7 +61,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing GetDefinitionAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing GetDefinitionAsync: {ErrorMessage}", ex.Message);
         return null;
       }
     }
@@ -80,7 +80,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing GetResponseForAppointmentAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing GetResponseForAppointmentAsync: {ErrorMessage}", ex.Message);
         return null;
       }
     }
@@ -135,7 +135,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
       }
       catch (Exception ex)
       {
-        Logger.LogError(ex, "Error executing SubmitResponseAsync: {ErrorMessage}", ex.Message);
+        this.Logger.LogError(ex, "Error executing SubmitResponseAsync: {ErrorMessage}", ex.Message);
         throw;
       }
     }
