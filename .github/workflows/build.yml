@@ -48,10 +48,10 @@ jobs:
         working-directory: ./PhysicallyFitPT.Tests
         run: dotnet restore PhysicallyFitPT.Tests.csproj --use-lock-file
 
-      - name: Setup .NET SDK 8.0.x (with NuGet cache)
+      - name: Setup .NET SDK 8.0.403 (with NuGet cache)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "8.0.403"
           cache: true
           cache-dependency-path: '**/packages.lock.json'
           
