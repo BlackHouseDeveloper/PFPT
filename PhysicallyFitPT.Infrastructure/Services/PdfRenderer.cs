@@ -9,11 +9,6 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
-public interface IPdfRenderer
-{
-  byte[] RenderSimple(string title, string body);
-}
-
 public class PdfRenderer : IPdfRenderer
 {
   /// <inheritdoc/>
@@ -35,3 +30,7 @@ public class PdfRenderer : IPdfRenderer
     }).GeneratePdf();
   }
 }
+
+
+
+

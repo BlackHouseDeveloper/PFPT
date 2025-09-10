@@ -1,4 +1,8 @@
-﻿namespace PhysicallyFitPT.Infrastructure.Services
+﻿// <copyright file="NoteBuilderService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT.Infrastructure.Services
 {
   using System;
   using System.Collections.Generic;
@@ -113,6 +117,7 @@
           {
             throw new ArgumentOutOfRangeException(nameof(value), $"Invalid Side value: {value}");
           }
+
           return (Side)value;
         }
 
@@ -122,6 +127,7 @@
             {
                 throw new ArgumentOutOfRangeException(nameof(value), $"Invalid SpecialTestResult value: {value}");
             }
+
             return (SpecialTestResult)value;
         }
 

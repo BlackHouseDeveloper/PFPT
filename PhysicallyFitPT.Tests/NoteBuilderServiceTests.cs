@@ -15,7 +15,6 @@ namespace PhysicallyFitPT.Tests
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using Xunit;
 
-
   public class NoteBuilderServiceTests
     {
         [Fact]

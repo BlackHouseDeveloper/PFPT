@@ -16,7 +16,6 @@ namespace PhysicallyFitPT.Infrastructure.Services
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using PhysicallyFitPT.Shared;
 
-
   public class QuestionnaireService : BaseService, IQuestionnaireService
   {
     private readonly IDbContextFactory<ApplicationDbContext> _factory;

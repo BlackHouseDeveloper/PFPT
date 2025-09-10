@@ -1,4 +1,8 @@
-﻿namespace PhysicallyFitPT.Domain;
+﻿// <copyright file="Patient.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT.Domain;
 
 public sealed class Patient
 {

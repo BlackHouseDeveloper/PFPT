@@ -1,4 +1,8 @@
-﻿namespace PhysicallyFitPT.Domain;
+﻿// <copyright file="NoteAndSections.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace PhysicallyFitPT.Domain;
 
 // Note + Sections (annotation-free POCOs)
 public sealed class Note
