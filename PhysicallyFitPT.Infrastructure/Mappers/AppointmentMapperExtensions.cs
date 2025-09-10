@@ -26,5 +26,23 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
                 IsCheckedIn = appointment.IsCheckedIn,
             };
         }
+
+        public static void UpdateFromDto(this Appointment appointment, AppointmentDto dto)
+        {
+            // Parse VisitType from string
+            if (Enum.TryParse<VisitType>(dto.VisitType, out var visitType))
+            {
+                appointment.VisitType = visitType;
+            }
+            
+            appointment.ScheduledStart = dto.ScheduledStart;
+            appointment.ScheduledEnd = dto.ScheduledEnd;
+            appointment.Location = dto.Location;
+            appointment.ClinicianName = dto.ClinicianName;
+            appointment.ClinicianNpi = dto.ClinicianNpi;
+            appointment.QuestionnaireSentAt = dto.QuestionnaireSentAt;
+            appointment.QuestionnaireCompletedAt = dto.QuestionnaireCompletedAt;
+            appointment.IsCheckedIn = dto.IsCheckedIn;
+        }
     }
 }

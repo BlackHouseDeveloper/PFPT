@@ -62,4 +62,140 @@ public class PatientService : BaseService, IPatientService
       return Enumerable.Empty<PatientDto>();
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<PatientDto> CreateAsync(PatientDto patientDto, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      // Validate required fields
+      if (string.IsNullOrWhiteSpace(patientDto.FirstName))
+      {
+        throw new ArgumentException("FirstName is required", nameof(patientDto));
+      }
+
+      if (string.IsNullOrWhiteSpace(patientDto.LastName))
+      {
+        throw new ArgumentException("LastName is required", nameof(patientDto));
+      }
+
+      using var db = await this.dbFactory.CreateDbContextAsync();
+      var patient = patientDto.FromDto();
+      patient.Id = Guid.NewGuid(); // Ensure new ID
+      
+      db.Patients.Add(patient);
+      await db.SaveChangesAsync(cancellationToken);
+
+      return patient.ToDto();
+    }
+    catch (Exception ex)
+    {
+      this.Logger.LogError(ex, "Error executing CreateAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<PatientDto?> GetByIdAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      if (patientId == Guid.Empty)
+      {
+        throw new ArgumentException("Patient ID cannot be empty", nameof(patientId));
+      }
+
+      using var db = await this.dbFactory.CreateDbContextAsync();
+      var patient = await db.Patients.AsNoTracking()
+          .FirstOrDefaultAsync(p => p.Id == patientId, cancellationToken);
+
+      return patient?.ToDto();
+    }
+    catch (Exception ex)
+    {
+      this.Logger.LogError(ex, "Error executing GetByIdAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<PatientDto?> UpdateAsync(Guid patientId, PatientDto patientDto, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      if (patientId == Guid.Empty)
+      {
+        throw new ArgumentException("Patient ID cannot be empty", nameof(patientId));
+      }
+
+      // Validate required fields
+      if (string.IsNullOrWhiteSpace(patientDto.FirstName))
+      {
+        throw new ArgumentException("FirstName is required", nameof(patientDto));
+      }
+
+      if (string.IsNullOrWhiteSpace(patientDto.LastName))
+      {
+        throw new ArgumentException("LastName is required", nameof(patientDto));
+      }
+
+      using var db = await this.dbFactory.CreateDbContextAsync();
+      var patient = await db.Patients.FirstOrDefaultAsync(p => p.Id == patientId, cancellationToken);
+      
+      if (patient == null)
+      {
+        return null;
+      }
+
+      // Update properties
+      patient.MRN = patientDto.MRN;
+      patient.FirstName = patientDto.FirstName;
+      patient.LastName = patientDto.LastName;
+      patient.DateOfBirth = patientDto.DateOfBirth;
+      patient.Sex = patientDto.Sex;
+      patient.Email = patientDto.Email;
+      patient.MobilePhone = patientDto.MobilePhone;
+      patient.MedicationsCsv = patientDto.MedicationsCsv;
+      patient.ComorbiditiesCsv = patientDto.ComorbiditiesCsv;
+      patient.AssistiveDevicesCsv = patientDto.AssistiveDevicesCsv;
+      patient.LivingSituation = patientDto.LivingSituation;
+
+      await db.SaveChangesAsync(cancellationToken);
+      return patient.ToDto();
+    }
+    catch (Exception ex)
+    {
+      this.Logger.LogError(ex, "Error executing UpdateAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<bool> SoftDeleteAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      if (patientId == Guid.Empty)
+      {
+        throw new ArgumentException("Patient ID cannot be empty", nameof(patientId));
+      }
+
+      using var db = await this.dbFactory.CreateDbContextAsync();
+      var patient = await db.Patients.FirstOrDefaultAsync(p => p.Id == patientId, cancellationToken);
+      
+      if (patient == null)
+      {
+        return false;
+      }
+
+      patient.IsDeleted = true;
+      await db.SaveChangesAsync(cancellationToken);
+      return true;
+    }
+    catch (Exception ex)
+    {
+      this.Logger.LogError(ex, "Error executing SoftDeleteAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
 }

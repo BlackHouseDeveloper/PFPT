@@ -18,4 +18,8 @@ public interface IAppointmentService
   Task<bool> CancelAsync(Guid appointmentId, CancellationToken cancellationToken = default);
 
   Task<IReadOnlyList<AppointmentDto>> GetUpcomingByPatientAsync(Guid patientId, DateTimeOffset fromUtc, int take = 50, CancellationToken cancellationToken = default);
+
+  Task<AppointmentDto?> GetByIdAsync(Guid appointmentId, CancellationToken cancellationToken = default);
+
+  Task<AppointmentDto?> UpdateAsync(Guid appointmentId, AppointmentDto appointmentDto, CancellationToken cancellationToken = default);
 }

@@ -140,4 +140,64 @@ public class AppointmentService : BaseService, IAppointmentService
       return Array.Empty<AppointmentDto>();
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<AppointmentDto?> GetByIdAsync(Guid appointmentId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      if (appointmentId == Guid.Empty)
+      {
+        throw new ArgumentException("Appointment ID cannot be empty", nameof(appointmentId));
+      }
+
+      using var db = await this.factory.CreateDbContextAsync(cancellationToken);
+      var appointment = await db.Appointments.AsNoTracking()
+          .FirstOrDefaultAsync(a => a.Id == appointmentId, cancellationToken);
+
+      return appointment?.ToDto();
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, "Error executing GetByIdAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<AppointmentDto?> UpdateAsync(Guid appointmentId, AppointmentDto appointmentDto, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      if (appointmentId == Guid.Empty)
+      {
+        throw new ArgumentException("Appointment ID cannot be empty", nameof(appointmentId));
+      }
+
+      // Validate scheduling constraints
+      if (appointmentDto.ScheduledEnd.HasValue && appointmentDto.ScheduledEnd <= appointmentDto.ScheduledStart)
+      {
+        throw new ArgumentException("End time must be after start time", nameof(appointmentDto));
+      }
+
+      using var db = await this.factory.CreateDbContextAsync(cancellationToken);
+      var appointment = await db.Appointments.FirstOrDefaultAsync(a => a.Id == appointmentId, cancellationToken);
+      
+      if (appointment == null)
+      {
+        return null;
+      }
+
+      // Update the appointment with DTO data
+      appointment.UpdateFromDto(appointmentDto);
+      
+      await db.SaveChangesAsync(cancellationToken);
+      return appointment.ToDto();
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, "Error executing UpdateAsync: {ErrorMessage}", ex.Message);
+      throw;
+    }
+  }
 }
