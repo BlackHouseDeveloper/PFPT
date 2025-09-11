@@ -105,11 +105,4 @@
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
   </ItemGroup>
 
-  <!-- Fix: Ensure packages.lock.json is not copied to output/app bundle -->
-  <ItemGroup>
-    <None Update="packages.lock.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
