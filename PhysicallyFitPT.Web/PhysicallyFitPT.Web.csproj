@@ -38,4 +38,11 @@
     <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" ExcludeAssets="native" />
   </ItemGroup>
 
+  <!-- Fix: Ensure packages.lock.json is not copied to output/app bundle -->
+  <ItemGroup>
+    <None Update="packages.lock.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
