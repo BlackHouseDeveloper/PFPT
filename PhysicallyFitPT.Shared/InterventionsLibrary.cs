@@ -4,8 +4,14 @@
 
 namespace PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Provides reference data for treatment interventions and exercises organized by category.
+/// </summary>
 public static class InterventionsLibrary
 {
+  /// <summary>
+  /// Gets a list of treatment categories available for intervention planning.
+  /// </summary>
   public static readonly List<string> TreatmentCategories = new()
     {
         "ROM – Active, Passive, AAROM",
@@ -22,6 +28,9 @@ public static class InterventionsLibrary
         "HEP Instruction",
     };
 
+  /// <summary>
+  /// Gets a dictionary of exercises organized by body region.
+  /// </summary>
   public static readonly Dictionary<string, List<string>> ExerciseLibrary = new()
   {
     ["Neck"] = new() { "Chin tucks", "Cervical isometrics", "Scapular retraction with band" },

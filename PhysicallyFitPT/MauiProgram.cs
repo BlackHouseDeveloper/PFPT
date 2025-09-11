@@ -16,8 +16,15 @@ using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
+/// <summary>
+/// Provides methods for configuring and creating the MAUI application.  
+/// </summary>
 public static class MauiProgram
 {
+  /// <summary>
+  /// Creates and configures the MAUI application instance.
+  /// </summary>  
+  /// <returns>The configured <see cref="MauiApp"/>.</returns>
   public static MauiApp CreateMauiApp()
   {
     var builder = MauiApp.CreateBuilder();

@@ -6,6 +6,9 @@ namespace PhysicallyFitPT;
 
 using Foundation;
 
+/// <summary>
+/// Represents the iOS application delegate.
+/// </summary>
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
