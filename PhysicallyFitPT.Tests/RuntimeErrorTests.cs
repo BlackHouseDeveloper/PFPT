@@ -173,9 +173,8 @@ public class RuntimeErrorTests
   /// <summary>
   /// Tests that NoteBuilderService could throw null reference exceptions on null objective data.
   /// </summary>
-  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
-  public async Task NoteBuilderService_CouldThrowNullReference_OnNullObjective()
+  public void NoteBuilderService_CouldThrowNullReference_OnNullObjective()
   {
     // This test demonstrates a potential issue but would require mocking
     // to force the objective to be null - included for documentation
