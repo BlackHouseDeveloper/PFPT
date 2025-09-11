@@ -38,36 +38,28 @@ public class PatientService : BaseService, IPatientService
   /// <inheritdoc/>
   public async Task<IEnumerable<PatientDto>> SearchAsync(string query, int take = 50, CancellationToken cancellationToken = default)
   {
-    try
+    // Validate inputs
+    if (take <= 0 || take > 1000)
     {
-      // Validate inputs
-      if (take <= 0 || take > 1000)
-      {
-        throw new ArgumentException("Take parameter must be between 1 and 1000", nameof(take));
-      }
-
-      using var db = await this.dbFactory.CreateDbContextAsync();
-      string q = (query ?? string.Empty).Trim().ToLower();
-
-      // Prevent SQL injection by validating query length
-      if (q.Length > 100)
-      {
-        throw new ArgumentException("Search query too long", nameof(query));
-      }
-
-      string like = $"%{q}%";
-      var patients = await db.Patients.AsNoTracking()
-          .Where(p => EF.Functions.Like((p.FirstName + " " + p.LastName).ToLower(), like))
-          .OrderBy(p => p.LastName).ThenBy(p => p.FirstName)
-          .Take(take).
-          ToListAsync(cancellationToken);
-
-      return patients.Select(p => p.ToDto()).ToList();
+      throw new ArgumentException("Take parameter must be between 1 and 1000", nameof(take));
     }
-    catch (Exception ex)
+
+    string q = (query ?? string.Empty).Trim().ToLower();
+
+    // Prevent SQL injection by validating query length
+    if (q.Length > 100)
     {
-      this.Logger.LogError(ex, "Error executing SearchAsync: {ErrorMessage}", ex.Message);
-      return Enumerable.Empty<PatientDto>();
+      throw new ArgumentException("Search query too long", nameof(query));
     }
+
+    using var db = await this.dbFactory.CreateDbContextAsync();
+    string like = $"%{q}%";
+    var patients = await db.Patients.AsNoTracking()
+        .Where(p => EF.Functions.Like((p.FirstName + " " + p.LastName).ToLower(), like))
+        .OrderBy(p => p.LastName).ThenBy(p => p.FirstName)
+        .Take(take).
+        ToListAsync(cancellationToken);
+
+    return patients.Select(p => p.ToDto()).ToList();
   }
 }
