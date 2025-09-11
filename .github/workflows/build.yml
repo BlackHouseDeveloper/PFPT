@@ -78,7 +78,7 @@ jobs:
         run: dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -bl:artifacts/build-web.binlog
 
       - name: Test (unit tests only)
-        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --no-build --logger "trx;LogFileName=artifacts/test-results.trx"
+        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger "trx;LogFileName=artifacts/test-results.trx"
 
       - name: Upload build/test artifacts
         if: always()

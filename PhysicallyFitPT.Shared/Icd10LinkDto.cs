@@ -1,4 +1,4 @@
-﻿// <copyright file="Icd10LinkDto.cs" company="PlaceholderCompany">
+// <copyright file="Icd10LinkDto.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="ExercisePrescriptionDto.cs" company="PlaceholderCompany">
+// <copyright file="ExercisePrescriptionDto.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

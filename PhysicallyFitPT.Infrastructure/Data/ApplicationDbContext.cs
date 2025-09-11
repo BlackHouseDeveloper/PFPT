@@ -1,4 +1,4 @@
-﻿// <copyright file="ApplicationDbContext.cs" company="PlaceholderCompany">
+// <copyright file="ApplicationDbContext.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
