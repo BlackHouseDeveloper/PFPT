@@ -151,9 +151,6 @@ public sealed class SubjectiveSection
   /// </summary>
   public string? PatientGoalsNarrative { get; set; }
 }
-  /// <summary>
-  /// Gets or sets the narrative description of the patient's goals for treatment.
-  /// </summary>
 
 /// <summary>
 /// Represents the objective section of a clinical note containing measurable physical findings.
