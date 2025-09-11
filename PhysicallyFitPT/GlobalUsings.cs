@@ -2,12 +2,9 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT
-{
-  global using Microsoft.EntityFrameworkCore;
-  global using PhysicallyFitPT.Domain;
-  global using PhysicallyFitPT.Infrastructure.Data;
-  global using PhysicallyFitPT.Infrastructure.Services;
-  global using PhysicallyFitPT.Infrastructure.Services.Interfaces;
-  global using PhysicallyFitPT.Shared;
-}
+global using Microsoft.EntityFrameworkCore;
+global using PhysicallyFitPT.Domain;
+global using PhysicallyFitPT.Infrastructure.Data;
+global using PhysicallyFitPT.Infrastructure.Services;
+global using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+global using PhysicallyFitPT.Shared;
