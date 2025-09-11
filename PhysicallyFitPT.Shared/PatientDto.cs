@@ -31,20 +31,44 @@ namespace PhysicallyFitPT.Shared
     /// </summary>
     public string LastName { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the patient's date of birth.
+    /// </summary>
     public DateTime? DateOfBirth { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's sex/gender.
+    /// </summary>
     public string? Sex { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's email address.
+    /// </summary>
     public string? Email { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's mobile phone number.
+    /// </summary>
     public string? MobilePhone { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's medications as comma-separated values.
+    /// </summary>
     public string? MedicationsCsv { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's comorbidities as comma-separated values.
+    /// </summary>
     public string? ComorbiditiesCsv { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's assistive devices as comma-separated values.
+    /// </summary>
     public string? AssistiveDevicesCsv { get; set; }
 
+    /// <summary>
+    /// Gets or sets the patient's living situation description.
+    /// </summary>
     public string? LivingSituation { get; set; }
   }
 }

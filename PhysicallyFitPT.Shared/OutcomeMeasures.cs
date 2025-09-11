@@ -4,8 +4,14 @@
 
 namespace PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Provides reference data for outcome measures organized by body region.
+/// </summary>
 public static class OutcomeMeasures
 {
+  /// <summary>
+  /// Gets a dictionary of outcome measures organized by body region.
+  /// </summary>
   public static readonly Dictionary<string, List<string>> RegionMeasures = new()
   {
     ["Neck"] = new() { "NDI", "PSFS", "VAS" },

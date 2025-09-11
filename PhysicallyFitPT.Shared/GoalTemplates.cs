@@ -4,8 +4,14 @@
 
 namespace PhysicallyFitPT.Shared;
 
+/// <summary>
+/// Provides predefined goal templates organized by body region for treatment planning.
+/// </summary>
 public static class GoalTemplates
 {
+  /// <summary>
+  /// Gets a dictionary of goal templates organized by body region.
+  /// </summary>
   public static readonly Dictionary<string, List<string>> BodyRegionGoals = new()
   {
     ["Neck"] = new()

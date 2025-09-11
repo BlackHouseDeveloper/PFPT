@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Domain.Notes;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -172,9 +173,8 @@ public class RuntimeErrorTests
   /// <summary>
   /// Tests that NoteBuilderService could throw null reference exceptions on null objective data.
   /// </summary>
-  /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
   [Fact]
-  public async Task NoteBuilderService_CouldThrowNullReference_OnNullObjective()
+  public void NoteBuilderService_CouldThrowNullReference_OnNullObjective()
   {
     // This test demonstrates a potential issue but would require mocking
     // to force the objective to be null - included for documentation
@@ -182,41 +182,5 @@ public class RuntimeErrorTests
     // Potential issue in UpdateObjectiveAsync if note.Objective is null:
     // note.Objective.Rom = rom?.ToList() ?? note.Objective.Rom;
     Assert.True(true); // Placeholder - actual test would require complex setup
-  }
-}
-
-/// <summary>
-/// Test helper to create DbContext factory for testing.
-/// </summary>
-public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
-{
-  private readonly DbContextOptions<ApplicationDbContext> options;
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="TestDbContextFactory"/> class.
-  /// </summary>
-  /// <param name="options">Database context options to use for creating contexts.</param>
-  public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options)
-  {
-    this.options = options;
-  }
-
-  /// <inheritdoc/>
-  public ApplicationDbContext CreateDbContext()
-  {
-    var context = new ApplicationDbContext(this.options);
-    context.Database.EnsureCreated();
-    return context;
-  }
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-  public async Task<ApplicationDbContext> CreateDbContextAsync()
-  {
-    var context = new ApplicationDbContext(this.options);
-    await context.Database.EnsureCreatedAsync();
-    return context;
   }
 }
