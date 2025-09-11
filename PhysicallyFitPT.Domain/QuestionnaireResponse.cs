@@ -1,4 +1,4 @@
-﻿// <copyright file="QuestionnaireResponse.cs" company="PlaceholderCompany">
+// <copyright file="QuestionnaireResponse.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

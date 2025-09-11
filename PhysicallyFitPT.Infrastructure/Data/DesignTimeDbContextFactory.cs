@@ -1,4 +1,4 @@
-﻿// <copyright file="DesignTimeDbContextFactory.cs" company="PlaceholderCompany">
+// <copyright file="DesignTimeDbContextFactory.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="OutcomeMeasureScoreDto.cs" company="PlaceholderCompany">
+// <copyright file="OutcomeMeasureScoreDto.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

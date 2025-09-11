@@ -1,4 +1,4 @@
-﻿// <copyright file="20250909004336_Initial.cs" company="PlaceholderCompany">
+// <copyright file="20250909004336_Initial.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

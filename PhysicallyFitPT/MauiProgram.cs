@@ -1,4 +1,4 @@
-﻿// <copyright file="MauiProgram.cs" company="PlaceholderCompany">
+// <copyright file="MauiProgram.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

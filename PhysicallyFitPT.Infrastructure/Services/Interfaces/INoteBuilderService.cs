@@ -1,4 +1,4 @@
-﻿// <copyright file="INoteBuilderService.cs" company="PlaceholderCompany">
+// <copyright file="INoteBuilderService.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

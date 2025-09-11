@@ -1,4 +1,4 @@
-﻿// <copyright file="App.xaml.cs" company="PlaceholderCompany">
+// <copyright file="App.xaml.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

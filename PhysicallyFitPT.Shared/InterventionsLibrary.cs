@@ -1,4 +1,4 @@
-﻿// <copyright file="InterventionsLibrary.cs" company="PlaceholderCompany">
+// <copyright file="InterventionsLibrary.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
