@@ -74,6 +74,9 @@ jobs:
       - name: Build Android (Release)
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f net8.0-android -bl:artifacts/build-android.binlog
 
+      - name: Build iOS (Release)
+        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f net8.0-ios -bl:artifacts/build-ios.binlog
+
       - name: Build Web (Release)
         run: dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -bl:artifacts/build-web.binlog
 
