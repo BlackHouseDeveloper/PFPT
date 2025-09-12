@@ -46,6 +46,9 @@ public static class MauiProgram
 
     builder.Services.AddDbContextFactory<ApplicationDbContext>(opt => opt.UseSqlite($"Data Source={dbPath}"));
 
+    // Register SQLite data store for mobile platforms
+    builder.Services.AddScoped<IDataStore, SqliteDataStore>();
+
     // DI: services
     builder.Services.AddScoped<IPatientService, PatientService>();
     builder.Services.AddScoped<IAppointmentService, AppointmentService>();

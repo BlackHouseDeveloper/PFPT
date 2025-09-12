@@ -81,17 +81,6 @@
           "StyleCop.Analyzers.Unstable": "1.2.0.556"
         }
       },
-      "Uno.SQLitePCLRaw.provider.wasm": {
-        "type": "Direct",
-        "requested": "[3.2.0, )",
-        "resolved": "3.2.0",
-        "contentHash": "B9czCJiUP2z+crAkSN2Awnt0uULpmxvJZHJiDfQmbODBE1fd6uZhnQ5A+TtnlhHh9Tg/WZZDYZtUdROcpyYxMQ==",
-        "dependencies": {
-          "SQLitePCLRaw.bundle_sqlite3": "2.1.8",
-          "SQLitePCLRaw.provider.sqlite3": "2.1.8",
-          "Uno.sqlite-wasm": "3.40.0.2"
-        }
-      },
       "Microsoft.AspNetCore.Authorization": {
         "type": "Transitive",
         "resolved": "8.0.19",
@@ -301,14 +290,6 @@
         "resolved": "2.88.7",
         "contentHash": "BCXmWdQ0oVck9vRwC8U3ocSaTHEx28VB+6qw9OxGIMQ86iO5bp4Flqk3IXH0l9Pbr7vWAUOpI212iaL9mTaUZQ=="
       },
-      "SQLitePCLRaw.bundle_sqlite3": {
-        "type": "Transitive",
-        "resolved": "2.1.8",
-        "contentHash": "uDkpK5OneTBkzjl8G0WLUno6hxFreK2Ykx7HMWRxSfD6pD4zQsYuqnEOGFjgYyHPNvlkP4r4saDzqE6GRrqu/Q==",
-        "dependencies": {
-          "SQLitePCLRaw.provider.sqlite3": "2.1.8"
-        }
-      },
       "SQLitePCLRaw.lib.e_sqlite3": {
         "type": "Transitive",
         "resolved": "2.1.8",
@@ -318,14 +299,6 @@
         "type": "Transitive",
         "resolved": "2.1.8",
         "contentHash": "g5pnvmUereQirZkJGbZiOR2Y9bBlhHVt7Vgmnu3CGq00VdyGfD9hyQN0f8yrrSfFfgtbuxWDw2VTdDAOuMZEzQ==",
-        "dependencies": {
-          "SQLitePCLRaw.core": "2.1.8"
-        }
-      },
-      "SQLitePCLRaw.provider.sqlite3": {
-        "type": "Transitive",
-        "resolved": "2.1.8",
-        "contentHash": "K9P3Ru60Z3JbE470RK4tQ8hfx3KDEFSXzoUOn1j7PZMQ0LCAWDTxqHEt8ug3Rdl5ifoDsNBY6PDE7QnEQFhC2g==",
         "dependencies": {
           "SQLitePCLRaw.core": "2.1.8"
         }
@@ -362,11 +335,6 @@
         "dependencies": {
           "System.Text.Encodings.Web": "8.0.0"
         }
-      },
-      "Uno.sqlite-wasm": {
-        "type": "Transitive",
-        "resolved": "3.40.0.2",
-        "contentHash": "31nOg3auMamUiEVhr5TENHl7PfyN0k06bC0NRS/MJzwLITypKFcSvs89Lcb3T/Ra5zkH5fUSjEEJLT6BnT3NxA=="
       },
       "physicallyfitpt.domain": {
         "type": "Project"
