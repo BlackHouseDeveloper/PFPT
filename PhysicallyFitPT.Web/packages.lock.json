@@ -52,9 +52,9 @@
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[8.0.20, )",
-        "resolved": "8.0.20",
-        "contentHash": "T8IgvEg6M4INrHw9K89JjslxP0D6fHYiogFvarNPSjfusHdV/KvwJU4YC1+lNOIIgpjslkb4WWSW9IuNxHdPLg=="
+        "requested": "[8.0.19, )",
+        "resolved": "8.0.19",
+        "contentHash": "Cm/sq4ET7XGU7jBSfSh+s+eV0faJ1RnErpImRYN7+d5loWISBwl22qsM6sn9StUWKJao+xGvF0IxgyPVnY20Vw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
