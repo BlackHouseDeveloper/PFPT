@@ -36,3 +36,7 @@ dotnet_diagnostic.SA1633.severity = none
 
 [*.razor.css.sg.cs]
 dotnet_diagnostic.SA1633.severity = none
+
+[**/obj/**]
+generated_code = true
+dotnet_diagnostic.SA1633.severity = none
