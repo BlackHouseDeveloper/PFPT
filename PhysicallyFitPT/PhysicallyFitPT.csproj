@@ -43,6 +43,19 @@
     <None Remove="packages.lock.json" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+    <!-- Prevent default wildcard includes from picking up the lock file -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);packages.lock.json</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+    <!-- Belt and suspenders: ensure the lock file is never included in the app bundle -->
+    <None Remove="packages.lock.json" />
+    <Content Remove="packages.lock.json" />
+    <MauiAsset Remove="packages.lock.json" />
+    <BundleResource Remove="packages.lock.json" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- Use WebAssembly-compatible SQLite provider -->
     <PackageReference Include="Uno.SQLitePCLRaw.provider.wasm" />
@@ -113,5 +126,6 @@
       Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
   </ItemGroup>
+
 
 </Project>
