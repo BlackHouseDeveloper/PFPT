@@ -9,7 +9,9 @@ using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Web;
+using SQLitePCL;
 
+Batteries_V2.Init();
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.RootComponents.Add<App>("#app");

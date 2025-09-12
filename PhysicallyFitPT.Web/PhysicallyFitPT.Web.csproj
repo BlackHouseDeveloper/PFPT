@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+  <!-- Use WebAssembly-compatible SQLite provider -->
+  <PackageReference Include="Uno.SQLitePCLRaw.provider.wasm" />
+</ItemGroup>
+
+
+  <ItemGroup>
     <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
     <ProjectReference
@@ -23,8 +29,8 @@
 
   <!-- Fix: prevent WASM-native linking warnings for transitive SQLite native archive -->
   <PropertyGroup>
-    <WasmBuildNative>true</WasmBuildNative>
-    <RunAOTCompilation>true</RunAOTCompilation>
+    <WasmBuildNative>false</WasmBuildNative>
+    <RunAOTCompilation>false</RunAOTCompilation>
   </PropertyGroup>
 
   <ItemGroup>
