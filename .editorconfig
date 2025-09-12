@@ -22,5 +22,17 @@ insert_final_newline = true
 [*.cs]
 dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
 
+[*.g.cs]
+dotnet_diagnostic.SA1633.severity = none
+
+[*.sg.cs]
+dotnet_diagnostic.SA1633.severity = none
+
+[*.designer.cs]
+dotnet_diagnostic.SA1633.severity = none
+
+[*.razor.g.cs]
+dotnet_diagnostic.SA1633.severity = none
+
 [*.razor.css.sg.cs]
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
+dotnet_diagnostic.SA1633.severity = none
