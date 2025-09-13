@@ -150,17 +150,27 @@ jobs:
             const path = "docs/CHANGELOG.md";
             let shaExisting;
             try {
-              const res = await github.rest.repos.getContent({ owner, repo, path });
+              const res = await github.rest.repos.getContent({ 
+                owner, repo, path, 
+                ref: context.payload.pull_request.head.ref 
+              });
               if (!Array.isArray(res.data)) shaExisting = res.data.sha;
             } catch {}
+            
             // Write to PR head branch with [skip ci]
-            await github.rest.repos.createOrUpdateFileContents({
+            const updateParams = {
               owner, repo, path,
               message: "docs: update CHANGELOG.md [skip ci]",
               content: Buffer.from(content, "utf8").toString("base64"),
-              sha: shaExisting,
               branch: context.payload.pull_request.head.ref
-            });
+            };
+            
+            // Only include sha if file exists
+            if (shaExisting) {
+              updateParams.sha = shaExisting;
+            }
+            
+            await github.rest.repos.createOrUpdateFileContents(updateParams);
 
   build:
     name: Build & Guardrails
