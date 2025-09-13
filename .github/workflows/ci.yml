@@ -201,8 +201,19 @@ jobs:
       - name: Restore solution (lock files)
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
 
-      - name: Build (matrix)
-        run: dotnet build ./PhysicallyFitPT.sln -c Release -f ${{ matrix.tfm }} --nologo
+      - name: Build net8.0 projects (Web, Infrastructure, etc.)
+        if: matrix.tfm == 'net8.0'
+        run: |
+          dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj -c Release -f net8.0 --nologo
+
+      - name: Build mobile app (MAUI)
+        if: matrix.tfm != 'net8.0'
+        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
@@ -234,7 +245,7 @@ jobs:
         if: matrix.tfm == 'net8.0'
         run: |
           dotnet tool restore || true
-          dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure -s ./PhysicallyFitPT/PhysicallyFitPT.csproj
+          dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
 
   diff-summary:
     name: Diff Summary
