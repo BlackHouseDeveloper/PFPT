@@ -20,7 +20,31 @@ insert_final_newline = true
 
 
 [*.cs]
+# Core .NET analyzer categories - start with warnings, can promote to errors later
+dotnet_analyzer_diagnostic.category-design.severity = warning
+dotnet_analyzer_diagnostic.category-maintainability.severity = warning
+dotnet_analyzer_diagnostic.category-reliability.severity = error
+dotnet_analyzer_diagnostic.category-security.severity = error
+
+# StyleCop analyzers as warnings for now
 dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
+
+# Critical IDE rules as errors
+dotnet_diagnostic.IDE0005.severity = error # Remove unnecessary usings
+dotnet_diagnostic.IDE0055.severity = error # Formatting rule
+
+# Other IDE rules as suggestions for now
+dotnet_diagnostic.IDE0040.severity = suggestion # Accessibility modifiers
+dotnet_diagnostic.IDE0065.severity = suggestion # Using directive placement
+dotnet_diagnostic.IDE0130.severity = suggestion # Namespace matching folder structure
+dotnet_diagnostic.IDE0058.severity = suggestion # Expression value not used
+dotnet_diagnostic.IDE0022.severity = suggestion # Use block body for method
+dotnet_diagnostic.IDE0290.severity = suggestion # Use primary constructor
+
+# Style preferences
+csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_prefer_braces = true:suggestion
+csharp_prefer_simple_using_statement = true:suggestion
 
 [*.g.cs]
 dotnet_diagnostic.SA1633.severity = none

@@ -3,10 +3,6 @@
 // </copyright>
 
 namespace PhysicallyFitPT;
-
-using ObjCRuntime;
-using UIKit;
-
 /// <summary>
 /// Represents the entry point for the macOS Catalyst application.
 /// </summary>

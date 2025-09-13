@@ -46,6 +46,7 @@ try
 catch (Exception ex)
 {
   Console.WriteLine($"Failed to initialize data store: {ex.Message}");
+
   // Continue anyway - the app should still load but may have limited functionality
 }
 

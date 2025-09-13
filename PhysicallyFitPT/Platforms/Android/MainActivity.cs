@@ -3,11 +3,6 @@
 // </copyright>
 
 namespace PhysicallyFitPT;
-
-using Android.App;
-using Android.Content.PM;
-using Android.OS;
-
 /// <summary>
 /// Represents the main Android activity for the application.
 /// </summary>

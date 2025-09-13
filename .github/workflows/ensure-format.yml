@@ -1,0 +1,43 @@
+name: Ensure Format
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ensure-format:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.403
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.403"
+
+      - name: Restore dependencies
+        run: dotnet restore --no-cache
+
+      - name: Verify code formatting
+        run: dotnet format --verify-no-changes --no-restore
+
+      - name: Build Core Libraries with warnings as errors
+        run: |
+          dotnet build PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --no-restore --configuration Release -warnaserror
+          dotnet build PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --no-restore --configuration Release -warnaserror
+          dotnet build PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --no-restore --configuration Release -warnaserror
+
+      - name: Build Web Project with warnings as errors
+        run: dotnet build PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --no-restore --configuration Release -warnaserror
+
+      - name: Build Tests with warnings as errors
+        run: dotnet build PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --no-restore --configuration Release -warnaserror
+
+      - name: Run Tests
+        run: dotnet test PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --no-build --configuration Release

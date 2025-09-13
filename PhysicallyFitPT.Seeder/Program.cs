@@ -2,10 +2,6 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Infrastructure.Data;
 

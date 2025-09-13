@@ -15,7 +15,7 @@ using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 /// </summary>
 public class SqliteDataStore : IDataStore
 {
-  private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+  private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SqliteDataStore"/> class.
@@ -23,7 +23,7 @@ public class SqliteDataStore : IDataStore
   /// <param name="contextFactory">The database context factory.</param>
   public SqliteDataStore(IDbContextFactory<ApplicationDbContext> contextFactory)
   {
-    _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
+    this.contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
   }
 
   /// <inheritdoc/>
@@ -32,28 +32,28 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task InitializeAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     await context.Database.EnsureCreatedAsync();
   }
 
   /// <inheritdoc/>
   public async Task<IEnumerable<Patient>> GetPatientsAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Patients.AsNoTracking().OrderBy(p => p.LastName).ThenBy(p => p.FirstName).ToListAsync();
   }
 
   /// <inheritdoc/>
   public async Task<Patient?> GetPatientByIdAsync(Guid id)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Patients.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
   }
 
   /// <inheritdoc/>
   public async Task<IEnumerable<Patient>> SearchPatientsAsync(string query, int take = 50)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     var q = (query ?? string.Empty).Trim().ToLower();
     if (string.IsNullOrEmpty(q))
     {
@@ -70,7 +70,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Patient> CreatePatientAsync(Patient patient)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     patient.Id = Guid.NewGuid();
     context.Patients.Add(patient);
     await context.SaveChangesAsync();
@@ -80,7 +80,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Patient> UpdatePatientAsync(Patient patient)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     context.Patients.Update(patient);
     await context.SaveChangesAsync();
     return patient;
@@ -89,7 +89,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task DeletePatientAsync(Guid id)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     var patient = await context.Patients.FirstOrDefaultAsync(p => p.Id == id);
     if (patient != null)
     {
@@ -101,7 +101,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<IEnumerable<Appointment>> GetAppointmentsAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Appointments.AsNoTracking()
       .Include(a => a.Patient)
       .OrderBy(a => a.ScheduledStart)
@@ -111,7 +111,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Appointment?> GetAppointmentByIdAsync(Guid id)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Appointments.AsNoTracking()
       .Include(a => a.Patient)
       .FirstOrDefaultAsync(a => a.Id == id);
@@ -120,7 +120,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(Guid patientId)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Appointments.AsNoTracking()
       .Include(a => a.Patient)
       .Where(a => a.PatientId == patientId)
@@ -131,7 +131,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Appointment> CreateAppointmentAsync(Appointment appointment)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     appointment.Id = Guid.NewGuid();
     context.Appointments.Add(appointment);
     await context.SaveChangesAsync();
@@ -141,7 +141,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Appointment> UpdateAppointmentAsync(Appointment appointment)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     context.Appointments.Update(appointment);
     await context.SaveChangesAsync();
     return appointment;
@@ -150,7 +150,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task DeleteAppointmentAsync(Guid id)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     var appointment = await context.Appointments.FirstOrDefaultAsync(a => a.Id == id);
     if (appointment != null)
     {
@@ -162,7 +162,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Note?> GetNoteByAppointmentIdAsync(Guid appointmentId)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Notes.AsNoTracking()
       .Include(n => n.Appointment)
       .FirstOrDefaultAsync(n => n.AppointmentId == appointmentId);
@@ -171,7 +171,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Note> CreateNoteAsync(Note note)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     note.Id = Guid.NewGuid();
     context.Notes.Add(note);
     await context.SaveChangesAsync();
@@ -181,7 +181,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<Note> UpdateNoteAsync(Note note)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     context.Notes.Update(note);
     await context.SaveChangesAsync();
     return note;
@@ -190,21 +190,21 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<IEnumerable<QuestionnaireDefinition>> GetQuestionnaireDefinitionsAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.QuestionnaireDefinitions.AsNoTracking().ToListAsync();
   }
 
   /// <inheritdoc/>
   public async Task<QuestionnaireDefinition?> GetQuestionnaireDefinitionByIdAsync(Guid id)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.QuestionnaireDefinitions.AsNoTracking().FirstOrDefaultAsync(q => q.Id == id);
   }
 
   /// <inheritdoc/>
   public async Task<IEnumerable<QuestionnaireResponse>> GetQuestionnaireResponsesByAppointmentIdAsync(Guid appointmentId)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.QuestionnaireResponses.AsNoTracking()
       .Where(q => q.AppointmentId == appointmentId)
       .ToListAsync();
@@ -213,7 +213,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<QuestionnaireResponse> CreateQuestionnaireResponseAsync(QuestionnaireResponse response)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     response.Id = Guid.NewGuid();
     context.QuestionnaireResponses.Add(response);
     await context.SaveChangesAsync();
@@ -223,21 +223,21 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<IEnumerable<CptCode>> GetCptCodesAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.CptCodes.AsNoTracking().ToListAsync();
   }
 
   /// <inheritdoc/>
   public async Task<IEnumerable<Icd10Code>> GetIcd10CodesAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.Icd10Codes.AsNoTracking().ToListAsync();
   }
 
   /// <inheritdoc/>
   public async Task<CheckInMessageLog> CreateCheckInMessageLogAsync(CheckInMessageLog log)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     log.Id = Guid.NewGuid();
     context.CheckInMessageLogs.Add(log);
     await context.SaveChangesAsync();
@@ -247,7 +247,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task<IEnumerable<CheckInMessageLog>> GetPendingCheckInMessagesAsync()
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     return await context.CheckInMessageLogs.AsNoTracking()
       .Where(c => c.SentAt == null)
       .OrderBy(c => c.ScheduledSendAt)
@@ -257,7 +257,7 @@ public class SqliteDataStore : IDataStore
   /// <inheritdoc/>
   public async Task UpdateCheckInMessageLogAsync(CheckInMessageLog log)
   {
-    using var context = await _contextFactory.CreateDbContextAsync();
+    using var context = await this.contextFactory.CreateDbContextAsync();
     context.CheckInMessageLogs.Update(log);
     await context.SaveChangesAsync();
   }

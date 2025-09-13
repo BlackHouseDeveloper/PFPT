@@ -5,13 +5,6 @@
 namespace PhysicallyFitPT;
 
 using System.IO;
-using Microsoft.AspNetCore.Components.WebView.Maui;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection; // needed for AddHttpClient ext method
-using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Storage;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;

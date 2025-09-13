@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
-using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
 /// <summary>
 /// Tests for data store implementations to verify browser vs mobile compatibility.
@@ -19,6 +18,7 @@ public class DataStoreTests
   /// <summary>
   /// Tests that BrowserDataStore can be initialized and perform basic operations.
   /// </summary>
+  /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous unit test.</placeholder></returns>
   [Fact]
   public async Task BrowserDataStore_InitializeAndCreatePatient_ShouldWork()
   {
@@ -56,6 +56,7 @@ public class DataStoreTests
   /// <summary>
   /// Tests that SqliteDataStore can be initialized and perform basic operations.
   /// </summary>
+  /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous unit test.</placeholder></returns>
   [Fact]
   public async Task SqliteDataStore_InitializeAndCreatePatient_ShouldWork()
   {
@@ -93,6 +94,7 @@ public class DataStoreTests
   /// <summary>
   /// Tests that BrowserDataStore seeds reference data during initialization.
   /// </summary>
+  /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous unit test.</placeholder></returns>
   [Fact]
   public async Task BrowserDataStore_Initialize_ShouldSeedReferenceData()
   {

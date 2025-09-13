@@ -4,11 +4,8 @@
 
 namespace PhysicallyFitPT.Infrastructure.Services;
 
-using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 /// <summary>
 /// PDF rendering service implementation using QuestPDF.

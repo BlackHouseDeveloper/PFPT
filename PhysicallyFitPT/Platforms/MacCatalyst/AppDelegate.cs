@@ -3,9 +3,6 @@
 // </copyright>
 
 namespace PhysicallyFitPT;
-
-using Foundation;
-
 /// <summary>
 /// Represents the macOS Catalyst application delegate.
 /// </summary>

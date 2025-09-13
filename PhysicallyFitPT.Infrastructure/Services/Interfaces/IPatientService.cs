@@ -7,7 +7,6 @@ namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using PhysicallyFitPT.Domain;
 using PhysicallyFitPT.Shared;
 
 /// <summary>

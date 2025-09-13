@@ -3,10 +3,6 @@
 // </copyright>
 
 namespace PhysicallyFitPT;
-
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-
 /// <summary>
 /// Represents the main application class for the MAUI application.
 /// </summary>
