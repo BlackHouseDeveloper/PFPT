@@ -1,45 +1,61 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Enable trimming for smaller WASM payload -->
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>link</TrimMode>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <!-- Enable trimming for smaller WASM payload -->
+        <PublishTrimmed>true</PublishTrimmed>
+        <TrimMode>link</TrimMode>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      PrivateAssets="all" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="Microsoft.Extensions.Http" />
-  </ItemGroup>
+    <PropertyGroup>
+        <RunAOTCompilation>true</RunAOTCompilation>
+        <WasmBuildNative>true</WasmBuildNative>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
-    <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
-    <ProjectReference
-      Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+            PrivateAssets="all" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+        <PackageReference Include="Microsoft.Extensions.Http" />
+    </ItemGroup>
 
-  <!-- Exclude ALL SQLite native dependencies for WASM -->
-  <ItemGroup>
-    <PackageReference Update="Microsoft.Data.Sqlite.Core" ExcludeAssets="all" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" ExcludeAssets="all" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite.Core" ExcludeAssets="all" />
-    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" ExcludeAssets="all" />
-    <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" ExcludeAssets="all" />
-    <PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" ExcludeAssets="all" />
-    <PackageReference Update="SQLitePCLRaw.core" ExcludeAssets="all" />
-    <PackageReference Update="Uno.SQLitePCLRaw.provider.wasm" ExcludeAssets="all" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
+        <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
+        <ProjectReference
+            Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
+    </ItemGroup>
 
-  <!-- Remove any native file references -->
-  <ItemGroup>
-    <NativeFileReference Remove="**/e_sqlite3.a" />
-    <NativeFileReference Remove="**/sqlite3.a" />
-  </ItemGroup>
+    <!-- Exclude ALL SQLite native dependencies for WASM -->
+    <ItemGroup>
+        <PackageReference Update="Microsoft.Data.Sqlite.Core" ExcludeAssets="all" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" ExcludeAssets="all" />
+        <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite.Core" ExcludeAssets="all" />
+        <PackageReference Update="SQLitePCLRaw.core" ExcludeAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- nuke native SQLite for Web to unblock build -->
+        <PackageReference Remove="SQLitePCLRaw.bundle_e_sqlite3" />
+        <PackageReference Remove="SQLitePCLRaw.lib.e_sqlite3" />
+        <PackageReference Remove="SQLitePCLRaw.provider.e_sqlite3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Block transitive native SQLite on Web -->
+        <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" PrivateAssets="all" ExcludeAssets="All" />
+        <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" PrivateAssets="all" ExcludeAssets="All" />
+        <PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" PrivateAssets="all" ExcludeAssets="All" />
+    </ItemGroup>
+
+
+    <!-- Remove any native file references -->
+    <ItemGroup>
+        <NativeFileReference Remove="**/e_sqlite3.a" />
+        <NativeFileReference Remove="**/sqlite3.a" />
+    </ItemGroup>
 
 </Project>

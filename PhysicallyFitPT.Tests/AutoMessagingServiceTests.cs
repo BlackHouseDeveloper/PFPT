@@ -4,12 +4,15 @@
 
 namespace PhysicallyFitPT.Tests
 {
+    using System;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using PhysicallyFitPT.Domain;
     using PhysicallyFitPT.Infrastructure.Data;
     using PhysicallyFitPT.Infrastructure.Services;
     using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+    using Xunit;
 
     /// <summary>
     /// Tests for the AutoMessagingService class functionality.

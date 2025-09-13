@@ -15,7 +15,7 @@ The PFPT application uses a **platform-specific data storage abstraction** to ha
 
 All data operations go through the `IDataStore` interface, which provides platform-agnostic CRUD operations for:
 - Patients
-- Appointments 
+- Appointments
 - Notes
 - Questionnaires
 - Reference data (CPT codes, ICD-10 codes)
@@ -46,7 +46,7 @@ Platform-specific data stores are registered at startup:
 // Mobile (MauiProgram.cs)
 builder.Services.AddScoped<IDataStore, SqliteDataStore>();
 
-// Browser (Program.cs)  
+// Browser (Program.cs)
 builder.Services.AddScoped<IDataStore, BrowserDataStore>();
 ```
 
@@ -56,7 +56,7 @@ builder.Services.AddScoped<IDataStore, BrowserDataStore>();
 
 **Problem**: The original WebAssembly build crashed with `e_sqlite3` errors because it tried to use native SQLite libraries that aren't compatible with the browser sandbox.
 
-**Solution**: 
+**Solution**:
 1. Removed native SQLite initialization (`SQLitePCL.Batteries_V2.Init()`) from WebAssembly builds
 2. Excluded SQLite native file references from WASM project
 3. Created browser-compatible data store using in-memory EF provider
@@ -73,7 +73,7 @@ builder.Services.AddScoped<IDataStore, BrowserDataStore>();
 
 Visit `/diagnostics` in the web application to see:
 - Active storage backend
-- Platform information  
+- Platform information
 - Data store initialization status
 - Storage health test results
 

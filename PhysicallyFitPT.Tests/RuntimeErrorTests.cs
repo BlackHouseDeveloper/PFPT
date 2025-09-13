@@ -4,6 +4,8 @@
 
 namespace PhysicallyFitPT.Tests
 {
+    using System;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;

@@ -19,22 +19,29 @@ file_header_template = unset
 
 # Analyzer severities become errors via TreatWarningsAsErrors=true
 # Common IDE rules explicitly set
-dotnet_diagnostic.IDE0005.severity = error   # remove unused usings
 dotnet_diagnostic.IDE0055.severity = error   # formatting
 
-[*.g.cs]
+# Ignore headers on generated MAUI source-gen files
+# ===== Generated code exclusions (MAUI/Blazor) =====
+[**/*.g.cs]
+generated_code = true
 dotnet_diagnostic.SA1633.severity = none
 
-[*.sg.cs]
+[**/*.sg.cs]
+generated_code = true
 dotnet_diagnostic.SA1633.severity = none
 
-[*.designer.cs]
+[**/*.razor.g.cs]
+generated_code = true
 dotnet_diagnostic.SA1633.severity = none
 
-[*.razor.g.cs]
+[**/*.razor.css.sg.cs]
+generated_code = true
 dotnet_diagnostic.SA1633.severity = none
 
-[*.razor.css.sg.cs]
+# MAUI source-gen folder (note the **/ prefix – matches anywhere)
+[**/Microsoft.Maui.Controls.SourceGen/**]
+generated_code = true
 dotnet_diagnostic.SA1633.severity = none
 
 [**/obj/**]

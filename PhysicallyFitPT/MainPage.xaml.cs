@@ -4,6 +4,8 @@
 
 namespace PhysicallyFitPT
 {
+    using Microsoft.Maui.Controls;
+
     /// <summary>
     /// Represents the main page of the application.
     /// </summary>

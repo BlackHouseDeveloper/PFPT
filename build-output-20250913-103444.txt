@@ -1,0 +1,185 @@
+PFPT Clean Build - 20250913-103444
+---------------------------------------
+[33m[1m▶ Removing bin/ and obj/ folders...(B[m
+
+[33m[1m▶ dotnet clean(B[m
+----- dotnet clean -----
+$ dotnet clean
+Build started 9/13/2025 10:34:45 AM.
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" on node 1 (Clean target(s)).
+     1>ValidateSolutionConfiguration:
+         Building solution configuration "Debug|Any CPU".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (2) on node 1 (Clean target(s)).
+     2>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (5) on node 2 (Clean target(s)).
+     5>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (6) on node 7 (Clean target(s)).
+     6>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3) on node 4 (Clean target(s)).
+     3>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3:2) on node 1 (Clean target(s)).
+     3>ProcessFrameworkReferences:
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-arm'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-arm64'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-x86'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-x64'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+     6>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (Clean target(s)).
+     5>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (Clean target(s)).
+     3>_CleanMonoAndroidIntermediateDir:
+         Deleting file "obj/Debug/net8.0-android/res.flag".
+         Deleting file "obj/Debug/net8.0-android/R.txt".
+       _CleanAndroidBuildPropertiesCache:
+         Deleting file "obj/Debug/net8.0-android/build.props".
+     3>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     2>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (Clean target(s)).
+     3>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3:3) on node 4 (Clean target(s)).
+     3>CoreClean:
+         Creating directory "obj/Debug/net8.0-ios/iossimulator-arm64/".
+       _CleanAppBundle:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.app/" doesn't exist. Skipping.
+       _CleanBindingResourcePackage:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.resources" doesn't exist. Skipping.
+       _CleanDebugSymbols:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.app.mSYM" doesn't exist. Skipping.
+       _CleanDeviceSpecificOutput:
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/device-builds" doesn't exist. Skipping.
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/device-builds" doesn't exist. Skipping.
+       _CleanIntermediateToolOutput:
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/actool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/assetpacks" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/codesign" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/coremlc" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool-link" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool-manifests" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ipa" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/metal" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/optimized" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/scntool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/TextureAtlas" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/mtouch-cache" doesn't exist. Skipping.
+         Removing directory "obj/Debug/net8.0-ios/iossimulator-arm64/".
+     3>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     3>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (3:4) on node 8 (Clean target(s)).
+     3>_CleanAppBundle:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.app/" doesn't exist. Skipping.
+       _CleanBindingResourcePackage:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.resources" doesn't exist. Skipping.
+       _CleanDebugSymbols:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.app.mSYM" doesn't exist. Skipping.
+       _CleanDeviceSpecificOutput:
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/device-builds" doesn't exist. Skipping.
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/device-builds" doesn't exist. Skipping.
+       _CleanIntermediateToolOutput:
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/actool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/assetpacks" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/codesign" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/coremlc" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool-link" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool-manifests" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ipa" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/metal" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/optimized" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/scntool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/TextureAtlas" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/mtouch-cache" doesn't exist. Skipping.
+         Removing directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/".
+     3>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     3>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     1>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (Clean target(s)).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.60
+
+[33m[1m▶ dotnet restore(B[m
+----- dotnet restore -----
+$ dotnet restore
+  Determining projects to restore...
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj (in 529 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj (in 527 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj (in 566 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj (in 568 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj (in 574 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj (in 1.62 sec).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj (in 5.38 sec).
+
+[33m[1m▶ dotnet build (warnaserror)(B[m
+----- dotnet build (warnaserror) -----
+$ dotnet build -warnaserror
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  PhysicallyFitPT.Domain -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Domain/bin/Debug/net8.0/PhysicallyFitPT.Domain.dll
+  PhysicallyFitPT.Shared -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Shared/bin/Debug/net8.0/PhysicallyFitPT.Shared.dll
+  PhysicallyFitPT.Infrastructure -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/bin/Debug/net8.0/PhysicallyFitPT.Infrastructure.dll
+  Detected signing identity:
+          
+    Code Signing Key: "" (-)
+    Bundle Id: com.companyname.physicallyfitpt
+    App Id: com.companyname.physicallyfitpt
+  PhysicallyFitPT.Seeder -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/bin/Debug/net8.0/PhysicallyFitPT.Seeder.dll
+  PhysicallyFitPT.Tests -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/bin/Debug/net8.0/PhysicallyFitPT.Tests.dll
+  PhysicallyFitPT -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/bin/Debug/net8.0-android/PhysicallyFitPT.dll
+  PhysicallyFitPT.Domain -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Domain/bin/Debug/net8.0/PhysicallyFitPT.Domain.dll
+  PhysicallyFitPT.Shared -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Shared/bin/Debug/net8.0/PhysicallyFitPT.Shared.dll
+  PhysicallyFitPT.Infrastructure -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/bin/Debug/net8.0/PhysicallyFitPT.Infrastructure.dll
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001: Found a native function (sqlite3_config) with varargs in e_sqlite3. Calling such functions is not supported, and will fail at runtime. Managed DllImports:  [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_none(System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_int(System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_int_arm64cc(System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_log(System.Int32, System.IntPtr, SQLitePCL.hook_handle) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_log_arm64cc(System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, SQLitePCL.hook_handle) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001: Found a native function (sqlite3_db_config) with varargs in e_sqlite3. Calling such functions is not supported, and will fail at runtime. Managed DllImports:  [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_charptr(SQLitePCL.sqlite3, System.Int32, System.Byte*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_charptr_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Byte*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_int_outint(SQLitePCL.sqlite3, System.Int32, System.Int32, System.Int32*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_int_outint_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32, System.Int32*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_intptr_int_int(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_intptr_int_int_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+  Compiling native assets with emcc with -O0. This may take a while ...
+  [2/3] pinvoke.c -> pinvoke.o [took 0.653s]
+  [1/3] corebindings.c -> corebindings.o [took 0.653s]
+  [3/3] driver.c -> driver.o [took 0.701s]
+  Linking for initial memory $(EmccInitialHeapSize)=34013184 bytes. Set this msbuild property to change the value.
+  Linking with emcc with -O0. This may take a while ...
+   "/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Node.osx-arm64/8.0.20/tools/bin/node" /usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Sdk.osx-arm64/8.0.20/tools/emscripten/src/compiler.js /var/folders/gd/g8dz24hs0kgbbjz1n56rvxm40000gn/T/tmposd6g5gc.json --symbols-only
+  PhysicallyFitPT -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.dll
+   "/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Sdk.osx-arm64/8.0.20/tools/bin/wasm-ld" -o /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/dotnet.native.wasm /Users/calvinccarter/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.8/buildTransitive/net8.0/../../runtimes/browser-wasm/nativeassets/net8.0/e_sqlite3.a /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/pinvoke.o /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/driver.o /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/corebindings.o /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libicudata.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libicui18n.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libicuuc.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-component-debugger-static.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-component-diagnostics_tracing-stub-static.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-component-hot_reload-static.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-component-marshal-ilgen-static.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-ee-interp.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-icall-table.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-profiler-aot.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-profiler-browser.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-wasm-eh-wasm.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmono-wasm-simd.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libmonosgen-2.0.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libSystem.Globalization.Native.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libSystem.IO.Compression.Native.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/libSystem.Native.a /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.20/runtimes/browser-wasm/native/wasm-bundled-timezones.a -L/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Cache.osx-arm64/8.0.20/tools/emscripten/cache/sysroot/lib/wasm32-emscripten -lGL -lal -lhtml5 -lstubs-debug -lnoexit -lc-debug -ldlmalloc -lcompiler_rt-wasm-sjlj -lc++-except -lc++abi-debug-except -lunwind-except -lsockets -mllvm -combiner-global-alias-analysis=false -mllvm -wasm-enable-sjlj -mllvm -disable-lsr -mllvm -wasm-enable-eh -mllvm -exception-model=wasm --allow-undefined-file=/var/folders/gd/g8dz24hs0kgbbjz1n56rvxm40000gn/T/tmpzsomct7j.undefined --export-if-defined=free --export-if-defined=htons --export-if-defined=malloc --export-if-defined=memalign --export-if-defined=memset --export-if-defined=ntohs --export-if-defined=stackAlloc --export-if-defined=stackRestore --export-if-defined=stackSave --export-if-defined=fmod --export-if-defined=atan2 --export-if-defined=fma --export-if-defined=pow --export-if-defined=fmodf --export-if-defined=atan2f --export-if-defined=fmaf --export-if-defined=powf --export-if-defined=asin --export-if-defined=asinh --export-if-defined=acos --export-if-defined=acosh --export-if-defined=atan --export-if-defined=atanh --export-if-defined=cbrt --export-if-defined=cos --export-if-defined=cosh --export-if-defined=exp --export-if-defined=log --export-if-defined=log2 --export-if-defined=log10 --export-if-defined=sin --export-if-defined=sinh --export-if-defined=tan --export-if-defined=tanh --export-if-defined=asinf --export-if-defined=asinhf --export-if-defined=acosf --export-if-defined=acoshf --export-if-defined=atanf --export-if-defined=atanhf --export-if-defined=cbrtf --export-if-defined=cosf --export-if-defined=coshf --export-if-defined=expf --export-if-defined=logf --export-if-defined=log2f --export-if-defined=log10f --export-if-defined=sinf --export-if-defined=sinhf --export-if-defined=tanf --export-if-defined=tanhf --export-if-defined=__get_exception_message --export-if-defined=__cpp_exception --export-if-defined=__cxa_increment_exception_refcount --export-if-defined=__cxa_decrement_exception_refcount --export-if-defined=__thrown_object_from_unwind_exception --export-if-defined=__start_em_asm --export-if-defined=__stop_em_asm --export-if-defined=__start_em_lib_deps --export-if-defined=__stop_em_lib_deps --export-if-defined=__start_em_js --export-if-defined=__stop_em_js --export-if-defined=fflush --export=emscripten_stack_get_end --export=emscripten_stack_get_free --export=emscripten_stack_get_base --export=emscripten_stack_get_current --export=emscripten_stack_init --export=stackSave --export=stackRestore --export=stackAlloc --export=__errno_location --export=malloc --export=free --export=__trap --export=__wasm_call_ctors --export=__dl_seterr --export=emscripten_builtin_memalign --export=htonl --export=htons --export=ntohs --export-table --growable-table -z stack-size=5242880 --initial-memory=34013184 --no-entry --max-memory=2147483648 --stack-first
+  Detected signing identity:
+          
+    Bundle Id: com.companyname.physicallyfitpt
+    App Id: com.companyname.physicallyfitpt
+  Optimizing assemblies for size may change the behavior of the app. Be sure to test after publishing. See: https://aka.ms/dotnet-illink
+  Optimizing assemblies for size. This process might take a while.
+   "/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Node.osx-arm64/8.0.20/tools/bin/node" /usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Sdk.osx-arm64/8.0.20/tools/emscripten/src/compiler.js /var/folders/gd/g8dz24hs0kgbbjz1n56rvxm40000gn/T/tmpgy_ejvfh.json
+   "/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.Emscripten.3.1.34.Sdk.osx-arm64/8.0.20/tools/bin/llvm-objcopy" /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/dotnet.native.wasm /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/obj/Debug/net8.0/wasm/for-build/dotnet.native.wasm --remove-section=producers
+  PhysicallyFitPT.Web -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/bin/Debug/net8.0/PhysicallyFitPT.Web.dll
+  PhysicallyFitPT.Web (Blazor output) -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/bin/Debug/net8.0/wwwroot
+  PhysicallyFitPT -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.dll
+  Optimizing assemblies for size may change the behavior of the app. Be sure to test after publishing. See: https://aka.ms/dotnet-illink
+  Optimizing assemblies for size. This process might take a while.
+
+Build FAILED.
+
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001: Found a native function (sqlite3_config) with varargs in e_sqlite3. Calling such functions is not supported, and will fail at runtime. Managed DllImports:  [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_none(System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_int(System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_int_arm64cc(System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_log(System.Int32, System.IntPtr, SQLitePCL.hook_handle) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_config_log_arm64cc(System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, SQLitePCL.hook_handle) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001: Found a native function (sqlite3_db_config) with varargs in e_sqlite3. Calling such functions is not supported, and will fail at runtime. Managed DllImports:  [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_charptr(SQLitePCL.sqlite3, System.Int32, System.Byte*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_charptr_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Byte*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_int_outint(SQLitePCL.sqlite3, System.Int32, System.Int32, System.Int32*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_int_outint_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32, System.Int32*) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_intptr_int_int(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.NET.Runtime.WebAssembly.Sdk/8.0.20/Sdk/WasmApp.Native.targets(338,5): error WASM0001:     System.Int32 sqlite3_db_config_intptr_int_int_arm64cc(SQLitePCL.sqlite3, System.Int32, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.IntPtr, System.Int32, System.Int32) (in [SQLitePCLRaw.provider.e_sqlite3] SQLitePCL.SQLite3Provider_e_sqlite3+NativeMethods) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+    0 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:40.24

@@ -36,7 +36,7 @@ This project enforces strict code formatting and treats all warnings as errors. 
 
 2. **Make Small, Focused Changes**: Keep PRs small and focused on a single concern
 
-3. **Test Locally**: 
+3. **Test Locally**:
    - Run `./scripts/format.sh` to ensure formatting and build pass
    - Run tests with `dotnet test`
    - Test on relevant platforms (Web, Android, iOS)

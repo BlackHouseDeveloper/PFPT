@@ -1,13 +1,22 @@
-namespace PhysicallyFitPT;
 
-class Program : MauiApplication
+
+namespace PhysicallyFitPT.Platforms.Tizen
 {
-    /// <inheritdoc/>
-    protected override static MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    using Microsoft.Maui;
+    using Microsoft.Maui.Hosting;
 
-    static void Main(string[] args)
+    /// <summary>
+    /// The main application class for the Tizen platform.
+    /// </summary>
+    public class Program : MauiApplication
     {
-        var app = new Program();
-        app.Run(args);
+        /// <inheritdoc/>
+        protected override static MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+
+        static void Main(string[] args)
+        {
+            var app = new Program();
+            app.Run(args);
+        }
     }
 }

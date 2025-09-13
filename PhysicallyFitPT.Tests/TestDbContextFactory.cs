@@ -4,6 +4,7 @@
 
 namespace PhysicallyFitPT.Tests
 {
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using PhysicallyFitPT.Infrastructure.Data;
 

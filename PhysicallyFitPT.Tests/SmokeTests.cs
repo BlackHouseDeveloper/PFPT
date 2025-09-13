@@ -5,6 +5,7 @@
 namespace PhysicallyFitPT.Tests
 {
     using FluentAssertions;
+    using Xunit;
 
     /// <summary>
     /// Basic smoke tests to verify test infrastructure is working correctly.
