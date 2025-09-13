@@ -10,38 +10,15 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
       PrivateAssets="all" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.Extensions.Http" />
   </ItemGroup>
-
-  <ItemGroup>
-  <!-- Use WebAssembly-compatible SQLite provider -->
-  <PackageReference Include="Uno.SQLitePCLRaw.provider.wasm" />
-</ItemGroup>
 
 
   <ItemGroup>
     <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
-    <ProjectReference
-      Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
   </ItemGroup>
 
-  <!-- Fix: prevent WASM-native linking warnings for transitive SQLite native archive -->
-  <PropertyGroup>
-    <WasmBuildNative>false</WasmBuildNative>
-    <RunAOTCompilation>false</RunAOTCompilation>
-  </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Remove any stray native archive reference pulled in by transitive packages -->
-    <NativeFileReference Remove="**/e_sqlite3.a" />
-  </ItemGroup>
-
-  <!-- Additionally, make sure native assets from SQLitePCLRaw aren't pulled into this Server app -->
-  <ItemGroup>
-    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" ExcludeAssets="native" />
-    <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" ExcludeAssets="native" />
-  </ItemGroup>
 
 </Project>

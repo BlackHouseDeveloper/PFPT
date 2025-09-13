@@ -1,6 +1,4 @@
 @page "/notes/eval"
-@inject INoteBuilderService NoteBuilderService
-@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
 
 <PageTitle>Eval Note - PhysicallyFitPT</PageTitle>
 
@@ -9,25 +7,26 @@
 <p>Create and manage evaluation notes for patient assessments.</p>
 
 <div class="service-test">
-    <h3>Shared Services Connection Test</h3>
-    <p>NoteBuilderService: <strong>@(NoteBuilderService != null ? "✅ Connected" : "❌ Failed")</strong></p>
-    <p>DbContextFactory: <strong>@(DbContextFactory != null ? "✅ Connected" : "❌ Failed")</strong></p>
-    <p>Database Provider: <strong>In-Memory Database for Web</strong></p>
+    <h3>API Client Connection</h3>
+    <p>Data Source: <strong>✅ HTTP API (DB-stateless)</strong></p>
+    <p>Database: <strong>None (API-only)</strong></p>
+    <p>Storage: <strong>Remote API + Local Cache (Browser)</strong></p>
 </div>
 
 <div class="architecture-info">
-    <h3>Clean Architecture Benefits</h3>
+    <h3>DB-Stateless Web Benefits</h3>
     <ul>
-        <li>✅ Shared domain models and business logic</li>
-        <li>✅ Reused service interfaces and implementations</li>
-        <li>✅ Consistent data access patterns</li>
-        <li>✅ Platform-agnostic core functionality</li>
+        <li>✅ No Entity Framework dependencies</li>
+        <li>✅ Blazor WASM compatible</li>
+        <li>✅ API-based data access</li>
+        <li>✅ Lightweight web deployment</li>
+        <li>✅ Platform-agnostic client</li>
     </ul>
 </div>
 
 <div class="navigation-test">
     <h3>Navigation Test</h3>
-    <p>Test shared navigation: <a href="/patients">Go to Patients</a> | <a href="/">Back to Dashboard</a></p>
+    <p>Test API navigation: <a href="/patients">Go to Patients</a> | <a href="/">Back to Dashboard</a></p>
 </div>
 
 <style>
