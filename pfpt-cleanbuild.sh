@@ -70,7 +70,14 @@ extract_test_summary () {
   fi
 }
 
-# ---------- Clean bin/obj ----------
+
+# ---------- Hardened pre-clean ----------
+echo -e "${YELLOW}${BOLD}▶ Shutting down build servers...${RESET}" | tee -a "$logfile"
+dotnet build-server shutdown >>"$logfile" 2>&1
+
+echo -e "${YELLOW}${BOLD}▶ Removing Android lp/ intermediates (if present)...${RESET}" | tee -a "$logfile"
+rm -rf "PhysicallyFitPT/obj/Debug/net8.0-android/lp" 2>>"$logfile"
+
 echo -e "${YELLOW}${BOLD}▶ Removing bin/ and obj/ folders...${RESET}" | tee -a "$logfile"
 find . -type d \( -name bin -o -name obj \) -exec rm -rf {} + 2>>"$logfile"
 echo -e "${GREEN}✔ bin/obj removed${RESET}"
