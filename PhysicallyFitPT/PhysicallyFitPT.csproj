@@ -117,6 +117,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
     <!-- your extras are fine -->
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
   </ItemGroup>
 

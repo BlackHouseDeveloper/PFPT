@@ -9,23 +9,23 @@ namespace PhysicallyFitPT.Domain;
 /// </summary>
 public enum Side
 {
-  /// <summary>
-  /// Not applicable or not specified.
-  /// </summary>
-  NA = 0,
+    /// <summary>
+    /// Not applicable or not specified.
+    /// </summary>
+    NA = 0,
 
-  /// <summary>
-  /// Left side.
-  /// </summary>
-  Left = 1,
+    /// <summary>
+    /// Left side.
+    /// </summary>
+    Left = 1,
 
-  /// <summary>
-  /// Right side.
-  /// </summary>
-  Right = 2,
+    /// <summary>
+    /// Right side.
+    /// </summary>
+    Right = 2,
 
-  /// <summary>
-  /// Both sides (bilateral).
-  /// </summary>
-  Bilateral = 3,
+    /// <summary>
+    /// Both sides (bilateral).
+    /// </summary>
+    Bilateral = 3,
 }

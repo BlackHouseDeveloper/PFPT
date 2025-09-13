@@ -1,0 +1,123 @@
+@page "/diagnostics"
+@inject IDataStore DataStore
+@using PhysicallyFitPT.Infrastructure.Services.Interfaces
+
+<PageTitle>Diagnostics</PageTitle>
+
+<h1>System Diagnostics</h1>
+
+<div class="alert alert-info">
+    <h4>Storage Backend</h4>
+    <p><strong>Active Storage:</strong> @DataStore.StorageBackend</p>
+    <p><small>This page shows which data storage backend is currently active. Browser environments use in-memory storage, while mobile platforms use SQLite.</small></p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Platform Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Framework:</strong></td>
+                        <td>.NET @Environment.Version</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Environment:</strong></td>
+                        <td>@Environment.MachineName</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Is Browser:</strong></td>
+                        <td>@OperatingSystem.IsBrowser()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Platform:</strong></td>
+                        <td>@GetPlatformInfo()</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Data Storage Status</h5>
+            </div>
+            <div class="card-body">
+                @if (initializationStatus != null)
+                {
+                    <div class="alert @(initializationStatus.Success ? "alert-success" : "alert-danger")">
+                        <strong>Initialization:</strong> @(initializationStatus.Success ? "✓ Success" : "✗ Failed")
+                        @if (!string.IsNullOrEmpty(initializationStatus.Message))
+                        {
+                            <br><small>@initializationStatus.Message</small>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <strong>Status:</strong> Not tested yet
+                        <br><button class="btn btn-sm btn-primary mt-2" @onclick="TestDataStore">Test Data Store</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private class InitializationStatus
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+
+    private InitializationStatus? initializationStatus;
+
+    private async Task TestDataStore()
+    {
+        try
+        {
+            await DataStore.InitializeAsync();
+            
+            // Try a simple operation
+            var patients = await DataStore.GetPatientsAsync();
+            
+            initializationStatus = new InitializationStatus 
+            { 
+                Success = true, 
+                Message = $"Successfully initialized and found {patients.Count()} patients." 
+            };
+        }
+        catch (Exception ex)
+        {
+            initializationStatus = new InitializationStatus 
+            { 
+                Success = false, 
+                Message = ex.Message 
+            };
+        }
+    }
+
+    private static string GetPlatformInfo()
+    {
+        if (OperatingSystem.IsBrowser())
+            return "WebAssembly (Browser)";
+        if (OperatingSystem.IsAndroid())
+            return "Android";
+        if (OperatingSystem.IsIOS())
+            return "iOS";
+        if (OperatingSystem.IsMacOS())
+            return "macOS";
+        if (OperatingSystem.IsWindows())
+            return "Windows";
+        if (OperatingSystem.IsLinux())
+            return "Linux";
+        
+        return "Unknown";
+    }
+}

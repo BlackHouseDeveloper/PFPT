@@ -2,20 +2,19 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT;
-
-using Microsoft.Maui.Controls;
-
-/// <summary>
-/// Represents the main page of the application.
-/// </summary>
-public partial class MainPage : ContentPage
+namespace PhysicallyFitPT
 {
-  /// <summary>
-  /// Initializes a new instance of the <see cref="MainPage"/> class.
-  /// </summary>
-  public MainPage()
-  {
-    this.InitializeComponent();
-  }
+    /// <summary>
+    /// Represents the main page of the application.
+    /// </summary>
+    public partial class MainPage : ContentPage
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// </summary>
+        public MainPage()
+        {
+            this.InitializeComponent();
+        }
+    }
 }

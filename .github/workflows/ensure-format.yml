@@ -1,0 +1,61 @@
+name: Ensure format
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-format:
+    name: Verify formatting and analyzers
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install WebAssembly Workloads
+        run: |
+          dotnet workload install wasm-tools
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore Core Projects
+        run: |
+          dotnet restore PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj
+          dotnet restore PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj
+          dotnet restore PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj
+          dotnet restore PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj
+          dotnet restore PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj
+
+      - name: Verify formatting (no changes allowed)
+        run: |
+          dotnet format PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --no-restore --verify-no-changes
+          dotnet format PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --no-restore --verify-no-changes
+          dotnet format PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --no-restore --verify-no-changes
+          dotnet format PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --no-restore --verify-no-changes
+          dotnet format PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --no-restore --verify-no-changes
+
+      - name: Build (warnings are errors)
+        run: |
+          dotnet build PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --no-restore -warnaserror

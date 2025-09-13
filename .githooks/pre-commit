@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Ensures analyzers are present, formats code, and blocks the commit if changes are needed.
+
+set -euo pipefail
+
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "dotnet not found; skipping format check."
+  exit 0
+fi
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+echo "Pre-commit: restoring to enable analyzers..."
+dotnet restore
+
+echo "Pre-commit: verifying code format with analyzers..."
+if dotnet format --no-restore --verify-no-changes; then
+  echo "Pre-commit: formatting OK."
+  exit 0
+fi
+
+echo "Pre-commit: formatting issues found. Applying fixes..."
+dotnet format --no-restore
+
+echo
+echo "Formatting changes were applied."
+echo "Please review, stage, and re-commit."
+exit 1
