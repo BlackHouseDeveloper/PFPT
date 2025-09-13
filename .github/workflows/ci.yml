@@ -196,7 +196,6 @@ jobs:
           java-version: "17"
 
       - name: Install MAUI workload (once)
-        if: matrix.tfm != 'net8.0'
         run: dotnet workload install maui
 
       - name: Restore solution (lock files)
