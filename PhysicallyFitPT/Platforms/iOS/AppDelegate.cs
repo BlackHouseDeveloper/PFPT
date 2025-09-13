@@ -5,7 +5,6 @@
 namespace PhysicallyFitPT
 {
     using Foundation;
-    using UIKit;
 
     /// <summary>
     /// Represents the iOS application delegate.

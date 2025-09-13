@@ -3,6 +3,7 @@
 // </copyright>
 
 namespace PhysicallyFitPT;
+
 /// <summary>
 /// Represents the entry point for the iOS application.
 /// </summary>
@@ -17,19 +18,5 @@ public static class Program
         // if you want to use a different Application Delegate class from "AppDelegate"
         // you can specify it here.
         UIApplication.Main(args, null, typeof(AppDelegate));
-
-/* Unmerged change from project 'PhysicallyFitPT(net8.0-ios)'
-Before:
-  }
-After:
-    }
-*/
-
-/* Unmerged change from project 'PhysicallyFitPT(net8.0-maccatalyst)'
-Before:
-  }
-After:
-    }
-*/
     }
 }
