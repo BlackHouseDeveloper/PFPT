@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Blocks the push if formatting or build checks fail. Restores first so analyzers are active.
+
+set -euo pipefail
+
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "dotnet not found; skipping pre-push checks."
+  exit 0
+fi
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+echo "Pre-push: restore packages to enable analyzers..."
+dotnet restore
+
+echo "Pre-push: verifying formatting..."
+dotnet format --no-restore --verify-no-changes
+
+echo "Pre-push: building (warnings as errors)..."
+dotnet build --no-restore -warnaserror
+
+echo "Pre-push checks passed."

@@ -14,53 +14,53 @@ using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 /// </summary>
 public static class MauiProgram
 {
-  /// <summary>
-  /// Creates and configures the MAUI application instance.
-  /// </summary>
-  /// <returns>The configured <see cref="MauiApp"/>.</returns>
-  public static MauiApp CreateMauiApp()
-  {
-    var builder = MauiApp.CreateBuilder();
-    builder
-      .UseMauiApp<App>()
-      .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
+    /// <summary>
+    /// Creates and configures the MAUI application instance.
+    /// </summary>
+    /// <returns>The configured <see cref="MauiApp"/>.</returns>
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+          .UseMauiApp<App>()
+          .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
 #if DEBUG
-    builder.Services.AddBlazorWebViewDeveloperTools();
-    builder.Logging.AddDebug();
+        builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Logging.AddDebug();
 #endif
 
-    SQLitePCL.Batteries_V2.Init();
+        SQLitePCL.Batteries_V2.Init();
 
-    var envPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");
-    string dbPath = !string.IsNullOrWhiteSpace(envPath)
-      ? envPath!
-      : Path.Combine(FileSystem.AppDataDirectory, "physicallyfitpt.db");
+        var envPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");
+        string dbPath = !string.IsNullOrWhiteSpace(envPath)
+          ? envPath!
+          : Path.Combine(FileSystem.AppDataDirectory, "physicallyfitpt.db");
 
-    builder.Services.AddDbContextFactory<ApplicationDbContext>(opt => opt.UseSqlite($"Data Source={dbPath}"));
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(opt => opt.UseSqlite($"Data Source={dbPath}"));
 
-    // Register SQLite data store for mobile platforms
-    builder.Services.AddScoped<IDataStore, SqliteDataStore>();
+        // Register SQLite data store for mobile platforms
+        builder.Services.AddScoped<IDataStore, SqliteDataStore>();
 
-    // DI: services
-    builder.Services.AddScoped<IPatientService, PatientService>();
-    builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-    builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
-    builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
-    builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
-    builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
+        // DI: services
+        builder.Services.AddScoped<IPatientService, PatientService>();
+        builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+        builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
+        builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
+        builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
+        builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
 
-    builder.Services.AddHttpClient(); // if you just need the default factory
-    builder.Services.AddHttpClient("integrations");
-    builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddHttpClient(); // if you just need the default factory
+        builder.Services.AddHttpClient("integrations");
+        builder.Services.AddMauiBlazorWebView();
 
-    builder.Logging.AddDebug();
-    builder.Logging.AddFilter("Microsoft.AspNetCore.Components.WebView", LogLevel.Debug);
+        builder.Logging.AddDebug();
+        builder.Logging.AddFilter("Microsoft.AspNetCore.Components.WebView", LogLevel.Debug);
 
 #if DEBUG
-    builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
-    return builder.Build();
-  }
+        return builder.Build();
+    }
 }

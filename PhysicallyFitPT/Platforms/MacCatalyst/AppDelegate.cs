@@ -2,13 +2,20 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using Foundation;
+using UIKit;
+
 namespace PhysicallyFitPT;
+
 /// <summary>
 /// Represents the macOS Catalyst application delegate.
 /// </summary>
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-  /// <inheritdoc/>
-  protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    /// <summary>
+    /// Creates the MAUI application instance.
+    /// </summary>
+    /// <returns>The configured MAUI application.</returns>
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

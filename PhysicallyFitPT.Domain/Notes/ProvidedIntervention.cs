@@ -9,28 +9,28 @@ namespace PhysicallyFitPT.Domain.Notes;
 /// </summary>
 public sealed class ProvidedIntervention
 {
-  /// <summary>
-  /// Gets or sets the unique identifier for this intervention.
-  /// </summary>
-  public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets the unique identifier for this intervention.
+    /// </summary>
+    public Guid Id { get; set; }
 
-  /// <summary>
-  /// Gets or sets the CPT code for billing purposes.
-  /// </summary>
-  public string CptCode { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the CPT code for billing purposes.
+    /// </summary>
+    public string CptCode { get; set; } = string.Empty;
 
-  /// <summary>
-  /// Gets or sets the description of the intervention provided.
-  /// </summary>
-  public string? Description { get; set; }
+    /// <summary>
+    /// Gets or sets the description of the intervention provided.
+    /// </summary>
+    public string? Description { get; set; }
 
-  /// <summary>
-  /// Gets or sets the number of units provided.
-  /// </summary>
-  public int Units { get; set; }
+    /// <summary>
+    /// Gets or sets the number of units provided.
+    /// </summary>
+    public int Units { get; set; }
 
-  /// <summary>
-  /// Gets or sets the duration of the intervention in minutes.
-  /// </summary>
-  public int? Minutes { get; set; }
+    /// <summary>
+    /// Gets or sets the duration of the intervention in minutes.
+    /// </summary>
+    public int? Minutes { get; set; }
 }

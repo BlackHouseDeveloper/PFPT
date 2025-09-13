@@ -13,31 +13,31 @@ using Microsoft.EntityFrameworkCore.Design;
 /// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
-  /// <inheritdoc/>
-  public ApplicationDbContext CreateDbContext(string[] args)
-  {
-    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-        .UseSqlite($"Data Source={ResolveDbPath()}")
-        .Options;
-    return new ApplicationDbContext(options);
-  }
-
-  private static string ResolveDbPath()
-  {
-    var root = FindRepoRoot() ?? Directory.GetCurrentDirectory();
-    return Path.Combine(root, "pfpt.design.sqlite");
-  }
-
-  private static string? FindRepoRoot()
-  {
-    var d = new DirectoryInfo(Directory.GetCurrentDirectory());
-    while (d != null &&
-           !File.Exists(Path.Combine(d.FullName, ".gitignore")) &&
-           !File.Exists(Path.Combine(d.FullName, ".editorconfig")))
+    /// <inheritdoc/>
+    public ApplicationDbContext CreateDbContext(string[] args)
     {
-      d = d.Parent;
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite($"Data Source={ResolveDbPath()}")
+            .Options;
+        return new ApplicationDbContext(options);
     }
 
-    return d?.FullName;
-  }
+    private static string ResolveDbPath()
+    {
+        var root = FindRepoRoot() ?? Directory.GetCurrentDirectory();
+        return Path.Combine(root, "pfpt.design.sqlite");
+    }
+
+    private static string? FindRepoRoot()
+    {
+        var d = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (d != null &&
+               !File.Exists(Path.Combine(d.FullName, ".gitignore")) &&
+               !File.Exists(Path.Combine(d.FullName, ".editorconfig")))
+        {
+            d = d.Parent;
+        }
+
+        return d?.FullName;
+    }
 }

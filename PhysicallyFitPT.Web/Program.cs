@@ -2,9 +2,6 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -39,15 +36,15 @@ var app = builder.Build();
 // Initialize data store
 try
 {
-  using var scope = app.Services.CreateScope();
-  var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
-  await dataStore.InitializeAsync();
+    using var scope = app.Services.CreateScope();
+    var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
+    await dataStore.InitializeAsync();
 }
 catch (Exception ex)
 {
-  Console.WriteLine($"Failed to initialize data store: {ex.Message}");
+    Console.WriteLine($"Failed to initialize data store: {ex.Message}");
 
-  // Continue anyway - the app should still load but may have limited functionality
+    // Continue anyway - the app should still load but may have limited functionality
 }
 
 await app.RunAsync();

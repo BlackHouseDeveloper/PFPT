@@ -9,13 +9,13 @@ namespace PhysicallyFitPT.Domain;
 /// </summary>
 public class Icd10Code : Entity
 {
-  /// <summary>
-  /// Gets or sets the ICD-10 diagnostic code value.
-  /// </summary>
-  public string Code { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the ICD-10 diagnostic code value.
+    /// </summary>
+    public string Code { get; set; } = null!;
 
-  /// <summary>
-  /// Gets or sets the description of the diagnosis or condition.
-  /// </summary>
-  public string Description { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the description of the diagnosis or condition.
+    /// </summary>
+    public string Description { get; set; } = null!;
 }

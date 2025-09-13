@@ -21,44 +21,44 @@ using PhysicallyFitPT.Shared;
 /// </summary>
 public class PatientService : BaseService, IPatientService
 {
-  private readonly IDbContextFactory<ApplicationDbContext> dbFactory;
+    private readonly IDbContextFactory<ApplicationDbContext> dbFactory;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="PatientService"/> class.
-  /// </summary>
-  /// <param name="dbFactory">Database context factory for data access.</param>
-  /// <param name="logger">Logger instance for logging operations.</param>
-  public PatientService(IDbContextFactory<ApplicationDbContext> dbFactory, ILogger<PatientService> logger)
-      : base(logger)
-  {
-    this.dbFactory = dbFactory;
-  }
-
-  /// <inheritdoc/>
-  public async Task<IEnumerable<PatientDto>> SearchAsync(string query, int take = 50, CancellationToken cancellationToken = default)
-  {
-    // Validate inputs
-    if (take <= 0 || take > 1000)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PatientService"/> class.
+    /// </summary>
+    /// <param name="dbFactory">Database context factory for data access.</param>
+    /// <param name="logger">Logger instance for logging operations.</param>
+    public PatientService(IDbContextFactory<ApplicationDbContext> dbFactory, ILogger<PatientService> logger)
+        : base(logger)
     {
-      throw new ArgumentException("Take parameter must be between 1 and 1000", nameof(take));
+        this.dbFactory = dbFactory;
     }
 
-    string q = (query ?? string.Empty).Trim().ToLower();
-
-    // Prevent SQL injection by validating query length
-    if (q.Length > 100)
+    /// <inheritdoc/>
+    public async Task<IEnumerable<PatientDto>> SearchAsync(string query, int take = 50, CancellationToken cancellationToken = default)
     {
-      throw new ArgumentException("Search query too long", nameof(query));
+        // Validate inputs
+        if (take <= 0 || take > 1000)
+        {
+            throw new ArgumentException("Take parameter must be between 1 and 1000", nameof(take));
+        }
+
+        string q = (query ?? string.Empty).Trim().ToLower();
+
+        // Prevent SQL injection by validating query length
+        if (q.Length > 100)
+        {
+            throw new ArgumentException("Search query too long", nameof(query));
+        }
+
+        using var db = await this.dbFactory.CreateDbContextAsync(cancellationToken);
+        string like = $"%{q}%";
+        var patients = await db.Patients.AsNoTracking()
+            .Where(p => EF.Functions.Like((p.FirstName + " " + p.LastName).ToLower(), like))
+            .OrderBy(p => p.LastName).ThenBy(p => p.FirstName)
+            .Take(take).
+            ToListAsync(cancellationToken);
+
+        return patients.Select(p => p.ToDto()).ToList();
     }
-
-    using var db = await this.dbFactory.CreateDbContextAsync(cancellationToken);
-    string like = $"%{q}%";
-    var patients = await db.Patients.AsNoTracking()
-        .Where(p => EF.Functions.Like((p.FirstName + " " + p.LastName).ToLower(), like))
-        .OrderBy(p => p.LastName).ThenBy(p => p.FirstName)
-        .Take(take).
-        ToListAsync(cancellationToken);
-
-    return patients.Select(p => p.ToDto()).ToList();
-  }
 }

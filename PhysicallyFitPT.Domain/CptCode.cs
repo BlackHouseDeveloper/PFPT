@@ -9,13 +9,13 @@ namespace PhysicallyFitPT.Domain;
 /// </summary>
 public class CptCode : Entity
 {
-  /// <summary>
-  /// Gets or sets the CPT code value.
-  /// </summary>
-  public string Code { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the CPT code value.
+    /// </summary>
+    public string Code { get; set; } = null!;
 
-  /// <summary>
-  /// Gets or sets the description of the procedure or service.
-  /// </summary>
-  public string Description { get; set; } = null!;
+    /// <summary>
+    /// Gets or sets the description of the procedure or service.
+    /// </summary>
+    public string Description { get; set; } = null!;
 }

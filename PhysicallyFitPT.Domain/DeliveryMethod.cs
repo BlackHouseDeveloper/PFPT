@@ -9,13 +9,13 @@ namespace PhysicallyFitPT.Domain;
 /// </summary>
 public enum DeliveryMethod
 {
-  /// <summary>
-  /// Short Message Service (SMS) text message.
-  /// </summary>
-  SMS = 0,
+    /// <summary>
+    /// Short Message Service (SMS) text message.
+    /// </summary>
+    SMS = 0,
 
-  /// <summary>
-  /// Electronic mail (email) message.
-  /// </summary>
-  Email = 1,
+    /// <summary>
+    /// Electronic mail (email) message.
+    /// </summary>
+    Email = 1,
 }
