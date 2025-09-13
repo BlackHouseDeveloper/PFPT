@@ -2,34 +2,37 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Infrastructure.Data;
-using PhysicallyFitPT.Infrastructure.Services;
-using PhysicallyFitPT.Infrastructure.Services.Interfaces;
-
-namespace PhysicallyFitPT.Tests;
-
-/// <summary>
-/// Tests for the PatientService class functionality.
-/// </summary>
-public class PatientServiceTests
+namespace PhysicallyFitPT.Tests
 {
+    using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging.Abstractions;
+    using PhysicallyFitPT.Infrastructure.Data;
+    using PhysicallyFitPT.Infrastructure.Services;
+    using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+
     /// <summary>
-    /// Tests that searching for patients returns empty results when the database is empty.
+    /// Tests for the PatientService class functionality.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    [Fact]
-    public async Task SearchAsync_Returns_Empty_On_Empty_DB()
+    public class PatientServiceTests
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: System.Guid.NewGuid().ToString())
-            .Options;
+        /// <summary>
+        /// Tests that searching for patients returns empty results when the database is empty.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task SearchAsync_Returns_Empty_On_Empty_DB()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: System.Guid.NewGuid().ToString())
+                .Options;
 
-        var factory = new TestDbContextFactory(options);
-        var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PatientService>();
-        IPatientService svc = new PatientService(factory, mockLogger);
+            var factory = new TestDbContextFactory(options);
+            var mockLogger = new NullLogger<PatientService>();
+            IPatientService svc = new PatientService(factory, mockLogger);
 
-        var results = await svc.SearchAsync("john", 10);
-        results.Should().BeEmpty();
+            var results = await svc.SearchAsync("john", 10);
+            results.Should().BeEmpty();
+        }
     }
 }

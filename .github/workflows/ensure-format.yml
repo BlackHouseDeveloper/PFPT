@@ -24,6 +24,10 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Install MAUI Workloads
+        run: |
+          dotnet workload install maui maui-android maui-ios maui-maccatalyst maui-windows wasm-tools
+
       - name: Cache NuGet
         uses: actions/cache@v4
         with:
@@ -39,4 +43,9 @@ jobs:
         run: dotnet format --no-restore --verify-no-changes
 
       - name: Build (warnings are errors)
-        run: dotnet build --no-restore -warnaserror
+        run: |
+          dotnet build PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --no-restore -warnaserror
+          dotnet build PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --no-restore -warnaserror

@@ -2,43 +2,44 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Infrastructure.Data;
-
-namespace PhysicallyFitPT.Tests;
-
-/// <summary>
-/// Test helper to create DbContext factory for testing.
-/// </summary>
-public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
+namespace PhysicallyFitPT.Tests
 {
-    private readonly DbContextOptions<ApplicationDbContext> options;
+    using Microsoft.EntityFrameworkCore;
+    using PhysicallyFitPT.Infrastructure.Data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestDbContextFactory"/> class.
+    /// Test helper to create DbContext factory for testing.
     /// </summary>
-    /// <param name="options">Database context options to use for creating contexts.</param>
-    public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options)
+    public class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
     {
-        this.options = options;
-    }
+        private readonly DbContextOptions<ApplicationDbContext> options;
 
-    /// <inheritdoc/>
-    public ApplicationDbContext CreateDbContext()
-    {
-        var context = new ApplicationDbContext(this.options);
-        context.Database.EnsureCreated();
-        return context;
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestDbContextFactory"/> class.
+        /// </summary>
+        /// <param name="options">Database context options to use for creating contexts.</param>
+        public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options)
+        {
+            this.options = options;
+        }
 
-    /// <summary>
-    /// Creates a new database context asynchronously with schema initialization.
-    /// </summary>
-    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    public async Task<ApplicationDbContext> CreateDbContextAsync()
-    {
-        var context = new ApplicationDbContext(this.options);
-        await context.Database.EnsureCreatedAsync();
-        return context;
+        /// <inheritdoc/>
+        public ApplicationDbContext CreateDbContext()
+        {
+            var context = new ApplicationDbContext(this.options);
+            context.Database.EnsureCreated();
+            return context;
+        }
+
+        /// <summary>
+        /// Creates a new database context asynchronously with schema initialization.
+        /// </summary>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public async Task<ApplicationDbContext> CreateDbContextAsync()
+        {
+            var context = new ApplicationDbContext(this.options);
+            await context.Database.EnsureCreatedAsync();
+            return context;
+        }
     }
 }
