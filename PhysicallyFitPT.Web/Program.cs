@@ -4,33 +4,17 @@
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Infrastructure.Data;
-using PhysicallyFitPT.Infrastructure.Services;
-using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Web;
-using SQLitePCL;
 
-Batteries_V2.Init();
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Register DbContextFactory with in-memory database for web
-builder.Services.AddDbContextFactory<ApplicationDbContext>(opt =>
-    opt.UseInMemoryDatabase("PhysicallyFitPT_Web"));
-
-// Register all services - mirror MAUI app setup
-builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
-builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
-builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
-builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
-
-// HTTP client services
+// HTTP client services for API communication
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddHttpClient("integrations");
 
+// TODO: Add typed HTTP client services for API endpoints here
+// Example: builder.Services.AddHttpClient<IPatientApiClient, PatientApiClient>();
 await builder.Build().RunAsync();
