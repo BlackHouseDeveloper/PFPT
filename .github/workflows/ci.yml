@@ -148,29 +148,61 @@ jobs:
             const content = lines.join("\n") + "\n";
 
             const path = "docs/CHANGELOG.md";
-            let shaExisting;
-            try {
-              const res = await github.rest.repos.getContent({ 
-                owner, repo, path, 
-                ref: context.payload.pull_request.head.ref 
-              });
-              if (!Array.isArray(res.data)) shaExisting = res.data.sha;
-            } catch {}
             
-            // Write to PR head branch with [skip ci]
-            const updateParams = {
-              owner, repo, path,
-              message: "docs: update CHANGELOG.md [skip ci]",
-              content: Buffer.from(content, "utf8").toString("base64"),
-              branch: context.payload.pull_request.head.ref
-            };
+            // Retry logic for file updates with exponential backoff
+            let maxRetries = 3;
+            let retryDelay = 1000; // Start with 1 second
             
-            // Only include sha if file exists
-            if (shaExisting) {
-              updateParams.sha = shaExisting;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+              try {
+                // Get the latest file SHA
+                let shaExisting;
+                try {
+                  const res = await github.rest.repos.getContent({ 
+                    owner, repo, path, 
+                    ref: context.payload.pull_request.head.ref 
+                  });
+                  if (!Array.isArray(res.data)) shaExisting = res.data.sha;
+                } catch {}
+                
+                // Write to PR head branch with [skip ci]
+                const updateParams = {
+                  owner, repo, path,
+                  message: "docs: update CHANGELOG.md [skip ci]",
+                  content: Buffer.from(content, "utf8").toString("base64"),
+                  branch: context.payload.pull_request.head.ref
+                };
+                
+                // Only include sha if file exists
+                if (shaExisting) {
+                  updateParams.sha = shaExisting;
+                }
+                
+                await github.rest.repos.createOrUpdateFileContents(updateParams);
+                console.log(`Successfully updated CHANGELOG.md on attempt ${attempt}`);
+                break; // Success, exit retry loop
+                
+              } catch (error) {
+                console.log(`Attempt ${attempt} failed: ${error.message}`);
+                
+                if (attempt === maxRetries) {
+                  console.log(`All ${maxRetries} attempts failed. Last error: ${error.message}`);
+                  // Don't throw the error - just log it and continue
+                  // The CI should not fail just because changelog update failed
+                  break;
+                }
+                
+                if (error.status === 409) {
+                  console.log(`SHA conflict detected, retrying in ${retryDelay}ms...`);
+                  await new Promise(resolve => setTimeout(resolve, retryDelay));
+                  retryDelay *= 2; // Exponential backoff
+                } else {
+                  // For other errors, don't retry
+                  console.log(`Non-retryable error: ${error.message}`);
+                  break;
+                }
+              }
             }
-            
-            await github.rest.repos.createOrUpdateFileContents(updateParams);
 
   format-check:
     name: StyleCop Formatting
