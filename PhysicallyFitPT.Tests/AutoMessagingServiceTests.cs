@@ -31,7 +31,7 @@ public class AutoMessagingServiceTests
         .Options;
 
     var factory = new TestDbContextFactory(options);
-    AutoMessagingService svc = new AutoMessagingService(factory);
+    IAutoMessagingService svc = new AutoMessagingService(factory);
 
     var log = await svc.EnqueueCheckInAsync(Guid.NewGuid(), Guid.NewGuid(), VisitType.Eval, QuestionnaireType.Eval, DeliveryMethod.SMS, DateTimeOffset.UtcNow.AddHours(1));
     log.Id.Should().NotBeEmpty();

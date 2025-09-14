@@ -49,7 +49,7 @@ public class RuntimeErrorTests
 
     var factory = new TestDbContextFactory(options);
     var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PatientService>();
-    PatientService svc = new PatientService(factory, mockLogger);
+    IPatientService svc = new PatientService(factory, mockLogger);
 
     // Act & Assert - Should not throw
     var results = await svc.SearchAsync(null!, 10);
@@ -70,7 +70,7 @@ public class RuntimeErrorTests
 
     var factory = new TestDbContextFactory(options);
     var mockLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<PatientService>();
-    PatientService svc = new PatientService(factory, mockLogger);
+    IPatientService svc = new PatientService(factory, mockLogger);
 
     // Act & Assert
     Func<Task> act = async () => await svc.SearchAsync("test", 10);

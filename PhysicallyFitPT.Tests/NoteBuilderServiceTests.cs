@@ -33,7 +33,7 @@ public class NoteBuilderServiceTests
 
     var factory = new TestDbContextFactory(options);
     var mockLogger = new NullLogger<NoteBuilderService>();
-    NoteBuilderService svc = new NoteBuilderService(factory, mockLogger);
+    INoteBuilderService svc = new NoteBuilderService(factory, mockLogger);
 
     await using var db = factory.CreateDbContext();
 
@@ -46,7 +46,7 @@ public class NoteBuilderServiceTests
     await db.SaveChangesAsync();
 
     var noteDto = await svc.CreateEvalNoteAsync(patient.Id, appt.Id);
-    noteDto.VisitType.Should().Be(nameof(VisitType.Eval));
+    noteDto.VisitType.Should().Be(VisitType.Eval.ToString());
 
     var ok = await svc.SignAsync(noteDto.Id, "PT Jane");
     ok.Should().BeTrue();

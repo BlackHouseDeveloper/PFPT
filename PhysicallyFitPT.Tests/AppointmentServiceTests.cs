@@ -33,7 +33,7 @@ public class AppointmentServiceTests
 
     var factory = new TestDbContextFactory(options);
     var mockLogger = new NullLogger<AppointmentService>();
-    AppointmentService svc = new AppointmentService(factory, mockLogger);
+    IAppointmentService svc = new AppointmentService(factory, mockLogger);
 
     await using var db = factory.CreateDbContext();
     var patient = new Patient { FirstName = "A", LastName = "B" };
