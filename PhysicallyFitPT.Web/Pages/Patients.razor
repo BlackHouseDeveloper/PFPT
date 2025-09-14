@@ -1,5 +1,4 @@
 @page "/patients"
-@inject IPatientService PatientService
 
 <PageTitle>Patients - PhysicallyFitPT</PageTitle>
 
@@ -8,13 +7,15 @@
 <p>Patient management for PhysicallyFitPT clinical system.</p>
 
 <div class="service-test">
-    <h3>Service Connection Test</h3>
-    <p>PatientService Injected: <strong>@(PatientService != null ? "✅ Connected" : "❌ Failed")</strong></p>
+    <h3>API Client Connection</h3>
+    <p>Data Source: <strong>✅ HTTP API (DB-stateless)</strong></p>
+    <p>Database: <strong>None (API-only)</strong></p>
 </div>
 
 <div class="info-box">
-    <p><strong>Web App Status:</strong> Successfully connected to shared services from Infrastructure layer.</p>
-    <p>The web application can reuse all existing business logic and data access from the MAUI app.</p>
+    <p><strong>Web App Status:</strong> API-only web application.</p>
+    <p>All data access is via HTTP API calls. No local database or Entity Framework.</p>
+    <p>For implementation details, see: <a href="/docs/BUILD.md">/docs/BUILD.md</a></p>
 </div>
 
 <style>
