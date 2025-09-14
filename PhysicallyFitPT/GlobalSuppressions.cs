@@ -1,3 +1,9 @@
+//-----------------------------------------------------------------------
+// <copyright file="GlobalSuppressions.cs" company="BlackHouseDeveloper">
+//     Copyright (c) BlackHouseDeveloper. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
 // This file is used by Code Analysis to maintain SuppressMessage
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given
