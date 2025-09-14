@@ -186,6 +186,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
+      - name: Install MAUI workload
+        run: dotnet workload restore
+
       - name: Restore solution
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
 
@@ -208,6 +211,9 @@ jobs:
 
       - name: Install Roslynator
         run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Install MAUI workload
+        run: dotnet workload restore
 
       - name: Restore solution
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
@@ -314,6 +320,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
+      - name: Install MAUI workload
+        run: dotnet workload restore
+
       - name: Restore solution
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
 
@@ -368,7 +377,7 @@ jobs:
               });
               mentions = mentionsVar.data.value;
             } catch {
-              mentions = '@BlackHouseDeveloper';
+              mentions = '@BlackHouseDeveloper @copilot';
             }
             
             try {
