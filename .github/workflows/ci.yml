@@ -186,14 +186,23 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Install MAUI workload
-        run: dotnet workload restore
-
-      - name: Restore solution
-        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+      - name: Restore non-mobile projects only
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
       - name: Check code formatting (StyleCop)
-        run: dotnet format --verify-no-changes --verbosity diagnostic
+        run: |
+          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic
 
   analyze:
     name: Roslynator Static Analysis
@@ -212,14 +221,23 @@ jobs:
       - name: Install Roslynator
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Install MAUI workload
-        run: dotnet workload restore
+      - name: Restore non-mobile projects only
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
-      - name: Restore solution
-        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
-
-      - name: Run Roslynator analysis
-        run: roslynator analyze ./PhysicallyFitPT.sln --severity-level info
+      - name: Run Roslynator analysis on non-mobile projects
+        run: |
+          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
 
   build:
     name: Build & Guardrails
@@ -263,6 +281,18 @@ jobs:
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
+
+      - name: Check MAUI project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
+
+      - name: Install Roslynator for MAUI analysis (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Run Roslynator analysis on MAUI project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
 
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
@@ -320,11 +350,14 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Install MAUI workload
-        run: dotnet workload restore
-
-      - name: Restore solution
-        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+      - name: Restore non-mobile projects only
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
       - name: Run unit tests
         run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults

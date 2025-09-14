@@ -1,0 +1,66 @@
+name: Copilot Mention Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  trigger-copilot:
+    name: Process Copilot Mention
+    runs-on: ubuntu-latest
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@copilot')
+    steps:
+      - name: Trigger Copilot via GitHub API
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+            const comment_id = context.payload.comment.id;
+            const comment_body = context.payload.comment.body;
+            
+            // Check if this is a fresh comment mentioning @copilot
+            if (!comment_body.includes('@copilot')) {
+              console.log('Comment does not mention @copilot, skipping');
+              return;
+            }
+            
+            // Get the pull request details
+            const pr = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: issue_number
+            });
+            
+            console.log(`Processing @copilot mention in comment ${comment_id} on PR #${issue_number}`);
+            console.log(`Comment: ${comment_body}`);
+            console.log(`PR head SHA: ${pr.data.head.sha}`);
+            
+            // Add a reaction to acknowledge the mention
+            try {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id,
+                content: 'eyes'
+              });
+            } catch (error) {
+              console.log('Could not add reaction:', error.message);
+            }
+            
+            // Post acknowledgment comment
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body: `👋 @copilot has been notified and will process your request shortly.`
+            });
