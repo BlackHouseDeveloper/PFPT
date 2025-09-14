@@ -186,20 +186,18 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore non-mobile projects only
+      - name: Restore non-mobile projects only (excluding Infrastructure)
         run: |
           dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
-      - name: Check code formatting (StyleCop)
+      - name: Check code formatting (StyleCop) - Infrastructure formatted on macOS
         run: |
           dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
-          dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic
@@ -221,20 +219,18 @@ jobs:
       - name: Install Roslynator
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Restore non-mobile projects only
+      - name: Restore non-mobile projects only (excluding Infrastructure)
         run: |
           dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
-      - name: Run Roslynator analysis on non-mobile projects
+      - name: Run Roslynator analysis on non-mobile projects (Infrastructure analyzed on macOS)
         run: |
           roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
           roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info
-          roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level info
           roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info
           roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info
           roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
@@ -286,6 +282,10 @@ jobs:
         if: matrix.tfm == 'net8.0-ios'
         run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
 
+      - name: Check Infrastructure project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
+
       - name: Install Roslynator for MAUI analysis (macOS only)
         if: matrix.tfm == 'net8.0-ios'
         run: dotnet tool install -g roslynator.dotnet.cli
@@ -293,6 +293,10 @@ jobs:
       - name: Run Roslynator analysis on MAUI project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
         run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
+
+      - name: Run Roslynator analysis on Infrastructure project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
 
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'

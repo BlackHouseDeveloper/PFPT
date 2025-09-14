@@ -56,10 +56,10 @@ public class AppointmentService : BaseService, IAppointmentService
         throw new ArgumentException("End time must be after start time", nameof(end));
       }
 
-      using var db = await this.factory.CreateDbContextAsync();
+      using var db = await this.factory.CreateDbContextAsync(cancellationToken);
 
       // Verify patient exists
-      bool patientExists = await db.Patients.AnyAsync(p => p.Id == patientId);
+      bool patientExists = await db.Patients.AnyAsync(p => p.Id == patientId, cancellationToken);
       if (!patientExists)
       {
         throw new ArgumentException("Patient not found", nameof(patientId));
