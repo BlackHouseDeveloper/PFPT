@@ -148,33 +148,128 @@ jobs:
             const content = lines.join("\n") + "\n";
 
             const path = "docs/CHANGELOG.md";
-            let shaExisting;
-            try {
-              const res = await github.rest.repos.getContent({ 
-                owner, repo, path, 
-                ref: context.payload.pull_request.head.ref 
-              });
-              if (!Array.isArray(res.data)) shaExisting = res.data.sha;
-            } catch {}
             
-            // Write to PR head branch with [skip ci]
-            const updateParams = {
-              owner, repo, path,
-              message: "docs: update CHANGELOG.md [skip ci]",
-              content: Buffer.from(content, "utf8").toString("base64"),
-              branch: context.payload.pull_request.head.ref
-            };
+            // Retry logic for file updates with exponential backoff
+            let maxRetries = 3;
+            let retryDelay = 1000; // Start with 1 second
             
-            // Only include sha if file exists
-            if (shaExisting) {
-              updateParams.sha = shaExisting;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+              try {
+                // Get the latest file SHA
+                let shaExisting;
+                try {
+                  const res = await github.rest.repos.getContent({ 
+                    owner, repo, path, 
+                    ref: context.payload.pull_request.head.ref 
+                  });
+                  if (!Array.isArray(res.data)) shaExisting = res.data.sha;
+                } catch {}
+                
+                // Write to PR head branch with [skip ci]
+                const updateParams = {
+                  owner, repo, path,
+                  message: "docs: update CHANGELOG.md [skip ci]",
+                  content: Buffer.from(content, "utf8").toString("base64"),
+                  branch: context.payload.pull_request.head.ref
+                };
+                
+                // Only include sha if file exists
+                if (shaExisting) {
+                  updateParams.sha = shaExisting;
+                }
+                
+                await github.rest.repos.createOrUpdateFileContents(updateParams);
+                console.log(`Successfully updated CHANGELOG.md on attempt ${attempt}`);
+                break; // Success, exit retry loop
+                
+              } catch (error) {
+                console.log(`Attempt ${attempt} failed: ${error.message}`);
+                
+                if (attempt === maxRetries) {
+                  console.log(`All ${maxRetries} attempts failed. Last error: ${error.message}`);
+                  // Don't throw the error - just log it and continue
+                  // The CI should not fail just because changelog update failed
+                  break;
+                }
+                
+                if (error.status === 409) {
+                  console.log(`SHA conflict detected, retrying in ${retryDelay}ms...`);
+                  await new Promise(resolve => setTimeout(resolve, retryDelay));
+                  retryDelay *= 2; // Exponential backoff
+                } else {
+                  // For other errors, don't retry
+                  console.log(`Non-retryable error: ${error.message}`);
+                  break;
+                }
+              }
             }
-            
-            await github.rest.repos.createOrUpdateFileContents(updateParams);
+
+  format-check:
+    name: StyleCop Formatting
+    needs: changelog-intel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore non-mobile projects only (excluding Infrastructure)
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+
+      - name: Check code formatting (StyleCop) - Infrastructure formatted on macOS
+        run: |
+          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic
+
+  analyze:
+    name: Roslynator Static Analysis
+    needs: format-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Install Roslynator
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Restore non-mobile projects only (excluding Infrastructure)
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+
+      - name: Run Roslynator analysis on non-mobile projects (Infrastructure analyzed on macOS)
+        run: |
+          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
 
   build:
     name: Build & Guardrails
-    needs: changelog-intel
+    needs: analyze
     runs-on: macos-latest
     strategy:
       matrix:
@@ -215,6 +310,26 @@ jobs:
         if: matrix.tfm != 'net8.0'
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
+      - name: Check MAUI project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
+
+      - name: Check Infrastructure project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
+
+      - name: Install Roslynator for MAUI analysis (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Run Roslynator analysis on MAUI project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
+
+      - name: Run Roslynator analysis on Infrastructure project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
+
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
         run: |
@@ -247,10 +362,257 @@ jobs:
           dotnet tool restore || true
           dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
 
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.tfm }}
+          path: |
+            **/*.log
+            **/*.binlog
+          retention-days: 7
+
+  test:
+    name: Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore non-mobile projects only
+        run: |
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+
+      - name: Run unit tests
+        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 7
+
+  notify-failure:
+    name: Notify on Failure
+    if: failure() && github.event_name == 'pull_request'
+    needs: [format-check, analyze, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get failed jobs and notify
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runId = context.runId;
+            
+            // Get workflow run jobs
+            const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
+              owner,
+              repo,
+              run_id: runId,
+            });
+            
+            const failedJobs = jobsResponse.data.jobs.filter(job => 
+              job.conclusion === 'failure' || job.conclusion === 'cancelled'
+            );
+            
+            if (failedJobs.length === 0) return;
+            
+            // Get mentions/reviewers from repository variables
+            let mentions = '';
+            let reviewers = '';
+            
+            try {
+              const mentionsVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'MENTIONS'
+              });
+              mentions = mentionsVar.data.value;
+            } catch {
+              mentions = '@BlackHouseDeveloper @copilot';
+            }
+            
+            try {
+              const reviewersVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'REVIEWERS'
+              });
+              reviewers = reviewersVar.data.value;
+            } catch {
+              reviewers = 'BlackHouseDeveloper';
+            }
+            
+            // Build failure summary with log tails
+            const failureSummary = [];
+            failureSummary.push(`${mentions} - CI checks failed! 🚫`);
+            failureSummary.push('');
+            failureSummary.push('## Failed Jobs:');
+            
+            for (const job of failedJobs) {
+              failureSummary.push(`- **${job.name}**: ${job.conclusion}`);
+              
+              // Get job logs for tail
+              try {
+                const logsResponse = await github.rest.actions.downloadJobLogsForWorkflowRun({
+                  owner,
+                  repo,
+                  job_id: job.id,
+                });
+                
+                if (logsResponse.data) {
+                  const logText = logsResponse.data.toString();
+                  const lastLines = logText.split('\n').slice(-50).join('\n');
+                  const truncated = lastLines.length > 1000 ? 
+                    '...' + lastLines.slice(-1000) : lastLines;
+                  
+                  failureSummary.push('```');
+                  failureSummary.push(truncated);
+                  failureSummary.push('```');
+                }
+              } catch (error) {
+                failureSummary.push(`  - Could not fetch logs: ${error.message}`);
+              }
+            }
+            
+            failureSummary.push('');
+            failureSummary.push('## Action Required:');
+            failureSummary.push('- Fix the failed checks before requesting review');
+            failureSummary.push('- All gates must pass: format-check → analyze → build → test');
+            failureSummary.push(`- Full logs: https://github.com/${owner}/${repo}/actions/runs/${runId}`);
+            
+            // Post the comment
+            const comment = await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: context.issue.number,
+              body: failureSummary.join('\n')
+            });
+            
+            // Add reaction to acknowledge the failure notification
+            try {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: comment.data.id,
+                content: 'eyes'
+              });
+            } catch (error) {
+              console.log('Could not add reaction:', error.message);
+            }
+            
+            // Automatically trigger Copilot workflow
+            try {
+              // Use repository_dispatch to trigger Copilot automation
+              await github.rest.repos.createDispatchEvent({
+                owner,
+                repo,
+                event_type: 'copilot-auto-fix',
+                client_payload: {
+                  pr_number: context.issue.number,
+                  run_id: runId,
+                  failed_jobs: failedJobs.map(job => ({
+                    name: job.name,
+                    conclusion: job.conclusion,
+                    html_url: job.html_url
+                  })),
+                  trigger_reason: 'automatic_ci_failure'
+                }
+              });
+              
+              console.log('Successfully triggered Copilot auto-fix workflow');
+            } catch (error) {
+              console.log('Could not trigger Copilot auto-fix:', error.message);
+              
+              // Fallback: Post additional comment to trigger Copilot mention workflow
+              try {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: context.issue.number,
+                  body: `🤖 **Auto-triggering Copilot for CI failure resolution**\n\n@copilot Please analyze and fix the CI failures listed above. Focus on:\n\n${failedJobs.map(job => `- **${job.name}**: ${job.conclusion}`).join('\n')}\n\n*This is an automated request triggered by CI failure.*`
+                });
+              } catch (fallbackError) {
+                console.log('Fallback comment also failed:', fallbackError.message);
+              }
+            }
+
+  request-review:
+    name: Auto-Request Review
+    if: success() && github.event_name == 'pull_request'
+    needs: [format-check, analyze, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request reviewers on success
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Get reviewers from repository variables
+            let reviewers = '';
+            
+            try {
+              const reviewersVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'REVIEWERS'
+              });
+              reviewers = reviewersVar.data.value;
+            } catch {
+              reviewers = 'BlackHouseDeveloper';
+            }
+            
+            // Parse reviewers (comma/space/newline separated)
+            const reviewerList = reviewers
+              .split(/[,\s\n]+/)
+              .map(r => r.trim())
+              .filter(r => r.length > 0);
+            
+            if (reviewerList.length > 0) {
+              try {
+                await github.rest.pulls.requestReviewers({
+                  owner,
+                  repo,
+                  pull_number: context.issue.number,
+                  reviewers: reviewerList
+                });
+                
+                // Also post a success comment
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: context.issue.number,
+                  body: `✅ All CI checks passed! Review requested from: ${reviewerList.map(r => '@' + r).join(', ')}`
+                });
+              } catch (error) {
+                console.log('Could not request reviewers:', error.message);
+              }
+            }
+
   diff-summary:
     name: Diff Summary
     if: github.event_name == 'pull_request'
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

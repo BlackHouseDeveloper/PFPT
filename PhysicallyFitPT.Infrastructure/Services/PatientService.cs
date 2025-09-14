@@ -52,7 +52,7 @@ public class PatientService : BaseService, IPatientService
       throw new ArgumentException("Search query too long", nameof(query));
     }
 
-    using var db = await this.dbFactory.CreateDbContextAsync();
+    using var db = await this.dbFactory.CreateDbContextAsync(cancellationToken);
     string like = $"%{q}%";
     var patients = await db.Patients.AsNoTracking()
         .Where(p => EF.Functions.Like((p.FirstName + " " + p.LastName).ToLower(), like))
