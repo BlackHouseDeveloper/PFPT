@@ -172,9 +172,52 @@ jobs:
             
             await github.rest.repos.createOrUpdateFileContents(updateParams);
 
+  format-check:
+    name: StyleCop Formatting
+    needs: changelog-intel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore solution
+        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+
+      - name: Check code formatting (StyleCop)
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+
+  analyze:
+    name: Roslynator Static Analysis
+    needs: format-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Install Roslynator
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Restore solution
+        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+
+      - name: Run Roslynator analysis
+        run: roslynator analyze ./PhysicallyFitPT.sln --severity-level info
+
   build:
     name: Build & Guardrails
-    needs: changelog-intel
+    needs: analyze
     runs-on: macos-latest
     strategy:
       matrix:
@@ -247,10 +290,203 @@ jobs:
           dotnet tool restore || true
           dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
 
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.tfm }}
+          path: |
+            **/*.log
+            **/*.binlog
+          retention-days: 7
+
+  test:
+    name: Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore solution
+        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+
+      - name: Run unit tests
+        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 7
+
+  notify-failure:
+    name: Notify on Failure
+    if: failure() && github.event_name == 'pull_request'
+    needs: [format-check, analyze, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get failed jobs and notify
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runId = context.runId;
+            
+            // Get workflow run jobs
+            const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
+              owner,
+              repo,
+              run_id: runId,
+            });
+            
+            const failedJobs = jobsResponse.data.jobs.filter(job => 
+              job.conclusion === 'failure' || job.conclusion === 'cancelled'
+            );
+            
+            if (failedJobs.length === 0) return;
+            
+            // Get mentions/reviewers from repository variables
+            let mentions = '';
+            let reviewers = '';
+            
+            try {
+              const mentionsVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'MENTIONS'
+              });
+              mentions = mentionsVar.data.value;
+            } catch {
+              mentions = '@BlackHouseDeveloper';
+            }
+            
+            try {
+              const reviewersVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'REVIEWERS'
+              });
+              reviewers = reviewersVar.data.value;
+            } catch {
+              reviewers = 'BlackHouseDeveloper';
+            }
+            
+            // Build failure summary with log tails
+            const failureSummary = [];
+            failureSummary.push(`${mentions} - CI checks failed! 🚫`);
+            failureSummary.push('');
+            failureSummary.push('## Failed Jobs:');
+            
+            for (const job of failedJobs) {
+              failureSummary.push(`- **${job.name}**: ${job.conclusion}`);
+              
+              // Get job logs for tail
+              try {
+                const logsResponse = await github.rest.actions.downloadJobLogsForWorkflowRun({
+                  owner,
+                  repo,
+                  job_id: job.id,
+                });
+                
+                if (logsResponse.data) {
+                  const logText = logsResponse.data.toString();
+                  const lastLines = logText.split('\n').slice(-50).join('\n');
+                  const truncated = lastLines.length > 1000 ? 
+                    '...' + lastLines.slice(-1000) : lastLines;
+                  
+                  failureSummary.push('```');
+                  failureSummary.push(truncated);
+                  failureSummary.push('```');
+                }
+              } catch (error) {
+                failureSummary.push(`  - Could not fetch logs: ${error.message}`);
+              }
+            }
+            
+            failureSummary.push('');
+            failureSummary.push('## Action Required:');
+            failureSummary.push('- Fix the failed checks before requesting review');
+            failureSummary.push('- All gates must pass: format-check → analyze → build → test');
+            failureSummary.push(`- Full logs: https://github.com/${owner}/${repo}/actions/runs/${runId}`);
+            
+            // Post the comment
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: context.issue.number,
+              body: failureSummary.join('\n')
+            });
+
+  request-review:
+    name: Auto-Request Review
+    if: success() && github.event_name == 'pull_request'
+    needs: [format-check, analyze, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request reviewers on success
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Get reviewers from repository variables
+            let reviewers = '';
+            
+            try {
+              const reviewersVar = await github.rest.actions.getRepoVariable({
+                owner,
+                repo,
+                name: 'REVIEWERS'
+              });
+              reviewers = reviewersVar.data.value;
+            } catch {
+              reviewers = 'BlackHouseDeveloper';
+            }
+            
+            // Parse reviewers (comma/space/newline separated)
+            const reviewerList = reviewers
+              .split(/[,\s\n]+/)
+              .map(r => r.trim())
+              .filter(r => r.length > 0);
+            
+            if (reviewerList.length > 0) {
+              try {
+                await github.rest.pulls.requestReviewers({
+                  owner,
+                  repo,
+                  pull_number: context.issue.number,
+                  reviewers: reviewerList
+                });
+                
+                // Also post a success comment
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: context.issue.number,
+                  body: `✅ All CI checks passed! Review requested from: ${reviewerList.map(r => '@' + r).join(', ')}`
+                });
+              } catch (error) {
+                console.log('Could not request reviewers:', error.message);
+              }
+            }
+
   diff-summary:
     name: Diff Summary
     if: github.event_name == 'pull_request'
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
