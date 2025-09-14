@@ -463,12 +463,60 @@ jobs:
             failureSummary.push(`- Full logs: https://github.com/${owner}/${repo}/actions/runs/${runId}`);
             
             // Post the comment
-            await github.rest.issues.createComment({
+            const comment = await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: context.issue.number,
               body: failureSummary.join('\n')
             });
+            
+            // Add reaction to acknowledge the failure notification
+            try {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: comment.data.id,
+                content: 'eyes'
+              });
+            } catch (error) {
+              console.log('Could not add reaction:', error.message);
+            }
+            
+            // Automatically trigger Copilot workflow
+            try {
+              // Use repository_dispatch to trigger Copilot automation
+              await github.rest.repos.createDispatchEvent({
+                owner,
+                repo,
+                event_type: 'copilot-auto-fix',
+                client_payload: {
+                  pr_number: context.issue.number,
+                  run_id: runId,
+                  failed_jobs: failedJobs.map(job => ({
+                    name: job.name,
+                    conclusion: job.conclusion,
+                    html_url: job.html_url
+                  })),
+                  trigger_reason: 'automatic_ci_failure'
+                }
+              });
+              
+              console.log('Successfully triggered Copilot auto-fix workflow');
+            } catch (error) {
+              console.log('Could not trigger Copilot auto-fix:', error.message);
+              
+              // Fallback: Post additional comment to trigger Copilot mention workflow
+              try {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: context.issue.number,
+                  body: `🤖 **Auto-triggering Copilot for CI failure resolution**\n\n@copilot Please analyze and fix the CI failures listed above. Focus on:\n\n${failedJobs.map(job => `- **${job.name}**: ${job.conclusion}`).join('\n')}\n\n*This is an automated request triggered by CI failure.*`
+                });
+              } catch (fallbackError) {
+                console.log('Fallback comment also failed:', fallbackError.message);
+              }
+            }
 
   request-review:
     name: Auto-Request Review

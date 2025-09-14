@@ -62,5 +62,18 @@ jobs:
               owner,
               repo,
               issue_number,
-              body: `👋 @copilot has been notified and will process your request shortly.`
+              body: `👋 **@copilot acknowledged** - Processing your request...\n\n*Comment details: ${comment_body.substring(0, 200)}${comment_body.length > 200 ? '...' : ''}*`
             });
+            
+            // If this appears to be a CI failure mention, provide additional context
+            if (comment_body.toLowerCase().includes('failure') || 
+                comment_body.toLowerCase().includes('failed') || 
+                comment_body.toLowerCase().includes('error')) {
+              
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body: `🔍 **CI Failure Analysis Initiated**\n\nCopilot is analyzing recent CI failures and will provide fixes shortly. Please allow a few moments for the analysis to complete.`
+              });
+            }
