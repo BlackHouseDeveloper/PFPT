@@ -35,6 +35,17 @@
           "Microsoft.Extensions.Options": "8.0.0"
         }
       },
+      "Microsoft.Extensions.Http.Polly": {
+        "type": "Direct",
+        "requested": "[8.0.8, )",
+        "resolved": "8.0.8",
+        "contentHash": "pGdr4TNLLHLRT5PVZaNdcgBIKN1lQQAFcbnNV7P7qcS6WazGXT2ijMsuhUcNtm2ZxEVB7pZDRDJKR6J9m2bVaA==",
+        "dependencies": {
+          "Microsoft.Extensions.Http": "8.0.0",
+          "Polly": "7.2.4",
+          "Polly.Extensions.Http": "3.0.0"
+        }
+      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[8.0.19, )",
@@ -102,19 +113,6 @@
         "contentHash": "77zXqGgneGoz23+Nw3GTIYJ+DFjFdpaTTdakBoK1T+m9CnKrxqpCTNUj80UFumSlHqwZ6Sq97joAP6DH2ZzTmA==",
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.19"
-        }
-      },
-      "Microsoft.AspNetCore.Components.Web": {
-        "type": "Transitive",
-        "resolved": "8.0.19",
-        "contentHash": "jdHEJ4CGu/NeP5o+AugElmqSrw0oi4lD+tSjyX8LXyS3xrZmOWeFRA5rvBx3+XAXlevKyQNa+sCPlYCAM9KO4g==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Components": "8.0.19",
-          "Microsoft.AspNetCore.Components.Forms": "8.0.19",
-          "Microsoft.Extensions.DependencyInjection": "8.0.1",
-          "Microsoft.Extensions.Primitives": "8.0.0",
-          "Microsoft.JSInterop": "8.0.19",
-          "System.IO.Pipelines": "8.0.0"
         }
       },
       "Microsoft.AspNetCore.Metadata": {
@@ -205,6 +203,14 @@
         "resolved": "8.0.0",
         "contentHash": "dk9JPxTCIevS75HyEQ0E4OVAFhB2N+V9ShCXf8Q6FkUQZDkgLI12y679Nym1YqsiSysuQskT7Z+6nUf3yab6Vw=="
       },
+      "Polly.Extensions.Http": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "drrG+hB3pYFY7w1c3BD+lSGYvH2oIclH8GRSehgfyP5kjnFnHKQuuBhuHLv+PWyFuaTDyk/vfRpnxOzd11+J8g==",
+        "dependencies": {
+          "Polly": "7.1.0"
+        }
+      },
       "StyleCop.Analyzers.Unstable": {
         "type": "Transitive",
         "resolved": "1.2.0.556",
@@ -224,7 +230,32 @@
         "type": "Project"
       },
       "physicallyfitpt.shared": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "PhysicallyFitPT.Domain": "[1.0.0, )"
+        }
+      },
+      "physicallyfitpt.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components.Web": "[8.0.19, )",
+          "PhysicallyFitPT.Domain": "[1.0.0, )",
+          "PhysicallyFitPT.Shared": "[1.0.0, )"
+        }
+      },
+      "Microsoft.AspNetCore.Components.Web": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.19, )",
+        "resolved": "8.0.19",
+        "contentHash": "jdHEJ4CGu/NeP5o+AugElmqSrw0oi4lD+tSjyX8LXyS3xrZmOWeFRA5rvBx3+XAXlevKyQNa+sCPlYCAM9KO4g==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "8.0.19",
+          "Microsoft.AspNetCore.Components.Forms": "8.0.19",
+          "Microsoft.Extensions.DependencyInjection": "8.0.1",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "Microsoft.JSInterop": "8.0.19",
+          "System.IO.Pipelines": "8.0.0"
+        }
       },
       "Microsoft.Extensions.Configuration": {
         "type": "CentralTransitive",
@@ -323,6 +354,12 @@
         "requested": "[8.0.0, )",
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
+      },
+      "Polly": {
+        "type": "CentralTransitive",
+        "requested": "[8.4.1, )",
+        "resolved": "7.2.4",
+        "contentHash": "bw00Ck5sh6ekduDE3mnCo1ohzuad946uslCDEENu3091+6UKnBuKLo4e+yaNcCzXxOZCXWY2gV4a35+K1d4LDA=="
       }
     },
     "net8.0/browser-wasm": {}
