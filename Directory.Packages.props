@@ -59,6 +59,7 @@
     <!-- Blazor WebAssembly packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.19" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.19" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="8.0.19" />
 
 
   </ItemGroup>
