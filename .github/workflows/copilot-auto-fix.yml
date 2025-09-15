@@ -90,8 +90,7 @@ jobs:
                 repo,
                 title: issueTitle,
                 body: issueBody.join('\n'),
-                labels: ['automated', 'ci-failure', 'copilot-fix'],
-                assignees: ['copilot']
+                labels: ['automated', 'ci-failure', 'copilot-fix']
               });
               
               console.log(`Created auto-fix issue: ${issue.data.html_url}`);
