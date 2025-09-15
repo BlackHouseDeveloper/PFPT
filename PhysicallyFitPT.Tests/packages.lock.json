@@ -81,6 +81,15 @@
           "Microsoft.SourceLink.Common": "8.0.0"
         }
       },
+      "Moq": {
+        "type": "Direct",
+        "requested": "[4.20.70, )",
+        "resolved": "4.20.70",
+        "contentHash": "4rNnAwdpXJBuxqrOCzCyICXHSImOTRktCgCWXWykuF1qwoIsVvEnR7PjbMk/eLOxWvhmj5Kwt+kDV3RGUYcNwg==",
+        "dependencies": {
+          "Castle.Core": "5.1.1"
+        }
+      },
       "Roslynator.Analyzers": {
         "type": "Direct",
         "requested": "[4.12.4, )",
@@ -112,6 +121,14 @@
         "requested": "[2.8.1, )",
         "resolved": "2.8.1",
         "contentHash": "qBTK0WAcnw65mymIjVDqWUTdqjMyzjwu9e9SF0oGYfYELgbcteDZ4fQLJaXw8mzkvpAD7YdoexBbg8VYQFkWWA=="
+      },
+      "Castle.Core": {
+        "type": "Transitive",
+        "resolved": "5.1.1",
+        "contentHash": "rpYtIczkzGpf+EkZgDr9CClTdemhsrwA/W5hMoPjLkRFnXzH44zDLoovXeKtmxb1ykXK9aJVODSpiJml8CTw2g==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "6.0.0"
+        }
       },
       "Humanizer.Core": {
         "type": "Transitive",
@@ -502,6 +519,11 @@
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "c9xLpVz6PL9lp/djOWtk5KPDZq3cSYpmXoJQY524EOtuFl5z9ZtsotpsyrDW40U1DRnQSYvcPKEUV0X//u6gkQ=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw=="
       },
       "System.IO.Pipelines": {
         "type": "Transitive",
