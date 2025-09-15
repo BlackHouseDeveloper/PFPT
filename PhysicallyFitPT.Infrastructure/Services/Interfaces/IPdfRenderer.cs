@@ -2,6 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
+
 /// <summary>
 /// Interface for PDF rendering services.
 /// </summary>
