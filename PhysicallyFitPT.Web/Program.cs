@@ -5,11 +5,11 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Http;
-using Polly;
-using Polly.Extensions.Http;
 using PhysicallyFitPT.Shared;
 using PhysicallyFitPT.Web;
 using PhysicallyFitPT.Web.Services;
+using Polly;
+using Polly.Extensions.Http;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -26,9 +26,9 @@ builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfo>();
 // HTTP client with Polly resilience patterns
 builder.Services.AddHttpClient<IDataService, WebApiDataService>(client =>
 {
-    var apiConfig = builder.Configuration.GetSection("Api").Get<ApiConfiguration>() ?? new ApiConfiguration();
-    client.BaseAddress = new Uri(apiConfig.BaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(apiConfig.TimeoutSeconds);
+  var apiConfig = builder.Configuration.GetSection("Api").Get<ApiConfiguration>() ?? new ApiConfiguration();
+  client.BaseAddress = new Uri(apiConfig.BaseUrl);
+  client.Timeout = TimeSpan.FromSeconds(apiConfig.TimeoutSeconds);
 })
 .AddPolicyHandler(GetRetryPolicy())
 .AddPolicyHandler(GetCircuitBreakerPolicy());
@@ -40,30 +40,30 @@ await builder.Build().RunAsync();
 
 static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
 {
-    return HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .WaitAndRetryAsync(
-            retryCount: 3,
-            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-            onRetry: (outcome, timespan, retryCount, context) =>
-            {
-                Console.WriteLine($"Retry {retryCount} after {timespan} seconds");
-            });
+  return HttpPolicyExtensions
+      .HandleTransientHttpError()
+      .WaitAndRetryAsync(
+          retryCount: 3,
+          sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+          onRetry: (outcome, timespan, retryCount, context) =>
+          {
+            Console.WriteLine($"Retry {retryCount} after {timespan} seconds");
+          });
 }
 
 static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
 {
-    return HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .CircuitBreakerAsync(
-            handledEventsAllowedBeforeBreaking: 5,
-            durationOfBreak: TimeSpan.FromSeconds(30),
-            onBreak: (exception, duration) =>
-            {
-                Console.WriteLine($"Circuit breaker opened for {duration}");
-            },
-            onReset: () =>
-            {
-                Console.WriteLine("Circuit breaker reset");
-            });
+  return HttpPolicyExtensions
+      .HandleTransientHttpError()
+      .CircuitBreakerAsync(
+          handledEventsAllowedBeforeBreaking: 5,
+          durationOfBreak: TimeSpan.FromSeconds(30),
+          onBreak: (exception, duration) =>
+          {
+            Console.WriteLine($"Circuit breaker opened for {duration}");
+          },
+          onReset: () =>
+          {
+            Console.WriteLine("Circuit breaker reset");
+          });
 }
