@@ -1,0 +1,168 @@
+/* Unified responsive layout styles */
+.pfp-layout {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --background-color: #f8f9fa;
+  --text-color: #2c3e50;
+  --border-color: #dee2e6;
+  --header-height: 60px;
+  --sidebar-width: 250px;
+}
+
+/* Desktop Layout */
+.pfp-layout-desktop {
+  display: flex;
+  min-height: 100vh;
+}
+
+.pfp-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+}
+
+.pfp-main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+}
+
+.pfp-header {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.pfp-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.pfp-app-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.pfp-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pfp-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--background-color);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.pfp-content {
+  flex: 1;
+  padding: 2rem;
+  background: var(--background-color);
+  overflow-y: auto;
+}
+
+/* Mobile Layout */
+.pfp-layout-mobile {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pfp-mobile-header {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.pfp-mobile-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 100%;
+}
+
+.pfp-mobile-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  flex: 1;
+  text-align: center;
+}
+
+.pfp-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pfp-mobile-main {
+  flex: 1;
+  background: var(--background-color);
+  overflow-y: auto;
+}
+
+.pfp-mobile-content {
+  padding: 1rem;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .pfp-mobile-header-content {
+    padding: 0 0.75rem;
+  }
+  
+  .pfp-mobile-title {
+    font-size: 1.125rem;
+  }
+  
+  .pfp-mobile-content {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pfp-mobile-content {
+    padding: 0.5rem;
+  }
+}
+
+/* Platform-specific adjustments */
+.pfp-layout[data-platform="web"] {
+  /* Web-specific styles */
+}
+
+.pfp-layout[data-platform="mobile"] {
+  /* MAUI mobile-specific styles */
+  --header-height: 44px; /* iOS safe area consideration */
+}
+
+.pfp-layout[data-platform="desktop"] {
+  /* MAUI desktop-specific styles */
+}
