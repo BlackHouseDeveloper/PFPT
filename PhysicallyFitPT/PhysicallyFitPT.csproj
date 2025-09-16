@@ -125,6 +125,7 @@
     <ProjectReference
       Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.Web\PhysicallyFitPT.Web.csproj" />
   </ItemGroup>
 
 
