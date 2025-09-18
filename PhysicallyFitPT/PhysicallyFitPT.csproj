@@ -56,10 +56,7 @@
     <BundleResource Remove="packages.lock.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Use WebAssembly-compatible SQLite provider -->
-    <PackageReference Include="Uno.SQLitePCLRaw.provider.wasm" />
-  </ItemGroup>
+
 
 
   <!-- Fix: QuestPDF ships Lato fonts as native assets, exclude from iOS/MacCatalyst app bundles -->
