@@ -3,5 +3,6 @@
 <Routes AppAssembly="@AppAssembly" />
 
 @code {
-    [Parameter] public System.Reflection.Assembly? AppAssembly { get; set; }
+    private System.Reflection.Assembly AppAssembly => 
+        System.Reflection.Assembly.GetEntryAssembly() ?? System.Reflection.Assembly.GetExecutingAssembly();
 }
