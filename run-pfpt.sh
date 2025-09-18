@@ -50,7 +50,22 @@ case "$choice" in
       emulator -avd "$avd_name" >/dev/null 2>&1 &
       echo "Waiting for emulator to start..."
       adb wait-for-device
-      sleep 5
+      echo "Waiting for Android emulator to fully boot..."
+      boot_completed=""
+      until [[ "$boot_completed" == "1" ]]; do
+      boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+      sleep 2
+      done
+      echo "✅ Emulator booted."
+
+device_id=$(adb devices | tail -n +2 | awk '/device$/{print $1; exit}')
+if [ -z "$device_id" ]; then
+  echo "❌ Emulator failed to become active." >&2
+  exit 1
+fi
+echo "Running MAUI Android app on emulator $device_id..."
+dotnet build -t:Run -f net8.0-android PhysicallyFitPT/PhysicallyFitPT.csproj
+
       device_id=$(adb devices | tail -n +2 | awk '/device$/{print $1; exit}')
       if [ -z "$device_id" ]; then
         echo "❌ Emulator failed to start or be recognized." >&2
