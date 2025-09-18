@@ -4,11 +4,10 @@
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using PhysicallyFitPT.Web;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<PhysicallyFitPT.Shared.Components.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // HTTP client services for API communication
