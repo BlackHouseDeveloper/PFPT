@@ -1,4 +1,12 @@
-﻿<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new[] { typeof(PhysicallyFitPT.UI.Components.Pages.Dashboard).Assembly }">
+﻿@namespace PhysicallyFitPT.Shared
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using Microsoft.Extensions.DependencyInjection
+@using System.Net.Http
+@using System.Threading.Tasks
+
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new[] { typeof(PhysicallyFitPT.UI.Components.Pages.Dashboard).Assembly }">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(PhysicallyFitPT.UI.Components.Layout.ResponsiveMainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />

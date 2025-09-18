@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Http;
 using PhysicallyFitPT.Shared;
-using PhysicallyFitPT.Web;
 using PhysicallyFitPT.Web.Services;
 using Polly;
 using Polly.Extensions.Http;

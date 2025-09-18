@@ -16,7 +16,7 @@ public class WebPlatformInfo : IPlatformInfo
   public PlatformType Platform => PlatformType.Web;
 
   /// <inheritdoc/>
-  public DeviceType Device => DetermineDeviceType();
+  public DeviceType Device => this.DetermineDeviceType();
 
   /// <inheritdoc/>
   public bool SupportsOffline => true; // PWA support
