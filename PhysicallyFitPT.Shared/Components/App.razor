@@ -1,0 +1,8 @@
+@using PhysicallyFitPT.Shared.Components
+
+<Routes AppAssembly="@AppAssembly" />
+
+@code {
+    private System.Reflection.Assembly AppAssembly => 
+        System.Reflection.Assembly.GetEntryAssembly() ?? System.Reflection.Assembly.GetExecutingAssembly();
+}
