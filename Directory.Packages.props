@@ -59,6 +59,14 @@
     <!-- Blazor WebAssembly packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.19" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.19" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="8.0.19" />
+    
+    <!-- HTTP client and resilience -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="8.0.8" />
+    <PackageVersion Include="Polly" Version="8.4.1" />
+    
+    <!-- Testing packages -->
+    <PackageVersion Include="Moq" Version="4.20.70" />
 
 
   </ItemGroup>

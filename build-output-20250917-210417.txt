@@ -1,0 +1,190 @@
+PFPT Clean Build - 20250917-210417
+---------------------------------------
+[33m[1m▶ Shutting down build servers...(B[m
+Shutting down MSBuild server...
+Shutting down VB/C# compiler server...
+VB/C# compiler server shut down successfully.
+MSBuild server shut down successfully.
+[33m[1m▶ Removing Android lp/ intermediates (if present)...(B[m
+[33m[1m▶ Removing bin/ and obj/ folders...(B[m
+
+[33m[1m▶ dotnet clean(B[m
+----- dotnet clean -----
+$ dotnet clean
+Build started 9/17/2025 9:04:19 PM.
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" on node 1 (Clean target(s)).
+     1>ValidateSolutionConfiguration:
+         Building solution configuration "Debug|Any CPU".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (4) on node 7 (Clean target(s)).
+     4>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (3) on node 2 (Clean target(s)).
+     3>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" (5) on node 4 (Clean target(s)).
+     5>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (7) on node 6 (Clean target(s)).
+     7>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     5>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" (Clean target(s)).
+     1>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (1) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6) on node 3 (Clean target(s)).
+     6>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6:2) on node 1 (Clean target(s)).
+     6>ProcessFrameworkReferences:
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-arm'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-arm64'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-x86'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/local/share/dotnet/sdk/8.0.413/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.FrameworkReferenceResolution.targets(154,5): message NETSDK1084: There is no application host available for the specified RuntimeIdentifier 'android-x64'. [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+     6>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6:3) on node 2 (Clean target(s)).
+     6>CoreClean:
+         Creating directory "obj/Debug/net8.0-ios/iossimulator-arm64/".
+     6>_CleanMonoAndroidIntermediateDir:
+         Deleting file "obj/Debug/net8.0-android/res.flag".
+         Deleting file "obj/Debug/net8.0-android/R.txt".
+       _CleanAndroidBuildPropertiesCache:
+         Deleting file "obj/Debug/net8.0-android/build.props".
+     6>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     7>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (Clean target(s)).
+     6>_CleanAppBundle:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.app/" doesn't exist. Skipping.
+       _CleanBindingResourcePackage:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.resources" doesn't exist. Skipping.
+       _CleanDebugSymbols:
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/PhysicallyFitPT.app.mSYM" doesn't exist. Skipping.
+       _CleanDeviceSpecificOutput:
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/device-builds" doesn't exist. Skipping.
+         Directory "bin/Debug/net8.0-ios/iossimulator-arm64/device-builds" doesn't exist. Skipping.
+       _CleanIntermediateToolOutput:
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/actool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/assetpacks" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/codesign" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/coremlc" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool-link" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ibtool-manifests" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/ipa" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/metal" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/optimized" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/scntool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/TextureAtlas" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-ios/iossimulator-arm64/mtouch-cache" doesn't exist. Skipping.
+         Removing directory "obj/Debug/net8.0-ios/iossimulator-arm64/".
+     6>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     6>Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6) is building "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (6:4) on node 7 (Clean target(s)).
+     6>_CleanAppBundle:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.app/" doesn't exist. Skipping.
+       _CleanBindingResourcePackage:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.resources" doesn't exist. Skipping.
+     3>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (Clean target(s)).
+     6>_CleanDebugSymbols:
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/PhysicallyFitPT.app.mSYM" doesn't exist. Skipping.
+       _CleanDeviceSpecificOutput:
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/device-builds" doesn't exist. Skipping.
+         Directory "bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/device-builds" doesn't exist. Skipping.
+       _CleanIntermediateToolOutput:
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/actool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/assetpacks" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/codesign" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/coremlc" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool-link" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ibtool-manifests" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/ipa" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/metal" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/optimized" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/scntool" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/TextureAtlas" doesn't exist. Skipping.
+         Directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/mtouch-cache" doesn't exist. Skipping.
+         Removing directory "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/".
+     6>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     6>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)).
+     4>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (Clean target(s)).
+     1>Done Building Project "/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.sln" (Clean target(s)).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.08
+
+[33m[1m▶ dotnet restore(B[m
+----- dotnet restore -----
+$ dotnet restore
+  Determining projects to restore...
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj (in 386 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.UI/PhysicallyFitPT.UI.csproj (in 386 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj (in 386 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj (in 388 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj (in 386 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj (in 390 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj (in 386 ms).
+  Restored /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj (in 2.67 sec).
+
+[33m[1m▶ dotnet build (warnaserror)(B[m
+----- dotnet build (warnaserror) -----
+$ dotnet build -warnaserror
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  PhysicallyFitPT.Domain -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Domain/bin/Debug/net8.0/PhysicallyFitPT.Domain.dll
+  PhysicallyFitPT.Shared -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Shared/bin/Debug/net8.0/PhysicallyFitPT.Shared.dll
+  PhysicallyFitPT.Infrastructure -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Infrastructure/bin/Debug/net8.0/PhysicallyFitPT.Infrastructure.dll
+  PhysicallyFitPT.UI -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.UI/bin/Debug/net8.0/PhysicallyFitPT.UI.dll
+/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/Program.cs(15,28): error CS0246: The type or namespace name 'App' could not be found (are you missing a using directive or an assembly reference?) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+  Detected signing identity:
+          
+    Bundle Id: com.companyname.physicallyfitpt
+    App Id: com.companyname.physicallyfitpt
+  Detected signing identity:
+          
+    Code Signing Key: "" (-)
+    Bundle Id: com.companyname.physicallyfitpt
+    App Id: com.companyname.physicallyfitpt
+  PhysicallyFitPT.Seeder -> /Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Seeder/bin/Debug/net8.0/PhysicallyFitPT.Seeder.dll
+  Tool /usr/bin/xcrun execution finished (exit code = 1).
+          
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+  	<key>com.apple.actool.compilation-results</key>
+  	<dict>
+  		<key>output-files</key>
+  		<array>
+  			<string>/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/obj/Debug/net8.0-ios/iossimulator-arm64/actool/bundle/appicon60x60@2x.png</string>
+  			<string>/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/obj/Debug/net8.0-ios/iossimulator-arm64/actool/bundle/appicon76x76@2x~ipad.png</string>
+  			<string>/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/obj/Debug/net8.0-ios/iossimulator-arm64/actool/partial-info.plist</string>
+  		</array>
+  	</dict>
+  	<key>com.apple.actool.errors</key>
+  	<array>
+  		<dict>
+  			<key>description</key>
+  			<string>No simulator runtime version from ["22C150", "22G86"] available to use with iphonesimulator SDK version 23A339</string>
+  		</dict>
+  	</array>
+  </dict>
+  </plist>
+  
+  
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error : /usr/bin/xcrun exited with code 1 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error :          [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error : actool exited with code 1 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error :          [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/obj/Debug/net8.0-ios/iossimulator-arm64/actool/cloned-assets/Assets.xcassets : actool error : No simulator runtime version from ["22C150", "22G86"] available to use with iphonesimulator SDK version 23A339 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+MainPage.xaml(9,44): XamlC error XFC0000: Cannot resolve type "clr-namespace:PhysicallyFitPT.Shared:App". [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+MainPage.xaml(9,44): XamlC error XFC0000: Cannot resolve type "clr-namespace:PhysicallyFitPT.Shared:App". [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+
+Build FAILED.
+
+/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/Program.cs(15,28): error CS0246: The type or namespace name 'App' could not be found (are you missing a using directive or an assembly reference?) [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error : /usr/bin/xcrun exited with code 1 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error :          [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error : actool exited with code 1 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/local/share/dotnet/packs/Microsoft.iOS.Sdk.net8.0_18.0/18.0.8319/tools/msbuild/iOS/Xamarin.Shared.targets(893,3): error :          [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/obj/Debug/net8.0-ios/iossimulator-arm64/actool/cloned-assets/Assets.xcassets : actool error : No simulator runtime version from ["22C150", "22G86"] available to use with iphonesimulator SDK version 23A339 [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+MainPage.xaml(9,44): XamlC error XFC0000: Cannot resolve type "clr-namespace:PhysicallyFitPT.Shared:App". [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+MainPage.xaml(9,44): XamlC error XFC0000: Cannot resolve type "clr-namespace:PhysicallyFitPT.Shared:App". [/Users/calvinccarter/Projects/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+    0 Warning(s)
+    6 Error(s)
+
+Time Elapsed 00:00:16.27

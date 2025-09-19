@@ -1,0 +1,147 @@
+/* Dashboard page styles */
+.pfp-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pfp-page-header {
+  margin-bottom: 2rem;
+}
+
+.pfp-page-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-page-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.125rem;
+}
+
+.pfp-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.pfp-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.pfp-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pfp-card-wide {
+  grid-column: 1 / -1;
+}
+
+.pfp-card-header {
+  padding: 1.25rem 1.5rem 0 1.5rem;
+}
+
+.pfp-card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-card-body {
+  padding: 1.5rem;
+}
+
+.pfp-stat {
+  text-align: center;
+}
+
+.pfp-stat-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color, #3498db);
+  line-height: 1;
+}
+
+.pfp-stat-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pfp-quick-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pfp-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+
+.pfp-btn-primary {
+  background: var(--primary-color, #3498db);
+  color: white;
+}
+
+.pfp-btn-primary:hover {
+  background: #2980b9;
+  color: white;
+}
+
+.pfp-btn-secondary {
+  background: #f8f9fa;
+  color: var(--text-color, #2c3e50);
+  border: 1px solid #dee2e6;
+}
+
+.pfp-btn-secondary:hover {
+  background: #e9ecef;
+  color: var(--text-color, #2c3e50);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .pfp-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .pfp-page-header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .pfp-card-header,
+  .pfp-card-body {
+    padding: 1rem;
+  }
+  
+  .pfp-quick-actions {
+    flex-direction: column;
+  }
+  
+  .pfp-btn {
+    justify-content: center;
+  }
+}

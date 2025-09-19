@@ -378,7 +378,10 @@
         "type": "Project"
       },
       "physicallyfitpt.shared": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "PhysicallyFitPT.Domain": "[1.0.0, )"
+        }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "CentralTransitive",
