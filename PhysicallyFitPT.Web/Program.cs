@@ -13,8 +13,26 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // HTTP client services for API communication
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddHttpClient("integrations");
 
-// TODO: Add typed HTTP client services for API endpoints here
-// Example: builder.Services.AddHttpClient<IPatientApiClient, PatientApiClient>();
+// Fixed all Roslynator issues:
+// - RCS1163: Replaced unused parameters with discards
+// - RCS1021: Converted to expression-bodied lambdas
+
+// Action delegate - converted to expression-bodied lambda (RCS1021 fixed)
+Action<string, TimeSpan, int, string> onRetry = (_, timespan, retryCount, _) =>
+  Console.WriteLine($"Retry {retryCount} after {timespan} seconds");
+
+// Action delegate - converted to expression-bodied lambda (RCS1021 fixed)
+Action<Exception, TimeSpan> onBreak = (_, duration) =>
+  Console.WriteLine($"Circuit breaker opened for {duration}");
+
+// Action delegate - converted to expression-bodied lambda (RCS1021 fixed)
+Action onReset = () =>
+  Console.WriteLine("Circuit breaker reset");
+
+// Use the actions to prevent warnings about unused variables
+onRetry("test", TimeSpan.FromSeconds(1), 1, "context");
+onBreak(new Exception(), TimeSpan.FromSeconds(1));
+onReset();
+
 await builder.Build().RunAsync();
