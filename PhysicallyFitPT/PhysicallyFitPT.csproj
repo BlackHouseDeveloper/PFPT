@@ -85,6 +85,19 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="PFPT_RemovePackagesLockFromPublish"
+    BeforeTargets="_ComputePublishLocation"
+    Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+
+    <ItemGroup>
+      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)"
+        Condition="$([System.IO.Path]::GetFileName('%(ResolvedFileToPublish.OriginalItemSpec)')) == 'packages.lock.json'">
+        <PublishFolderType>None</PublishFolderType>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg"
