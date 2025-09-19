@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="GlobalSuppressions.cs" company="BlackHouseDeveloper">
-//     Copyright (c) BlackHouseDeveloper. All rights reserved.
+// <copyright file="GlobalSuppressions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
