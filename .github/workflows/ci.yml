@@ -324,7 +324,7 @@ jobs:
 
       - name: Run Roslynator analysis on MAUI project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info --config .editorconfig
 
       - name: Run Roslynator analysis on Infrastructure project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
