@@ -49,14 +49,11 @@
     <PackageVersion Include="SQLitePCLRaw.core" Version="2.1.8" />
 
 
-    <!-- Use WebAssembly-compatible SQLite provider -->
-    <PackageVersion Include="Uno.SQLitePCLRaw.provider.wasm" Version="3.2.0" />
-
-
+    <!-- MAUI-specific packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.80" />
     <PackageVersion Include="SkiaSharp.Views.Maui.Controls" Version="2.88.7" />
 
-    <!-- Blazor WebAssembly packages -->
+    <!-- Blazor WebAssembly packages (Web project only) -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.19" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.19" />
 

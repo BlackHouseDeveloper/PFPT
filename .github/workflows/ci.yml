@@ -291,7 +291,16 @@ jobs:
           java-version: "17"
 
       - name: Install MAUI workload (once)
-        run: dotnet workload install maui
+        run: |
+          echo "Installing MAUI workloads..."
+          dotnet workload install maui --skip-sign-check || {
+            echo "MAUI workload installation failed, trying alternative approach..."
+            dotnet workload install microsoft-net-workload-android
+            dotnet workload install microsoft-net-workload-ios
+            dotnet workload install microsoft-net-workload-maccatalyst
+          }
+          echo "Installed workloads:"
+          dotnet workload list
 
       - name: Restore solution (lock files)
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
