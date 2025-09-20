@@ -324,7 +324,7 @@ jobs:
 
       - name: Run Roslynator analysis on MAUI project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info --ignored-paths "Microsoft.Maui.Controls.SourceGen"
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info  --exclude "**/Microsoft.Maui.Controls.SourceGen/**/*.razor.css.sg.cs"
 
       - name: Run Roslynator analysis on Infrastructure project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
