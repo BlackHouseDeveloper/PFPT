@@ -1,0 +1,158 @@
+/* Responsive Navigation Styles */
+.pfp-nav {
+  --nav-bg: #2c3e50;
+  --nav-text: #ecf0f1;
+  --nav-hover: #34495e;
+  --nav-active: #3498db;
+  --nav-border: #34495e;
+}
+
+/* Sidebar Navigation (Desktop) */
+.pfp-nav[data-device="desktop"] .pfp-nav-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--nav-border);
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Mobile Navigation */
+.pfp-nav[data-device="mobile"] .pfp-nav-mobile,
+.pfp-nav[data-device="tablet"] .pfp-nav-mobile {
+  position: relative;
+}
+
+.pfp-nav-toggle {
+  background: var(--nav-bg);
+  border: none;
+  color: var(--nav-text);
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+}
+
+.pfp-hamburger {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--nav-text);
+  position: relative;
+}
+
+.pfp-hamburger::before,
+.pfp-hamburger::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: var(--nav-text);
+  transition: transform 0.3s ease;
+}
+
+.pfp-hamburger::before {
+  top: -6px;
+}
+
+.pfp-hamburger::after {
+  top: 6px;
+}
+
+.pfp-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.pfp-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--nav-bg);
+  transform: translateX(-100%);
+  animation: slideIn 0.3s ease forwards;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Navigation List */
+.pfp-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0;
+}
+
+.pfp-nav-item {
+  margin: 0;
+}
+
+.pfp-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--nav-text);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.pfp-nav-link:hover {
+  background: var(--nav-hover);
+  color: var(--nav-text);
+}
+
+.pfp-nav-link.active {
+  background: var(--nav-active);
+  color: white;
+}
+
+.pfp-nav-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pfp-nav-drawer {
+    width: 100vw;
+    max-width: 320px;
+  }
+}
+
+/* Platform-specific adjustments */
+.pfp-nav[data-platform="web"] {
+  /* Web-specific styles */
+}
+
+.pfp-nav[data-platform="mobile"] {
+  /* MAUI mobile-specific styles */
+}
+
+.pfp-nav[data-platform="desktop"] {
+  /* MAUI desktop-specific styles */
+}
