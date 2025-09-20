@@ -57,8 +57,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Use WebAssembly-compatible SQLite provider -->
-    <PackageReference Include="Uno.SQLitePCLRaw.provider.wasm" />
+    <!-- Use WebAssembly-compatible SQLite provider only for browser/WASM targets -->
+    <!-- Note: This package requires wasi-experimental workload which is only needed for WASM targets -->
+    <!-- For MAUI targets (Android/iOS/macOS/Windows), this package is not needed and causes workload errors -->
   </ItemGroup>
 
 
