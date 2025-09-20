@@ -4,9 +4,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 # Install the WASI experimental workload for Blazor/WebAssembly
 RUN dotnet workload install wasi-experimental
 
-# Restore any additional workloads required by the repo
-RUN dotnet workload restore
-
 # Install SQLite (common for MAUI/Blazor)
 RUN apt-get update && \
     apt-get install -y \
@@ -50,6 +47,9 @@ RUN chsh -s /usr/bin/zsh
 
 # Install Oh My Zsh for a familiar shell experience
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+
+# Install Roslynator CLI globally
+RUN dotnet tool install -g roslynator.dotnet.cli
 
 # Clean up
 RUN apt-get clean
