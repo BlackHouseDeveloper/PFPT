@@ -1,19 +1,15 @@
-﻿@namespace PhysicallyFitPT.Shared
+@namespace PhysicallyFitPT.Shared
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
-@using Microsoft.Extensions.DependencyInjection
-@using System.Net.Http
-@using System.Threading.Tasks
 
-<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new[] { typeof(PhysicallyFitPT.UI.Components.Pages.Dashboard).Assembly }">
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(PhysicallyFitPT.UI.Components.Layout.ResponsiveMainLayout)" />
+        <RouteView RouteData="@routeData" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(PhysicallyFitPT.UI.Components.Layout.ResponsiveMainLayout)">
+        <LayoutView>
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>
