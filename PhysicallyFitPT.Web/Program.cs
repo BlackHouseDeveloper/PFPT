@@ -12,7 +12,7 @@ using Polly.Extensions.Http;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add(typeof(PhysicallyFitPT.Web.App), "#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Configuration
