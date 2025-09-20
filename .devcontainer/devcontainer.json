@@ -4,10 +4,17 @@
     "dockerfile": "Dockerfile"
   },
   "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
+    "terminal.integrated.shell.linux": "/bin/zsh",
+    "editor.fontFamily": "'Fira Code', 'monospace'",
+    "editor.fontLigatures": true
   },
   "extensions": [
     "ms-dotnettools.csharp",
-    "eamodio.gitlens"
-  ]
+    "eamodio.gitlens",
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode-remote.remote-containers",
+    "ms-python.python"
+  ],
+  "postCreateCommand": "dotnet workload restore",
+  "remoteUser": "vscode"
 }
