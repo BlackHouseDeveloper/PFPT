@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
