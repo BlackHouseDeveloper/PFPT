@@ -240,23 +240,16 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore non-mobile projects only (excluding Infrastructure)
+      - name: Restore Ubuntu-compatible projects only
         run: |
+          # Only Domain project can build on Ubuntu without mobile dependencies
           dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          echo "Note: Web, Infrastructure, Shared, Tests, and Seeder formatted on macOS due to mobile dependencies"
 
-      - name: Check code formatting (StyleCop) - consolidated for non-mobile projects
+      - name: Check code formatting (StyleCop) - Ubuntu-compatible project only
         run: |
-          # Format check for non-mobile projects in parallel
-          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic &
-          
-          # Wait for all background jobs
-          wait
+          # Only format Domain project on Ubuntu
+          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
 
   analyze:
     name: Roslynator Static Analysis
@@ -275,23 +268,16 @@ jobs:
       - name: Install Roslynator
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Restore non-mobile projects only (excluding Infrastructure)
+      - name: Restore Ubuntu-compatible projects only  
         run: |
+          # Only Domain project can build on Ubuntu without mobile dependencies
           dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          echo "Note: Web, Infrastructure, Shared, Tests, and Seeder analyzed on macOS due to mobile dependencies"
 
-      - name: Run Roslynator analysis on non-mobile projects - consolidated
+      - name: Run Roslynator analysis on Ubuntu-compatible project only
         run: |
-          # Parallel analysis for better performance
-          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info &
-          
-          # Wait for all background jobs
-          wait
+          # Only analyze Domain project on Ubuntu
+          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
 
   build:
     name: Build & Guardrails (${{ matrix.tfm }})
@@ -361,38 +347,47 @@ jobs:
         if: matrix.tfm != 'net8.0'
         run: dotnet workload restore
          
-      - name: Restore solution (mobile builds) or individual projects (net8.0)
+      - name: Restore projects (strategy based on matrix.tfm)
         run: |
           if [ "${{ matrix.tfm }}" == "net8.0" ]; then
-            echo "Restoring individual non-mobile projects..."
+            echo "Restoring Ubuntu-compatible project (Domain only)..."
+            # Only Domain project can build on Ubuntu without mobile dependencies
             dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
-            dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file  
-            dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
-            dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
-            dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+            echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
           else
             echo "Restoring full solution for MAUI builds..."
             dotnet restore ./PhysicallyFitPT.sln --use-lock-file
           fi
 
-      - name: Build net8.0 projects (Web, Infrastructure, etc.)
+      - name: Build net8.0 projects (Ubuntu-compatible only)
         if: matrix.tfm == 'net8.0'
         run: |
-          dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release -f net8.0 --nologo
+          # Build only Domain project that doesn't have mobile dependencies
+          echo "Building Ubuntu-compatible net8.0 project..."
           dotnet build ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj -c Release -f net8.0 --nologo
+          echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
 
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
-      - name: Check MAUI-related project formatting (macOS only, consolidated)
+      - name: Build net8.0 projects on macOS (projects with mobile dependencies)
         if: matrix.tfm == 'net8.0-ios'
         run: |
-          # Consolidated format checking for MAUI-related projects
+          echo "Building net8.0 projects that have mobile dependencies..."
+          dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj -c Release -f net8.0 --nologo
+
+      - name: Check format for projects with mobile dependencies (macOS only, consolidated)
+        if: matrix.tfm == 'net8.0-ios'
+        run: |
+          # Consolidated format checking for projects with mobile dependencies
+          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic &
           dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic &
           dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic &
           dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic &
@@ -400,14 +395,17 @@ jobs:
           # Wait for all background jobs
           wait
 
-      - name: Install Roslynator for MAUI analysis (macOS only)
+      - name: Install Roslynator for macOS analysis (iOS build only)
         if: matrix.tfm == 'net8.0-ios'
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Run Roslynator analysis on MAUI-related projects (macOS only, consolidated)
+      - name: Run Roslynator analysis on projects with mobile dependencies (macOS only, consolidated)
         if: matrix.tfm == 'net8.0-ios'
         run: |
-          # Consolidated analysis for MAUI-related projects
+          # Consolidated analysis for projects with mobile dependencies
+          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info &
           roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info &
           roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info &
           roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning &
@@ -446,11 +444,25 @@ jobs:
         if: matrix.tfm != 'net8.0'
         run: dotnet publish ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
-      - name: Verify EF design-time uses Sqlite (run once)
-        if: matrix.tfm == 'net8.0'
+      - name: Verify EF design-time uses Sqlite (run on macOS build only)
+        if: matrix.tfm == 'net8.0-ios'
         run: |
           dotnet tool restore || true
           dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
+
+      - name: Run unit tests (macOS only, since tests require Infrastructure)
+        if: matrix.tfm == 'net8.0-ios'
+        run: |
+          echo "Running unit tests..."
+          dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
+          
+      - name: Upload test results on failure
+        if: failure() && matrix.tfm == 'net8.0-ios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 7
 
       - name: Upload build logs on failure
         if: failure()
@@ -463,42 +475,18 @@ jobs:
           retention-days: 7
 
   test:
-    name: Unit Tests
+    name: Unit Tests (Consolidated with iOS build)
     needs: build
     runs-on: ubuntu-latest
+    if: false  # Disabled - tests now run as part of iOS build to avoid duplicate macOS runner
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET SDK 8.0.x
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
-
-      - name: Restore non-mobile projects only
-        run: |
-          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
-          dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
-
-      - name: Run unit tests
-        run: dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
-
-      - name: Upload test results on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: TestResults/
-          retention-days: 7
+      - name: Tests moved to iOS build
+        run: echo "Unit tests now run as part of the iOS build job to optimize runner usage"
 
   notify-failure:
     name: Notify on Failure
     if: failure() && github.event_name == 'pull_request'
-    needs: [format-check, analyze, build, test]
+    needs: [format-check, analyze, build]
     runs-on: ubuntu-latest
     steps:
       - name: Get failed jobs and notify
@@ -660,7 +648,7 @@ jobs:
   request-review:
     name: Auto-Request Review
     if: success() && github.event_name == 'pull_request'
-    needs: [format-check, analyze, build, test]
+    needs: [format-check, analyze, build]
     runs-on: ubuntu-latest
     steps:
       - name: Request reviewers on success
@@ -717,7 +705,7 @@ jobs:
   diff-summary:
     name: Diff Summary
     if: github.event_name == 'pull_request'
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
