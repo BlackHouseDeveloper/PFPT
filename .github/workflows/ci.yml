@@ -291,8 +291,34 @@ jobs:
           java-version: "17"
 
       - name: Install MAUI workload (once)
-        run: dotnet workload install maui
-
+        run: |
+          echo "Installing MAUI workloads..."
+          # First, update workload manifests
+          dotnet workload update --skip-sign-check || echo "Workload update failed, continuing..."
+           
+           # Install MAUI workload with multiple fallback strategies
+           if ! dotnet workload install maui --skip-sign-check; then
+             echo "Standard MAUI workload installation failed, trying individual components..."
+             
+             # Try installing individual Android/iOS/macCatalyst workloads
+             dotnet workload install android --skip-sign-check || echo "Android workload failed"
+             dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
+             dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
+             
+             # Verify we have at least some workloads installed
+             if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
+               echo "❌ No mobile workloads installed. This may cause build failures."
+               echo "Available workloads:"
+               dotnet workload search
+               exit 1
+             fi
+           fi
+           
+           echo "✅ Successfully installed workloads:"
+           dotnet workload list
+      - name: Restore .NET workloads
+        run: dotnet workload restore
+         
       - name: Restore solution (lock files)
         run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
 
