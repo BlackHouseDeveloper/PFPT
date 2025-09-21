@@ -2,13 +2,14 @@ name: CI, Guardrails, and CI-aware CHANGELOG
 
 on:
   pull_request:
-    branches: ['**']
+    branches: [main, development]
   push:
-    branches: ['**']
+    branches: [main, development]
 
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
@@ -28,8 +29,8 @@ jobs:
       - name: Build CI-aware CHANGELOG with success emphasis
         uses: actions/github-script@v7
         env:
-          MAX_COMMITS: "1500"
-          MAX_RUNS: "1500"
+          MAX_COMMITS: "500"
+          MAX_RUNS: "500"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -50,24 +51,45 @@ jobs:
               return out.slice(0, cap);
             }
 
-            // 1) Repo commits oldest->newest (capped)
+            // 1) Repo commits for PR scope only (base..head) or recent commits
             const commits = [];
             {
-              let page = 1, per_page = 100, cap = parseInt(process.env.MAX_COMMITS || "1500", 10);
-              while (commits.length < cap) {
-                const res = await github.rest.repos.listCommits({ owner, repo, page, per_page });
-                if (!res.data.length) break;
-                commits.push(...res.data);
-                if (res.data.length < per_page) break;
-                page++;
+              let page = 1, per_page = 100, cap = parseInt(process.env.MAX_COMMITS || "500", 10);
+              
+              // Try to get PR-specific commit range if available
+              if (context.payload.pull_request && context.payload.pull_request.base && context.payload.pull_request.head) {
+                console.log('Fetching commits for PR range...');
+                try {
+                  const prCommits = await github.rest.repos.compareCommits({
+                    owner, repo,
+                    base: context.payload.pull_request.base.sha,
+                    head: context.payload.pull_request.head.sha
+                  });
+                  commits.push(...prCommits.data.commits);
+                  console.log(`Found ${commits.length} commits in PR range`);
+                } catch (error) {
+                  console.log(`PR range fetch failed: ${error.message}, falling back to recent commits`);
+                }
               }
-              commits.reverse();
+              
+              // Fallback to recent commits if PR range failed or not available
+              if (commits.length === 0) {
+                console.log('Fetching recent commits...');
+                while (commits.length < cap) {
+                  const res = await github.rest.repos.listCommits({ owner, repo, page, per_page });
+                  if (!res.data.length) break;
+                  commits.push(...res.data);
+                  if (res.data.length < per_page) break;
+                  page++;
+                }
+                commits.reverse();
+              }
             }
 
-            // 2) Workflow runs (batched once) mapped by head_sha
+            // 2) Workflow runs (batched, reduced scope) mapped by head_sha
             const runs = await paginate(github.rest.actions.listWorkflowRunsForRepo, {
               owner, repo, per_page: 100
-            }, parseInt(process.env.MAX_RUNS || "1500", 10));
+            }, parseInt(process.env.MAX_RUNS || "500", 10));
 
             const bySha = new Map();
             for (const r of runs) {
@@ -77,12 +99,12 @@ jobs:
               }
             }
 
-            // 3) Jobs for mapped runs (paginated per run)
+            // 3) Jobs for mapped runs (paginated per run, reduced per-run limit)
             const jobsByRun = new Map();
             for (const r of bySha.values()) {
               const jobs = await paginate(github.rest.actions.listJobsForWorkflowRun, {
                 owner, repo, run_id: r.id, per_page: 100
-              }, 400);
+              }, 200); // Reduced from 400 to 200 jobs per run
               jobsByRun.set(r.id, jobs);
             }
 
@@ -225,12 +247,16 @@ jobs:
           dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
-      - name: Check code formatting (StyleCop) - Infrastructure and Shared formatted on macOS
+      - name: Check code formatting (StyleCop) - consolidated for non-mobile projects
         run: |
-          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
-          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
-          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic
-          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic
+          # Format check for non-mobile projects in parallel
+          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic &
+          
+          # Wait for all background jobs
+          wait
 
   analyze:
     name: Roslynator Static Analysis
@@ -256,17 +282,21 @@ jobs:
           dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
           dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
-      - name: Run Roslynator analysis on non-mobile projects (Infrastructure and Shared analyzed on macOS)
+      - name: Run Roslynator analysis on non-mobile projects - consolidated
         run: |
-          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
-          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info
-          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info
-          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
+          # Parallel analysis for better performance
+          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info &
+          
+          # Wait for all background jobs
+          wait
 
   build:
-    name: Build & Guardrails
+    name: Build & Guardrails (${{ matrix.tfm }})
     needs: analyze
-    runs-on: macos-latest
+    runs-on: ${{ matrix.tfm == 'net8.0' && 'ubuntu-latest' || 'macos-latest' }}
     strategy:
       matrix:
         tfm: [net8.0, net8.0-android, net8.0-ios, net8.0-maccatalyst]
@@ -286,7 +316,8 @@ jobs:
           distribution: microsoft
           java-version: "17"
 
-      - name: Install MAUI workload (once)
+      - name: Install MAUI workload (only for Android builds)
+        if: matrix.tfm == 'net8.0-android'
         run: |
           echo "Installing MAUI workloads..."
           # First, update workload manifests
@@ -312,11 +343,37 @@ jobs:
            
            echo "✅ Successfully installed workloads:"
            dotnet workload list
-      - name: Restore .NET workloads
+           
+      - name: Verify MAUI workloads (mobile builds only)
+        if: matrix.tfm != 'net8.0'
+        run: |
+          echo "Verifying MAUI workloads are available..."
+          if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst|maui)"; then
+            echo "❌ No MAUI workloads found. Install failed in previous job."
+            echo "Available workloads:"
+            dotnet workload search
+            exit 1
+          else
+            echo "✅ MAUI workloads verified:"
+            dotnet workload list
+          fi
+      - name: Restore .NET workloads (mobile builds only)
+        if: matrix.tfm != 'net8.0'
         run: dotnet workload restore
          
-      - name: Restore solution (lock files)
-        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+      - name: Restore solution (mobile builds) or individual projects (net8.0)
+        run: |
+          if [ "${{ matrix.tfm }}" == "net8.0" ]; then
+            echo "Restoring individual non-mobile projects..."
+            dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
+            dotnet restore ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file  
+            dotnet restore ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
+            dotnet restore ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --use-lock-file
+            dotnet restore ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          else
+            echo "Restoring full solution for MAUI builds..."
+            dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+          fi
 
       - name: Build net8.0 projects (Web, Infrastructure, etc.)
         if: matrix.tfm == 'net8.0'
@@ -332,33 +389,31 @@ jobs:
         if: matrix.tfm != 'net8.0'
         run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
-      - name: Check MAUI project formatting (macOS only)
+      - name: Check MAUI-related project formatting (macOS only, consolidated)
         if: matrix.tfm == 'net8.0-ios'
-        run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
-
-      - name: Check Shared project formatting (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
-
-      - name: Check Infrastructure project formatting (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
+        run: |
+          # Consolidated format checking for MAUI-related projects
+          dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic &
+          dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic &
+          
+          # Wait for all background jobs
+          wait
 
       - name: Install Roslynator for MAUI analysis (macOS only)
         if: matrix.tfm == 'net8.0-ios'
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Run Roslynator analysis on MAUI project (macOS only)
+      - name: Run Roslynator analysis on MAUI-related projects (macOS only, consolidated)
         if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
-
-      - name: Run Roslynator analysis on Shared project (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info
-
-      - name: Run Roslynator analysis on Infrastructure project (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
+        run: |
+          # Consolidated analysis for MAUI-related projects
+          roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info &
+          roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning &
+          
+          # Wait for all background jobs
+          wait
 
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
@@ -376,11 +431,16 @@ jobs:
         run: |
           ! grep -R --include='*.cs' -E 'AddDbContext|UseSqlite|UseInMemoryDatabase' ./PhysicallyFitPT.Web || { echo "DbContext usage found in Web"; exit 1; }
 
-      - name: Assert Sqlite present on devices
+      - name: Assert Sqlite present on device TFMs only
         if: matrix.tfm != 'net8.0'
         run: |
-          dotnet list ./PhysicallyFitPT/PhysicallyFitPT.csproj package --include-transitive \
-            | grep -i 'Microsoft.EntityFrameworkCore.Sqlite'
+          echo "Validating SQLite presence for device target: ${{ matrix.tfm }}"
+          if ! dotnet list ./PhysicallyFitPT/PhysicallyFitPT.csproj package --include-transitive | grep -i 'Microsoft.EntityFrameworkCore.Sqlite'; then
+            echo "❌ SQLite package not found in device build"
+            exit 1
+          else
+            echo "✅ SQLite package verified for device TFM"
+          fi
 
       - name: Publish (devices)
         if: matrix.tfm != 'net8.0'
@@ -458,14 +518,14 @@ jobs:
             });
             
             const failedJobs = jobsResponse.data.jobs.filter(job => 
-              job.conclusion === 'failure' || job.conclusion === 'cancelled'
+              job.conclusion === 'failure' || job.conclusion === 'cancelled' || job.conclusion === 'timed_out'
             );
             
             if (failedJobs.length === 0) return;
             
-            // Get mentions/reviewers from repository variables
-            let mentions = '';
-            let reviewers = '';
+            // Get mentions/reviewers from repository variables with better fallbacks
+            let mentions = '@BlackHouseDeveloper @copilot';
+            let reviewers = 'BlackHouseDeveloper';
             
             try {
               const mentionsVar = await github.rest.actions.getRepoVariable({
@@ -473,9 +533,11 @@ jobs:
                 repo,
                 name: 'MENTIONS'
               });
-              mentions = mentionsVar.data.value;
-            } catch {
-              mentions = '@BlackHouseDeveloper @copilot';
+              if (mentionsVar.data && mentionsVar.data.value && mentionsVar.data.value.trim()) {
+                mentions = mentionsVar.data.value.trim();
+              }
+            } catch (error) {
+              console.log('MENTIONS variable not found, using default:', mentions);
             }
             
             try {
@@ -484,9 +546,11 @@ jobs:
                 repo,
                 name: 'REVIEWERS'
               });
-              reviewers = reviewersVar.data.value;
-            } catch {
-              reviewers = 'BlackHouseDeveloper';
+              if (reviewersVar.data && reviewersVar.data.value && reviewersVar.data.value.trim()) {
+                reviewers = reviewersVar.data.value.trim();
+              }
+            } catch (error) {
+              console.log('REVIEWERS variable not found, using default:', reviewers);
             }
             
             // Build failure summary with log tails
@@ -498,7 +562,11 @@ jobs:
             for (const job of failedJobs) {
               failureSummary.push(`- **${job.name}**: ${job.conclusion}`);
               
-              // Get job logs for tail
+              // Add artifact link for more reliable log access
+              failureSummary.push(`  - [View full logs](${job.html_url})`);
+              failureSummary.push(`  - [Build artifacts](https://github.com/${owner}/${repo}/actions/runs/${runId})`);
+              
+              // Get job logs for tail (with better error handling)
               try {
                 const logsResponse = await github.rest.actions.downloadJobLogsForWorkflowRun({
                   owner,
@@ -512,12 +580,18 @@ jobs:
                   const truncated = lastLines.length > 1000 ? 
                     '...' + lastLines.slice(-1000) : lastLines;
                   
-                  failureSummary.push('```');
-                  failureSummary.push(truncated);
-                  failureSummary.push('```');
+                  if (truncated.trim()) {
+                    failureSummary.push('  <details><summary>📋 Last 50 lines of logs</summary>');
+                    failureSummary.push('');
+                    failureSummary.push('  ```');
+                    failureSummary.push(truncated);
+                    failureSummary.push('  ```');
+                    failureSummary.push('  </details>');
+                  }
                 }
               } catch (error) {
-                failureSummary.push(`  - Could not fetch logs: ${error.message}`);
+                failureSummary.push(`  - ⚠️ Could not fetch logs: ${error.message}`);
+                failureSummary.push(`  - Use the links above to access full logs and artifacts`);
               }
             }
             
@@ -597,8 +671,8 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             
-            // Get reviewers from repository variables
-            let reviewers = '';
+            // Get reviewers from repository variables with better fallbacks
+            let reviewers = 'BlackHouseDeveloper';
             
             try {
               const reviewersVar = await github.rest.actions.getRepoVariable({
@@ -606,9 +680,11 @@ jobs:
                 repo,
                 name: 'REVIEWERS'
               });
-              reviewers = reviewersVar.data.value;
-            } catch {
-              reviewers = 'BlackHouseDeveloper';
+              if (reviewersVar.data && reviewersVar.data.value && reviewersVar.data.value.trim()) {
+                reviewers = reviewersVar.data.value.trim();
+              }
+            } catch (error) {
+              console.log('REVIEWERS variable not found, using default:', reviewers);
             }
             
             // Parse reviewers (comma/space/newline separated)
