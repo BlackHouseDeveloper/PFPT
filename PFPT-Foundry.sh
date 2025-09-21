@@ -74,7 +74,6 @@ if [[ "$OS_TYPE" == "macOS" ]] && dotnet --info 2>/dev/null | grep -qi 'homebrew
   export NUGET_PACKAGES="${NUGET_PACKAGES:-$HOME/.nuget/packages}"
 fi
 
-# ---- Command Line Argument Processing -------------------------------------
 
 # ---- Command Line Argument Processing -------------------------------------
 
