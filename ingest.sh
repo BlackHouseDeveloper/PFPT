@@ -194,9 +194,9 @@ for p in "${projects[@]}"; do
   kind="${kind_tfm%%|*}"
   tfm="${kind_tfm#*|}"
 
-  rel="$(python3 - <<EOF
+  rel="$(python3 - "$p" <<'EOF'
 import os,sys
-print(os.path.relpath("$p","."))
+print(os.path.relpath(sys.argv[1], "."))
 EOF
 )"
   # project refs (ProjectReference)
@@ -213,7 +213,11 @@ EOF
     # normalize reference path relative to repo root
     rrel="$(python3 - <<EOF
 import os,sys
-print(os.path.relpath(os.path.normpath(os.path.join(os.path.dirname("$rel"),"$r")),"."))
+base = sys.argv[1]
+ref  = sys.argv[2]
+import os.path as p
+joined = p.normpath(p.join(p.dirname(base), ref))
+print(p.relpath(joined, "."))
 EOF
 )"
     if (( JQ_PRESENT )); then
