@@ -18,7 +18,7 @@ using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Services;
 using PhysicallyFitPT.Shared;
-using PhysicallyFitPT.UI.Components.Layout;
+using PhysicallyFitPT.Shared.Components.Layout;
 
 /// <summary>
 /// Provides methods for configuring and creating the MAUI application.
@@ -89,6 +89,7 @@ public static class MauiProgram
 
     AppDomain.CurrentDomain.AssemblyResolve += static (_, args) =>
     {
+      // Handle legacy references to PhysicallyFitPT.UI (now merged into PhysicallyFitPT.Shared)
       if (args.Name.StartsWith("PhysicallyFitPT.UI", StringComparison.Ordinal))
       {
         return typeof(ResponsiveMainLayout).Assembly;
