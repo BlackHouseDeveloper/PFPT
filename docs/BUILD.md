@@ -200,8 +200,8 @@ echo $ANDROID_HOME
 
 **iOS Code Signing**
 ```bash
-# Open project in Xcode to configure signing
-open PhysicallyFitPT/Platforms/iOS/PhysicallyFitPT.iOS.csproj
+# Open iOS platform folder in Xcode to configure signing
+open PhysicallyFitPT/Platforms/iOS/
 ```
 
 **Permission Errors**
