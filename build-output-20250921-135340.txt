@@ -1,0 +1,109 @@
+PFPT Clean Build - 20250921-135340
+---------------------------------------
+[33m[1m▶ Shutting down build servers...[m
+Shutting down MSBuild server...
+Shutting down VB/C# compiler server...
+MSBuild server shut down successfully.
+VB/C# compiler server shut down successfully.
+[33m[1m▶ Removing Android lp/ intermediates (if present)...[m
+[33m[1m▶ Removing bin/ and obj/ folders...[m
+
+[33m[1m▶ dotnet clean[m
+----- dotnet clean -----
+$ dotnet clean
+MSBuild version 17.8.32+74df0b3f5 for .NET
+Build started 09/21/2025 13:53:42.
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" on node 1 (Clean target(s)).
+     1>ValidateSolutionConfiguration:
+         Building solution configuration "Debug|Any CPU".
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj" (3) on node 2 (Clean target(s)).
+     3>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (4) on node 3 (Clean target(s)).
+     4>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     3>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj" (Clean target(s)).
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (2) on node 4 (Clean target(s)).
+     2>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (5) on node 1 (Clean target(s)).
+     5>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" (6:2) on node 3 (Clean target(s)).
+     6>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj" (7:4) on node 2 (Clean target(s)).
+     7>CoreClean:
+         Creating directory "obj/Debug/net8.0/".
+     7>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj" (Clean target(s)).
+     5>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj" (Clean target(s)).
+     6>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" (Clean target(s)).
+     4>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj" (Clean target(s)).
+     2>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" (Clean target(s)).
+     1>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (1) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8) on node 4 (Clean target(s)).
+     8>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8:2) on node 1 (Clean target(s)).
+     8>/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+     8>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)) -- FAILED.
+     8>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8:3) on node 2 (Clean target(s)).
+     8>/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+     8>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)) -- FAILED.
+     8>Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8) is building "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (8:4) on node 3 (Clean target(s)).
+     8>/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+     8>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)) -- FAILED.
+     8>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target(s)) -- FAILED.
+     1>Done Building Project "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (Clean target(s)) -- FAILED.
+
+Build FAILED.
+
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (Clean target) (1) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8:2) ->
+       (_CheckForMissingWorkload target) -> 
+         /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+       /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+
+
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (Clean target) (1) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8:3) ->
+         /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+       /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-ios]
+
+
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT.sln" (Clean target) (1) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8) ->
+       "/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj" (Clean target) (8:4) ->
+         /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+       /usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-maccatalyst]
+
+    0 Warning(s)
+    3 Error(s)
+
+Time Elapsed 00:00:03.09
+
+[33m[1m▶ dotnet restore[m
+----- dotnet restore -----
+$ dotnet restore
+  Determining projects to restore...
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+
+[33m[1m▶ dotnet build (warnaserror)[m
+----- dotnet build (warnaserror) -----
+$ dotnet build -warnaserror
+MSBuild version 17.8.32+74df0b3f5 for .NET
+  Determining projects to restore...
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+
+Build FAILED.
+
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To build this project, the following workloads must be installed: wasi-experimental [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+/usr/lib/dotnet/sdk/8.0.119/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.Sdk.ImportWorkloads.targets(38,5): error NETSDK1147: To install these workloads, run the following command: dotnet workload restore [/home/runner/work/PFPT/PFPT/PhysicallyFitPT/PhysicallyFitPT.csproj::TargetFramework=net8.0-android]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.54
