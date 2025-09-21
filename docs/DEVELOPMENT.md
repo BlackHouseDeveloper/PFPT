@@ -181,6 +181,118 @@ The project includes automated analyzers:
 - **Roslynator.Analyzers** - Code quality improvements
 - **TreatWarningsAsErrors** - Ensures clean builds
 
+## Automation Features
+
+PFPT includes several automation capabilities to streamline clinical workflows and reduce manual tasks.
+
+### Automated Messaging
+
+The `AutoMessagingService` provides patient communication automation:
+
+```csharp
+// Example: Sending automated appointment reminders
+public interface IAutoMessagingService
+{
+    Task SendAppointmentReminderAsync(Guid appointmentId);
+    Task SendFollowUpMessageAsync(Guid patientId, string templateType);
+    Task ScheduleAutomatedMessagesAsync(Guid patientId, MessageScheduleConfig config);
+}
+```
+
+#### Key Features
+- **Appointment Reminders**: Automatic notifications before scheduled visits
+- **Follow-up Messages**: Post-treatment check-ins and care instructions
+- **Customizable Templates**: Configurable message content for different scenarios
+- **Scheduling System**: Time-based message delivery with patient preferences
+
+#### Configuration
+Message templates and schedules are defined in the `PhysicallyFitPT.Shared` project:
+
+```csharp
+public class MessageTemplate
+{
+    public string Type { get; set; } // "reminder", "followup", "assessment"
+    public string Subject { get; set; }
+    public string Content { get; set; }
+    public TimeSpan SendBefore { get; set; } // For appointment reminders
+}
+```
+
+### PDF Export Automation
+
+The `PdfRenderer` service enables automated report generation:
+
+```csharp
+public interface IPdfRenderer
+{
+    byte[] RenderSimple(string title, string body);
+    byte[] RenderPatientSummary(Patient patient, List<Appointment> appointments);
+    byte[] RenderTreatmentPlan(Guid patientId, List<Goal> goals);
+}
+```
+
+#### Automation Capabilities
+- **Batch Report Generation**: Export multiple patient reports for billing
+- **Scheduled Reports**: Automatic generation of progress summaries
+- **Template Customization**: Modify layouts and branding through QuestPDF
+- **Data Integration**: Pulls from multiple services for comprehensive reports
+
+#### Usage Examples
+```csharp
+// Generate patient summary for billing
+var patientService = serviceProvider.GetService<IPatientService>();
+var pdfRenderer = serviceProvider.GetService<IPdfRenderer>();
+
+var patient = await patientService.GetByIdAsync(patientId);
+var appointments = await patientService.GetAppointmentsAsync(patientId);
+var summaryPdf = pdfRenderer.RenderPatientSummary(patient, appointments);
+
+// Save or email the PDF
+await File.WriteAllBytesAsync($"patient-summary-{patient.MRN}.pdf", summaryPdf);
+```
+
+### Assessment Management Automation
+
+The `QuestionnaireService` automates patient assessment workflows:
+
+```csharp
+public interface IQuestionnaireService
+{
+    Task<QuestionnaireResponse> CreateResponseAsync(Guid questionnaireId, Guid patientId);
+    Task<AssessmentScore> CalculateScoreAsync(QuestionnaireResponse response);
+    Task<List<OutcomeMeasure>> GetOutcomeTrendsAsync(Guid patientId);
+}
+```
+
+#### Automated Features
+- **Smart Scoring**: Automatic calculation of standardized assessment scores (TUG, BBS, NPRS)
+- **Outcome Tracking**: Trend analysis and progress monitoring
+- **Reminder Systems**: Scheduled follow-up assessments
+- **Data Validation**: Real-time validation of assessment responses
+
+#### Supported Assessments
+- **Timed Up and Go (TUG)**: Fall risk and mobility assessment
+- **Berg Balance Scale (BBS)**: Balance confidence evaluation
+- **Numeric Pain Rating Scale (NPRS)**: Pain level tracking
+- **Functional assessments**: Custom clinic-specific evaluations
+
+### Workflow Integration
+
+Automation features integrate seamlessly with the clinical workflow:
+
+1. **Patient Check-in**: Automatic assessment scheduling based on treatment protocols
+2. **Documentation**: Auto-population of common fields and templates
+3. **Billing**: Automated report generation with CPT code integration
+4. **Follow-up**: Scheduled messaging based on treatment plans and outcomes
+
+### Configuration and Customization
+
+Automation settings are configurable through:
+- **appsettings.json**: Global automation preferences
+- **Database Settings**: Per-clinic customization
+- **User Preferences**: Individual clinician settings
+- **Template Management**: Custom message and report templates
+
 ## Project Structure Deep Dive
 
 ### Adding New Features
