@@ -20,11 +20,11 @@
 ## Changelog Policy
 
 - `/docs/CHANGELOG.md` is a primary context document for agents and reviewers.
-- The workflow generates the changelog first on PRs, emphasizing successes (✅) for quick triage.
+- **Post-merge strategy**: The workflow generates the changelog automatically after merges to main branch, preventing merge conflicts and ensuring accuracy.
 - Premium API usage is minimized:
   - Fetch workflow runs once, map by `head_sha`.
   - Paginate and cap runs/commits/jobs.
-  - PR-scoped commit ranges when available to reduce API calls.
+  - Only runs on merge to main, not on every PR.
   - Write back once with `[skip ci]`.
 
 ## Failure Notifications
