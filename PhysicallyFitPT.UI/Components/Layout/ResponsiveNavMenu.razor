@@ -1,0 +1,92 @@
+@* Responsive navigation menu that adapts to platform and screen size *@
+@using PhysicallyFitPT.Shared
+
+@inject IPlatformInfo PlatformInfo
+
+<nav class="pfp-nav" data-platform="@PlatformInfo.Platform.ToString().ToLower()" data-device="@PlatformInfo.Device.ToString().ToLower()">
+  @if (ShouldShowSideNav())
+  {
+    <div class="pfp-nav-sidebar">
+      @RenderNavItems()
+    </div>
+  }
+  else
+  {
+    <div class="pfp-nav-mobile">
+      <button class="pfp-nav-toggle" @onclick="ToggleMobileNav" aria-label="Toggle navigation">
+        <span class="pfp-hamburger"></span>
+      </button>
+      
+      @if (showMobileNav)
+      {
+        <div class="pfp-nav-overlay" @onclick="CloseMobileNav"></div>
+        <div class="pfp-nav-drawer">
+          @RenderNavItems()
+        </div>
+      }
+    </div>
+  }
+</nav>
+
+@code {
+  private bool showMobileNav = false;
+
+  private bool ShouldShowSideNav()
+  {
+    // Show sidebar for desktop browsers and desktop MAUI apps
+    return PlatformInfo.Device == DeviceType.Desktop || 
+           (PlatformInfo.Platform == PlatformType.Web && (PlatformInfo.ScreenWidth ?? 0) >= 1024);
+  }
+
+  private void ToggleMobileNav()
+  {
+    showMobileNav = !showMobileNav;
+  }
+
+  private void CloseMobileNav()
+  {
+    showMobileNav = false;
+  }
+
+  private RenderFragment RenderNavItems() => __builder =>
+  {
+    <ul class="pfp-nav-list">
+      <li class="pfp-nav-item">
+        <a href="/" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">🏠</span>
+          Dashboard
+        </a>
+      </li>
+      <li class="pfp-nav-item">
+        <a href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">👥</span>
+          Patients
+        </a>
+      </li>
+      <li class="pfp-nav-item">
+        <a href="/appointments" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📅</span>
+          Appointments
+        </a>
+      </li>
+      <li class="pfp-nav-item">
+        <a href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📝</span>
+          Eval Note
+        </a>
+      </li>
+      <li class="pfp-nav-item">
+        <a href="/admin/automessaging" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📨</span>
+          Auto Messaging
+        </a>
+      </li>
+      <li class="pfp-nav-item">
+        <a href="/ui-kit" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">🎨</span>
+          UI Kit
+        </a>
+      </li>
+    </ul>
+  };
+}
