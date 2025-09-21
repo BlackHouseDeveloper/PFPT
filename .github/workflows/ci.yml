@@ -295,36 +295,32 @@ jobs:
           echo "Installing MAUI workloads..."
           # First, update workload manifests
           dotnet workload update --skip-sign-check || echo "Workload update failed, continuing..."
-          
-          # Install MAUI workload with multiple fallback strategies
-          if ! dotnet workload install maui --skip-sign-check; then
-            echo "Standard MAUI workload installation failed, trying individual components..."
-            
-            # Try installing individual Android/iOS/macCatalyst workloads
-            dotnet workload install android --skip-sign-check || echo "Android workload failed"
-            dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
-            dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
-            
-            # Verify we have at least some workloads installed
-            if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
-              echo "❌ No mobile workloads installed. This may cause build failures."
-              echo "Available workloads:"
-              dotnet workload search
-              exit 1
-            fi
-          fi
-          
-          echo "✅ Successfully installed workloads:"
-          dotnet workload list
-
+           
+           # Install MAUI workload with multiple fallback strategies
+           if ! dotnet workload install maui --skip-sign-check; then
+             echo "Standard MAUI workload installation failed, trying individual components..."
+             
+             # Try installing individual Android/iOS/macCatalyst workloads
+             dotnet workload install android --skip-sign-check || echo "Android workload failed"
+             dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
+             dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
+             
+             # Verify we have at least some workloads installed
+             if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
+               echo "❌ No mobile workloads installed. This may cause build failures."
+               echo "Available workloads:"
+               dotnet workload search
+               exit 1
+             fi
+           fi
+           
+           echo "✅ Successfully installed workloads:"
+           dotnet workload list
+      - name: Restore .NET workloads
+        run: dotnet workload restore
+         
       - name: Restore solution (lock files)
-        run: |
-          echo "Restoring solution with lock files..."
-          # Remove any stale lock files that might have cached WebAssembly dependencies
-          find . -name "packages.lock.json" -path "*/PhysicallyFitPT/*" -delete || true
-          
-          # Restore solution and regenerate lock files
-          dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+        run: dotnet restore ./PhysicallyFitPT.sln --use-lock-file
 
       - name: Build net8.0 projects (Web, Infrastructure, etc.)
         if: matrix.tfm == 'net8.0'
@@ -338,17 +334,7 @@ jobs:
 
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
-        run: |
-          echo "Building MAUI app for target framework: ${{ matrix.tfm }}"
-          echo "Checking for any remaining WebAssembly dependencies..."
-          if grep -r "wasm\|wasi" PhysicallyFitPT/ --include="*.csproj" --include="*.json"; then
-            echo "⚠️  Found WebAssembly references in MAUI project"
-          else
-            echo "✅ No WebAssembly references found in MAUI project"
-          fi
-          
-          # Build the MAUI project for the specific target framework
-          dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
+        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
 
       - name: Check MAUI project formatting (macOS only)
         if: matrix.tfm == 'net8.0-ios'
@@ -364,7 +350,7 @@ jobs:
 
       - name: Run Roslynator analysis on MAUI project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info  --exclude "**/Microsoft.Maui.Controls.SourceGen/**/*.razor.css.sg.cs"
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
 
       - name: Run Roslynator analysis on Infrastructure project (macOS only)
         if: matrix.tfm == 'net8.0-ios'
