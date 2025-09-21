@@ -143,69 +143,31 @@ Database not found / issues: Ensure you have run the migration (--create-migrati
 iOS build issues: If building for iOS, make sure you’ve opened the project in Xcode at least once to accept any license agreements, and that you have an iOS simulator selected. You might also need to adjust code signing settings in Xcode for the iOS target if you deploy to a physical device.
 Hot Reload/Live Reload: When running the MAUI app, .NET Hot Reload should work if you launch from Visual Studio. For the Blazor Web app, code changes generally require rebuilding (dotnet run will pick up changes on restart). Develop with the approach that suits you (for quick UI iteration, the Web app is convenient; for testing native features, use the MAUI app).
 For any other issues, please check the repository’s issue tracker or contact the maintainers. Happy documenting!
-perl
-Copy code
 
-### CONTRIBUTING.md
+---
 
-```markdown
-# Contributing to PhysicallyFitPT
+## Contributing
 
-Thank you for contributing to the Physically Fit PT project! This guide outlines the conventions and best practices for development to ensure a smooth collaboration.
+We welcome contributions! Please see our contributing guidelines for development standards, branch naming conventions, and pull request process.
 
-## Branch Naming Convention
+### Quick Steps
 
-We use a branch naming strategy to categorize the work being done:
-- **Feature branches** – use the prefix `feat/` followed by a short description.  
-  *Example:* `feat/patient-intake-form` for a new intake form feature.
-- **Bug fix branches** – use the prefix `fix/` followed by the issue or bug description.  
-  *Example:* `fix/appointment-timezone-bug`.
-- **Refactor branches** – use the prefix `refactor/` for code refactoring or cleanup that doesn’t add new features.  
-  *Example:* `refactor/ui-components-structure`.
+1. **Fork and Clone**: Fork the repository and clone your fork
+2. **Environment Setup**: Run `./PFPT-Foundry.sh` to set up development environment
+3. **Create Branch**: Use conventional naming (`feat/`, `fix/`, `docs/`)
+4. **Make Changes**: Follow coding standards and write tests
+5. **Test Thoroughly**: Run `dotnet test` and verify all platforms build
+6. **Submit PR**: Include clear description and reference any related issues
 
-Use hyphens `-` to separate words, and keep branch names concise yet descriptive. Include the issue number if applicable (e.g., `fix/42-null-pointer-check` for issue #42).
+### Standards
 
-## Pre-Push Checklist
+- **Code Style**: Enforced via StyleCop and Roslynator analyzers
+- **Testing**: Maintain test coverage for new features using xUnit
+- **Documentation**: Update relevant docs for any changes
+- **Architecture**: Follow Clean Architecture and DDD principles
 
-Before pushing your changes or opening a Pull Request, please make sure you have completed the following:
+For detailed contribution guidelines, see `DEVELOPMENT.md`.
 
-1. **Build the Solution:** Run `dotnet build` (or use your IDE’s build command) to ensure all projects compile without errors or warnings.
-2. **Run Tests:** Execute `dotnet test` to run all unit tests. All tests should pass. If you added new functionality, consider adding corresponding tests.
-3. **Code Format & Style:** Ensure your code follows the project’s style guidelines. We use .editorconfig and analyzers (StyleCop, Roslynator) to enforce style. You can automatically format your code by running:  
-   ```bash
-   dotnet format
-(This will catch things like spacing, naming, etc.) The CI pipeline will reject code with formatting issues or compiler warnings, so it’s best to fix them before pushing.
-4. Static Analysis: Pay attention to any warnings or suggestions from analyzers (e.g., IDE suggestions, Roslynator). Treat warnings as errors – our build treats warnings as errors to maintain code quality.
-5. Commit Message: Use clear and descriptive commit messages. Start with a short summary in imperative mood (e.g., “Add X”, “Fix Y”, “Refactor Z”). If the commit addresses a GitHub issue, include a reference (e.g., “Fix #42 - Correct null check in AppointmentService”).
-Writing and Running Tests
-We love contributions that include unit tests. Our test project uses XUnit and an in-memory SQLite database for any tests involving EF Core. Here are some guidelines for writing tests:
-Use In-Memory SQLite: For consistency, use SQLite’s in-memory mode for tests that require a database. This ensures tests are fast and isolated. You can set this up using UseSqlite("DataSource=:memory:") in the DbContextOptions. An example pattern:
-csharp
-Copy code
-var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlite("DataSource=:memory:")
-                .Options;
-using var db = new ApplicationDbContext(options);
-await db.Database.OpenConnectionAsync();
-await db.Database.EnsureCreatedAsync();
-// ... perform test actions, possibly using db or a context factory ...
-In our tests, we often use PooledDbContextFactory<ApplicationDbContext> provided by EF Core to create contexts on the fly
-GitHub
-GitHub
-. The key is opening the connection and calling EnsureCreatedAsync() to materialize the schema in memory.
-Arrange-Act-Assert: Follow the AAA pattern to keep tests readable. Set up your data and context (Arrange), perform the operation (Act), and then assert the expected outcome (Assert).
-Avoid External Dependencies: Tests should not depend on external services or files. The in-memory database and in-memory data structures should be sufficient for most scenarios. If you need to test file generation (e.g., PDF output), consider capturing the output to a byte array or stream (as done in PdfRendererTests) rather than writing to disk.
-Test Naming: Use descriptive test method names that convey intent. For example, SearchAsync_ReturnsEmpty_WhenDatabaseIsEmpty() clearly states what the test is verifying
-GitHub
-GitHub
-.
-Run dotnet test to execute all tests. Make sure new tests pass on the CI as well.
-Making Changes in Infrastructure/Services
-Please do not modify code under PhysicallyFitPT.Infrastructure/Services for feature changes unless it’s related to a bug fix or documentation. That folder contains core service logic (PatientService, AppointmentService, etc.), and active feature development might be in progress. If you need to extend a service, consider creating a new one or discuss with the team via an issue or PR comment. When updating documentation or scripts, ensure that all explanations are clear to other developers. We aim for a self-explanatory codebase.
-Pull Request Guidelines
-Reference any relevant issue numbers in your PR description.
-Provide a summary of the changes you made and why. If your PR is a work-in-progress or exploratory, mark it as a draft.
-If adding or changing UI, include screenshots of the before/after when possible.
-Smaller PRs are easier to review. If your contribution is large, try to break it into smaller logical commits or multiple PRs.
-Be receptive to feedback. We may ask for modifications or clarifications. This is part of the review process to maintain quality and consistency.
-By following these guidelines, you help us maintain a high-quality project and make the review process smoother. We appreciate your effort in contributing to PFPT!
+---
+
+*Happy documenting! 🏥📱*

@@ -1,53 +1,155 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ---- safety & env ----------------------------------------------------------------
-# refuse to run as root (prevents sudo-caused permission mess)
+# ============================================================================
+# PFPT Development Environment Setup Script
+# ============================================================================
+# 
+# This script automates the setup and maintenance of the Physically Fit PT 
+# development environment. It handles project scaffolding, dependency 
+# management, database setup, and development tooling configuration.
+#
+# Features:
+# - Cross-platform compatibility (macOS, Linux, Windows with WSL)
+# - Idempotent operations (safe to run multiple times)
+# - Comprehensive project scaffolding with Clean Architecture
+# - Automated dependency and tool installation
+# - Database migration and seeding capabilities
+# - CI/CD workflow generation
+#
+# Usage:
+#   ./PFPT-Foundry.sh                  # Basic setup
+#   ./PFPT-Foundry.sh --create-migration  # Setup + database migration
+#   ./PFPT-Foundry.sh --seed               # Setup + seed sample data
+#   ./PFPT-Foundry.sh --help               # Show help information
+#
+# ============================================================================
+
+# ---- Platform Detection & Compatibility -----------------------------------
+
+# Detect operating system for platform-specific configurations
+OS_TYPE=""
+case "$(uname -s)" in
+    Darwin*)    OS_TYPE="macOS" ;;
+    Linux*)     OS_TYPE="Linux" ;;
+    CYGWIN*|MINGW*|MSYS*) OS_TYPE="Windows" ;;
+    *)          OS_TYPE="Unknown" ;;
+esac
+
+echo "🔧 PFPT Foundry - Development Environment Setup"
+echo "   Platform: $OS_TYPE"
+echo "   .NET SDK: $(dotnet --version 2>/dev/null || echo 'Not found')"
+echo
+
+# ---- Safety & Environment Checks ------------------------------------------
+
+# Refuse to run as root (prevents sudo-caused permission issues)
 if [ "$EUID" -eq 0 ]; then
-  echo "✋ Do not run this script with sudo. Fix file permissions instead."; exit 1
+  echo "✋ ERROR: Do not run this script with sudo."
+  echo "   This can cause permission issues with created files."
+  echo "   Fix file permissions manually if needed:"
+  echo "   sudo chown -R \$USER:\$USER ."
+  exit 1
 fi
 
-# ensure .NET SDK is installed
+# Ensure .NET SDK is installed and accessible
 if ! command -v dotnet >/dev/null 2>&1; then
-  echo "❌ .NET 8 SDK is not installed or not on PATH. Please install .NET 8.0 SDK."; exit 1
+  echo "❌ ERROR: .NET 8 SDK is not installed or not on PATH."
+  echo "   Please install .NET 8.0 SDK from: https://dotnet.microsoft.com/download/dotnet/8.0"
+  echo "   After installation, verify with: dotnet --version"
+  exit 1
 fi
 
-# Use user-local caches if Homebrew SDK is detected (or if unset)
-if dotnet --info 2>/dev/null | grep -qi 'homebrew'; then
-  echo "⚠️  Homebrew-managed .NET detected; using user-local NuGet/cache dirs."
+# Verify .NET version compatibility
+DOTNET_VERSION=$(dotnet --version 2>/dev/null | cut -d. -f1)
+if [ "$DOTNET_VERSION" -lt 8 ]; then
+  echo "⚠️  WARNING: .NET version $DOTNET_VERSION detected, but .NET 8+ is recommended."
+  echo "   Some features may not work correctly with older versions."
+fi
+
+# Configure user-local caches for Homebrew-managed .NET (macOS specific)
+if [[ "$OS_TYPE" == "macOS" ]] && dotnet --info 2>/dev/null | grep -qi 'homebrew'; then
+  echo "⚠️  Homebrew-managed .NET detected; configuring user-local cache directories."
   export DOTNET_CLI_HOME="${DOTNET_CLI_HOME:-$HOME/.dotnet}"
   export NUGET_PACKAGES="${NUGET_PACKAGES:-$HOME/.nuget/packages}"
 fi
-# ------------------------------------------------------------------------------
 
-# ---------------------------------------------
-# Physically Fit PT – Blazor (MAUI) scaffold (macOS, .NET 8)
-# Clean architecture: domain, services, CI, tests, seed data, shared libs
-# Flags:
-#   --create-migration   Generate initial EF Core migration and update DB
-#   --seed               Seed the local dev DB (uses PFP_DB_PATH or ./dev.physicallyfitpt.db)
-#   -h, --help           Show this help/usage information
-# ---------------------------------------------
-# This script bootstraps or updates the PhysicallyFitPT solution. It is safe to re-run:
-# if projects exist, it will normalize Target Frameworks to .NET 8 and ensure all references,
-# packages, and baseline code are in place (without duplicating content).
-# Do NOT run with sudo; ensure proper permissions for all created files.
+# ---- Command Line Argument Processing -------------------------------------
 
+# ---- Command Line Argument Processing -------------------------------------
+
+# Initialize flags for script operations
 CREATE_MIGRATION=false
 SEED_DATA=false
-if [[ $# -gt 0 ]]; then
+VERBOSE=false
+
+# Process command line arguments
+while [[ $# -gt 0 ]]; do
   case "$1" in
-    --create-migration) CREATE_MIGRATION=true ;;
-    --seed)            SEED_DATA=true ;;
+    --create-migration)
+      CREATE_MIGRATION=true
+      echo "🗃️  Database migration will be created and applied"
+      shift ;;
+    --seed)
+      SEED_DATA=true
+      echo "🌱 Sample data will be seeded to the database"
+      shift ;;
+    --verbose|-v)
+      VERBOSE=true
+      echo "📝 Verbose output enabled"
+      shift ;;
     -h|--help)
-      echo "Usage: $0 [--create-migration] [--seed]"
-      echo "Bootstraps (or updates) the PhysicallyFitPT solution and optional dev database."
-      echo "    --create-migration   Create initial EF Core migration and update the database."
-      echo "    --seed               Seed the dev SQLite database with sample data."
+      cat << 'EOF'
+PFPT-Foundry.sh - Physically Fit PT Development Environment Setup
+
+DESCRIPTION:
+    Bootstraps or updates the PhysicallyFitPT solution with Clean Architecture.
+    Handles project scaffolding, dependency management, and database setup.
+    Safe to run multiple times - won't overwrite existing code or data.
+
+USAGE:
+    ./PFPT-Foundry.sh [OPTIONS]
+
+OPTIONS:
+    --create-migration    Create initial EF Core migration and update database
+                         (Required for first-time setup)
+    
+    --seed               Seed the development SQLite database with sample data
+                         (Patients, appointments, reference codes, etc.)
+    
+    --verbose, -v        Enable verbose output for debugging
+    
+    --help, -h           Show this help information
+
+EXAMPLES:
+    ./PFPT-Foundry.sh                           # Basic project setup
+    ./PFPT-Foundry.sh --create-migration        # Setup + database migration
+    ./PFPT-Foundry.sh --seed                    # Setup + seed sample data
+    ./PFPT-Foundry.sh --create-migration --seed # Full setup with data
+
+ENVIRONMENT VARIABLES:
+    PFP_DB_PATH         Custom path for SQLite database file
+                        (Default: ./dev.physicallyfitpt.db)
+    
+    DOTNET_CLI_HOME     Custom .NET CLI home directory
+    NUGET_PACKAGES      Custom NuGet packages cache directory
+
+REQUIREMENTS:
+    - .NET 8.0 SDK or later
+    - Git (for project initialization)
+    - Platform: macOS, Linux, or Windows with WSL
+
+For more information, see: DEVELOPMENT.md
+EOF
       exit 0 ;;
-    *) echo "Unknown option: $1"; exit 1 ;;
+    *)
+      echo "❌ ERROR: Unknown option '$1'"
+      echo "   Use --help for usage information"
+      exit 1 ;;
   esac
-fi
+done
+
+# ---- Project Configuration ------------------------------------------------
 
 SOLUTION="PhysicallyFitPT"
 APP="$SOLUTION"                   # .NET MAUI Blazor app (multi-target)
