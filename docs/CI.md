@@ -9,7 +9,10 @@
 
 ## Performance Optimizations
 
-- **Runner targeting**: Non-mobile projects (net8.0) build on Ubuntu for cost/speed efficiency.
+- **Strategic runner targeting**: 
+  - Domain project (no dependencies) builds on Ubuntu for cost/speed efficiency
+  - All other projects build on macOS due to mobile framework dependencies
+  - Tests consolidated with iOS build to avoid duplicate macOS runners
 - **MAUI workloads**: Installed once during Android build, verified on other mobile builds.
 - **Parallel execution**: Format checks and analysis run in parallel where possible.
 - **Reduced API usage**: Changelog generation limited to 500 commits/runs vs 1500.
@@ -30,3 +33,14 @@
 - Improved reliability with better error handling for log extraction.
 - Detects `timed_out` jobs in addition to `failure` and `cancelled`.
 - Fallback mechanisms for undefined MENTIONS/REVIEWERS variables.
+
+## Build Strategy
+
+Due to the multi-targeted nature of shared components, the build strategy is:
+
+- **Ubuntu Runner**: Domain project only (fastest, cheapest for dependency-free work)
+- **macOS Runner**: All other projects due to transitive mobile dependencies:
+  - Web, Infrastructure, Shared, Tests, Seeder (net8.0 variants)
+  - PhysicallyFitPT MAUI app (mobile TFMs)
+  
+This provides cost optimization while maintaining compatibility.
