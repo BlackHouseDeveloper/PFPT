@@ -518,3 +518,5 @@ DerivedData/
 
 # Misc IDEs
 .fleet/
+reference/manifest.json
+reference/memory.db

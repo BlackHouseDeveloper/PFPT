@@ -1,0 +1,19 @@
+# Overrides for RepoMemory.Indexer only
+root = false
+
+[*.cs]
+# Documentation (SA16xx e.g., SA1633 file header)
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+
+# Ordering (SA12xx e.g., SA1208 using order)
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = none
+
+# Spacing (SA1001, SA1003, SA1009, SA1012, …)
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none
+
+# Layout (SA1501, SA1502, SA1503, SA1513, …)
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
+
+# Readability (SA1107, SA1108, SA1118, SA1119, …)
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.ReadabilityRules.severity = none
+dotnet_diagnostic.SA1119.severity = none

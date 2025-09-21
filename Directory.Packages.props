@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- .NET 8 line: lock Extensions to 8.x -->
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.x" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.20" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.8" />
