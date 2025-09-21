@@ -398,6 +398,26 @@ jobs:
           # Wait for all background jobs
           wait
 
+      - name: Check MAUI project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
+
+      - name: Check Infrastructure project formatting (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
+
+      - name: Install Roslynator for MAUI analysis (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: dotnet tool install -g roslynator.dotnet.cli
+
+      - name: Run Roslynator analysis on MAUI project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
+
+      - name: Run Roslynator analysis on Infrastructure project (macOS only)
+        if: matrix.tfm == 'net8.0-ios'
+        run: roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
+
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
         run: |
@@ -690,7 +710,7 @@ jobs:
   diff-summary:
     name: Diff Summary
     if: github.event_name == 'pull_request'
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
