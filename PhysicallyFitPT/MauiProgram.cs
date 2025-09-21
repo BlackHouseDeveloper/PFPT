@@ -4,6 +4,7 @@
 
 namespace PhysicallyFitPT;
 
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Components.WebView.Maui;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,19 @@ using Microsoft.Maui.Storage;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+using PhysicallyFitPT.Services;
+using PhysicallyFitPT.Shared;
+using PhysicallyFitPT.UI.Components.Layout;
 
 /// <summary>
 /// Provides methods for configuring and creating the MAUI application.
 /// </summary>
 public static class MauiProgram
 {
+#if ANDROID || IOS || MACCATALYST || WINDOWS
+  private static bool uiAssemblyHooked;
+#endif
+
   /// <summary>
   /// Creates and configures the MAUI application instance.
   /// </summary>
@@ -53,6 +61,7 @@ public static class MauiProgram
     builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
     builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
     builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
+    builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();
 
     builder.Services.AddHttpClient(); // if you just need the default factory
     builder.Services.AddHttpClient("integrations");
@@ -65,6 +74,30 @@ public static class MauiProgram
     builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
+    EnsureUiAssemblyBinding();
+
     return builder.Build();
+  }
+
+  private static void EnsureUiAssemblyBinding()
+  {
+#if ANDROID || IOS || MACCATALYST || WINDOWS
+    if (uiAssemblyHooked)
+    {
+      return;
+    }
+
+    AppDomain.CurrentDomain.AssemblyResolve += static (_, args) =>
+    {
+      if (args.Name.StartsWith("PhysicallyFitPT.UI", StringComparison.Ordinal))
+      {
+        return typeof(ResponsiveMainLayout).Assembly;
+      }
+
+      return null;
+    };
+
+    uiAssemblyHooked = true;
+#endif
   }
 }

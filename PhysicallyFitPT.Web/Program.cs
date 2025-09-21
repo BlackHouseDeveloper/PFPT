@@ -12,7 +12,7 @@ using Polly.Extensions.Http;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<PhysicallyFitPT.Shared.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Configuration
@@ -44,10 +44,8 @@ static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
       .WaitAndRetryAsync(
           retryCount: 3,
           sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-          onRetry: (outcome, timespan, retryCount, context) =>
-          {
-            Console.WriteLine($"Retry {retryCount} after {timespan} seconds");
-          });
+          onRetry: (_, timespan, retryCount, _) =>
+            Console.WriteLine($"Retry {retryCount} after {timespan} seconds"));
 }
 
 static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
@@ -57,12 +55,8 @@ static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
       .CircuitBreakerAsync(
           handledEventsAllowedBeforeBreaking: 5,
           durationOfBreak: TimeSpan.FromSeconds(30),
-          onBreak: (exception, duration) =>
-          {
-            Console.WriteLine($"Circuit breaker opened for {duration}");
-          },
+          onBreak: (_, duration) =>
+            Console.WriteLine($"Circuit breaker opened for {duration}"),
           onReset: () =>
-          {
-            Console.WriteLine("Circuit breaker reset");
-          });
+            Console.WriteLine("Circuit breaker reset"));
 }
