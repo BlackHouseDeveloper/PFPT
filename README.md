@@ -1,6 +1,16 @@
 # Physically Fit PT (PFPT) – Clinician Documentation App
 
-**Physically Fit PT (PFPT)** is a cross-platform clinician documentation application for physical therapy practice. It is built with .NET MAUI Blazor (for mobile and desktop) and Blazor WebAssembly (for web), following a Clean Architecture pattern. This app enables physical therapists to record patient notes, appointments, and more, with support for generating PDF summaries.
+**Physically Fit PT (PFPT)** is a modern, cross-platform clinician documentation application designed specifically for physical therapy practice. Built with .NET MAUI Blazor for native mobile and desktop experiences, and Blazor WebAssembly for web deployment, PFPT follows Clean Architecture principles to ensure maintainability and scalability.
+
+## Key Features
+
+- **🏥 Clinical Documentation**: Comprehensive patient notes, appointment tracking, and treatment planning
+- **📱 Multi-Platform Support**: Native iOS, Android, macOS desktop, and web applications
+- **📄 PDF Export**: Professional patient reports and documentation export using QuestPDF
+- **🗄️ SQLite Database**: Local data storage with Entity Framework Core for offline capabilities
+- **🔧 Automation Tools**: Automated messaging workflows and assessment management
+- **🎯 Modular Architecture**: Clean separation of concerns with domain-driven design
+- **🔒 Data Security**: Local SQLite encryption support and audit trail capabilities
 
 ## Prerequisites
 
@@ -12,17 +22,26 @@ To set up and run PFPT on a development machine, ensure you have the following:
 - **.NET MAUI Workloads** – After installing the .NET SDK, install MAUI workloads by running:  
   ```bash
   dotnet workload install maui
+  ```
+
 This will set up Android, iOS, and MacCatalyst targets for .NET MAUI.
-IDE (optional) – You can use Visual Studio 2022 (Windows or Mac) or Visual Studio Code. VS Code works well for editing, but launching the MAUI app might require CLI commands or VS for Mac.
-Note: Do not run any setup scripts with sudo. All development tasks should be run with normal user permissions.
-Getting Started
-1. Clone the Repository
+
+**IDE (optional)** – You can use Visual Studio 2022 (Windows or Mac) or Visual Studio Code. VS Code works well for editing, but launching the MAUI app might require CLI commands or VS for Mac.
+
+> **Note**: Do not run any setup scripts with sudo. All development tasks should be run with normal user permissions.
+
+## Getting Started
+
+### 1. Clone the Repository
+
 Start by cloning the PFPT repository from GitHub:
-bash
-Copy code
+
+```bash
 git clone https://github.com/BlackHouseDeveloper/PFPT.git
 cd PFPT
-2. Initial Setup and Database Configuration
+```
+
+### 2. Initial Setup and Database Configuration
 PFPT includes a setup script PFPT-Foundry.sh to scaffold the solution and prepare the local database:
 To ensure the project is fully set up (restore NuGet packages, ensure correct .NET 8 targets, etc.), you can run the setup script:
 bash
@@ -39,28 +58,68 @@ bash
 Copy code
 ./PFPT-Foundry.sh --seed
 This uses the PhysicallyFitPT.Seeder console project to populate the SQLite database with initial test data. By default, the data file is created at dev.physicallyfitpt.db in the project root. If the file already exists, the seeder will add any missing data without duplicating existing entries.
-After running the above, you should have a SQLite database (dev.physicallyfitpt.db) with the latest schema and seed data. To have the app use this database, set an environment variable pointing to the file before running the app:
-bash
-Copy code
+#### Configure Database Path
+
+After setup, you'll have a SQLite database (`dev.physicallyfitpt.db`) with the latest schema and seed data. To have the app use this database, set the environment variable:
+
+```bash
 export PFP_DB_PATH="$(pwd)/dev.physicallyfitpt.db"
-If PFP_DB_PATH is not set, the MAUI app will default to an in-memory database (useful for running the Web version without persistent storage).
-3. Running the Application
-PFPT can be run as a MAUI app or as a Blazor WebAssembly app:
-Run as MAUI App (Mac Catalyst/Desktop):
-The MAUI Blazor app can run as a macOS desktop application. Use the dotnet CLI:
-bash
-Copy code
+```
+
+If `PFP_DB_PATH` is not set:
+- **MAUI app**: Uses `FileSystem.AppDataDirectory` for local storage
+- **Web app**: Uses in-memory database (no persistence across sessions)
+
+### 3. Running the Application
+
+PFPT supports multiple deployment targets for different use cases:
+
+#### Desktop Application (Mac Catalyst)
+
+Run as a native macOS desktop application:
+
+```bash
 dotnet build -t:Run -f net8.0-maccatalyst PhysicallyFitPT/PhysicallyFitPT.csproj
-This will compile and launch the app as a Mac Catalyst app. You should see a desktop window with the PFPT interface. By default, it will use the SQLite database file if PFP_DB_PATH is set (as above); otherwise it runs with an in-memory database. Alternatively: You can open PhysicallyFitPT.sln in Visual Studio 2022 (Mac) and run the PhysicallyFitPT project targeting Mac Catalyst. For iOS or Android, you may deploy via Visual Studio to a simulator or device (ensure you have the respective SDKs and devices available).
-Run as Blazor Web App (WebAssembly):
-The solution includes PhysicallyFitPT.Web, a Blazor WebAssembly client that runs in the browser. To start it, run:
-bash
-Copy code
+```
+
+This compiles and launches the app as a Mac Catalyst desktop application. The app will use the SQLite database if `PFP_DB_PATH` is set, otherwise it uses local app storage.
+
+**Alternative**: Open `PhysicallyFitPT.sln` in Visual Studio 2022 (Mac) and run the PhysicallyFitPT project targeting Mac Catalyst.
+
+#### Mobile Applications
+
+Deploy to iOS or Android devices/simulators via Visual Studio:
+
+```bash
+# iOS Simulator
+dotnet build -t:Run -f net8.0-ios PhysicallyFitPT/PhysicallyFitPT.csproj
+
+# Android Emulator/Device  
+dotnet build -t:Run -f net8.0-android PhysicallyFitPT/PhysicallyFitPT.csproj
+```
+
+*Ensure you have the respective SDKs and devices/simulators configured.*
+
+#### Web Application (Browser)
+
+Run the Blazor WebAssembly client for browser-based access:
+
+```bash
 dotnet run --project PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj
-This will build the WebAssembly project and start a local development web server (using the Blazor Dev Server). The console output will indicate the local URL (typically http://localhost:5000 or http://localhost:5001). Open that URL in your browser to use the app. The Web version uses an in-memory EF Core database (no persistence) – it registers an in-memory database context so data will reset on page refresh. This is intended mainly for demo and development convenience.
-Tip: If you make changes to the code, you can re-run dotnet build or dotnet run as above. For the web project, the development server supports Hot Reload in supported editors, or you can manually refresh the browser after rebuilding.
-4. Project Structure
-PFPT is organized into several .NET projects for a clear separation of concerns (see Solution Architecture for more details):
+```
+
+This starts a local development server. Open the displayed URL (typically `http://localhost:5000`) in your browser.
+
+**Note**: The web version uses an in-memory database with no persistence across sessions. This is designed for demo and development convenience.
+
+#### Development Tips
+
+- **Hot Reload**: Supported in Visual Studio and VS Code for MAUI projects
+- **Web Hot Reload**: Automatic when using `dotnet run` with the web project
+- **Code Changes**: Re-run `dotnet build` or restart the development server after changes
+### 4. Project Structure
+
+PFPT follows Clean Architecture principles with clear separation of concerns:
 PhysicallyFitPT – The .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst, etc.). This is the primary app project.
 PhysicallyFitPT.Web – The Blazor WebAssembly app for running PFPT in a web browser.
 PhysicallyFitPT.Domain – The domain entities (business models) with no EF Core or UI dependencies.
