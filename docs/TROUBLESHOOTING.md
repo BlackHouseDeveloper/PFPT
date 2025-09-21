@@ -214,11 +214,6 @@ rm -rf PhysicallyFitPT/obj/Debug/net8.0-maccatalyst
 ```bash
 # Check for startup exceptions in logs
 # Enable detailed logging in appsettings.json:
-"Logging": {
-  "LogLevel": {
-    "Default": "Debug"
-  }
-}
 
 # Verify database seeding
 ./PFPT-Foundry.sh --seed
