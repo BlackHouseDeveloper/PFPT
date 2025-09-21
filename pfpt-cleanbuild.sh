@@ -54,8 +54,6 @@ else
 fi
 
 # ---- Initialization & Logging Setup ---------------------------------------
-# ---- Initialization & Logging Setup ---------------------------------------
-
 # Generate timestamp for this build session
 timestamp="$(date +"%Y%m%d-%H%M%S")"
 logfile="build-output-${timestamp}.txt"
