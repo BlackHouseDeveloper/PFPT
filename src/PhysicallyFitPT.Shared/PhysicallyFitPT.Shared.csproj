@@ -49,7 +49,7 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
   </ItemGroup>
 
 </Project>

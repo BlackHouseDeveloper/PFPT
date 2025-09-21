@@ -31,9 +31,9 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
-    <ProjectReference Include="..\PhysicallyFitPT.Domain\PhysicallyFitPT.Domain.csproj" />
-    <ProjectReference Include="..\PhysicallyFitPT.Web\PhysicallyFitPT.Web.csproj" />
+    <ProjectReference Include="..\..\src\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
+    <ProjectReference Include="..\..\src\PhysicallyFitPT.Web\PhysicallyFitPT.Web.csproj" />
   </ItemGroup>
 
 </Project>
