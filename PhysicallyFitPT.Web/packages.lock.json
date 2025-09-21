@@ -232,6 +232,8 @@
       "physicallyfitpt.shared": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.AspNetCore.Components.Web": "[8.0.19, )",
+          "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.19, )",
           "PhysicallyFitPT.Domain": "[1.0.0, )"
         }
       },

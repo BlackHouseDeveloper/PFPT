@@ -19,6 +19,14 @@ using Xunit;
 /// </summary>
 public class WebApiDataServiceTests
 {
+  /// <summary>
+  /// Cached JsonSerializerOptions instance to avoid creating new instances for every serialization operation.
+  /// </summary>
+  private static readonly JsonSerializerOptions JsonOptions = new()
+  {
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+  };
+
   private readonly Mock<ILogger<WebApiDataService>> mockLogger;
   private readonly Mock<HttpMessageHandler> mockHttpMessageHandler;
   private readonly HttpClient httpClient;
@@ -51,7 +59,7 @@ public class WebApiDataServiceTests
   public async Task SearchPatientsAsync_ReturnsEmpty_WhenApiReturnsEmptyResponse()
   {
     // Arrange
-    var emptyResponse = "[]";
+    const string emptyResponse = "[]";
     this.SetupHttpResponse(HttpStatusCode.OK, emptyResponse);
 
     var service = new WebApiDataService(this.httpClient, this.apiConfig, this.mockLogger.Object);
@@ -107,10 +115,7 @@ public class WebApiDataServiceTests
       new PatientDto { Id = Guid.NewGuid(), FirstName = "Jane", LastName = "Smith" },
     };
 
-    var jsonResponse = JsonSerializer.Serialize(patients, new JsonSerializerOptions
-    {
-      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    });
+    var jsonResponse = JsonSerializer.Serialize(patients, JsonOptions);
 
     this.SetupHttpResponse(HttpStatusCode.OK, jsonResponse);
 
