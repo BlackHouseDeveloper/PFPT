@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 /// <summary>
 /// Base entity class providing common properties for domain entities.

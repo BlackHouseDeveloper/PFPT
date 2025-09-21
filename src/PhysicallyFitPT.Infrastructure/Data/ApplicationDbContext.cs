@@ -5,7 +5,7 @@
 namespace PhysicallyFitPT.Infrastructure.Data;
 
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 
 /// <summary>
 /// Entity Framework database context for the PhysicallyFitPT application.

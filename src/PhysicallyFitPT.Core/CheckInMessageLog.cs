@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 /// <summary>
 /// Represents a log entry for check-in messages sent to patients.

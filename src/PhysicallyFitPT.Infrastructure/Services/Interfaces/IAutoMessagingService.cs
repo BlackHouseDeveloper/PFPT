@@ -4,7 +4,7 @@
 
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 
 /// <summary>
 /// Interface for automated messaging services including check-in notifications.

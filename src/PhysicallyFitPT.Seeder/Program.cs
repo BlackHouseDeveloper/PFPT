@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 
 var envPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");

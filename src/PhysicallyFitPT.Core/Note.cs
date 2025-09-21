@@ -2,9 +2,9 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
-using PhysicallyFitPT.Domain.Notes;
+using PhysicallyFitPT.Core.Notes;
 
 // Note + Sections (annotation-free POCOs)
 

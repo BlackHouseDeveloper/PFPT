@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Shared;
 
 /// <summary>

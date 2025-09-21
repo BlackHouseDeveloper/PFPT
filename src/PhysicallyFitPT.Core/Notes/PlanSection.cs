@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain.Notes;
+namespace PhysicallyFitPT.Core.Notes;
 
 /// <summary>
 /// Represents the plan section of a clinical note containing treatment plans and recommendations.

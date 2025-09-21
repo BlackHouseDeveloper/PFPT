@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 
 /// <summary>
 /// Unified interface for data access abstraction across platforms.

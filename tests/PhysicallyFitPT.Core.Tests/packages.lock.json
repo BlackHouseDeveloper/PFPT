@@ -619,7 +619,7 @@
           "xunit.extensibility.core": "[2.8.1]"
         }
       },
-      "physicallyfitpt.domain": {
+      "physicallyfitpt.core": {
         "type": "Project"
       },
       "physicallyfitpt.infrastructure": {
@@ -627,7 +627,7 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "[8.0.8, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.8, )",
-          "PhysicallyFitPT.Domain": "[1.0.0, )",
+          "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",
           "QuestPDF": "[2024.3.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[2.1.8, )",
@@ -639,15 +639,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "[8.0.19, )",
           "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.19, )",
-          "PhysicallyFitPT.Domain": "[1.0.0, )"
-        }
-      },
-      "physicallyfitpt.ui": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.AspNetCore.Components.Web": "[8.0.19, )",
-          "PhysicallyFitPT.Domain": "[1.0.0, )",
-          "PhysicallyFitPT.Shared": "[1.0.0, )"
+          "PhysicallyFitPT.Core": "[1.0.0, )"
         }
       },
       "physicallyfitpt.web": {
@@ -656,9 +648,8 @@
           "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.19, )",
           "Microsoft.Extensions.Http": "[8.0.0, )",
           "Microsoft.Extensions.Http.Polly": "[8.0.8, )",
-          "PhysicallyFitPT.Domain": "[1.0.0, )",
-          "PhysicallyFitPT.Shared": "[1.0.0, )",
-          "PhysicallyFitPT.UI": "[1.0.0, )"
+          "PhysicallyFitPT.Core": "[1.0.0, )",
+          "PhysicallyFitPT.Shared": "[1.0.0, )"
         }
       },
       "Microsoft.AspNetCore.Components.Web": {

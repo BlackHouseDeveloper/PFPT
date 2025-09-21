@@ -8,7 +8,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Domain.Notes;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;

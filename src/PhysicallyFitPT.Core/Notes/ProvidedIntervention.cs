@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain.Notes;
+namespace PhysicallyFitPT.Core.Notes;
 
 /// <summary>
 /// Represents an intervention provided during the treatment session.

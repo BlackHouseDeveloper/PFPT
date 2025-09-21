@@ -5,8 +5,8 @@
 namespace PhysicallyFitPT.Infrastructure.Mappers
 {
   using System.Linq;
-  using PhysicallyFitPT.Domain;
-  using PhysicallyFitPT.Domain.Notes;
+  using PhysicallyFitPT.Core;
+  using PhysicallyFitPT.Core.Notes;
   using PhysicallyFitPT.Shared;
 
   /// <summary>

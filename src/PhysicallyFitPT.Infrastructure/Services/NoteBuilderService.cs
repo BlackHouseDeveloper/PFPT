@@ -12,8 +12,8 @@ namespace PhysicallyFitPT.Infrastructure.Services
   using System.Threading.Tasks;
   using Microsoft.EntityFrameworkCore;
   using Microsoft.Extensions.Logging;
-  using PhysicallyFitPT.Domain;
-  using PhysicallyFitPT.Domain.Notes;
+  using PhysicallyFitPT.Core;
+  using PhysicallyFitPT.Core.Notes;
   using PhysicallyFitPT.Infrastructure.Data;
   using PhysicallyFitPT.Infrastructure.Mappers;
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;

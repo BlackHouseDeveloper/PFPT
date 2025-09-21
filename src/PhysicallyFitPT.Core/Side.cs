@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 /// <summary>
 /// Specifies the anatomical side or laterality for measurements and tests.

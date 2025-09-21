@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 /// <summary>
 /// Represents an International Classification of Diseases, 10th Revision (ICD-10) diagnostic code.

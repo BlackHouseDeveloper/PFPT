@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Mappers;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;

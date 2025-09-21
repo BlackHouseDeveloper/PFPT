@@ -4,7 +4,7 @@
 
 namespace PhysicallyFitPT.Infrastructure.Mappers
 {
-  using PhysicallyFitPT.Domain;
+  using PhysicallyFitPT.Core;
   using PhysicallyFitPT.Shared;
 
   /// <summary>

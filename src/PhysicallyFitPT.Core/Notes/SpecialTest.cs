@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PhysicallyFitPT.Domain.Notes;
+namespace PhysicallyFitPT.Core.Notes;
 
 /// <summary>
 /// Represents a special test performed during the physical examination.
