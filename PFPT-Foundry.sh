@@ -168,6 +168,7 @@ ensure_maui_tfms() {
       /<PropertyGroup>/ && inserted==0 {print "    <TargetFrameworks>" TFMS "</TargetFrameworks>"; inserted=1}
     ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
   fi
+}
 # 2.1) Normalize MAUI app to multi-target .NET 8
 ensure_maui_tfms "$APP/$APP.csproj"
 
