@@ -73,12 +73,21 @@ if [[ "$OS_TYPE" == "macOS" ]] && dotnet --info 2>/dev/null | grep -qi 'homebrew
   export DOTNET_CLI_HOME="${DOTNET_CLI_HOME:-$HOME/.dotnet}"
   export NUGET_PACKAGES="${NUGET_PACKAGES:-$HOME/.nuget/packages}"
 fi
+# ------------------------------------------------------------------------------
 
-# ---- Command Line Argument Processing -------------------------------------
+# ---------------------------------------------
+# Physically Fit PT – Blazor (MAUI) scaffold (macOS, .NET 8)
+# Clean architecture: domain, services, CI, tests, seed data, shared libs
+# Flags:
+#   --create-migration   Generate initial EF Core migration and update DB
+#   --seed               Seed the local dev DB (uses PFP_DB_PATH or ./dev.physicallyfitpt.db)
+#   -h, --help           Show this help/usage information
+# ---------------------------------------------
+# This script bootstraps or updates the PhysicallyFitPT solution. It is safe to re-run:
+# if projects exist, it will normalize Target Frameworks to .NET 8 and ensure all references,
+# packages, and baseline code are in place (without duplicating content).
+# Do NOT run with sudo; ensure proper permissions for all created files.
 
-# ---- Command Line Argument Processing -------------------------------------
-
-# Initialize flags for script operations
 CREATE_MIGRATION=false
 SEED_DATA=false
 VERBOSE=false
@@ -270,6 +279,7 @@ ensure_maui_tfms() {
       /<PropertyGroup>/ && inserted==0 {print "    <TargetFrameworks>" TFMS "</TargetFrameworks>"; inserted=1}
     ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
   fi
+}
 # 2.1) Normalize MAUI app to multi-target .NET 8
 ensure_maui_tfms "$APP/$APP.csproj"
 
