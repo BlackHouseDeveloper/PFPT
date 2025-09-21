@@ -339,6 +339,105 @@ The `PFPT-Foundry.sh` script provides automated environment setup:
 - Authentication pluggable via .NET Identity
 - External APIs integrable via HTTP clients
 
+## Automation Architecture
+
+PFPT includes a comprehensive automation framework designed to streamline clinical workflows and reduce manual tasks.
+
+### Automation Services Layer
+
+#### AutoMessagingService
+```
+┌─────────────────────────────────────┐
+│ AutoMessagingService                │
+├─────────────────────────────────────┤
+│ + SendAppointmentReminderAsync()    │
+│ + SendFollowUpMessageAsync()        │
+│ + ScheduleAutomatedMessagesAsync()  │
+│ + ProcessMessageQueueAsync()        │
+└─────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────┐
+│ Message Templates & Scheduling      │
+├─────────────────────────────────────┤
+│ • Appointment reminders             │
+│ • Post-treatment follow-ups         │
+│ • Assessment notifications          │
+│ • Customizable content templates    │
+└─────────────────────────────────────┘
+```
+
+#### PDF Export Automation
+```
+┌─────────────────────────────────────┐
+│ PdfRenderer (QuestPDF)              │
+├─────────────────────────────────────┤
+│ + RenderPatientSummary()            │
+│ + RenderTreatmentPlan()             │
+│ + RenderProgressReport()            │
+│ + BatchGenerateReports()            │
+└─────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────┐
+│ Report Generation Pipeline          │
+├─────────────────────────────────────┤
+│ • Data aggregation from services    │
+│ • Template-based formatting         │
+│ • Batch processing capabilities     │
+│ • Integration with billing systems  │
+└─────────────────────────────────────┘
+```
+
+#### Assessment Management
+```
+┌─────────────────────────────────────┐
+│ QuestionnaireService                │
+├─────────────────────────────────────┤
+│ + CreateResponseAsync()             │
+│ + CalculateScoreAsync()             │
+│ + GetOutcomeTrendsAsync()           │
+│ + ScheduleFollowUpAsync()           │
+└─────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────┐
+│ Standardized Assessments            │
+├─────────────────────────────────────┤
+│ • TUG (Timed Up and Go)             │
+│ • BBS (Berg Balance Scale)          │
+│ • NPRS (Numeric Pain Rating)        │
+│ • Custom clinic assessments         │
+└─────────────────────────────────────┘
+```
+
+### Automation Data Flow
+
+```
+Patient Check-in
+      │
+      ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ Assessment      │    │ Documentation    │    │ Communication   │
+│ Scheduling      │───▶│ Auto-Population  │───▶│ Automated       │
+│                 │    │                  │    │ Messaging       │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+      │                         │                       │
+      ▼                         ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ Outcome         │    │ Report           │    │ Follow-up       │
+│ Tracking        │    │ Generation       │    │ Coordination    │
+│                 │    │                  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
+
+### Integration Points
+
+- **Clinical Workflow**: Seamless integration with patient management
+- **Billing Systems**: Automated CPT code integration and report generation
+- **External APIs**: HTTP client support for third-party integrations
+- **Notification Systems**: Configurable messaging templates and schedules
+
 ## Compliance & Standards
 
 ### Medical Standards
