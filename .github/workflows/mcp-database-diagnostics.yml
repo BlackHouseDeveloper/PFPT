@@ -57,13 +57,10 @@ jobs:
       - name: Validate Database Design-Time Factory
         if: inputs.operation == 'validate'
         run: |
-          echo "🔍 Validating EF Core design-time factory..."
-          dotnet ef dbcontext info -p src/PhysicallyFitPT.Infrastructure -v
+          echo "🔍 Running comprehensive database validation..."
           
-          echo "📋 Listing available migrations..."
-          dotnet ef migrations list -p src/PhysicallyFitPT.Infrastructure -v
-          
-          echo "✅ Database design-time validation complete"
+          # Use extracted database validation script
+          python3 .github/scripts/mcp/database/validate-database.py
       
       - name: Create New Migration
         if: inputs.operation == 'migrate'
