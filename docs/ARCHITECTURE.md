@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Physically Fit PT (PFPT)** is an enterprise-grade, cross-platform healthcare documentation platform designed specifically for physical therapy practices. Built with .NET MAUI Blazor for mobile/desktop and Blazor WebAssembly for web deployment, PFPT follows Clean Architecture principles with healthcare compliance, enterprise automation, and clinical workflow optimization at its core.
+**Physically Fit PT (PFPT)** is an enterprise-grade, cross-platform healthcare documentation platform designed specifically for physical therapy practices. PFPT is built with .NET MAUI Blazor for mobile and desktop, and Blazor WebAssembly for web deployment. The platform follows Clean Architecture principles, with healthcare compliance, enterprise automation, and clinical workflow optimization at its core.
 
 ## Enterprise Solution Structure
 
