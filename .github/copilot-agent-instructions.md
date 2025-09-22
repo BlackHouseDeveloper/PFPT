@@ -217,19 +217,48 @@ dotnet new console -n ReproCase
 - Validate translation completeness
 - Generate locale-specific test cases
 
-### 5. Code Quality Enforcement MCPs
+### 5. Advanced Diagnostic MCPs
 
-**Style Consistency MCP:**
-- Enforce .editorconfig settings
-- Validate naming conventions
-- Check for code duplication
-- Ensure consistent project structure
+**Error Reproduction MCP** (`mcp-error-reproduction.yml`):
+- Reproduces build, runtime, database, PDF, UI, and platform-specific errors
+- Generates comprehensive error analysis reports
+- Provides debugging information and system diagnostics
+- Creates reproduction instructions for development team
 
-**Performance Monitoring MCP:**
-- Profile application startup time
-- Monitor memory usage patterns
-- Identify performance bottlenecks
-- Generate performance reports
+**Database Diagnostic MCP** (`mcp-database-diagnostics.yml`):
+- Validates EF Core design-time factory and migrations
+- Creates, applies, and rolls back database migrations
+- Seeds database with test data
+- Performs database performance analysis
+- Generates schema analysis and backup operations
+
+**PDF Export Diagnostic MCP** (`mcp-pdf-diagnostics.yml`):
+- Validates PDF generation and template rendering
+- Tests PDF accessibility compliance (PDF/UA)
+- Performs PDF generation performance benchmarking
+- Generates sample PDFs for different scenarios
+- Analyzes PDF structure and content extraction
+
+**Accessibility Compliance MCP** (`mcp-accessibility-compliance.yml`):
+- Performs automated accessibility audits using axe-core
+- Tests WCAG 2.1 compliance at A, AA, or AAA levels
+- Validates keyboard navigation and screen reader compatibility
+- Generates accessibility implementation guides
+- Tests form accessibility and UI component compliance
+
+**Localization Workflow MCP** (`mcp-localization-workflow.yml`):
+- Extracts localizable strings from source code
+- Validates existing localization resources
+- Generates localization templates and resource files
+- Audits localization coverage across the application
+- Updates resource files with new translations
+
+**Documentation Automation MCP** (`mcp-documentation-automation.yml`):
+- Generates API documentation from XML comments
+- Creates architecture diagrams and project structure docs
+- Generates developer onboarding guides
+- Updates troubleshooting documentation
+- Creates comprehensive documentation indexes
 
 ### 6. Security & Privacy MCPs
 
@@ -389,28 +418,81 @@ dotnet new console -n ReproCase
 
 ## Quick Reference Commands
 
+### Environment Setup
 ```sh
 # Environment setup
 ./PFPT-Foundry.sh
 
+# Install required workloads
+dotnet workload install maui
+```
+
+### Build Commands
+```sh
 # Build specific platforms
 dotnet build src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f net8.0-android
 dotnet build src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f net8.0-ios
 dotnet build src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release
 
+# Clean build
+./pfpt-cleanbuild.sh
+```
+
+### Code Quality
+```sh
 # Code quality checks
 dotnet format PFPT.sln --verify-no-changes
 roslynator analyze PFPT.sln --severity-level info
+```
 
+### Database Operations
+```sh
 # Database operations
 dotnet ef migrations add <Name> -p src/PhysicallyFitPT.Infrastructure -s src/PhysicallyFitPT.Maui
 dotnet ef database update -p src/PhysicallyFitPT.Infrastructure -s src/PhysicallyFitPT.Maui
 
-# Testing
+# Run database diagnostics
+gh workflow run mcp-database-diagnostics.yml -f operation=validate
+```
+
+### Testing
+```sh
+# Unit testing
 dotnet test tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj
 
-# Clean build
-./pfpt-cleanbuild.sh
+# PDF testing
+gh workflow run mcp-pdf-diagnostics.yml -f test_type=validate
+
+# Accessibility testing
+gh workflow run mcp-accessibility-compliance.yml -f test_scope=ui-components
+```
+
+### MCP Workflow Commands
+```sh
+# Database diagnostics
+gh workflow run mcp-database-diagnostics.yml -f operation=validate
+gh workflow run mcp-database-diagnostics.yml -f operation=migrate
+gh workflow run mcp-database-diagnostics.yml -f operation=seed
+
+# PDF export testing
+gh workflow run mcp-pdf-diagnostics.yml -f test_type=validate
+gh workflow run mcp-pdf-diagnostics.yml -f test_type=performance
+gh workflow run mcp-pdf-diagnostics.yml -f test_type=accessibility
+
+# Documentation generation
+gh workflow run mcp-documentation-automation.yml -f doc_type=api
+gh workflow run mcp-documentation-automation.yml -f doc_type=all
+
+# Accessibility compliance
+gh workflow run mcp-accessibility-compliance.yml -f test_scope=full-audit -f accessibility_level=AA
+
+# Localization workflow
+gh workflow run mcp-localization-workflow.yml -f operation=extract
+gh workflow run mcp-localization-workflow.yml -f operation=audit-coverage
+
+# Error reproduction
+gh workflow run mcp-error-reproduction.yml -f error_type=build -f platform=multi
+gh workflow run mcp-error-reproduction.yml -f error_type=runtime -f platform=android
 ```
 
 ---
