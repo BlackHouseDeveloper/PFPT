@@ -89,11 +89,6 @@ All MCP workflows include:
 - Clinical workflow impact assessment  
 - Multi-platform testing and validation
 - Comprehensive reporting with healthcare-specific insights
-- **PhysicallyFitPT.Shared** – Shared libraries, predefined lists (goal templates, interventions, outcome measures)
-- **PhysicallyFitPT.Maui** – .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst)
-- **PhysicallyFitPT.Web** – Blazor WebAssembly app for web browsers
-- **PhysicallyFitPT.Seeder** – Console application to seed SQLite database with initial data
-- **PhysicallyFitPT.Core.Tests** – XUnit test project containing unit tests
 
 ---
 
