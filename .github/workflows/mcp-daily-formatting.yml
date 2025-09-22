@@ -1,0 +1,208 @@
+name: Daily Code Formatting Maintenance
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  daily-format:
+    name: Daily Code Formatting Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Restore dependencies
+        run: |
+          dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj
+      
+      - name: Check for formatting issues
+        id: format-check
+        run: |
+          echo "🔍 Checking code formatting across entire codebase..."
+          
+          # Check formatting without applying changes
+          if dotnet format PFPT.sln --verify-no-changes --verbosity diagnostic; then
+            echo "✅ No formatting issues found"
+            echo "ISSUES_FOUND=false" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Formatting issues detected"
+            echo "ISSUES_FOUND=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Apply formatting fixes
+        if: steps.format-check.outputs.ISSUES_FOUND == 'true'
+        run: |
+          echo "🔧 Applying formatting fixes..."
+          dotnet format PFPT.sln --verbosity diagnostic
+          
+          # Check what files were changed
+          if git diff --quiet; then
+            echo "No actual changes needed"
+            echo "CHANGES_MADE=false" >> $GITHUB_ENV
+          else
+            echo "Changes applied"
+            echo "CHANGES_MADE=true" >> $GITHUB_ENV
+            
+            # Generate summary of changes
+            echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+            git diff --name-only >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
+      
+      - name: Create maintenance PR
+        if: env.CHANGES_MADE == 'true'
+        run: |
+          # Create a new branch for the maintenance PR
+          BRANCH_NAME="maintenance/daily-formatting-$(date +'%Y%m%d')"
+          git config --local user.email "action@github.com"
+          git config --local user.name "PFPT Maintenance Bot"
+          
+          git checkout -b "$BRANCH_NAME"
+          git add -A
+          git commit -m "🔧 Daily code formatting maintenance
+
+          Automated formatting fixes applied by daily maintenance workflow:
+          
+          📅 Date: $(date +'%Y-%m-%d %H:%M:%S UTC')
+          🎯 Scope: Repository-wide formatting standardization
+          
+          Files modified:
+          $(echo "$CHANGED_FILES" | sed 's/^/- /')
+          
+          Changes include:
+          - StyleCop formatting rule compliance
+          - Consistent indentation and spacing
+          - Code style standardization
+          - Removal of unnecessary whitespace
+          
+          This is an automated maintenance commit to keep the codebase clean and consistent."
+          
+          git push origin "$BRANCH_NAME"
+          
+          # Save branch name for PR creation
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      
+      - name: Create Pull Request
+        if: env.CHANGES_MADE == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const changedFiles = process.env.CHANGED_FILES.split('\n').filter(f => f.trim());
+            const branchName = process.env.BRANCH_NAME;
+            
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔧 Daily Code Formatting Maintenance',
+              head: branchName,
+              base: 'main',
+              body: `## 🤖 Automated Daily Maintenance
+              
+              This PR contains automated code formatting fixes applied during daily maintenance.
+              
+              ### 📋 Summary
+              - **Trigger**: Daily maintenance workflow
+              - **Date**: ${new Date().toISOString().split('T')[0]}
+              - **Files modified**: ${changedFiles.length}
+              - **Type**: Code formatting standardization
+              
+              ### 📁 Files Changed
+              ${changedFiles.map(file => `- \`${file}\``).join('\n')}
+              
+              ### 🔧 Applied Fixes
+              - StyleCop formatting rule compliance
+              - Consistent indentation and spacing  
+              - Code style standardization
+              - Removal of unnecessary whitespace
+              
+              ### ✅ Safety
+              - No functional code changes
+              - Only formatting and style improvements
+              - All builds should pass without issues
+              
+              ### 🚀 Next Steps
+              - Review changes (optional - all are formatting only)
+              - Merge when ready to maintain code consistency
+              
+              *This PR was created automatically by the daily maintenance workflow.*`,
+              labels: ['housekeeping', 'automated', 'formatting']
+            });
+            
+            console.log(`Created PR #${pr.data.number}: ${pr.data.html_url}`);
+      
+      - name: Generate maintenance report
+        if: always()
+        run: |
+          echo "📊 Daily Formatting Maintenance Report"
+          echo "======================================"
+          echo "Date: $(date +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "Issues found: ${{ steps.format-check.outputs.ISSUES_FOUND }}"
+          echo "Changes made: ${CHANGES_MADE:-false}"
+          echo "Branch created: ${BRANCH_NAME:-none}"
+          
+          if [ "${CHANGES_MADE:-false}" = "true" ]; then
+            echo ""
+            echo "Modified files:"
+            echo "$CHANGED_FILES"
+          fi
+          
+          echo ""
+          echo "Maintenance workflow completed successfully."
+      
+      - name: Post summary to repository
+        if: steps.format-check.outputs.ISSUES_FOUND == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issuesFound = '${{ steps.format-check.outputs.ISSUES_FOUND }}' === 'true';
+            const changesMade = process.env.CHANGES_MADE === 'true';
+            
+            if (issuesFound && changesMade) {
+              // Create an issue to track the maintenance
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `📅 Daily Maintenance Report - ${new Date().toISOString().split('T')[0]}`,
+                body: `## Daily Code Formatting Maintenance Report
+                
+                **Date**: ${new Date().toISOString().split('T')[0]}
+                **Status**: ✅ Completed with changes
+                
+                ### Actions Taken
+                - 🔍 Scanned entire codebase for formatting issues
+                - 🔧 Applied automated formatting fixes
+                - 📝 Created maintenance PR with changes
+                
+                ### Next Steps
+                - Review and merge the maintenance PR when ready
+                - Monitor for any build issues (unlikely with formatting-only changes)
+                
+                *This is an automated report from the daily maintenance workflow.*`,
+                labels: ['maintenance', 'automated', 'report']
+              });
+            }

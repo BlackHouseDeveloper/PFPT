@@ -1,0 +1,112 @@
+name: Auto-format PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autoformat:
+    name: Auto-format Code
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Restore dependencies
+        run: |
+          dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj
+      
+      - name: Check for formatting issues
+        id: format-check
+        run: |
+          # Format code and capture changes
+          dotnet format PFPT.sln --verify-no-changes --verbosity diagnostic > format-result.txt 2>&1 || echo "FORMAT_NEEDED=true" >> $GITHUB_OUTPUT
+          
+          if [ -f format-result.txt ]; then
+            echo "FORMAT_OUTPUT<<EOF" >> $GITHUB_OUTPUT
+            cat format-result.txt >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Apply formatting fixes
+        if: steps.format-check.outputs.FORMAT_NEEDED == 'true'
+        run: |
+          echo "🔧 Applying code formatting fixes..."
+          dotnet format PFPT.sln --verbosity diagnostic
+          
+          # Check if any files were modified
+          if git diff --quiet; then
+            echo "No formatting changes needed"
+            echo "FORMAT_APPLIED=false" >> $GITHUB_ENV
+          else
+            echo "Formatting changes applied"
+            echo "FORMAT_APPLIED=true" >> $GITHUB_ENV
+          fi
+      
+      - name: Commit formatting changes
+        if: env.FORMAT_APPLIED == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Auto-format Bot"
+          git add -A
+          git commit -m "Auto-format: Apply StyleCop formatting rules
+
+          - Applied dotnet format to ensure code consistency
+          - Fixed indentation, spacing, and style issues
+          - Automated by GitHub Actions on PR #${{ github.event.pull_request.number }}"
+          git push
+      
+      - name: Comment on PR with formatting results
+        if: steps.format-check.outputs.FORMAT_NEEDED == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const formatApplied = process.env.FORMAT_APPLIED === 'true';
+            const formatOutput = `${{ steps.format-check.outputs.FORMAT_OUTPUT }}`;
+            
+            const comment = formatApplied ? 
+              `🔧 **Auto-formatting applied!**
+              
+              I've automatically applied code formatting fixes to this PR to ensure consistency with PFPT coding standards.
+              
+              **Changes applied:**
+              - StyleCop formatting rules
+              - Consistent indentation and spacing
+              - Code style standardization
+              
+              The PR is now ready for review with properly formatted code.` :
+              
+              `⚠️ **Formatting issues detected**
+              
+              Code formatting issues were found but could not be automatically fixed:
+              
+              \`\`\`
+              ${formatOutput}
+              \`\`\`
+              
+              Please run \`dotnet format PFPT.sln\` locally and commit the changes.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
