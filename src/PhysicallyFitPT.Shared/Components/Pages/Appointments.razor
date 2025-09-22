@@ -190,16 +190,17 @@
         await LoadTodaysAppointments();
     }
 
-    private async Task LoadTodaysAppointments()
+    private Task LoadTodaysAppointments()
     {
         isLoadingAppointments = true;
+
         try
         {
             // For demo purposes, we'll load a placeholder set
             // In real implementation, we'd need an endpoint to get today's appointments
             appointments.Clear();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Failed to load today's appointments.";
         }
@@ -208,6 +209,8 @@
             isLoadingAppointments = false;
             StateHasChanged();
         }
+
+        return Task.CompletedTask;
     }
 
     private void ShowScheduleModal()
@@ -241,7 +244,7 @@
             searchResults = results.ToList();
             StateHasChanged();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Failed to search patients.";
         }
@@ -276,7 +279,7 @@
             HideScheduleModal();
             await LoadTodaysAppointments();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Failed to schedule appointment. Please try again.";
         }
@@ -307,7 +310,7 @@
                 errorMessage = "Failed to cancel appointment.";
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Error cancelling appointment.";
         }

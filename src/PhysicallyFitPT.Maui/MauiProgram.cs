@@ -60,6 +60,8 @@ public static class MauiProgram
     builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
     builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
     builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
+    builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+    builder.Services.AddScoped<IDataService, LocalDataService>();
     builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
     builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();
 

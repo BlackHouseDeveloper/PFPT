@@ -26,9 +26,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure Entity Framework
+var configuredConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+var environmentDbPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");
+var connectionString = !string.IsNullOrWhiteSpace(environmentDbPath)
+    ? $"Data Source={environmentDbPath}"
+    : configuredConnection ?? "Data Source=pfpt.db";
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=pfpt.db");
+    options.UseSqlite(connectionString);
 });
 
 // DI Setup for services
@@ -37,6 +43,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
 builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
 builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
+builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
 
 // Add CORS for development
 builder.Services.AddCors(options =>
@@ -142,7 +149,7 @@ app.MapDelete("/api/appointments/{id}", async (Guid id, IAppointmentService appo
 .WithOpenApi();
 
 // Minimal APIs for notes
-app.MapGet("/api/notes/appointment/{appointmentId}", async (Guid appointmentId, INoteBuilderService noteService) =>
+app.MapGet("/api/notes/appointment/{appointmentId}", (Guid appointmentId, INoteBuilderService noteService) =>
 {
     try
     {
@@ -158,7 +165,7 @@ app.MapGet("/api/notes/appointment/{appointmentId}", async (Guid appointmentId, 
 .WithOpenApi();
 
 // Minimal APIs for questionnaires
-app.MapGet("/api/questionnaires", async (IQuestionnaireService questionnaireService) =>
+app.MapGet("/api/questionnaires",  (IQuestionnaireService questionnaireService) =>
 {
     try
     {
@@ -174,19 +181,11 @@ app.MapGet("/api/questionnaires", async (IQuestionnaireService questionnaireServ
 .WithOpenApi();
 
 // Dashboard statistics endpoint
-app.MapGet("/api/dashboard/stats", async (IPatientService patientService, IAppointmentService appointmentService) =>
+app.MapGet("/api/dashboard/stats", async (IDashboardMetricsService dashboardMetricsService, CancellationToken cancellationToken) =>
 {
     try
     {
-        // For now, we'll return mock statistics since we need more infrastructure to get real stats
-        // TODO: Implement real dashboard statistics once aggregation services are available
-        var stats = new DashboardStatsDto
-        {
-            TodaysAppointments = 8,  // Mock data
-            ActivePatients = 127,    // Mock data
-            PendingNotes = 3,        // Mock data
-            OverdueOutcomeMeasures = 5 // Mock data
-        };
+        var stats = await dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
         return Results.Ok(stats);
     }
     catch (Exception ex)

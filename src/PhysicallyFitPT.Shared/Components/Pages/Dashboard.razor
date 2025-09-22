@@ -114,7 +114,7 @@
         {
             dashboardStats = await DataService.GetDashboardStatsAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Failed to load dashboard statistics. Please check your connection and try again.";
         }
