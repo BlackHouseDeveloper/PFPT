@@ -36,18 +36,59 @@ dotnet build
 
 ## Project Structure
 
-- `src/` – Application, modules, platform code
-- `docs/` – Documentation
-- `scripts/` – Automation scripts (setup, export, DB, etc.)
-- `tests/` – Unit and UI tests
-- `.github/` – Workflows, Copilot/MCP instructions
-
-Platform-specific code and extensions: `.windows.cs`, `.android.cs`, `.ios.cs`, etc.
+PFPT follows Clean Architecture with healthcare-focused enterprise design:
 
 ### Core Projects
+- **PhysicallyFitPT.Core** – Domain entities and healthcare business logic (Clean Architecture Core)
+- **PhysicallyFitPT.Infrastructure** – Data access, EF Core, PDF services, healthcare integrations
+- **PhysicallyFitPT.Maui** – Cross-platform native app (iOS, Android, macOS)
+- **PhysicallyFitPT.Web** – Blazor WebAssembly Progressive Web App
+- **PhysicallyFitPT.Api** – Web API for cloud services and healthcare integrations
+- **PhysicallyFitPT.Shared** – Clinical libraries, standardized assessments, DTOs
+- **PhysicallyFitPT.AI** – AI/ML services for clinical intelligence and decision support
+- **PhysicallyFitPT.Seeder** – Database seeding console app
 
-- **PhysicallyFitPT.Core** – Domain entities (business models) with no EF Core or UI dependencies
-- **PhysicallyFitPT.Infrastructure** – Persistence (EF Core ApplicationDbContext), domain services, PDF generation
+### Test Projects  
+- **PhysicallyFitPT.Core.Tests** – Unit tests (xUnit)
+- **PhysicallyFitPT.Api.Tests** – API integration tests
+- **PhysicallyFitPT.Maui.Tests** – UI and platform tests
+
+### Enterprise Documentation
+- **docs/** – Comprehensive documentation including architecture, development guides, CI/CD
+- **.github/** – Enterprise MCP workflows, issue templates, Copilot integration
+
+### Platform-Specific Considerations
+Platform-specific code uses extensions: `.android.cs`, `.ios.cs`, `.maccatalyst.cs`, `.web.cs`
+
+## Enterprise MCP Framework
+
+PFPT includes 14 production-ready MCP workflows for healthcare software development:
+
+### Development Automation
+- `mcp-auto-format-pr.yml` - Automatic code formatting on PR submission
+- `mcp-daily-formatting.yml` - Daily maintenance formatting with PR creation
+- `mcp-copilot-setup-validation.yml` - Comprehensive development environment validation
+
+### Healthcare Compliance
+- `mcp-accessibility-compliance.yml` - WCAG 2.1 compliance testing and validation
+- `mcp-pdf-diagnostics.yml` - Clinical report and PDF accessibility validation
+- `mcp-database-diagnostics.yml` - HIPAA-compliant database management and validation
+
+### Enterprise Operations  
+- `mcp-release-notes-generation.yml` - AI-powered release notes with clinical impact assessment
+- `mcp-triage.yml` - Intelligent issue categorization with healthcare-specific labels
+- `mcp-documentation-automation.yml` - Clinical documentation and API documentation generation
+
+### Quality Assurance
+- `mcp-error-reproduction.yml` - Comprehensive error analysis and debugging automation
+- `mcp-localization-workflow.yml` - Multi-language clinical terminology management
+- `ci.yml` - Multi-platform CI/CD with healthcare compliance validation
+
+All MCP workflows include:
+- Healthcare compliance considerations (HIPAA, accessibility)
+- Clinical workflow impact assessment  
+- Multi-platform testing and validation
+- Comprehensive reporting with healthcare-specific insights
 - **PhysicallyFitPT.Shared** – Shared libraries, predefined lists (goal templates, interventions, outcome measures)
 - **PhysicallyFitPT.Maui** – .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst)
 - **PhysicallyFitPT.Web** – Blazor WebAssembly app for web browsers
