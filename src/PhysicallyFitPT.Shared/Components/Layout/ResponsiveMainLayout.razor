@@ -1,0 +1,76 @@
+@* Unified main layout that adapts to platform and screen size *@
+@using PhysicallyFitPT.Shared
+@inherits LayoutComponentBase
+
+@inject IPlatformInfo PlatformInfo
+
+<div class="pfp-layout" data-platform="@PlatformInfo.Platform.ToString().ToLower()" data-device="@PlatformInfo.Device.ToString().ToLower()">
+  
+  @if (ShouldShowSideNav())
+  {
+    <!-- Desktop layout with sidebar -->
+    <div class="pfp-layout-desktop">
+      <aside class="pfp-sidebar">
+        <ResponsiveNavMenu />
+      </aside>
+      
+      <main class="pfp-main-content">
+        <header class="pfp-header">
+          <div class="pfp-header-content">
+            <h1 class="pfp-app-title">Physically Fit PT</h1>
+            <div class="pfp-header-actions">
+              @if (ShowUserInfo)
+              {
+                <div class="pfp-user-info">
+                  <span>@UserDisplayName</span>
+                </div>
+              }
+            </div>
+          </div>
+        </header>
+        
+        <div class="pfp-content">
+          @Body
+        </div>
+      </main>
+    </div>
+  }
+  else
+  {
+    <!-- Mobile layout with top navigation -->
+    <div class="pfp-layout-mobile">
+      <header class="pfp-mobile-header">
+        <div class="pfp-mobile-header-content">
+          <ResponsiveNavMenu />
+          <h1 class="pfp-mobile-title">Physically Fit PT</h1>
+          @if (ShowUserInfo)
+          {
+            <div class="pfp-user-avatar">
+              <span>@(UserDisplayName?.Substring(0, 1) ?? "U")</span>
+            </div>
+          }
+        </div>
+      </header>
+      
+      <main class="pfp-mobile-main">
+        <div class="pfp-mobile-content">
+          @Body
+        </div>
+      </main>
+    </div>
+  }
+  
+</div>
+
+@code {
+  [Parameter] public RenderFragment? Body { get; set; }
+  [Parameter] public bool ShowUserInfo { get; set; } = true;
+  [Parameter] public string? UserDisplayName { get; set; } = "User";
+
+  private bool ShouldShowSideNav()
+  {
+    // Show sidebar for desktop browsers and desktop MAUI apps
+    return PlatformInfo.Device == DeviceType.Desktop || 
+           (PlatformInfo.Platform == PlatformType.Web && (PlatformInfo.ScreenWidth ?? 0) >= 1024);
+  }
+}
