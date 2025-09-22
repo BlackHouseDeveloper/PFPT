@@ -172,7 +172,9 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const path = 'docs/CHANGELOG.md';
-            const content = '${{ steps.generate.outputs.content }}';
+            // Decode the content from base64, then re-encode to base64 to avoid double encoding
+            const rawContent = Buffer.from('${{ steps.generate.outputs.content }}', 'base64').toString('utf-8');
+            const content = Buffer.from(rawContent, 'utf-8').toString('base64');
             
             // Retry logic for file updates with exponential backoff
             let maxRetries = 3;
