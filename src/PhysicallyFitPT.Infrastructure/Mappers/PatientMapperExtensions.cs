@@ -8,14 +8,14 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
   using PhysicallyFitPT.Shared;
 
   /// <summary>
-  /// Extension methods for mapping Patient domain objects to DTOs.
+  /// Extension methods for mapping Patient core objects to DTOs.
   /// </summary>
   public static class PatientMapperExtensions
   {
     /// <summary>
-    /// Converts a Patient domain object to its corresponding DTO.
+    /// Converts a Patient core object to its corresponding DTO.
     /// </summary>
-    /// <param name="patient">The patient domain object to convert.</param>
+    /// <param name="patient">The patient core object to convert.</param>
     /// <returns>A PatientDto containing the patient data.</returns>
     public static PatientDto ToDto(this Patient patient)
     {

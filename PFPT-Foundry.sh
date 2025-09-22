@@ -77,7 +77,7 @@ fi
 
 # ---------------------------------------------
 # Physically Fit PT – Blazor (MAUI) scaffold (macOS, .NET 8)
-# Clean architecture: domain, services, CI, tests, seed data, shared libs
+# Clean architecture: core, services, CI, tests, seed data, shared libs
 # Flags:
 #   --create-migration   Generate initial EF Core migration and update DB
 #   --seed               Seed the local dev DB (uses PFP_DB_PATH or ./dev.physicallyfitpt.db)
@@ -162,7 +162,7 @@ done
 
 SOLUTION="PhysicallyFitPT"
 APP="$SOLUTION"                   # .NET MAUI Blazor app (multi-target)
-DOMAIN="$SOLUTION.Domain"         # Domain entities (POCOs, no EF attributes)
+DOMAIN="$SOLUTION.Core"         # Domain entities (POCOs, no EF attributes)
 INFRA="$SOLUTION.Infrastructure"  # Infrastructure (EF Core DbContext, Services, PDF renderer)
 SHARED="$SOLUTION.Shared"         # Shared DTOs / clinical libraries
 TESTS="$SOLUTION.Tests"           # XUnit test project
@@ -398,7 +398,7 @@ fi
 # 5) Domain models (no DataAnnotations)
 mkdir -p "$DOMAIN"
 cat > "$DOMAIN/Common.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public abstract class Entity
 {
@@ -419,7 +419,7 @@ public enum GoalStatus { Active = 0, Met = 1, PartiallyMet = 2, NotMet = 3, Defe
 EOF
 
 cat > "$DOMAIN/Patient.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class Patient : Entity
 {
@@ -439,7 +439,7 @@ public class Patient : Entity
 EOF
 
 cat > "$DOMAIN/Appointment.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class Appointment : Entity
 {
@@ -459,7 +459,7 @@ public class Appointment : Entity
 EOF
 
 cat > "$DOMAIN/NoteAndSections.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class Note : Entity
 {
@@ -583,7 +583,7 @@ public class ExercisePrescription
 EOF
 
 cat > "$DOMAIN/Goal.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class Goal
 {
@@ -599,7 +599,7 @@ public class Goal
 EOF
 
 cat > "$DOMAIN/Codes.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class CptCode : Entity
 {
@@ -615,7 +615,7 @@ public class Icd10Code : Entity
 EOF
 
 cat > "$DOMAIN/Questionnaires.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class QuestionnaireDefinition : Entity
 {
@@ -637,7 +637,7 @@ public class QuestionnaireResponse : Entity
 EOF
 
 cat > "$DOMAIN/Messaging.cs" <<'EOF'
-namespace PhysicallyFitPT.Domain;
+namespace PhysicallyFitPT.Core;
 
 public class CheckInMessageLog : Entity
 {
@@ -660,7 +660,7 @@ EOF
 mkdir -p "$INFRA"/{Data,Services,Services/Interfaces}
 cat > "$INFRA/Data/ApplicationDbContext.cs" <<'EOF'
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 
 namespace PhysicallyFitPT.Infrastructure.Data;
 
@@ -804,13 +804,13 @@ EOF
 
 # Service interfaces
 cat > "$INFRA/Services/Interfaces/IPatientService.cs" <<'EOF'
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 public interface IPatientService { Task<IEnumerable<Patient>> SearchAsync(string query, int take = 50); }
 EOF
 
 cat > "$INFRA/Services/Interfaces/IAppointmentService.cs" <<'EOF'
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
 public interface IAppointmentService
@@ -822,7 +822,7 @@ public interface IAppointmentService
 EOF
 
 cat > "$INFRA/Services/Interfaces/IAutoMessagingService.cs" <<'EOF'
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
 public interface IAutoMessagingService
@@ -833,7 +833,7 @@ public interface IAutoMessagingService
 EOF
 
 cat > "$INFRA/Services/Interfaces/INoteBuilderService.cs" <<'EOF'
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 namespace PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
 public interface INoteBuilderService
@@ -848,7 +848,7 @@ EOF
 # Service implementations
 cat > "$INFRA/Services/PatientService.cs" <<'EOF'
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
@@ -873,7 +873,7 @@ EOF
 
 cat > "$INFRA/Services/AppointmentService.cs" <<'EOF'
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
@@ -926,7 +926,7 @@ EOF
 
 cat > "$INFRA/Services/AutoMessagingService.cs" <<'EOF'
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
@@ -967,7 +967,7 @@ EOF
 
 cat > "$INFRA/Services/NoteBuilderService.cs" <<'EOF'
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 
@@ -1174,7 +1174,7 @@ mkdir -p "$APP"/Components/Pages/{Patients,Appointments,Notes,Admin,Reports,Note
 
 cat > "$APP/GlobalUsings.cs" <<'EOF'
 global using Microsoft.EntityFrameworkCore;
-global using PhysicallyFitPT.Domain;
+global using PhysicallyFitPT.Core;
 global using PhysicallyFitPT.Shared;
 global using PhysicallyFitPT.Infrastructure.Data;
 global using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -1302,7 +1302,7 @@ else
 
 @code {
   string? search;
-  List<PhysicallyFitPT.Domain.Patient> results = new();
+  List<PhysicallyFitPT.Core.Patient> results = new();
 
   async Task DoSearch()
   {
@@ -1341,14 +1341,14 @@ cat > "$IMPORTS" <<'EOF'
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @using PhysicallyFitPT
-@using PhysicallyFitPT.Domain
+@using PhysicallyFitPT.Core
 @using PhysicallyFitPT.Shared
 @using PhysicallyFitPT.Infrastructure.Data
 @using PhysicallyFitPT.Infrastructure.Services
 @using PhysicallyFitPT.Infrastructure.Services.Interfaces
 EOF
 else
-  for ns in "PhysicallyFitPT.Domain" "PhysicallyFitPT.Shared" "PhysicallyFitPT.Infrastructure.Data" "PhysicallyFitPT.Infrastructure.Services" "PhysicallyFitPT.Infrastructure.Services.Interfaces"; do
+  for ns in "PhysicallyFitPT.Core" "PhysicallyFitPT.Shared" "PhysicallyFitPT.Infrastructure.Data" "PhysicallyFitPT.Infrastructure.Services" "PhysicallyFitPT.Infrastructure.Services.Interfaces"; do
     grep -q "^@using $ns$" "$IMPORTS" || echo "@using $ns" >> "$IMPORTS"
   done
 fi
@@ -1406,7 +1406,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -1447,7 +1447,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -1483,7 +1483,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
@@ -1530,7 +1530,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Domain;
+using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 
 var envPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");

@@ -8,14 +8,14 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
   using PhysicallyFitPT.Shared;
 
   /// <summary>
-  /// Extension methods for mapping Questionnaire domain objects to DTOs.
+  /// Extension methods for mapping Questionnaire core objects to DTOs.
   /// </summary>
   public static class QuestionnaireMapperExtensions
   {
     /// <summary>
-    /// Converts a QuestionnaireDefinition domain object to its corresponding DTO.
+    /// Converts a QuestionnaireDefinition core object to its corresponding DTO.
     /// </summary>
-    /// <param name="def">The questionnaire definition domain object to convert.</param>
+    /// <param name="def">The questionnaire definition core object to convert.</param>
     /// <returns>A QuestionnaireDto containing the questionnaire definition data.</returns>
     public static QuestionnaireDto ToDto(this QuestionnaireDefinition def)
     {
@@ -31,9 +31,9 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
     }
 
     /// <summary>
-    /// Converts a QuestionnaireResponse domain object to its corresponding DTO.
+    /// Converts a QuestionnaireResponse core object to its corresponding DTO.
     /// </summary>
-    /// <param name="response">The questionnaire response domain object to convert.</param>
+    /// <param name="response">The questionnaire response core object to convert.</param>
     /// <returns>A QuestionnaireResponseDto containing the questionnaire response data.</returns>
     public static QuestionnaireResponseDto ToDto(this QuestionnaireResponse response)
     {

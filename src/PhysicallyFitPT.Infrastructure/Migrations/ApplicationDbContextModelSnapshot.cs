@@ -17,7 +17,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Appointment", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Appointment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.CheckInMessageLog", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.CheckInMessageLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,7 +139,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("CheckInMessageLogs");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.CptCode", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.CptCode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -178,7 +178,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("CptCodes");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Icd10Code", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Icd10Code", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,7 +216,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("Icd10Codes");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Note", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Note", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,7 +265,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("Notes");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Patient", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Patient", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,7 +333,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.QuestionnaireDefinition", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.QuestionnaireDefinition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -376,7 +376,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("QuestionnaireDefinitions");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.QuestionnaireResponse", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.QuestionnaireResponse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -420,9 +420,9 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.ToTable("QuestionnaireResponses");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Appointment", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Appointment", b =>
                 {
-                    b.HasOne("PhysicallyFitPT.Domain.Patient", "Patient")
+                    b.HasOne("PhysicallyFitPT.Core.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -431,21 +431,21 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Note", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Note", b =>
                 {
-                    b.HasOne("PhysicallyFitPT.Domain.Appointment", "Appointment")
+                    b.HasOne("PhysicallyFitPT.Core.Appointment", "Appointment")
                         .WithOne("Note")
-                        .HasForeignKey("PhysicallyFitPT.Domain.Note", "AppointmentId")
+                        .HasForeignKey("PhysicallyFitPT.Core.Note", "AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhysicallyFitPT.Domain.Patient", "Patient")
+                    b.HasOne("PhysicallyFitPT.Core.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("PhysicallyFitPT.Domain.AssessmentSection", "Assessment", b1 =>
+                    b.OwnsOne("PhysicallyFitPT.Core.AssessmentSection", "Assessment", b1 =>
                         {
                             b1.Property<Guid>("NoteId")
                                 .HasColumnType("TEXT");
@@ -463,7 +463,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("NoteId");
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.Goal", "Goals", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.Goal", "Goals", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -505,7 +505,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                                         .HasForeignKey("NoteId");
                                 });
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.Icd10Link", "Icd10Codes", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.Icd10Link", "Icd10Codes", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -536,7 +536,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.Navigation("Icd10Codes");
                         });
 
-                    b.OwnsOne("PhysicallyFitPT.Domain.ObjectiveSection", "Objective", b1 =>
+                    b.OwnsOne("PhysicallyFitPT.Core.ObjectiveSection", "Objective", b1 =>
                         {
                             b1.Property<Guid>("NoteId")
                                 .HasColumnType("TEXT");
@@ -548,7 +548,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("NoteId");
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.MmtMeasure", "Mmt", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.MmtMeasure", "Mmt", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -584,7 +584,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                                         .HasForeignKey("NoteId");
                                 });
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.OutcomeMeasureScore", "OutcomeMeasures", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.OutcomeMeasureScore", "OutcomeMeasures", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -616,7 +616,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                                         .HasForeignKey("NoteId");
                                 });
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.ProvidedIntervention", "ProvidedInterventions", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.ProvidedIntervention", "ProvidedInterventions", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -648,7 +648,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                                         .HasForeignKey("NoteId");
                                 });
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.RomMeasure", "Rom", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.RomMeasure", "Rom", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -690,7 +690,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                                         .HasForeignKey("NoteId");
                                 });
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.SpecialTest", "SpecialTests", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.SpecialTest", "SpecialTests", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -733,7 +733,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.Navigation("SpecialTests");
                         });
 
-                    b.OwnsOne("PhysicallyFitPT.Domain.PlanSection", "Plan", b1 =>
+                    b.OwnsOne("PhysicallyFitPT.Core.PlanSection", "Plan", b1 =>
                         {
                             b1.Property<Guid>("NoteId")
                                 .HasColumnType("TEXT");
@@ -757,7 +757,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("NoteId");
 
-                            b1.OwnsMany("PhysicallyFitPT.Domain.ExercisePrescription", "Hep", b2 =>
+                            b1.OwnsMany("PhysicallyFitPT.Core.ExercisePrescription", "Hep", b2 =>
                                 {
                                     b2.Property<Guid>("Id")
                                         .ValueGeneratedOnAdd()
@@ -789,7 +789,7 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                             b1.Navigation("Hep");
                         });
 
-                    b.OwnsOne("PhysicallyFitPT.Domain.SubjectiveSection", "Subjective", b1 =>
+                    b.OwnsOne("PhysicallyFitPT.Core.SubjectiveSection", "Subjective", b1 =>
                         {
                             b1.Property<Guid>("NoteId")
                                 .HasColumnType("TEXT");
@@ -843,12 +843,12 @@ namespace PhysicallyFitPT.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Appointment", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Appointment", b =>
                 {
                     b.Navigation("Note");
                 });
 
-            modelBuilder.Entity("PhysicallyFitPT.Domain.Patient", b =>
+            modelBuilder.Entity("PhysicallyFitPT.Core.Patient", b =>
                 {
                     b.Navigation("Appointments");
                 });

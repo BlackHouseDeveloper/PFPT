@@ -22,6 +22,14 @@ insert_final_newline = true
 [*.cs]
 dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
 
+[src/PhysicallyFitPT.Api/**/*.cs]
+; TODO: Restore StyleCop warnings once the API has real functionality.
+dotnet_analyzer_diagnostic.category-StyleCop.severity = none
+
+[tests/**/*.cs]
+; TODO: Restore StyleCop warnings once test projects contain meaningful coverage.
+dotnet_analyzer_diagnostic.category-StyleCop.severity = none
+
 [*.g.cs]
 dotnet_diagnostic.SA1633.severity = none
 

@@ -9,7 +9,7 @@
 ```
 PFPT/
 ├── PhysicallyFitPT/                    # .NET MAUI Blazor App (Multi-platform)
-├── PhysicallyFitPT.Domain/             # Domain Entities (Clean Architecture Core)
+├── PhysicallyFitPT.Core/             # Domain Entities (Clean Architecture Core)
 ├── PhysicallyFitPT.Infrastructure/     # Data Access, EF Core, Services
 ├── PhysicallyFitPT.Shared/             # Shared DTOs and Clinical Libraries
 ├── PhysicallyFitPT.Tests/              # Unit and Integration Tests (xUnit)
@@ -41,11 +41,11 @@ PFPT/
 - **iOS** - Native iOS application  
 - **macOS (Mac Catalyst)** - Native macOS desktop application
 
-### 2. PhysicallyFitPT.Domain (Domain Layer)
+### 2. PhysicallyFitPT.Core (Domain Layer)
 
 **Target Framework:** `net8.0`
 
-**Purpose:** Contains pure domain entities following Domain-Driven Design principles. No external dependencies or EF Core attributes.
+**Purpose:** Contains pure core entities following Domain-Driven Design principles. No external dependencies or EF Core attributes.
 
 **Key Entities:**
 - `Patient.cs` - Core patient entity with demographics and audit fields
@@ -60,7 +60,7 @@ PFPT/
 **Design Principles:**
 - Pure POCOs (Plain Old CLR Objects)
 - No infrastructure dependencies
-- Rich domain behavior
+- Rich core behavior
 - Immutable where appropriate
 - Comprehensive audit trail support
 
@@ -100,14 +100,14 @@ PFPT/
 
 **Target Framework:** `net8.0`
 
-**Purpose:** Contains DTOs, shared utilities, and clinical domain knowledge that can be used across projects.
+**Purpose:** Contains DTOs, shared utilities, and clinical core knowledge that can be used across projects.
 
 **Typical Contents:**
 - Data Transfer Objects (DTOs)
 - Validation logic
 - Clinical calculation utilities
 - Shared constants and enumerations
-- Cross-cutting domain services
+- Cross-cutting core services
 
 ### 5. PhysicallyFitPT.Tests (Test Suite)
 
@@ -205,13 +205,13 @@ dotnet run --project PhysicallyFitPT.Seeder
 ### Clean Architecture
 The solution follows Clean Architecture principles:
 
-1. **Domain Layer** (PhysicallyFitPT.Domain)
+1. **Domain Layer** (PhysicallyFitPT.Core)
    - Business entities and rules
    - No external dependencies
 
 2. **Application Layer** (Interfaces in Infrastructure)
    - Use cases and application services
-   - Orchestrates domain objects
+   - Orchestrates core objects
 
 3. **Infrastructure Layer** (PhysicallyFitPT.Infrastructure)
    - External concerns (database, file system, web services)
@@ -226,7 +226,7 @@ The solution follows Clean Architecture principles:
 - Registered in platform-specific startup code
 
 ### Cross-Cutting Concerns
-- Audit trails built into domain entities
+- Audit trails built into core entities
 - Soft delete patterns for data retention
 - Comprehensive error handling and logging
 - Consistent validation patterns
@@ -327,7 +327,7 @@ The `PFPT-Foundry.sh` script provides automated environment setup:
 ## Extensibility Points
 
 ### Adding New Features
-1. Define domain entities in Domain project
+1. Define core entities in Domain project
 2. Add service interfaces in Infrastructure/Services/Interfaces
 3. Implement services in Infrastructure/Services
 4. Create UI components in Components folder

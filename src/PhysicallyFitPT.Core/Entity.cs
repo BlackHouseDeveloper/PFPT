@@ -5,7 +5,7 @@
 namespace PhysicallyFitPT.Core;
 
 /// <summary>
-/// Base entity class providing common properties for domain entities.
+/// Base entity class providing common properties for core entities.
 /// </summary>
 public abstract class Entity
 {

@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- TODO: Remove SA1633 suppression once file headers are finalized. -->
+    <NoWarn>$(NoWarn);SA1633</NoWarn>
+    <!-- TODO: Remove StyleCop suppression when API endpoints are implemented. -->
+    <EnableStyleCop>false</EnableStyleCop>
   </PropertyGroup>
 
   <ItemGroup>

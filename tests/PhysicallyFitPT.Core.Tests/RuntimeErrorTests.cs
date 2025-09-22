@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using PhysicallyFitPT.Core;
-using PhysicallyFitPT.Domain.Notes;
+using PhysicallyFitPT.Core.Notes;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;

@@ -93,10 +93,10 @@ if ! command -v dotnet >/dev/null 2>&1; then
 fi
 
 # Check if we're in a .NET solution directory
-if [ ! -f "PhysicallyFitPT.sln" ]; then
-  echo -e "${YELLOW}${BOLD}⚠️  WARNING: PhysicallyFitPT.sln not found in current directory${RESET}"
+if [ ! -f "PFPT.sln" ]; then
+  echo -e "${YELLOW}${BOLD}⚠️  WARNING: PFPT.sln not found in current directory${RESET}"
   echo -e "${YELLOW}   Continuing anyway, but some operations may fail${RESET}"
-  echo "WARNING: PhysicallyFitPT.sln not found in current directory" >> "$logfile"
+  echo "WARNING: PFPT.sln not found in current directory" >> "$logfile"
 fi
 
 # ---- Build Step Tracking --------------------------------------------------

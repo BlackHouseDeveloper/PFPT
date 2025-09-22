@@ -112,7 +112,7 @@ namespace PhysicallyFitPT.Infrastructure.Services
         }
 
         // Create and save new response
-        var response = new Domain.QuestionnaireResponse
+        var response = new Core.QuestionnaireResponse
         {
           PatientId = patientId,
           AppointmentId = appointmentId,

@@ -8,14 +8,14 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
   using PhysicallyFitPT.Shared;
 
   /// <summary>
-  /// Extension methods for mapping Appointment domain objects to DTOs.
+  /// Extension methods for mapping Appointment core objects to DTOs.
   /// </summary>
   public static class AppointmentMapperExtensions
   {
     /// <summary>
-    /// Converts an Appointment domain object to its corresponding DTO.
+    /// Converts an Appointment core object to its corresponding DTO.
     /// </summary>
-    /// <param name="appointment">The appointment domain object to convert.</param>
+    /// <param name="appointment">The appointment core object to convert.</param>
     /// <returns>An AppointmentDto containing the appointment data.</returns>
     public static AppointmentDto ToDto(this Appointment appointment)
     {

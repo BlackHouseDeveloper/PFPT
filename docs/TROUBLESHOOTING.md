@@ -335,7 +335,7 @@ dotnet nuget locals all --clear
 dotnet build -m:2
 
 # Build projects individually
-dotnet build PhysicallyFitPT.Domain
+dotnet build PhysicallyFitPT.Core
 dotnet build PhysicallyFitPT.Infrastructure
 dotnet build PhysicallyFitPT
 ```
