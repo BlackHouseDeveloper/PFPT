@@ -1,0 +1,234 @@
+name: MCP Database Diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Database operation to perform'
+        required: true
+        default: 'validate'
+        type: choice
+        options:
+          - validate
+          - migrate
+          - rollback
+          - seed
+          - backup
+          - analyze
+      target_migration:
+        description: 'Target migration (for rollback)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  EF_PROVIDER: sqlite
+
+jobs:
+  database-diagnostics:
+    name: Database Diagnostics - ${{ inputs.operation }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Restore dependencies
+        run: |
+          dotnet restore src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj
+          dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj
+      
+      - name: Install EF Tools
+        run: dotnet tool install --global dotnet-ef
+      
+      - name: Validate Database Design-Time Factory
+        if: inputs.operation == 'validate'
+        run: |
+          echo "🔍 Validating EF Core design-time factory..."
+          dotnet ef dbcontext info -p src/PhysicallyFitPT.Infrastructure -v
+          
+          echo "📋 Listing available migrations..."
+          dotnet ef migrations list -p src/PhysicallyFitPT.Infrastructure -v
+          
+          echo "✅ Database design-time validation complete"
+      
+      - name: Create New Migration
+        if: inputs.operation == 'migrate'
+        run: |
+          timestamp=$(date +"%Y%m%d_%H%M%S")
+          migration_name="AutoDiagnostic_${timestamp}"
+          echo "🔄 Creating diagnostic migration: ${migration_name}"
+          
+          dotnet ef migrations add "${migration_name}" \
+            -p src/PhysicallyFitPT.Infrastructure \
+            -o Migrations \
+            --verbose
+          
+          echo "📋 Migration created successfully"
+          
+      - name: Rollback to Target Migration
+        if: inputs.operation == 'rollback' && inputs.target_migration != ''
+        run: |
+          echo "⏪ Rolling back to migration: ${{ inputs.target_migration }}"
+          dotnet ef database update "${{ inputs.target_migration }}" \
+            -p src/PhysicallyFitPT.Infrastructure \
+            --verbose
+            
+      - name: Seed Database
+        if: inputs.operation == 'seed'
+        run: |
+          echo "🌱 Seeding database with test data..."
+          cd src/PhysicallyFitPT.Seeder
+          dotnet run --configuration Release
+          echo "✅ Database seeding complete"
+          
+      - name: Database Backup
+        if: inputs.operation == 'backup'
+        run: |
+          echo "💾 Creating database backup..."
+          timestamp=$(date +"%Y%m%d_%H%M%S")
+          backup_name="pfpt_backup_${timestamp}.db"
+          
+          # Create a fresh database and export schema
+          dotnet ef database update -p src/PhysicallyFitPT.Infrastructure
+          
+          if [ -f "dev.physicallyfitpt.db" ]; then
+            cp "dev.physicallyfitpt.db" "${backup_name}"
+            echo "✅ Database backed up as: ${backup_name}"
+          else
+            echo "⚠️ No database file found to backup"
+          fi
+          
+      - name: Analyze Database Performance
+        if: inputs.operation == 'analyze'
+        run: |
+          echo "📊 Analyzing database performance..."
+          
+          # Generate SQL schema for analysis
+          dotnet ef migrations script \
+            -p src/PhysicallyFitPT.Infrastructure \
+            -o schema_analysis.sql \
+            --verbose
+            
+          echo "📝 Schema analysis generated"
+          
+          # Check for potential performance issues
+          echo "🔍 Checking for potential performance issues..."
+          
+          if grep -i "CREATE INDEX" schema_analysis.sql; then
+            echo "✅ Indexes found in schema"
+          else
+            echo "⚠️ No indexes found - consider adding for performance"
+          fi
+          
+          if grep -i "FOREIGN KEY" schema_analysis.sql; then
+            echo "✅ Foreign key constraints found"
+          else
+            echo "⚠️ No foreign key constraints found"
+          fi
+          
+      - name: Generate Diagnostic Report
+        if: always()
+        run: |
+          echo "📋 Generating diagnostic report..."
+          
+          cat > database_diagnostic_report.md <<EOF
+          # Database Diagnostic Report
+          
+          **Operation:** ${{ inputs.operation }}
+          **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **EF Provider:** ${EF_PROVIDER}
+          
+          ## Migration Status
+          \`\`\`
+          $(dotnet ef migrations list -p src/PhysicallyFitPT.Infrastructure 2>&1 || echo "Could not list migrations")
+          \`\`\`
+          
+          ## DbContext Information
+          \`\`\`
+          $(dotnet ef dbcontext info -p src/PhysicallyFitPT.Infrastructure 2>&1 || echo "Could not get context info")
+          \`\`\`
+          
+          ## Schema Script Preview
+          \`\`\`sql
+          $(head -n 50 schema_analysis.sql 2>/dev/null || echo "No schema file generated")
+          \`\`\`
+          
+          ## Recommendations
+          - Ensure all entities have appropriate indexes
+          - Validate foreign key relationships
+          - Consider query performance for large datasets
+          - Test migration rollback scenarios
+          - Monitor database growth and cleanup strategies
+          EOF
+          
+          echo "✅ Diagnostic report generated: database_diagnostic_report.md"
+          
+      - name: Upload Diagnostic Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-diagnostics-${{ inputs.operation }}-${{ github.run_number }}
+          path: |
+            database_diagnostic_report.md
+            schema_analysis.sql
+            *.db
+            src/PhysicallyFitPT.Infrastructure/Migrations/
+          retention-days: 30
+          
+      - name: Post Results Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const operation = '${{ inputs.operation }}';
+            const success = '${{ job.status }}' === 'success';
+            const emoji = success ? '✅' : '❌';
+            
+            const summary = [
+              `${emoji} **Database Diagnostics Complete**`,
+              '',
+              `**Operation:** ${operation}`,
+              `**Status:** ${{ job.status }}`,
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Artifacts Generated:**',
+              '- Database diagnostic report',
+              '- Schema analysis script',
+              '- Migration files (if applicable)',
+              '',
+              `**Download:** [View workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            // If this was triggered manually, we might not have an issue/PR context
+            // In that case, we could create a new issue or just log the results
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('No issue context available. Results summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }
