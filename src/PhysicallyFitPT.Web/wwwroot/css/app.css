@@ -101,3 +101,332 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+/* Additional styles for patient search and appointment management */
+
+.pfp-search-section {
+  margin-bottom: 1.5rem;
+}
+
+.pfp-input-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pfp-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.pfp-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #3498db);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.pfp-alert {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pfp-alert-error {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+}
+
+.pfp-alert-success {
+  background: #efe;
+  border: 1px solid #cfc;
+  color: #363;
+}
+
+.pfp-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.pfp-patient-list {
+  margin-top: 1rem;
+}
+
+.pfp-results-header {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.pfp-patient-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  background: white;
+  transition: box-shadow 0.2s ease;
+}
+
+.pfp-patient-card:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pfp-patient-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-patient-details {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pfp-detail {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.pfp-patient-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pfp-btn-outline {
+  background: transparent;
+  color: var(--primary-color, #3498db);
+  border: 1px solid var(--primary-color, #3498db);
+}
+
+.pfp-btn-outline:hover {
+  background: var(--primary-color, #3498db);
+  color: white;
+}
+
+.pfp-btn-danger {
+  background: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+}
+
+.pfp-btn-danger:hover {
+  background: #c82333;
+}
+
+.pfp-btn-text {
+  background: transparent;
+  color: var(--primary-color, #3498db);
+  border: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.pfp-no-results,
+.pfp-getting-started {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.pfp-no-results p,
+.pfp-getting-started p {
+  margin: 0.5rem 0;
+}
+
+.pfp-no-results small,
+.pfp-getting-started small {
+  color: #adb5bd;
+}
+
+/* Modal styles */
+.pfp-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.pfp-modal {
+  background: white;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pfp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.pfp-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.pfp-modal-body {
+  padding: 1.5rem;
+}
+
+.pfp-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.pfp-form-group {
+  margin-bottom: 1rem;
+}
+
+.pfp-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-search-results {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+
+.pfp-search-result {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.pfp-search-result:hover {
+  background: #f8f9fa;
+}
+
+.pfp-search-result:last-child {
+  border-bottom: none;
+}
+
+.pfp-selected-patient {
+  padding: 0.75rem 1rem;
+  background: #e3f2fd;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  color: #1976d2;
+}
+
+/* Appointment styles */
+.pfp-appointments-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pfp-appointment-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+}
+
+.pfp-appointment-time {
+  font-size: 1rem;
+  color: var(--text-color, #2c3e50);
+}
+
+.pfp-appointment-details {
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.pfp-appointment-type {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.pfp-appointment-location,
+.pfp-appointment-clinician {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.pfp-appointment-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Mobile responsiveness for new components */
+@media (max-width: 768px) {
+  .pfp-input-group {
+    flex-direction: column;
+  }
+  
+  .pfp-patient-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .pfp-patient-actions {
+    align-self: stretch;
+  }
+  
+  .pfp-patient-actions .pfp-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .pfp-appointment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .pfp-appointment-details {
+    margin-left: 0;
+  }
+  
+  .pfp-modal {
+    margin: 1rem;
+    max-width: none;
+  }
+}

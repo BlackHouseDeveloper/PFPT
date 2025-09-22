@@ -12,17 +12,46 @@
 #pragma warning disable SA1111 // Closing parenthesis should be on its own line
 #pragma warning disable SA1400 // Access modifier should be declared
 
+using Microsoft.EntityFrameworkCore;
+using PhysicallyFitPT.Core;
+using PhysicallyFitPT.Infrastructure.Data;
+using PhysicallyFitPT.Infrastructure.Services;
+using PhysicallyFitPT.Infrastructure.Services.Interfaces;
+using PhysicallyFitPT.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add services to the container
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure Entity Framework
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=pfpt.db");
+});
+
+// DI Setup for services
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
+builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
+builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
+
+// Add CORS for development
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,33 +59,155 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 
-var summaries = new[]
+// Minimal APIs for patients
+app.MapGet("/api/patients/search", async (string? query, int take, IPatientService patientService) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    try
+    {
+        var patients = await patientService.SearchAsync(query ?? string.Empty, take > 0 ? take : 50);
+        return Results.Ok(patients);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 })
-.WithName("GetWeatherForecast")
+.WithName("SearchPatients")
+.WithOpenApi();
+
+// Minimal APIs for appointments
+app.MapPost("/api/appointments", async (AppointmentCreateRequest request, IAppointmentService appointmentService) =>
+{
+    try
+    {
+        var appointment = await appointmentService.ScheduleAsync(
+            request.PatientId,
+            request.Start,
+            request.End,
+            request.VisitType,
+            request.Location,
+            request.ClinicianName,
+            request.ClinicianNpi);
+        return Results.Created($"/api/appointments/{appointment.Id}", appointment);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("CreateAppointment")
+.WithOpenApi();
+
+app.MapGet("/api/patients/{patientId}/appointments/upcoming", async (Guid patientId, DateTimeOffset? from, int take, IAppointmentService appointmentService) =>
+{
+    try
+    {
+        var appointments = await appointmentService.GetUpcomingByPatientAsync(
+            patientId,
+            from ?? DateTimeOffset.UtcNow,
+            take > 0 ? take : 50);
+        return Results.Ok(appointments);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetPatientAppointments")
+.WithOpenApi();
+
+app.MapDelete("/api/appointments/{id}", async (Guid id, IAppointmentService appointmentService) =>
+{
+    try
+    {
+        var success = await appointmentService.CancelAsync(id);
+        return success ? Results.NoContent() : Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("CancelAppointment")
+.WithOpenApi();
+
+// Minimal APIs for notes
+app.MapGet("/api/notes/appointment/{appointmentId}", async (Guid appointmentId, INoteBuilderService noteService) =>
+{
+    try
+    {
+        // Implementation would depend on note service methods
+        return Results.Ok(new { message = "Note endpoint placeholder" });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetNoteByAppointment")
+.WithOpenApi();
+
+// Minimal APIs for questionnaires
+app.MapGet("/api/questionnaires", async (IQuestionnaireService questionnaireService) =>
+{
+    try
+    {
+        // Implementation would depend on questionnaire service methods
+        return Results.Ok(new { message = "Questionnaire endpoint placeholder" });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetQuestionnaires")
+.WithOpenApi();
+
+// Dashboard statistics endpoint
+app.MapGet("/api/dashboard/stats", async (IPatientService patientService, IAppointmentService appointmentService) =>
+{
+    try
+    {
+        // For now, we'll return mock statistics since we need more infrastructure to get real stats
+        // TODO: Implement real dashboard statistics once aggregation services are available
+        var stats = new DashboardStatsDto
+        {
+            TodaysAppointments = 8,  // Mock data
+            ActivePatients = 127,    // Mock data
+            PendingNotes = 3,        // Mock data
+            OverdueOutcomeMeasures = 5 // Mock data
+        };
+        return Results.Ok(stats);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetDashboardStats")
 .WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+// Request DTOs for API endpoints
+public record AppointmentCreateRequest(
+    Guid PatientId,
+    DateTimeOffset Start,
+    DateTimeOffset? End,
+    VisitType VisitType,
+    string? Location = null,
+    string? ClinicianName = null,
+    string? ClinicianNpi = null);
 
 #pragma warning restore SA1400 // Access modifier should be declared
 #pragma warning restore SA1111 // Closing parenthesis should be on its own line
