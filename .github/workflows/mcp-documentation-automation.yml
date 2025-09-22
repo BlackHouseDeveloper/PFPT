@@ -118,35 +118,18 @@ jobs:
           # Create architecture diagrams using tree
           mkdir -p docs/architecture
           
-          # Generate project structure
-          cat > docs/architecture/project-structure.md <<EOF
-          # PFPT Project Structure
+          # Use project structure template
+          cp .github/templates/documentation/project-structure-template.md docs/architecture/project-structure.md
           
-          ## Overview
+          # Replace template variables
+          PROJECT_TREE=$(tree src/ -I 'bin|obj|*.user' 2>/dev/null || find src/ -type d | head -20 | sed 's/^/  /')
+          sed -i "s/{{GENERATION_DATE}}/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/g" docs/architecture/project-structure.md
           
-          PFPT follows Clean Architecture principles with clear separation of concerns:
-          
-          \`\`\`
-          $(tree src/ -I 'bin|obj|*.user' || find src/ -type d | head -20)
-          \`\`\`
-          
-          ## Layer Dependencies
-          
-          - **Core**: No dependencies (domain entities)
-          - **Infrastructure**: Depends on Core (data access, external services)
-          - **Shared**: Common utilities and shared models
-          - **Maui**: Platform-specific UI implementation
-          - **Web**: Blazor WebAssembly client
-          
-          ## Data Flow
-          
-          1. UI Layer (Maui/Web) → Services
-          2. Services → Repository Interfaces  
-          3. Infrastructure → Entity Framework → SQLite
-          4. PDF Generation → QuestPDF → File System
-          
-          _Auto-generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
-          EOF
+          # Replace project tree (use temp file for multiline replacement)
+          echo "$PROJECT_TREE" > project_tree_temp.txt
+          sed -i "/{{PROJECT_TREE}}/r project_tree_temp.txt" docs/architecture/project-structure.md
+          sed -i "/{{PROJECT_TREE}}/d" docs/architecture/project-structure.md
+          rm -f project_tree_temp.txt
           
           # Generate component map
           echo "📋 Mapping project components..."
@@ -157,46 +140,8 @@ jobs:
         run: |
           echo "👋 Generating onboarding documentation..."
           
-          cat > docs/ONBOARDING.md <<EOF
-          # PFPT Developer Onboarding Guide
-          
-          Welcome to the Physically Fit PT (PFPT) development team! This guide will help you get up and running quickly.
-          
-          ## Prerequisites
-          
-          ### Required Software
-          - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-          - [Visual Studio Code](https://code.visualstudio.com/) or Visual Studio
-          - [Git](https://git-scm.com/)
-          
-          ### Platform-Specific Requirements
-          - **Android Development**: Android SDK, OpenJDK 17
-          - **iOS Development**: Xcode (macOS only)
-          - **Windows Development**: Windows SDK
-          
-          ### Recommended Extensions (VS Code)
-          - C# for Visual Studio Code
-          - .NET MAUI
-          - GitLens
-          - REST Client
-          
-          ## Quick Start (5 minutes)
-          
-          1. **Clone the repository**:
-             \`\`\`bash
-             git clone https://github.com/BlackHouseDeveloper/PFPT.git
-             cd PFPT
-             \`\`\`
-          
-          2. **Run the setup script**:
-             \`\`\`bash
-             ./PFPT-Foundry.sh
-             \`\`\`
-          
-          3. **Open in VS Code**:
-             \`\`\`bash
-             code .
-             \`\`\`
+          # Use onboarding template
+          cp .github/templates/documentation/onboarding-template.md docs/ONBOARDING.md
           
           4. **Build and test**:
              \`\`\`bash

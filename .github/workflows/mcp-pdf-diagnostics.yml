@@ -148,6 +148,10 @@ jobs:
       - name: Basic PDF Validation
         if: inputs.test_type == 'validate'
         run: |
+          echo "📄 Validating PDF generation capabilities..."
+          
+          # Use extracted PDF validation script
+          python3 .github/scripts/mcp/pdf/validate-pdf.py
           cd pdf-test-app
           dotnet restore
           dotnet run

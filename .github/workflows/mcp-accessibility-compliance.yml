@@ -93,44 +93,40 @@ jobs:
         run: |
           echo "♿ Testing UI component accessibility..."
           
-          # Create accessibility test configuration
-          cat > axe-config.json <<EOF
-          {
-            "rules": {
-              "color-contrast": { "enabled": true },
-              "keyboard": { "enabled": true },
-              "label": { "enabled": true },
-              "name-role-value": { "enabled": true },
-              "focus-order-semantics": { "enabled": true }
-            },
-            "tags": ["wcag2${{ inputs.accessibility_level || 'aa' }}", "best-practice"]
-          }
-          EOF
+          # Use extracted axe configuration
+          cp .github/templates/accessibility/axe-config.json ./axe-config.json
+          
+          # Update configuration for specific accessibility level
+          sed -i "s/wcag2aa/wcag2${{ inputs.accessibility_level || 'aa' }}/g" axe-config.json
           
           # Test main page accessibility
           xvfb-run -a axe --config axe-config.json http://localhost:8080 --format json --output ui-components-audit.json || {
             echo "⚠️ Accessibility issues found in UI components"
           }
           
-          # Generate human-readable report
+          # Generate human-readable report from template
           if [ -f ui-components-audit.json ]; then
-            cat > ui-components-report.md <<EOF
-          # UI Components Accessibility Report
-          
-          **WCAG Level**: ${{ inputs.accessibility_level || 'AA' }}
-          **Test Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          
-          ## Summary
-          
-          $(jq -r '.violations | length' ui-components-audit.json 2>/dev/null || echo "0") violations found
-          $(jq -r '.passes | length' ui-components-audit.json 2>/dev/null || echo "0") rules passed
-          
-          ## Critical Issues
-          
-          EOF
+            cp .github/templates/accessibility/ui-components-report.md ui-components-report.md
             
-            # Extract critical violations
-            jq -r '.violations[] | select(.impact == "critical" or .impact == "serious") | "### " + .description + "\n- **Impact**: " + .impact + "\n- **Help**: " + .help + "\n- **Tags**: " + (.tags | join(", ")) + "\n"' ui-components-audit.json >> ui-components-report.md 2>/dev/null || echo "No critical issues found" >> ui-components-report.md
+            # Replace template variables
+            sed -i "s/{{ACCESSIBILITY_LEVEL}}/${{ inputs.accessibility_level || 'AA' }}/g" ui-components-report.md
+            sed -i "s/{{TEST_DATE}}/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/g" ui-components-report.md
+            
+            # Replace violations and passes counts
+            VIOLATIONS_COUNT=$(jq -r '.violations | length' ui-components-audit.json 2>/dev/null || echo "0")
+            PASSES_COUNT=$(jq -r '.passes | length' ui-components-audit.json 2>/dev/null || echo "0")
+            
+            sed -i "s/{{VIOLATIONS_COUNT}}/$VIOLATIONS_COUNT/g" ui-components-report.md
+            sed -i "s/{{PASSES_COUNT}}/$PASSES_COUNT/g" ui-components-report.md
+            
+            # Extract and format critical issues
+            CRITICAL_ISSUES=$(jq -r '.violations[] | select(.impact == "critical" or .impact == "serious") | "### " + .description + "\n- **Impact**: " + .impact + "\n- **Help**: " + .help + "\n- **Tags**: " + (.tags | join(", ")) + "\n"' ui-components-audit.json 2>/dev/null || echo "No critical issues found")
+            
+            # Replace critical issues placeholder (use temp file for multiline replacement)
+            echo "$CRITICAL_ISSUES" > critical_issues_temp.txt
+            sed -i "/{{CRITICAL_ISSUES}}/r critical_issues_temp.txt" ui-components-report.md
+            sed -i "/{{CRITICAL_ISSUES}}/d" ui-components-report.md
+            rm -f critical_issues_temp.txt
             
             echo "✅ UI components accessibility report generated"
           fi
@@ -140,35 +136,8 @@ jobs:
         run: |
           echo "🧭 Testing navigation accessibility..."
           
-          # Test keyboard navigation
-          cat > keyboard-nav-test.js <<EOF
-          // Keyboard navigation test script
-          const { chromium } = require('playwright');
-          
-          (async () => {
-            const browser = await chromium.launch();
-            const page = await browser.newPage();
-            
-            await page.goto('http://localhost:8080');
-            
-            // Test tab navigation
-            await page.keyboard.press('Tab');
-            const focusedElement = await page.evaluate(() => document.activeElement.tagName);
-            console.log('First focusable element:', focusedElement);
-            
-            // Test ARIA landmarks
-            const landmarks = await page.evaluate(() => {
-              return Array.from(document.querySelectorAll('[role="main"], [role="navigation"], [role="banner"], [role="contentinfo"]')).length;
-            });
-            console.log('ARIA landmarks found:', landmarks);
-            
-            await browser.close();
-          })();
-          EOF
-          
-          # Install Playwright for navigation testing
-          npm install playwright
-          node keyboard-nav-test.js > navigation-test-results.txt 2>&1 || {
+          # Use extracted keyboard navigation test script
+          node .github/scripts/mcp/accessibility/keyboard-nav-test.js > navigation-test-results.txt 2>&1 || {
             echo "⚠️ Navigation accessibility issues detected"
           }
           
@@ -179,25 +148,8 @@ jobs:
         run: |
           echo "📝 Testing form accessibility..."
           
-          # Create form accessibility test
-          cat > form-accessibility-test.js <<EOF
-          // Form accessibility validation
-          const fs = require('fs');
-          
-          // Simulate form accessibility checks
-          const formChecks = {
-            labels: 'All form inputs should have associated labels',
-            fieldsets: 'Related form controls should be grouped in fieldsets',
-            errorMessages: 'Form validation errors should be clearly communicated',
-            required: 'Required fields should be clearly indicated',
-            instructions: 'Form instructions should be programmatically associated'
-          };
-          
-          const results = Object.entries(formChecks).map(([check, description]) => ({
-            check,
-            description,
-            status: 'manual-review-required'
-          }));
+          # Use extracted form accessibility test script
+          node .github/scripts/mcp/accessibility/form-accessibility-test.js
           
           fs.writeFileSync('form-accessibility-results.json', JSON.stringify(results, null, 2));
           console.log('Form accessibility checklist generated');
