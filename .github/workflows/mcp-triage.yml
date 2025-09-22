@@ -39,11 +39,13 @@ jobs:
             const labelsToRemove = [];
             
             // Healthcare/Clinical specific labels
-            if (fullText.includes('hipaa') || fullText.includes('patient data') || fullText.includes('phi')) {
+            const healthcareTerms = ['hipaa', 'patient data', 'phi'];
+            if (healthcareTerms.some(term => fullText.includes(term))) {
               labelsToAdd.push('healthcare-compliance');
             }
             
-            if (fullText.includes('clinical') || fullText.includes('therapy') || fullText.includes('assessment')) {
+            const clinicalTerms = ['clinical', 'therapy', 'assessment'];
+            if (clinicalTerms.some(term => fullText.includes(term))) {
               labelsToAdd.push('clinical-workflow');
             }
             
