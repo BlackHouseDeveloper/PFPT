@@ -52,40 +52,40 @@
   {
     <ul class="pfp-nav-list">
       <li class="pfp-nav-item">
-        <a href="/" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/" class="pfp-nav-link" Match="NavLinkMatch.All" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">🏠</span>
           Dashboard
-        </a>
+        </NavLink>
       </li>
       <li class="pfp-nav-item">
-        <a href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">👥</span>
           Patients
-        </a>
+        </NavLink>
       </li>
       <li class="pfp-nav-item">
-        <a href="/appointments" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/appointments" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">📅</span>
           Appointments
-        </a>
+        </NavLink>
       </li>
       <li class="pfp-nav-item">
-        <a href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">📝</span>
           Eval Note
-        </a>
+        </NavLink>
       </li>
       <li class="pfp-nav-item">
-        <a href="/admin/automessaging" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/admin/automessaging" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">📨</span>
           Auto Messaging
-        </a>
+        </NavLink>
       </li>
       <li class="pfp-nav-item">
-        <a href="/ui-kit" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <NavLink href="/ui-kit" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">🎨</span>
           UI Kit
-        </a>
+        </NavLink>
       </li>
     </ul>
   };
