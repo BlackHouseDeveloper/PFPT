@@ -299,7 +299,7 @@ Automation settings are configurable through:
 
 1. **Domain Entity** (if needed):
    ```csharp
-   // PhysicallyFitPT.Domain/NewEntity.cs
+   // PhysicallyFitPT.Core/NewEntity.cs
    public class NewEntity
    {
        public Guid Id { get; set; }
@@ -362,7 +362,7 @@ Automation settings are configurable through:
 ### Database Schema Changes
 
 1. **Update Domain Entity**:
-   - Add new properties to domain entities
+   - Add new properties to core entities
    - Ensure audit trail properties are included
 
 2. **Update DbContext**:
@@ -525,7 +525,7 @@ dotnet --version  # Should be 8.0.x
 dotnet workload list  # Should include 'maui'
 
 # Verify project builds
-dotnet build PhysicallyFitPT.Domain
+dotnet build PhysicallyFitPT.Core
 dotnet build PhysicallyFitPT.Infrastructure  
 dotnet build PhysicallyFitPT.Tests
 

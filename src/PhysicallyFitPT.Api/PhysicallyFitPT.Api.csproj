@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- TODO: Remove SA1633 suppression once file headers are finalized. -->
+    <NoWarn>$(NoWarn);SA1633</NoWarn>
+    <!-- TODO: Remove StyleCop suppression when API endpoints are implemented. -->
+    <EnableStyleCop>false</EnableStyleCop>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.Infrastructure\PhysicallyFitPT.Infrastructure.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

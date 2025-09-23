@@ -84,8 +84,8 @@ This document provides a comprehensive listing of all elements in the PFPT (Phys
 - **`Shared/`** - Reusable Blazor components
 - **`docs/`** - Component-specific documentation
 
-### 2. PhysicallyFitPT.Domain/ (Domain Layer)
-**Purpose:** Core business entities and domain logic
+### 2. PhysicallyFitPT.Core/ (Domain Layer)
+**Purpose:** Core business entities and core logic
 
 #### Domain Entities
 - **`Patient.cs`** - Core patient entity with demographics
@@ -98,7 +98,7 @@ This document provides a comprehensive listing of all elements in the PFPT (Phys
 - **`Common.cs`** - Shared value objects and enumerations
 
 #### Configuration
-- **`PhysicallyFitPT.Domain.csproj`** - Class library project file
+- **`PhysicallyFitPT.Core.csproj`** - Class library project file
 - **`packages.lock.json`** - NuGet package dependency lock file
 
 ### 3. PhysicallyFitPT.Infrastructure/ (Infrastructure Layer)
@@ -138,7 +138,7 @@ This document provides a comprehensive listing of all elements in the PFPT (Phys
 - **`packages.lock.json`** - Dependency lock file
 
 ### 4. PhysicallyFitPT.Shared/ (Shared Libraries)
-**Purpose:** DTOs, utilities, and cross-cutting domain services
+**Purpose:** DTOs, utilities, and cross-cutting core services
 
 #### Configuration
 - **`PhysicallyFitPT.Shared.csproj`** - Shared library project file
@@ -148,7 +148,7 @@ This document provides a comprehensive listing of all elements in the PFPT (Phys
 - Validation logic and rules
 - Clinical calculation utilities
 - Shared constants and enumerations
-- Cross-cutting domain services
+- Cross-cutting core services
 
 ### 5. PhysicallyFitPT.Tests/ (Test Suite)
 **Purpose:** Comprehensive testing coverage using xUnit
@@ -236,13 +236,13 @@ This document provides a comprehensive listing of all elements in the PFPT (Phys
 ## Architecture Patterns
 
 ### Clean Architecture Layers
-1. **Domain** (PhysicallyFitPT.Domain) - Pure business logic
+1. **Domain** (PhysicallyFitPT.Core) - Pure business logic
 2. **Application** (Interfaces in Infrastructure) - Use cases and workflows  
 3. **Infrastructure** (PhysicallyFitPT.Infrastructure) - External concerns
 4. **Presentation** (PhysicallyFitPT, PhysicallyFitPT.Web) - User interfaces
 
 ### Cross-Cutting Concerns
-- **Audit Trail** - Built into all domain entities
+- **Audit Trail** - Built into all core entities
 - **Soft Delete** - Logical deletion with IsDeleted flags
 - **Dependency Injection** - Constructor-based throughout
 - **Error Handling** - Comprehensive logging and resilience patterns

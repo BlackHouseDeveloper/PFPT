@@ -1,0 +1,132 @@
+@* Dashboard page with responsive layout *@
+@page "/"
+@page "/dashboard"
+@layout ResponsiveMainLayout
+@inject IDataService DataService
+
+<div class="pfp-dashboard">
+  <div class="pfp-page-header">
+    <h2>Dashboard</h2>
+    <p>Welcome to Physically Fit PT</p>
+  </div>
+
+  @if (isLoading)
+  {
+    <div class="pfp-loading">Loading dashboard...</div>
+  }
+  else
+  {
+    <div class="pfp-dashboard-grid">
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h3>Today's Appointments</h3>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-stat">
+            <span class="pfp-stat-number">@dashboardStats.TodaysAppointments</span>
+            <span class="pfp-stat-label">Scheduled</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h3>Active Patients</h3>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-stat">
+            <span class="pfp-stat-number">@dashboardStats.ActivePatients</span>
+            <span class="pfp-stat-label">Total</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h3>Pending Notes</h3>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-stat">
+            <span class="pfp-stat-number">@dashboardStats.PendingNotes</span>
+            <span class="pfp-stat-label">To Complete</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h3>PN Due</h3>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-stat">
+            <span class="pfp-stat-number">@dashboardStats.OverdueOutcomeMeasures</span>
+            <span class="pfp-stat-label">Overdue</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pfp-card pfp-card-wide">
+        <div class="pfp-card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-quick-actions">
+            <NavLink href="/patients" class="pfp-btn pfp-btn-primary">
+              👥 View Patients
+            </NavLink>
+            <NavLink href="/appointments" class="pfp-btn pfp-btn-secondary">
+              📅 Schedule Appointment
+            </NavLink>
+            <NavLink href="/notes/eval" class="pfp-btn pfp-btn-secondary">
+              📝 New Eval Note
+            </NavLink>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (errorMessage != null)
+  {
+    <div class="pfp-alert pfp-alert-error">
+      @errorMessage
+      <button class="pfp-btn pfp-btn-text" @onclick="RefreshDashboard">🔄 Retry</button>
+    </div>
+  }
+</div>
+
+@code {
+    private DashboardStatsDto dashboardStats = new();
+    private bool isLoading = true;
+    private string? errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardStats();
+    }
+
+    private async Task LoadDashboardStats()
+    {
+        isLoading = true;
+        errorMessage = null;
+        
+        try
+        {
+            dashboardStats = await DataService.GetDashboardStatsAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to load dashboard statistics. Please check your connection and try again.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshDashboard()
+    {
+        await LoadDashboardStats();
+    }
+}

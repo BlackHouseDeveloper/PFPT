@@ -1,0 +1,318 @@
+@page "/appointments"
+@layout ResponsiveMainLayout
+@inject IDataService DataService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Appointments</PageTitle>
+
+<div class="pfp-page-header">
+  <h2>Appointments</h2>
+  <p>Schedule and manage patient appointments</p>
+</div>
+
+<div class="pfp-card">
+  <div class="pfp-card-header">
+    <h3>Appointment Scheduler</h3>
+    <button class="pfp-btn pfp-btn-primary" @onclick="ShowScheduleModal">
+      ➕ Schedule New Appointment
+    </button>
+  </div>
+  <div class="pfp-card-body">
+    
+    @if (errorMessage != null)
+    {
+      <div class="pfp-alert pfp-alert-error">
+        @errorMessage
+      </div>
+    }
+
+    @if (successMessage != null)
+    {
+      <div class="pfp-alert pfp-alert-success">
+        @successMessage
+      </div>
+    }
+
+    <div class="pfp-appointments-section">
+      <h4>Today's Appointments</h4>
+      
+      @if (isLoadingAppointments)
+      {
+        <div class="pfp-loading">Loading appointments...</div>
+      }
+      else if (appointments.Any())
+      {
+        <div class="pfp-appointment-list">
+          @foreach (var appointment in appointments)
+          {
+            <div class="pfp-appointment-card">
+              <div class="pfp-appointment-time">
+                <strong>@appointment.ScheduledStart.ToString("h:mm tt")</strong>
+                @if (appointment.ScheduledEnd.HasValue)
+                {
+                  <span> - @appointment.ScheduledEnd.Value.ToString("h:mm tt")</span>
+                }
+              </div>
+              <div class="pfp-appointment-details">
+                <div class="pfp-appointment-type">@appointment.VisitType</div>
+                @if (!string.IsNullOrEmpty(appointment.Location))
+                {
+                  <div class="pfp-appointment-location">📍 @appointment.Location</div>
+                }
+                @if (!string.IsNullOrEmpty(appointment.ClinicianName))
+                {
+                  <div class="pfp-appointment-clinician">👨‍⚕️ @appointment.ClinicianName</div>
+                }
+              </div>
+              <div class="pfp-appointment-actions">
+                <button class="pfp-btn pfp-btn-outline" @onclick="() => ViewAppointment(appointment.Id)">
+                  View Details
+                </button>
+                <button class="pfp-btn pfp-btn-danger" @onclick="() => CancelAppointment(appointment.Id)">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+      else
+      {
+        <div class="pfp-no-results">
+          <p>No appointments scheduled for today.</p>
+          <p><small>Click "Schedule New Appointment" to get started.</small></p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+@* Schedule Appointment Modal *@
+@if (showScheduleModal)
+{
+  <div class="pfp-modal-overlay">
+    <div class="pfp-modal">
+      <div class="pfp-modal-header">
+        <h3>Schedule New Appointment</h3>
+        <button class="pfp-btn pfp-btn-text" @onclick="HideScheduleModal">✕</button>
+      </div>
+      <div class="pfp-modal-body">
+        
+        <div class="pfp-form-group">
+          <label>Patient Search</label>
+          <input @bind="patientSearchQuery" @onkeypress="OnPatientSearchKeyPress" 
+                 placeholder="Search for patient..." 
+                 class="pfp-input" />
+          @if (searchResults.Any())
+          {
+            <div class="pfp-search-results">
+              @foreach (var patient in searchResults)
+              {
+                <div class="pfp-search-result" @onclick="() => SelectPatient(patient)">
+                  @patient.FirstName @patient.LastName
+                  @if (!string.IsNullOrEmpty(patient.MRN))
+                  {
+                    <small>(MRN: @patient.MRN)</small>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (selectedPatient != null)
+        {
+          <div class="pfp-selected-patient">
+            <strong>Selected Patient:</strong> @selectedPatient.FirstName @selectedPatient.LastName
+          </div>
+
+          <div class="pfp-form-group">
+            <label>Appointment Date & Time</label>
+            <input @bind="scheduledStart" type="datetime-local" class="pfp-input" />
+          </div>
+
+          <div class="pfp-form-group">
+            <label>Visit Type</label>
+            <select @bind="selectedVisitType" class="pfp-input">
+              <option value="@VisitType.Eval">Evaluation</option>
+              <option value="@VisitType.Daily">Treatment</option>
+              <option value="@VisitType.Progress">Re-Evaluation</option>
+              <option value="@VisitType.Discharge">Discharge</option>
+            </select>
+          </div>
+
+          <div class="pfp-form-group">
+            <label>Location (Optional)</label>
+            <input @bind="appointmentLocation" placeholder="Clinic room or location" class="pfp-input" />
+          </div>
+
+          <div class="pfp-form-group">
+            <label>Clinician Name (Optional)</label>
+            <input @bind="clinicianName" placeholder="Clinician name" class="pfp-input" />
+          </div>
+        }
+      </div>
+      <div class="pfp-modal-footer">
+        <button class="pfp-btn pfp-btn-secondary" @onclick="HideScheduleModal">Cancel</button>
+        <button class="pfp-btn pfp-btn-primary" @onclick="ScheduleAppointment" 
+                disabled="@(selectedPatient == null || isScheduling)">
+          @if (isScheduling)
+          {
+            <span>Scheduling...</span>
+          }
+          else
+          {
+            <span>Schedule Appointment</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@code {
+    private List<AppointmentDto> appointments = new();
+    private List<PatientDto> searchResults = new();
+    private PatientDto? selectedPatient = null;
+    private bool isLoadingAppointments = false;
+    private bool showScheduleModal = false;
+    private bool isScheduling = false;
+    private string? errorMessage = null;
+    private string? successMessage = null;
+    private string patientSearchQuery = string.Empty;
+    private DateTime scheduledStart = DateTime.Now.AddHours(1);
+    private VisitType selectedVisitType = VisitType.Daily;
+    private string appointmentLocation = string.Empty;
+    private string clinicianName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTodaysAppointments();
+    }
+
+    private Task LoadTodaysAppointments()
+    {
+        isLoadingAppointments = true;
+
+        try
+        {
+            // For demo purposes, we'll load a placeholder set
+            // In real implementation, we'd need an endpoint to get today's appointments
+            appointments.Clear();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to load today's appointments.";
+        }
+        finally
+        {
+            isLoadingAppointments = false;
+            StateHasChanged();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void ShowScheduleModal()
+    {
+        showScheduleModal = true;
+        selectedPatient = null;
+        patientSearchQuery = string.Empty;
+        searchResults.Clear();
+        errorMessage = null;
+        successMessage = null;
+    }
+
+    private void HideScheduleModal()
+    {
+        showScheduleModal = false;
+    }
+
+    private async Task OnPatientSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(patientSearchQuery))
+        {
+            await SearchPatients();
+        }
+    }
+
+    private async Task SearchPatients()
+    {
+        try
+        {
+            var results = await DataService.SearchPatientsAsync(patientSearchQuery.Trim(), 10);
+            searchResults = results.ToList();
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to search patients.";
+        }
+    }
+
+    private void SelectPatient(PatientDto patient)
+    {
+        selectedPatient = patient;
+        searchResults.Clear();
+        patientSearchQuery = $"{patient.FirstName} {patient.LastName}";
+        StateHasChanged();
+    }
+
+    private async Task ScheduleAppointment()
+    {
+        if (selectedPatient == null) return;
+
+        isScheduling = true;
+        errorMessage = null;
+        
+        try
+        {
+            var appointment = await DataService.ScheduleAppointmentAsync(
+                selectedPatient.Id,
+                new DateTimeOffset(scheduledStart),
+                null, // End time
+                selectedVisitType,
+                appointmentLocation,
+                clinicianName);
+
+            successMessage = $"Appointment scheduled successfully for {selectedPatient.FirstName} {selectedPatient.LastName}";
+            HideScheduleModal();
+            await LoadTodaysAppointments();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to schedule appointment. Please try again.";
+        }
+        finally
+        {
+            isScheduling = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ViewAppointment(Guid appointmentId)
+    {
+        await JSRuntime.InvokeVoidAsync("alert", $"View appointment details for ID: {appointmentId}");
+    }
+
+    private async Task CancelAppointment(Guid appointmentId)
+    {
+        try
+        {
+            var success = await DataService.CancelAppointmentAsync(appointmentId);
+            if (success)
+            {
+                successMessage = "Appointment cancelled successfully.";
+                await LoadTodaysAppointments();
+            }
+            else
+            {
+                errorMessage = "Failed to cancel appointment.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "Error cancelling appointment.";
+        }
+    }
+}

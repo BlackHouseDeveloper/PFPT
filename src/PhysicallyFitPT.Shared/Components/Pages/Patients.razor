@@ -1,0 +1,158 @@
+@page "/patients"
+@layout ResponsiveMainLayout
+@inject IDataService DataService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Patients</PageTitle>
+
+<div class="pfp-page-header">
+  <h2>Patients</h2>
+  <p>Manage patient records and information</p>
+</div>
+
+<div class="pfp-card">
+  <div class="pfp-card-header">
+    <h3>Patient Search</h3>
+  </div>
+  <div class="pfp-card-body">
+    <div class="pfp-search-section">
+      <div class="pfp-input-group">
+        <input @bind="searchQuery" @onkeypress="OnSearchKeyPress" 
+               placeholder="Search patients by name..." 
+               class="pfp-input" />
+        <button @onclick="SearchPatients" class="pfp-btn pfp-btn-primary" disabled="@isLoading">
+          @if (isLoading)
+          {
+            <span>Searching...</span>
+          }
+          else
+          {
+            <span>🔍 Search</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    @if (errorMessage != null)
+    {
+      <div class="pfp-alert pfp-alert-error">
+        @errorMessage
+      </div>
+    }
+
+    @if (patients.Any())
+    {
+      <div class="pfp-patient-list">
+        <div class="pfp-results-header">
+          <span>Found @patients.Count() patients</span>
+        </div>
+        
+        @foreach (var patient in patients)
+        {
+          <div class="pfp-patient-card">
+            <div class="pfp-patient-info">
+              <h4>@patient.FirstName @patient.LastName</h4>
+              <div class="pfp-patient-details">
+                @if (!string.IsNullOrEmpty(patient.MRN))
+                {
+                  <span class="pfp-detail">MRN: @patient.MRN</span>
+                }
+                @if (patient.DateOfBirth.HasValue)
+                {
+                  <span class="pfp-detail">DOB: @patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
+                }
+                @if (!string.IsNullOrEmpty(patient.MobilePhone))
+                {
+                  <span class="pfp-detail">📞 @patient.MobilePhone</span>
+                }
+                @if (!string.IsNullOrEmpty(patient.Email))
+                {
+                  <span class="pfp-detail">✉️ @patient.Email</span>
+                }
+              </div>
+            </div>
+            <div class="pfp-patient-actions">
+              <button class="pfp-btn pfp-btn-secondary" @onclick="() => ViewPatient(patient.Id)">
+                View Details
+              </button>
+              <button class="pfp-btn pfp-btn-outline" @onclick="() => ScheduleAppointment(patient.Id)">
+                Schedule
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    else if (!isLoading && hasSearched)
+    {
+      <div class="pfp-no-results">
+        <p>No patients found matching your search criteria.</p>
+        <p><small>Try adjusting your search terms or check the spelling.</small></p>
+      </div>
+    }
+    else if (!hasSearched)
+    {
+      <div class="pfp-getting-started">
+        <p>Enter a patient name in the search box above to get started.</p>
+        <p><small>You can search by first name, last name, or both.</small></p>
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+    private string searchQuery = string.Empty;
+    private List<PatientDto> patients = new();
+    private bool isLoading = false;
+    private bool hasSearched = false;
+    private string? errorMessage = null;
+
+    private async Task SearchPatients()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var results = await DataService.SearchPatientsAsync(searchQuery.Trim(), 50);
+            patients = results.ToList();
+            hasSearched = true;
+        }
+        catch (Exception )
+        {
+            errorMessage = "Failed to search patients. Please try again.";
+            patients.Clear();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchPatients();
+        }
+    }
+
+    private async Task ViewPatient(Guid patientId)
+    {
+        // TODO: Navigate to patient details page
+        await JSRuntime.InvokeVoidAsync("alert", $"View patient details for ID: {patientId}");
+    }
+
+    private async Task ScheduleAppointment(Guid patientId)
+    {
+        // TODO: Open appointment scheduling modal/page
+        await JSRuntime.InvokeVoidAsync("alert", $"Schedule appointment for patient ID: {patientId}");
+    }
+}

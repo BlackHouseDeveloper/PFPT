@@ -15,7 +15,7 @@ This document provides a comprehensive analysis of potential runtime errors foun
 
 2. **Input Validation Gaps**
    - **Risk**: High - Invalid data could cause runtime exceptions
-   - **Fix**: Created custom validation attributes for all domain entities
+   - **Fix**: Created custom validation attributes for all core entities
    - **Files**: `Patient.cs`, `Goal.cs`, `NoteAndSections.cs`, `ValidationAttributes.cs`
 
 3. **Collection Access Errors**
@@ -103,7 +103,7 @@ This document provides a comprehensive analysis of potential runtime errors foun
 ## Files Modified
 
 ### New Files Created ✅
-- `PhysicallyFitPT.Domain/ValidationAttributes.cs` - Custom validation attributes
+- `PhysicallyFitPT.Core/ValidationAttributes.cs` - Custom validation attributes
 - `PhysicallyFitPT.Infrastructure/Services/BaseService.cs` - Service base class with error handling
 - `PhysicallyFitPT.Infrastructure/SafeJsonHelper.cs` - Safe JSON operations
 - `PhysicallyFitPT.Shared/SafeInterventionsLibrary.cs` - Safe collection access

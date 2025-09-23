@@ -520,3 +520,4 @@ DerivedData/
 .fleet/
 reference/manifest.json
 reference/memory.db
+build-output-*

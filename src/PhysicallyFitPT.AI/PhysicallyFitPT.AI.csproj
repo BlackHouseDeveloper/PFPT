@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- TODO: Remove SA1633 suppression once AI services add documentation. -->
+    <NoWarn>$(NoWarn);SA1633</NoWarn>
+    <!-- TODO: Re-enable StyleCop when AI services move beyond scaffolding. -->
+    <EnableStyleCop>false</EnableStyleCop>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
+  </ItemGroup>
+
+</Project>

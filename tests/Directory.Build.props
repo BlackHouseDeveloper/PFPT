@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- TODO: Re-enable StyleCop once the test suites include real coverage. -->
+    <EnableStyleCop>false</EnableStyleCop>
+  </PropertyGroup>
+</Project>
