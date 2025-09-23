@@ -64,4 +64,11 @@ public interface IDataService
   /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>True if the appointment was cancelled successfully, false otherwise.</returns>
   Task<bool> CancelAppointmentAsync(Guid appointmentId, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets dashboard statistics including today's appointments count, total active patients, and pending notes.
+  /// </summary>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>Dashboard statistics DTO.</returns>
+  Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default);
 }

@@ -223,4 +223,30 @@ public class WebApiDataService : IDataService
       return false;
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting dashboard statistics");
+
+      var response = await this.httpClient.GetAsync("api/dashboard/stats", cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var stats = await response.Content.ReadFromJsonAsync<DashboardStatsDto>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved dashboard statistics");
+        return stats ?? new DashboardStatsDto();
+      }
+
+      this.logger.LogWarning("Failed to get dashboard stats with status: {StatusCode}", response.StatusCode);
+      return new DashboardStatsDto();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting dashboard statistics");
+      return new DashboardStatsDto();
+    }
+  }
 }
