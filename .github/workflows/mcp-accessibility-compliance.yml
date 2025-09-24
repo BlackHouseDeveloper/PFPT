@@ -247,9 +247,11 @@ jobs:
           echo "🔍 Performing comprehensive accessibility audit..."
           
           # Run comprehensive axe audit
+          ACCESS_LEVEL=$(echo "${{ inputs.accessibility_level }}" | tr '[:upper:]' '[:lower:]')
+
           xvfb-run -a axe --config axe-config.json http://localhost:8080 \
             --format json --output full-accessibility-audit.json \
-            --tags wcag2${{ toLower(inputs.accessibility_level) }} \
+            --tags "wcag2${ACCESS_LEVEL}" \
             --include "*" || {
             echo "⚠️ Accessibility violations found"
           }
