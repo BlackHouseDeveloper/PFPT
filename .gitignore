@@ -523,3 +523,5 @@ reference/memory.db
 .act/
 .act.secrets
 .act.env
+build-output-*
+
