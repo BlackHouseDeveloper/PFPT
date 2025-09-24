@@ -342,8 +342,8 @@ jobs:
           distribution: microsoft
           java-version: "17"
 
-      - name: Install MAUI workload (only for Android builds)
-        if: matrix.tfm == 'net8.0-android'
+      - name: Install MAUI workload (all mobile builds)
+        if: matrix.tfm != 'net8.0'
         run: |
           set -e
           echo "Installing MAUI workloads..."
