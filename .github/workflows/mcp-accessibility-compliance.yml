@@ -249,7 +249,7 @@ jobs:
           # Run comprehensive axe audit
           xvfb-run -a axe --config axe-config.json http://localhost:8080 \
             --format json --output full-accessibility-audit.json \
-            --tags wcag2${{ inputs.accessibility_level | lower }} \
+            --tags wcag2${{ toLower(inputs.accessibility_level) }} \
             --include "*" || {
             echo "⚠️ Accessibility violations found"
           }

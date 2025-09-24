@@ -225,7 +225,7 @@ jobs:
               ${summary}
               
               ### 🏥 Clinical Focus
-              ${{ inputs.include_clinical ? '✅ Clinical workflow categorization included' : '❌ Clinical categorization disabled' }}
+              ${{ inputs.include_clinical && '✅ Clinical workflow categorization included' || '❌ Clinical categorization disabled' }}
               
               ### 📋 Release Notes Preview
               
