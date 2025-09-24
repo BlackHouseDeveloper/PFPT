@@ -241,6 +241,43 @@ jobs:
         if: always()
         run: |
           echo "📊 Generating comprehensive validation report..."
+
+          DOTNET_VALID="${{ steps.dotnet-validation.outputs.DOTNET_VALID }}"
+          MAUI_AVAILABLE="${{ steps.maui-validation.outputs.MAUI_AVAILABLE }}"
+          VALIDATION_SCOPE="${{ inputs.validation_scope }}"
+          CORE_BUILD="${{ steps.deps-validation.outputs.CORE_BUILD }}"
+          TOOLS_VALID="${{ steps.tools-validation.outputs.TOOLS_VALID }}"
+          MISSING_TOOLS="${{ steps.tools-validation.outputs.MISSING_TOOLS }}"
+
+          DOTNET_SECTION=""
+          if [ "$DOTNET_VALID" != "true" ]; then
+            DOTNET_SECTION+=$'### .NET SDK\n'
+            DOTNET_SECTION+=$'- Install .NET 8.0 SDK from https://dotnet.microsoft.com/download/dotnet/8.0\n'
+            DOTNET_SECTION+=$'- Ensure DOTNET_ROOT is properly configured\n\n'
+          fi
+
+          MAUI_SECTION=""
+          if [ "$MAUI_AVAILABLE" != "true" ] && [ "$VALIDATION_SCOPE" = "full" ]; then
+            MAUI_SECTION+=$'### .NET MAUI Workloads\n'
+            MAUI_SECTION+=$'- Install MAUI workloads: `dotnet workload install maui`\n'
+            MAUI_SECTION+=$'- Verify workload installation: `dotnet workload list`\n\n'
+          fi
+
+          DEPENDENCIES_SECTION=""
+          if [ "$CORE_BUILD" != "true" ]; then
+            DEPENDENCIES_SECTION+=$'### PFPT Dependencies\n'
+            DEPENDENCIES_SECTION+=$'- Check project dependencies in .csproj files\n'
+            DEPENDENCIES_SECTION+=$'- Verify package compatibility with .NET 8.0\n'
+            DEPENDENCIES_SECTION+=$'- Run `dotnet restore` to resolve package issues\n\n'
+          fi
+
+          TOOLS_SECTION=""
+          if [ "$TOOLS_VALID" != "true" ]; then
+            TOOLS_SECTION+=$'### Development Tools\n'
+            TOOLS_SECTION+=$'- Install missing tools: '
+            TOOLS_SECTION+="$MISSING_TOOLS\n"
+            TOOLS_SECTION+=$'- Verify PATH environment variable includes tool locations\n\n'
+          fi
           
           cat > validation-results/reports/validation-report.md <<EOF
           # PFPT Copilot Development Environment Validation Report
@@ -277,34 +314,7 @@ jobs:
           
           ## Recommendations
           
-          $(if [ "${{ steps.dotnet-validation.outputs.DOTNET_VALID }}" != "true" ]; then
-            echo "### .NET SDK"
-            echo "- Install .NET 8.0 SDK from https://dotnet.microsoft.com/download/dotnet/8.0"
-            echo "- Ensure DOTNET_ROOT is properly configured"
-            echo ""
-          fi)
-          
-          $(if [ "${{ steps.maui-validation.outputs.MAUI_AVAILABLE }}" != "true" ] && [ "${{ inputs.validation_scope }}" = "full" ]; then
-            echo "### .NET MAUI Workloads"
-            echo "- Install MAUI workloads: \`dotnet workload install maui\`"
-            echo "- Verify workload installation: \`dotnet workload list\`"
-            echo ""
-          fi)
-          
-          $(if [ "${{ steps.deps-validation.outputs.CORE_BUILD }}" != "true" ]; then
-            echo "### PFPT Dependencies"
-            echo "- Check project dependencies in .csproj files"
-            echo "- Verify package compatibility with .NET 8.0"
-            echo "- Run \`dotnet restore\` to resolve package issues"
-            echo ""
-          fi)
-          
-          $(if [ "${{ steps.tools-validation.outputs.TOOLS_VALID }}" != "true" ]; then
-            echo "### Development Tools"
-            echo "- Install missing tools: ${{ steps.tools-validation.outputs.MISSING_TOOLS }}"
-            echo "- Verify PATH environment variable includes tool locations"
-            echo ""
-          fi)
+          ${DOTNET_SECTION}${MAUI_SECTION}${DEPENDENCIES_SECTION}${TOOLS_SECTION}
           
           ## Next Steps
           

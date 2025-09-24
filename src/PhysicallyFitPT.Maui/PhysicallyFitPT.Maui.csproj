@@ -134,7 +134,9 @@
 
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="PhysicallyFitPT.Shared" />
+    <TrimmerRootAssembly Include="PhysicallyFitPT.Shared">
+      <RootMode>Library</RootMode>
+    </TrimmerRootAssembly>
   </ItemGroup>
 
 
