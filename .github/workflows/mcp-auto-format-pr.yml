@@ -37,39 +37,60 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
       
+      - name: Setup project list for Ubuntu-compatible projects
+        id: setup-projects
+        run: |
+          # Define Ubuntu-compatible projects (no mobile dependencies)
+          cat > /tmp/setup_projects.sh << 'EOF'
+          #!/bin/bash
+          
+          get_ubuntu_projects() {
+            # Core Ubuntu-compatible projects
+            local projects=(
+              "./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
+              "./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj"
+              "./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj"
+              "./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj"
+            )
+            
+            # Add test and seeder projects if they exist
+            [ -f "./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj" ] && \
+              projects+=("./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj")
+            [ -f "./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" ] && \
+              projects+=("./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj")
+            
+            printf '%s\n' "${projects[@]}"
+          }
+          EOF
+          
+          chmod +x /tmp/setup_projects.sh
+          echo "Project setup script created"
+      
       - name: Restore Ubuntu-compatible projects
         run: |
-          # Restore projects that can be formatted on Ubuntu (no mobile dependencies)
-          dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
-          dotnet restore src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --use-lock-file
-          dotnet restore src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --use-lock-file
-          dotnet restore src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --use-lock-file
+          source /tmp/setup_projects.sh
           
-          # Also restore test and seeder projects if they exist
-          [ -f tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj ] && dotnet restore tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --use-lock-file || true
-          [ -f src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj ] && dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file || true
+          echo "Restoring Ubuntu-compatible projects (no mobile dependencies)..."
+          
+          while IFS= read -r project; do
+            if [ -f "$project" ]; then
+              echo "Restoring $project..."
+              # Convert ./src/... to src/... for dotnet restore
+              project_path="${project#./}"
+              dotnet restore "$project_path" --use-lock-file
+            fi
+          done < <(get_ubuntu_projects)
       
       - name: Check for formatting issues
         id: format-check
         run: |
+          source /tmp/setup_projects.sh
+          
           echo "Checking format for Ubuntu-compatible projects (excluding MAUI)..."
           
           HAS_CHANGES=false
-          FORMAT_OUTPUT=""
           
-          # Format Ubuntu-compatible projects individually
-          projects=(
-            "./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
-            "./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj"
-            "./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj"  
-            "./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj"
-          )
-          
-          # Add test and seeder projects if they exist
-          [ -f "./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj" ] && projects+=("./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj")
-          [ -f "./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" ] && projects+=("./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj")
-          
-          for project in "${projects[@]}"; do
+          while IFS= read -r project; do
             if [ -f "$project" ]; then
               echo "Checking format for $project..."
               if ! dotnet format "$project" --verify-no-changes --verbosity diagnostic; then
@@ -77,7 +98,7 @@ jobs:
                 HAS_CHANGES=true
               fi
             fi
-          done
+          done < <(get_ubuntu_projects)
           
           if [ "$HAS_CHANGES" = true ]; then
             echo "FORMAT_NEEDED=true" >> $GITHUB_OUTPUT
@@ -86,26 +107,16 @@ jobs:
       - name: Apply formatting fixes
         if: steps.format-check.outputs.FORMAT_NEEDED == 'true'
         run: |
+          source /tmp/setup_projects.sh
+          
           echo "🔧 Applying code formatting fixes..."
           
-          # Apply formatting to Ubuntu-compatible projects
-          projects=(
-            "./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
-            "./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj"
-            "./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj"
-            "./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj"
-          )
-          
-          # Add test and seeder projects if they exist
-          [ -f "./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj" ] && projects+=("./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj")
-          [ -f "./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" ] && projects+=("./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj")
-          
-          for project in "${projects[@]}"; do
+          while IFS= read -r project; do
             if [ -f "$project" ]; then
               echo "Formatting $project..."
               dotnet format "$project" --verbosity diagnostic
             fi
-          done
+          done < <(get_ubuntu_projects)
           
           # Check if any files were modified
           if git diff --quiet; then
