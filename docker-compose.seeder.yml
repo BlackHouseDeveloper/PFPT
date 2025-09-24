@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # Database migration service
+  pfpt-migrate:
+    build:
+      context: .
+      dockerfile: src/PhysicallyFitPT.Seeder/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PFP_DB_PATH=/data/pfpt.db
+      - PFP_LOGLEVEL=Information
+    volumes:
+      - ./data:/data
+    command: ["migrate"]
+    profiles: ["migrate"]
+
+  # Database seeding service
+  pfpt-seed:
+    build:
+      context: .
+      dockerfile: src/PhysicallyFitPT.Seeder/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PFP_DB_PATH=/data/pfpt.db
+      - PFP_LOGLEVEL=Information
+    volumes:
+      - ./data:/data
+    command: ["seed", "--env", "Production"]
+    profiles: ["seed"]
+
+  # Development seeding (includes sample patients)
+  pfpt-seed-dev:
+    build:
+      context: .
+      dockerfile: src/PhysicallyFitPT.Seeder/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PFP_DB_PATH=/data/pfpt-dev.db
+      - PFP_LOGLEVEL=Debug
+    volumes:
+      - ./data:/data
+    command: ["seed", "--env", "Development"]
+    profiles: ["seed-dev"]
+
+  # Verification service
+  pfpt-verify:
+    build:
+      context: .
+      dockerfile: src/PhysicallyFitPT.Seeder/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PFP_DB_PATH=/data/pfpt.db
+      - PFP_LOGLEVEL=Information
+    volumes:
+      - ./data:/data
+    command: ["verify"]
+    profiles: ["verify"]
+
+  # Data dump service
+  pfpt-dump:
+    build:
+      context: .
+      dockerfile: src/PhysicallyFitPT.Seeder/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PFP_DB_PATH=/data/pfpt.db
+      - PFP_LOGLEVEL=Information
+    volumes:
+      - ./data:/data
+    command: ["dump", "--out", "/data/export"]
+    profiles: ["dump"]
+
+# Usage examples:
+# docker-compose -f docker-compose.seeder.yml --profile migrate up
+# docker-compose -f docker-compose.seeder.yml --profile seed up
+# docker-compose -f docker-compose.seeder.yml --profile seed-dev up
+# docker-compose -f docker-compose.seeder.yml --profile verify up
+# docker-compose -f docker-compose.seeder.yml --profile dump up
