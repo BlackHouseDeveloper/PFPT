@@ -342,8 +342,8 @@ jobs:
           distribution: microsoft
           java-version: "17"
 
-      - name: Install MAUI workload (only for Android builds)
-        if: matrix.tfm == 'net8.0-android'
+      - name: Install MAUI workload (all mobile builds)
+        if: matrix.tfm != 'net8.0'
         run: |
           set -e
           echo "Installing MAUI workloads..."
@@ -376,6 +376,7 @@ jobs:
                 dotnet workload install android --skip-sign-check || echo "Android workload failed"
                 dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
                 dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
+                dotnet workload install wasi-experimental --skip-sign-check || echo "WASI workload failed (optional)"
                 
                 # Verify we have at least some workloads installed
                 if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
