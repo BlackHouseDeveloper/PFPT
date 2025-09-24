@@ -42,6 +42,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Setup .NET 8.0.120
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.120'
+
+      - name: Install EF Core Tools
+        run: |
+          dotnet tool install --global dotnet-ef --version 8.* || \
+          dotnet tool update --global dotnet-ef --version 8.*
+
       - name: Setup validation environment
         run: |
           echo "🔧 Setting up Copilot development environment validation..."
