@@ -346,53 +346,41 @@ jobs:
         if: matrix.tfm != 'net8.0'
         run: |
           set -e
-          echo "Installing MAUI workloads..."
+          echo "Installing MAUI workloads for target: ${{ matrix.tfm }}..."
           
-          # Retry logic for MAUI workload installation
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
+          # Update workload manifests first
+          dotnet workload update --skip-sign-check || echo "⚠️ Workload manifest update failed, continuing..."
           
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS..."
-            
-            # First, update workload manifests
-            if dotnet workload update --skip-sign-check; then
-              echo "✅ Workload manifests updated successfully"
-            else
-              echo "⚠️ Workload manifest update failed, continuing..."
-            fi
-            
-            # Try to install MAUI workload
-            if dotnet workload install maui --skip-sign-check; then
-              echo "✅ MAUI workload installed successfully"
-              break
-            else
-              echo "❌ MAUI workload installation failed on attempt $ATTEMPT"
-              
-              if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-                echo "Trying individual component installation as final fallback..."
-                
-                # Try installing individual Android/iOS/macCatalyst workloads
-                dotnet workload install android --skip-sign-check || echo "Android workload failed"
-                dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
-                dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
-                dotnet workload install wasi-experimental --skip-sign-check || echo "WASI workload failed (optional)"
-                
-                # Verify we have at least some workloads installed
-                if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
-                  echo "❌ No mobile workloads installed after all attempts."
-                  echo "Available workloads:"
-                  dotnet workload search
-                  exit 1
-                fi
-                break
-              else
-                echo "Retrying in 10 seconds..."
-                sleep 10
-                ATTEMPT=$((ATTEMPT + 1))
-              fi
-            fi
-          done
+          # Install specific workloads based on target framework with error handling
+          case "${{ matrix.tfm }}" in
+            "net8.0-android")
+              echo "Installing Android workloads..."
+              dotnet workload install android --skip-sign-check || echo "❌ android workload failed"
+              dotnet workload install maui-android --skip-sign-check || echo "❌ maui-android workload failed"
+              ;;
+            "net8.0-ios")
+              echo "Installing iOS workloads..."
+              dotnet workload install ios --skip-sign-check || echo "❌ ios workload failed"
+              dotnet workload install maui-ios --skip-sign-check || echo "❌ maui-ios workload failed"
+              ;;
+            "net8.0-maccatalyst")
+              echo "Installing macCatalyst workloads..."
+              dotnet workload install maccatalyst --skip-sign-check || echo "❌ maccatalyst workload failed"
+              dotnet workload install maui-maccatalyst --skip-sign-check || echo "❌ maui-maccatalyst workload failed"
+              ;;
+            *)
+              echo "Installing all available MAUI workloads..."
+              dotnet workload install maui --skip-sign-check || {
+                echo "MAUI meta-workload failed, installing individual components..."
+                dotnet workload install android --skip-sign-check || echo "android workload not available"
+                dotnet workload install ios --skip-sign-check || echo "ios workload not available"
+                dotnet workload install maccatalyst --skip-sign-check || echo "maccatalyst workload not available"
+                dotnet workload install maui-android --skip-sign-check || echo "maui-android workload not available"
+                dotnet workload install maui-ios --skip-sign-check || echo "maui-ios workload not available"
+                dotnet workload install maui-maccatalyst --skip-sign-check || echo "maui-maccatalyst workload not available"
+              }
+              ;;
+          esac
           
           echo "✅ Successfully installed workloads:"
           dotnet workload list
@@ -410,9 +398,6 @@ jobs:
             echo "✅ MAUI workloads verified:"
             dotnet workload list
           fi
-      - name: Restore .NET workloads (mobile builds only)
-        if: matrix.tfm != 'net8.0'
-        run: dotnet workload restore
          
       - name: Restore projects (strategy based on matrix.tfm)
         run: |
