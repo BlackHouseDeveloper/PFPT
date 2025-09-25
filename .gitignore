@@ -520,7 +520,6 @@ DerivedData/
 .fleet/
 reference/manifest.json
 reference/memory.db
-reference/memory.db
 .act/
 .act.secrets
 .act.env
