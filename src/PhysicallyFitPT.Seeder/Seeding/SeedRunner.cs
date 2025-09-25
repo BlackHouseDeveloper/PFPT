@@ -3,6 +3,7 @@
 // </copyright>
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
@@ -97,13 +98,16 @@ public class SeedRunner
       var environmentAllowed = EnvDetector.IsEnvironmentAllowed(task.AllowedEnvironments, environment);
 
       string? pendingReason = null;
-      if (!environmentAllowed)
+      if (!applied)
       {
-        pendingReason = $"Environment mismatch (allowed: {string.Join(", ", task.AllowedEnvironments)})";
-      }
-      else if (applied && !hashChanged)
-      {
-        pendingReason = "Already applied with current hash";
+        if (!environmentAllowed)
+        {
+          pendingReason = $"Environment mismatch (allowed: {string.Join(", ", task.AllowedEnvironments)})";
+        }
+        else if (hashChanged)
+        {
+          pendingReason = "Hash changed since last run";
+        }
       }
 
       result.Add(new SeedTaskStatus
@@ -187,9 +191,11 @@ public class SeedRunner
     var currentHash = await task.ComputeContentDescriptorAsync();
     var existingHistory = await dbContext.SeedHistory.FirstOrDefaultAsync(h => h.TaskId == task.Id, cancellationToken);
 
+    var hashChanged = existingHistory != null && existingHistory.Hash != currentHash;
     var shouldRun = existingHistory == null ||
-                   options.ReplayChanged && existingHistory.Hash != currentHash ||
-                   options.Force && options.ReplayChanged;
+                    hashChanged ||
+                    options.ReplayChanged ||
+                    options.Force;
 
     if (!shouldRun)
     {
@@ -203,10 +209,16 @@ public class SeedRunner
       return true;
     }
 
-    // Execute task in transaction
-    await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+    var canUseTransactions = dbContext.Database.IsRelational();
+    IDbContextTransaction? transaction = null;
+
     try
     {
+      if (canUseTransactions)
+      {
+        transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+      }
+
       logger.LogInformation("Executing task {TaskId}: {TaskName}", task.Id, task.Name);
       await task.ExecuteAsync(cancellationToken);
 
@@ -228,7 +240,11 @@ public class SeedRunner
       }
 
       await dbContext.SaveChangesAsync(cancellationToken);
-      await transaction.CommitAsync(cancellationToken);
+
+      if (transaction != null)
+      {
+        await transaction.CommitAsync(cancellationToken);
+      }
 
       logger.LogInformation("Task {TaskId} completed successfully", task.Id);
       return true;
@@ -236,8 +252,18 @@ public class SeedRunner
     catch (Exception ex)
     {
       logger.LogError(ex, "Task {TaskId} failed", task.Id);
-      await transaction.RollbackAsync(cancellationToken);
+      if (transaction != null)
+      {
+        await transaction.RollbackAsync(cancellationToken);
+      }
       return false;
+    }
+    finally
+    {
+      if (transaction != null)
+      {
+        await transaction.DisposeAsync();
+      }
     }
   }
 }
