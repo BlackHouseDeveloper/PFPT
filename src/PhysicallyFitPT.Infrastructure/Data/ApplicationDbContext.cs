@@ -61,6 +61,21 @@ public class ApplicationDbContext : DbContext
   /// </summary>
   public DbSet<CheckInMessageLog> CheckInMessageLogs => this.Set<CheckInMessageLog>();
 
+  /// <summary>
+  /// Gets the seed history entity set for tracking applied seed tasks.
+  /// </summary>
+  public DbSet<SeedHistory> SeedHistory => this.Set<SeedHistory>();
+
+  /// <summary>
+  /// Gets the seeder lock entity set for concurrency control.
+  /// </summary>
+  public DbSet<SeederLock> SeederLocks => this.Set<SeederLock>();
+
+  /// <summary>
+  /// Gets the reference summary entity set for composite reference data.
+  /// </summary>
+  public DbSet<ReferenceSummary> ReferenceSummaries => this.Set<ReferenceSummary>();
+
   /// <inheritdoc/>
   public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
   {
@@ -192,5 +207,26 @@ public class ApplicationDbContext : DbContext
       .HasForeignKey<Note>(n => n.AppointmentId)
       .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
+
+    // Seeding infrastructure entity configurations
+    b.Entity<SeedHistory>(e =>
+    {
+      e.HasKey(s => s.TaskId);
+      e.Property(s => s.TaskId).HasMaxLength(100).IsRequired();
+      e.Property(s => s.Name).HasMaxLength(200).IsRequired();
+      e.Property(s => s.Hash).HasMaxLength(64).IsRequired(); // SHA256 hash
+      e.HasIndex(s => s.AppliedAtUtc);
+    });
+
+    b.Entity<SeederLock>(e =>
+    {
+      e.HasKey(s => s.Id);
+      e.Property(s => s.ProcessInfo).HasMaxLength(500);
+    });
+
+    b.Entity<ReferenceSummary>(e =>
+    {
+      e.HasKey(s => s.Id);
+    });
   }
 }
