@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "color-contrast": { "enabled": true },
+    "keyboard": { "enabled": true },
+    "label": { "enabled": true },
+    "name-role-value": { "enabled": true },
+    "focus-order-semantics": { "enabled": true }
+  },
+  "tags": ["wcag2aa", "best-practice"]
+}

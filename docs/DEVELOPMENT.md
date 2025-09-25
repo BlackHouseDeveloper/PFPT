@@ -1,4 +1,4 @@
-# PFPT Development Guide
+# PFPT Enterprise Development Guide
 
 ## Quick Start
 
@@ -7,8 +7,9 @@
 - [ ] **.NET 8.0 SDK** - [Download here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [ ] **Xcode** (latest) - Required for iOS/Mac targets
 - [ ] **Git** - Version control
+- [ ] **GitHub CLI** (optional) - For MCP workflow automation
 
-### Initial Setup
+### Enterprise Development Setup
 
 1. **Clone the repository:**
    ```bash
@@ -16,20 +17,76 @@
    cd PFPT
    ```
 
-2. **Run the setup script:**
+2. **Run the automated setup:**
    ```bash
    ./PFPT-Foundry.sh
    ```
 
-3. **Create database and seed data:**
+3. **Validate your environment:**
+   ```bash
+   gh workflow run mcp-copilot-setup-validation.yml -f validation_scope=full
+   ```
+
+4. **Create database and seed data:**
    ```bash
    ./PFPT-Foundry.sh --create-migration --seed
    ```
 
-4. **Set environment variable (optional):**
+5. **Set environment variable (optional):**
    ```bash
    export PFP_DB_PATH="$(pwd)/dev.physicallyfitpt.db"
    ```
+
+## Enterprise MCP Framework
+
+PFPT includes a comprehensive automation framework with 14 production-ready workflows designed for healthcare software development.
+
+### MCP Workflow Categories
+
+#### Development Automation
+```bash
+# Validate development environment
+gh workflow run mcp-copilot-setup-validation.yml -f validation_scope=full
+
+# Auto-format code (runs automatically on PR)
+gh workflow run mcp-auto-format-pr.yml
+
+# Daily maintenance formatting
+gh workflow run mcp-daily-formatting.yml
+```
+
+#### Healthcare Compliance
+```bash
+# WCAG 2.1 accessibility compliance testing
+gh workflow run mcp-accessibility-compliance.yml -f test_scope=full-audit
+
+# Clinical PDF report validation
+gh workflow run mcp-pdf-diagnostics.yml -f test_type=accessibility
+
+# HIPAA-compliant database diagnostics
+gh workflow run mcp-database-diagnostics.yml -f operation=validate
+```
+
+#### Enterprise Operations
+```bash
+# Generate clinical impact release notes
+gh workflow run mcp-release-notes-generation.yml -f release_type=feature -f from_tag=v1.0.0 -f to_tag=v1.1.0
+
+# Clinical documentation automation
+gh workflow run mcp-documentation-automation.yml -f doc_type=all
+
+# Multi-language clinical terminology
+gh workflow run mcp-localization-workflow.yml -f operation=audit-coverage
+```
+
+#### Quality Assurance
+```bash
+# Comprehensive error reproduction
+gh workflow run mcp-error-reproduction.yml -f error_type=platform-specific -f platform=android
+
+# Automated issue triage (runs automatically)
+# Intelligent categorization with healthcare-specific labels
+```
 
 ## PFPT-Foundry.sh Script
 

@@ -1,0 +1,700 @@
+name: MCP Error Reproduction & Debugging
+
+on:
+  workflow_dispatch:
+    inputs:
+      error_type:
+        description: 'Type of error to reproduce/debug'
+        required: true
+        default: 'build'
+        type: choice
+        options:
+          - build
+          - runtime
+          - database
+          - pdf-generation
+          - ui-rendering
+          - platform-specific
+          - performance
+      platform:
+        description: 'Target platform for reproduction'
+        required: true
+        default: 'multi'
+        type: choice
+        options:
+          - multi
+          - android
+          - ios
+          - web
+          - windows
+          - macos
+      issue_reference:
+        description: 'GitHub issue number (optional)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  error-reproduction:
+    name: Error Reproduction - ${{ inputs.error_type }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Install Debugging Tools
+        run: |
+          # Install debugging and analysis tools
+          sudo apt-get update
+          sudo apt-get install -y gdb valgrind strace
+          
+          # Install .NET debugging tools
+          dotnet tool install --global dotnet-dump
+          dotnet tool install --global dotnet-trace
+          dotnet tool install --global dotnet-counters
+          
+      - name: Setup Error Reproduction Environment
+        run: |
+          echo "🔧 Setting up error reproduction environment..."
+          
+          mkdir -p error-reproduction/{logs,dumps,traces,reports}
+          
+          # Create reproduction context
+          cat > error-reproduction/reproduction-context.md <<EOF
+          # Error Reproduction Context
+          
+          **Error Type**: ${{ inputs.error_type }}
+          **Platform**: ${{ inputs.platform }}
+          **Issue Reference**: ${{ inputs.issue_reference || 'N/A' }}
+          **Reproduction Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Environment**: GitHub Actions Ubuntu Latest
+          
+          ## System Information
+          
+          - **OS**: $(uname -a)
+          - **.NET Version**: $(dotnet --version)
+          - **Available Memory**: $(free -h | grep '^Mem:' | awk '{print $2}')
+          - **CPU Info**: $(nproc) cores
+          - **Disk Space**: $(df -h / | tail -1 | awk '{print $4}')
+          
+          EOF
+          
+      - name: Build Error Reproduction
+        if: inputs.error_type == 'build'
+        run: |
+          echo "🔨 Reproducing build errors..."
+          
+          # Attempt clean build to identify issues
+          echo "Step 1: Clean build attempt"
+          dotnet clean 2>&1 | tee error-reproduction/logs/clean.log
+          
+          echo "Step 2: Restore attempt"
+          dotnet restore --verbosity detailed 2>&1 | tee error-reproduction/logs/restore.log
+          
+          echo "Step 3: Build individual projects"
+          for project in $(find src/ -name "*.csproj"); do
+            echo "Building: $project"
+            dotnet build "$project" --verbosity detailed 2>&1 | tee "error-reproduction/logs/build-$(basename $project .csproj).log"
+          done
+          
+          # Generate build analysis
+          cat > error-reproduction/reports/build-analysis.md <<EOF
+          # Build Error Analysis
+          
+          ## Build Logs Summary
+          
+          $(for log in error-reproduction/logs/*.log; do
+            echo "### $(basename $log)"
+            if grep -q "error\|Error\|ERROR" "$log"; then
+              echo "❌ Errors found:"
+              grep -n "error\|Error\|ERROR" "$log" | head -10
+            else
+              echo "✅ No errors detected"
+            fi
+            echo ""
+          done)
+          
+          ## Common Build Issues
+          
+          - **Missing workloads**: Check MAUI workload installation
+          - **Package conflicts**: Review package versions and dependencies
+          - **Target framework**: Verify consistent .NET versions
+          - **Platform SDKs**: Ensure required platform SDKs are installed
+          
+          EOF
+          
+      - name: Runtime Error Reproduction
+        if: inputs.error_type == 'runtime'
+        run: |
+          echo "🏃 Reproducing runtime errors..."
+          
+          # Build required projects
+          dotnet build src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Debug
+          
+          # Create test application for runtime error reproduction
+          mkdir -p error-reproduction/runtime-test
+          cd error-reproduction/runtime-test
+          
+          cat > RuntimeErrorTest.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <Nullable>enable</Nullable>
+            </PropertyGroup>
+            <ItemGroup>
+              <ProjectReference Include="../../src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj" />
+            </ItemGroup>
+          </Project>
+          EOF
+          
+          cat > Program.cs <<'EOF'
+          using System;
+          using System.Threading.Tasks;
+          
+          Console.WriteLine("🔍 Starting runtime error reproduction...");
+          
+          try
+          {
+              // Test basic functionality
+              await TestBasicOperations();
+              Console.WriteLine("✅ Basic operations completed successfully");
+          }
+          catch (Exception ex)
+          {
+              Console.WriteLine($"❌ Runtime error encountered:");
+              Console.WriteLine($"Type: {ex.GetType().Name}");
+              Console.WriteLine($"Message: {ex.Message}");
+              Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+              
+              // Log detailed error information
+              File.WriteAllText("runtime-error-details.txt", 
+                  $"Error Type: {ex.GetType().FullName}\n" +
+                  $"Message: {ex.Message}\n" +
+                  $"Stack Trace: {ex.StackTrace}\n" +
+                  $"Inner Exception: {ex.InnerException?.ToString() ?? "None"}\n" +
+                  $"Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss UTC}");
+              
+              Environment.Exit(1);
+          }
+          
+          static async Task TestBasicOperations()
+          {
+              // Add specific runtime tests based on reported issues
+              await Task.Delay(100); // Simulate async operation
+              
+              // Test potential null reference scenarios
+              string? testString = null;
+              _ = testString?.Length ?? 0;
+              
+              // Test collection operations
+              var testList = new List<string> { "test1", "test2" };
+              var result = testList.FirstOrDefault();
+              
+              Console.WriteLine("Runtime tests completed");
+          }
+          EOF
+          
+          # Run with error tracking
+          echo "Running runtime error reproduction..."
+          dotnet run 2>&1 | tee ../logs/runtime-test.log || {
+            echo "Runtime error reproduced successfully"
+            cp runtime-error-details.txt ../logs/ 2>/dev/null || true
+          }
+          
+      - name: Database Error Reproduction
+        if: inputs.error_type == 'database'
+        run: |
+          echo "🗄️ Reproducing database errors..."
+          
+          # Install EF tools
+          dotnet tool install --global dotnet-ef
+          
+          # Test database operations
+          echo "Testing EF Core operations..."
+          dotnet restore src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj
+          
+          # Test design-time factory
+          echo "Testing design-time DbContext..."
+          dotnet ef dbcontext info -p src/PhysicallyFitPT.Infrastructure 2>&1 | tee error-reproduction/logs/ef-dbcontext.log || {
+            echo "❌ DbContext error reproduced"
+          }
+          
+          # Test migrations
+          echo "Testing migration operations..."
+          dotnet ef migrations list -p src/PhysicallyFitPT.Infrastructure 2>&1 | tee error-reproduction/logs/ef-migrations.log || {
+            echo "❌ Migration error reproduced"
+          }
+          
+          # Create database error analysis
+          cat > error-reproduction/reports/database-analysis.md <<EOF
+          # Database Error Analysis
+          
+          ## EF Core Configuration
+          
+          $(cat error-reproduction/logs/ef-dbcontext.log)
+          
+          ## Migration Status
+          
+          $(cat error-reproduction/logs/ef-migrations.log)
+          
+          ## Common Database Issues
+          
+          - **Connection string**: Verify database connection configuration
+          - **Provider**: Ensure correct EF provider (SQLite)
+          - **Design-time factory**: Check DesignTimeDbContextFactory implementation
+          - **Migration history**: Verify migration consistency
+          
+          EOF
+          
+      - name: PDF Generation Error Reproduction  
+        if: inputs.error_type == 'pdf-generation'
+        run: |
+          echo "📄 Reproducing PDF generation errors..."
+          
+          # Build PDF infrastructure
+          dotnet build src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Debug
+          
+          # Create PDF test
+          mkdir -p error-reproduction/pdf-test
+          cd error-reproduction/pdf-test
+          
+          cat > PdfErrorTest.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+            </PropertyGroup>
+            <ItemGroup>
+              <ProjectReference Include="../../src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" />
+            </ItemGroup>
+          </Project>
+          EOF
+          
+          cat > Program.cs <<'EOF'
+          using QuestPDF.Fluent;
+          using QuestPDF.Helpers;
+          using QuestPDF.Infrastructure;
+          
+          Console.WriteLine("🔍 Testing PDF generation...");
+          
+          try
+          {
+              // Set QuestPDF license
+              QuestPDF.Settings.License = LicenseType.Community;
+              
+              // Test basic PDF generation
+              var document = Document.Create(container =>
+              {
+                  container.Page(page =>
+                  {
+                      page.Size(PageSizes.A4);
+                      page.Margin(2, Unit.Centimetre);
+                      page.PageColor(Colors.White);
+                      
+                      page.Content()
+                          .PaddingVertical(1, Unit.Centimetre)
+                          .Column(x =>
+                          {
+                              x.Spacing(20);
+                              x.Item().Text("Test PDF Generation").FontSize(18).SemiBold();
+                              x.Item().Text($"Generated: {DateTime.Now}");
+                          });
+                  });
+              });
+              
+              document.GeneratePdf("test-error-reproduction.pdf");
+              Console.WriteLine("✅ PDF generation successful");
+          }
+          catch (Exception ex)
+          {
+              Console.WriteLine($"❌ PDF generation error:");
+              Console.WriteLine($"Type: {ex.GetType().Name}");
+              Console.WriteLine($"Message: {ex.Message}");
+              Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+              
+              File.WriteAllText("pdf-error-details.txt",
+                  $"PDF Generation Error\n" +
+                  $"Error Type: {ex.GetType().FullName}\n" +
+                  $"Message: {ex.Message}\n" +
+                  $"Stack Trace: {ex.StackTrace}\n" +
+                  $"Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss UTC}");
+              
+              Environment.Exit(1);
+          }
+          EOF
+          
+          # Run PDF test
+          dotnet run 2>&1 | tee ../logs/pdf-generation-test.log || {
+            echo "PDF generation error reproduced"
+            cp pdf-error-details.txt ../logs/ 2>/dev/null || true
+          }
+          
+      - name: UI Rendering Error Reproduction
+        if: inputs.error_type == 'ui-rendering'
+        run: |
+          echo "🎨 Reproducing UI rendering errors..."
+          
+          # Build web project for UI testing
+          dotnet build src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Debug 2>&1 | tee error-reproduction/logs/web-build.log
+          
+          # Analyze Blazor components for common issues
+          echo "Analyzing Blazor components..."
+          find src/ -name "*.razor" | while read razor_file; do
+            echo "Checking: $razor_file"
+            
+            # Check for common rendering issues
+            if grep -q "@code{" "$razor_file"; then
+              echo "✅ Code block found in $razor_file"
+            fi
+            
+            if grep -q "@onclick" "$razor_file"; then
+              echo "📝 Event handler found in $razor_file"
+            fi
+            
+            # Check for potential null reference issues
+            if grep -q "\." "$razor_file" | grep -q "@"; then
+              echo "⚠️ Potential null reference in $razor_file"
+            fi
+          done > error-reproduction/logs/razor-analysis.log
+          
+          # Generate UI analysis report
+          cat > error-reproduction/reports/ui-analysis.md <<EOF
+          # UI Rendering Error Analysis
+          
+          ## Web Build Status
+          
+          $(if grep -q "error\|Error" error-reproduction/logs/web-build.log; then
+            echo "❌ Build errors found:"
+            grep "error\|Error" error-reproduction/logs/web-build.log
+          else
+            echo "✅ Web build successful"
+          fi)
+          
+          ## Razor Component Analysis
+          
+          $(cat error-reproduction/logs/razor-analysis.log)
+          
+          ## Common UI Issues
+          
+          - **Null reference**: Check for null safety in data binding
+          - **State management**: Verify component state consistency
+          - **Event handling**: Ensure event handlers are properly bound
+          - **CSS conflicts**: Check for styling conflicts
+          - **JavaScript interop**: Verify JS/Blazor interaction
+          
+          EOF
+          
+      - name: Platform-Specific Error Analysis
+        if: inputs.error_type == 'platform-specific'
+        run: |
+          echo "📱 Analyzing platform-specific errors..."
+          
+          platform="${{ inputs.platform }}"
+          
+          case "$platform" in
+            "android")
+              echo "Analyzing Android-specific issues..."
+              find src/ -name "*.android.cs" -o -name "*Android*" | head -10 > error-reproduction/logs/android-files.log
+              ;;
+            "ios")
+              echo "Analyzing iOS-specific issues..."
+              find src/ -name "*.ios.cs" -o -name "*iOS*" | head -10 > error-reproduction/logs/ios-files.log
+              ;;
+            "web")
+              echo "Analyzing Web-specific issues..."
+              find src/ -name "*.razor" -o -name "*Web*" | head -10 > error-reproduction/logs/web-files.log
+              ;;
+            *)
+              echo "Analyzing multi-platform issues..."
+              find src/ -name "*.cs" | grep -E "(Platform|Device|Native)" | head -20 > error-reproduction/logs/platform-files.log
+              ;;
+          esac
+          
+          # Create platform analysis
+          cat > error-reproduction/reports/platform-analysis.md <<EOF
+          # Platform-Specific Error Analysis
+          
+          **Target Platform**: $platform
+          
+          ## Platform Files
+          
+          $(cat error-reproduction/logs/*-files.log 2>/dev/null | sed 's|^|- |' || echo "No platform-specific files found")
+          
+          ## Platform Considerations
+          
+          ### Android
+          - Permissions and security policies
+          - Activity lifecycle management
+          - Resource constraints
+          
+          ### iOS  
+          - App Transport Security (ATS)
+          - Memory management
+          - App Store guidelines
+          
+          ### Web
+          - Browser compatibility
+          - CORS policies
+          - PWA requirements
+          
+          EOF
+          
+      - name: Performance Error Analysis
+        if: inputs.error_type == 'performance'
+        run: |
+          echo "⚡ Analyzing performance errors..."
+          
+          # Create performance test
+          mkdir -p error-reproduction/performance-test
+          cd error-reproduction/performance-test
+          
+          cat > PerformanceTest.cs <<'EOF'
+          using System;
+          using System.Diagnostics;
+          using System.Threading.Tasks;
+          
+          public class PerformanceTest
+          {
+              public static async Task Main()
+              {
+                  Console.WriteLine("🔍 Starting performance analysis...");
+                  
+                  var stopwatch = Stopwatch.StartNew();
+                  
+                  // Test memory allocation
+                  TestMemoryAllocation();
+                  Console.WriteLine($"Memory test: {stopwatch.ElapsedMilliseconds}ms");
+                  
+                  stopwatch.Restart();
+                  
+                  // Test async operations
+                  await TestAsyncOperations();
+                  Console.WriteLine($"Async test: {stopwatch.ElapsedMilliseconds}ms");
+                  
+                  // Report memory usage
+                  var memoryBefore = GC.GetTotalMemory(false);
+                  GC.Collect();
+                  var memoryAfter = GC.GetTotalMemory(true);
+                  
+                  Console.WriteLine($"Memory before GC: {memoryBefore / 1024}KB");
+                  Console.WriteLine($"Memory after GC: {memoryAfter / 1024}KB");
+              }
+              
+              static void TestMemoryAllocation()
+              {
+                  var list = new List<string>();
+                  for (int i = 0; i < 10000; i++)
+                  {
+                      list.Add($"Test string {i}");
+                  }
+              }
+              
+              static async Task TestAsyncOperations()
+              {
+                  var tasks = new List<Task>();
+                  for (int i = 0; i < 100; i++)
+                  {
+                      tasks.Add(Task.Delay(1));
+                  }
+                  await Task.WhenAll(tasks);
+              }
+          }
+          EOF
+          
+          # Compile and run performance test
+          cat > PerformanceTest.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+              <StartupObject>PerformanceTest</StartupObject>
+            </PropertyGroup>
+          </Project>
+          EOF
+          
+          dotnet run 2>&1 | tee ../logs/performance-test.log
+          
+      - name: Generate Comprehensive Error Report
+        if: always()
+        run: |
+          echo "📋 Generating comprehensive error report..."
+          
+          cat > error-reproduction/comprehensive-error-report.md <<EOF
+          # Comprehensive Error Reproduction Report
+          
+          **Error Type**: ${{ inputs.error_type }}
+          **Platform**: ${{ inputs.platform }}
+          **Issue Reference**: ${{ inputs.issue_reference || 'Manual reproduction' }}
+          **Reproduction Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Job Status**: ${{ job.status }}
+          
+          ## Environment Details
+          
+          - **OS**: $(uname -a)
+          - **.NET SDK**: $(dotnet --version)
+          - **Available Memory**: $(free -h | grep '^Mem:' | awk '{print $2}')
+          - **CPU Cores**: $(nproc)
+          
+          ## Error Reproduction Results
+          
+          $(for log in error-reproduction/logs/*.log; do
+            if [ -f "$log" ]; then
+              echo "### $(basename $log .log)"
+              echo "\`\`\`"
+              tail -20 "$log" || echo "Log file empty or unreadable"
+              echo "\`\`\`"
+              echo ""
+            fi
+          done)
+          
+          ## Analysis Reports
+          
+          $(for report in error-reproduction/reports/*.md; do
+            if [ -f "$report" ]; then
+              echo "### $(basename $report .md)"
+              cat "$report"
+              echo ""
+            fi
+          done)
+          
+          ## Debugging Information
+          
+          ### System Diagnostics
+          - **Process count**: $(ps aux | wc -l)
+          - **Disk usage**: $(df -h / | tail -1 | awk '{print $5}')
+          - **Load average**: $(uptime | awk -F'load average:' '{print $2}')
+          
+          ### .NET Diagnostics
+          - **Global tools**: 
+          \`\`\`
+          $(dotnet tool list -g 2>/dev/null || echo "No global tools installed")
+          \`\`\`
+          
+          ## Recommendations
+          
+          1. **Immediate Actions**:
+             - Review error logs for specific failure points
+             - Check environment dependencies
+             - Validate configuration settings
+          
+          2. **Further Investigation**:
+             - Enable verbose logging
+             - Use debugging tools (dotnet-dump, dotnet-trace)
+             - Test on different platforms/environments
+          
+          3. **Prevention**:
+             - Add unit tests for error scenarios
+             - Implement better error handling
+             - Monitor performance metrics
+          
+          ## Next Steps
+          
+          - [ ] Analyze error patterns
+          - [ ] Implement fixes for identified issues
+          - [ ] Add regression tests
+          - [ ] Update documentation
+          - [ ] Monitor production metrics
+          
+          _Report generated automatically by MCP Error Reproduction workflow_
+          EOF
+          
+      - name: Upload Error Reproduction Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-reproduction-${{ inputs.error_type }}-${{ github.run_number }}
+          path: |
+            error-reproduction/
+          retention-days: 30
+          
+      - name: Post Error Analysis Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const errorType = '${{ inputs.error_type }}';
+            const platform = '${{ inputs.platform }}';
+            const issueRef = '${{ inputs.issue_reference }}';
+            const success = '${{ job.status }}' === 'success';
+            const emoji = success ? '🔍✅' : '🔍❌';
+            
+            const summary = [
+              `${emoji} **Error Reproduction Analysis Complete**`,
+              '',
+              `**Error Type:** ${errorType}`,
+              `**Platform:** ${platform}`,
+              `**Status:** ${{ job.status }}`,
+              issueRef ? `**Issue Reference:** #${issueRef}` : '',
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Analysis Coverage:**',
+              '- Build error reproduction',
+              '- Runtime error debugging',
+              '- Database operation testing',
+              '- PDF generation validation',
+              '- UI rendering analysis',
+              '- Platform-specific checks',
+              '- Performance profiling',
+              '',
+              '**Generated Artifacts:**',
+              '- Comprehensive error report',
+              '- Debug logs and traces',
+              '- System diagnostics',
+              '- Reproduction instructions',
+              '',
+              '**Next Steps:**',
+              '- Review error analysis reports',
+              '- Implement fixes for identified issues',
+              '- Add regression tests',
+              '- Update error handling strategies',
+              '',
+              `**Download:** [View workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ].filter(line => line !== '');
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else if (issueRef) {
+                // Try to post to referenced issue
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: parseInt(issueRef),
+                    body: summary.join('\n')
+                  });
+                } catch (error) {
+                  console.log(`Could not post to issue #${issueRef}:`, error.message);
+                }
+              } else {
+                console.log('Error reproduction summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }

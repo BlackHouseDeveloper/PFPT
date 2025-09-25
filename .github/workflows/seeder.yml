@@ -40,11 +40,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore seeder and its dependencies (avoid MAUI projects)
+        run: |
+          dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          dotnet restore tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj --use-lock-file
 
-      - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+      - name: Build solution (seeder and tests only)
+        run: |
+          dotnet build src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --configuration Release --no-restore
+          dotnet build tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj --configuration Release --no-restore
 
       - name: Run seeder tests
         run: |
@@ -79,8 +83,8 @@ jobs:
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef --version 8.0.8
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore seeder and its dependencies (avoid MAUI projects)
+        run: dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
 
       - name: Build seeder
         run: dotnet build src/PhysicallyFitPT.Seeder --configuration Release --no-restore

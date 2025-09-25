@@ -1,0 +1,200 @@
+name: ✨ Feature Request
+description: Suggest an idea for PFPT
+title: '[FEATURE] '
+labels: ['enhancement']
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide detailed information to help us understand and evaluate your request.
+
+  - type: input
+    id: feature-title
+    attributes:
+      label: ✨ Feature Title
+      description: A clear, concise title for the feature
+      placeholder: "Example: Add voice-to-text for patient notes"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: 🎯 Problem or Use Case
+      description: Describe the problem this feature would solve
+      placeholder: "Example: Physical therapists spend too much time typing notes during patient sessions, which reduces face-to-face interaction time"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 💡 Proposed Solution
+      description: Describe the solution you'd like to see implemented
+      placeholder: "Describe your ideal solution in detail"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternative-solutions
+    attributes:
+      label: 🔄 Alternative Solutions
+      description: Describe any alternative solutions you've considered
+      placeholder: "List any other approaches you've thought about"
+
+  - type: dropdown
+    id: platform-support
+    attributes:
+      label: 🖥️ Platform Support
+      description: Which platforms should this feature support?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web (Blazor WebAssembly)
+        - Windows Desktop
+        - macOS Desktop
+        - All platforms
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: clinical-workflow
+    attributes:
+      label: 🏥 Clinical Workflow Impact
+      description: How does this feature impact clinical workflows?
+      options:
+        - label: Patient documentation improvement
+        - label: Assessment management enhancement
+        - label: PDF report generation improvement
+        - label: Data analysis and reporting enhancement
+        - label: Appointment scheduling improvement
+        - label: Billing and coding workflow improvement
+        - label: Compliance and audit trail improvement
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: 👥 Primary User Type
+      description: Who would primarily benefit from this feature?
+      options:
+        - Physical Therapists
+        - Physical Therapist Assistants
+        - Clinical Managers
+        - Administrative Staff
+        - IT Administrators
+        - All user types
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: ⚡ Priority Level
+      description: How important is this feature to your workflow?
+      options:
+        - Critical - Blocking current work
+        - High - Would significantly improve productivity
+        - Medium - Nice to have improvement
+        - Low - Minor enhancement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: technical-considerations
+    attributes:
+      label: 🔧 Technical Considerations
+      description: Technical aspects to consider
+      options:
+        - label: Database schema changes required
+        - label: New NuGet packages needed
+        - label: Platform-specific implementation needed
+        - label: Breaking changes to existing APIs
+        - label: Migration path for existing data
+        - label: Performance considerations
+        - label: Security implications
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Acceptance Criteria
+      description: Define what "done" looks like for this feature
+      placeholder: |
+        Example:
+        - [ ] User can initiate voice recording from patient notes screen
+        - [ ] Speech is accurately converted to text
+        - [ ] Text appears in the notes field in real-time
+        - [ ] User can edit the transcribed text
+        - [ ] Voice recordings are not stored for privacy
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: compliance-considerations
+    attributes:
+      label: 🔒 Compliance & Privacy Considerations
+      description: Healthcare compliance aspects
+      options:
+        - label: HIPAA compliance required
+        - label: Patient data privacy implications
+        - label: Audit trail requirements
+        - label: Data retention considerations
+        - label: Accessibility compliance (WCAG 2.1)
+        - label: Clinical documentation standards
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: 💼 Business Value
+      description: How does this feature provide value to healthcare providers?
+      placeholder: "Describe the business impact, time savings, improved patient care, etc."
+
+  - type: checkboxes
+    id: testing-requirements
+    attributes:
+      label: 🧪 Testing Requirements
+      description: How should this feature be tested?
+      options:
+        - label: Unit tests required
+        - label: Integration tests required
+        - label: Manual testing scenarios needed
+        - label: Cross-platform testing needed
+        - label: Performance testing required
+        - label: Accessibility testing required
+        - label: Clinical workflow testing needed
+
+  - type: checkboxes
+    id: documentation-impact
+    attributes:
+      label: 📚 Documentation Impact
+      description: What documentation needs to be updated?
+      options:
+        - label: User guide updates
+        - label: Developer documentation
+        - label: API documentation
+        - label: Training materials
+        - label: Compliance documentation
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📋 Additional Context
+      description: Any other context, mockups, or references
+      placeholder: "Include links to similar features, mockups, or any additional information"
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: ✅ Verification
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have considered the clinical workflow impact
+          required: true
+        - label: I understand this request will be evaluated for healthcare compliance
+          required: true
+        - label: I have provided clear acceptance criteria
+          required: true

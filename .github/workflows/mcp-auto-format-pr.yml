@@ -1,0 +1,187 @@
+name: Auto-format PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autoformat:
+    name: Auto-format Code
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      
+      - name: Setup project list for Ubuntu-compatible projects
+        id: setup-projects
+        run: |
+          # Define Ubuntu-compatible projects (no mobile dependencies)
+          cat > /tmp/setup_projects.sh << 'EOF'
+          #!/bin/bash
+          
+          get_ubuntu_projects() {
+            # Core Ubuntu-compatible projects
+            local projects=(
+              "./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
+              "./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj"
+              "./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj"
+              "./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj"
+            )
+            
+            # Add test and seeder projects if they exist
+            [ -f "./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj" ] && \
+              projects+=("./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj")
+            [ -f "./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" ] && \
+              projects+=("./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj")
+            
+            printf '%s\n' "${projects[@]}"
+          }
+          EOF
+          
+          chmod +x /tmp/setup_projects.sh
+          echo "Project setup script created"
+      
+      - name: Restore Ubuntu-compatible projects
+        run: |
+          source /tmp/setup_projects.sh
+          
+          echo "Restoring Ubuntu-compatible projects (no mobile dependencies)..."
+          
+          while IFS= read -r project; do
+            if [ -f "$project" ]; then
+              echo "Restoring $project..."
+              # Convert ./src/... to src/... for dotnet restore
+              project_path="${project#./}"
+              dotnet restore "$project_path" --use-lock-file
+            fi
+          done < <(get_ubuntu_projects)
+      
+      - name: Check for formatting issues
+        id: format-check
+        run: |
+          source /tmp/setup_projects.sh
+          
+          echo "Checking format for Ubuntu-compatible projects (excluding MAUI)..."
+          
+          HAS_CHANGES=false
+          
+          while IFS= read -r project; do
+            if [ -f "$project" ]; then
+              echo "Checking format for $project..."
+              if ! dotnet format "$project" --verify-no-changes --verbosity diagnostic; then
+                echo "Formatting needed for $project"
+                HAS_CHANGES=true
+              fi
+            fi
+          done < <(get_ubuntu_projects)
+          
+          if [ "$HAS_CHANGES" = true ]; then
+            echo "FORMAT_NEEDED=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Apply formatting fixes
+        if: steps.format-check.outputs.FORMAT_NEEDED == 'true'
+        run: |
+          source /tmp/setup_projects.sh
+          
+          echo "🔧 Applying code formatting fixes..."
+          
+          while IFS= read -r project; do
+            if [ -f "$project" ]; then
+              echo "Formatting $project..."
+              dotnet format "$project" --verbosity diagnostic
+            fi
+          done < <(get_ubuntu_projects)
+          
+          # Check if any files were modified
+          if git diff --quiet; then
+            echo "No formatting changes needed"
+            echo "FORMAT_APPLIED=false" >> $GITHUB_ENV
+          else
+            echo "Formatting changes applied"
+            echo "FORMAT_APPLIED=true" >> $GITHUB_ENV
+          fi
+
+      - name: Commit formatting changes
+        if: env.FORMAT_APPLIED == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Auto-format Bot"
+          git add -A
+          git commit -m "Auto-format: Apply StyleCop formatting rules
+
+          - Applied dotnet format to Ubuntu-compatible projects
+          - Fixed indentation, spacing, and style issues  
+          - Automated by GitHub Actions on PR #${{ github.event.pull_request.number }}
+          
+          Note: MAUI projects require macOS runner and are formatted during CI"
+          git push
+      
+      - name: Comment on PR with formatting results
+        if: steps.format-check.outputs.FORMAT_NEEDED == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const formatApplied = process.env.FORMAT_APPLIED === 'true';
+            
+            const comment = formatApplied ? 
+              `🔧 **Auto-formatting applied!**
+              
+              I've automatically applied code formatting fixes to this PR to ensure consistency with PFPT coding standards.
+              
+              **Changes applied to Ubuntu-compatible projects:**
+              - StyleCop formatting rules
+              - Consistent indentation and spacing
+              - Code style standardization
+              
+              **Projects formatted:**
+              - ✅ PhysicallyFitPT.Core
+              - ✅ PhysicallyFitPT.Web  
+              - ✅ PhysicallyFitPT.Infrastructure
+              - ✅ PhysicallyFitPT.Shared
+              - ✅ Test and Seeder projects (if present)
+              
+              **Note:** MAUI projects require macOS runner and will be formatted during the main CI workflow.
+              
+              The PR is now ready for review with properly formatted code.` :
+              
+              `⚠️ **Formatting issues detected**
+              
+              Code formatting issues were found but could not be automatically fixed.
+              
+              Please run \`dotnet format\` on the affected projects locally and commit the changes.
+              
+              **Note:** This auto-formatter only handles Ubuntu-compatible projects. MAUI projects are formatted during the main CI workflow on macOS.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });

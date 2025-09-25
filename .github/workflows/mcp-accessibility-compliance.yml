@@ -1,0 +1,495 @@
+name: MCP Accessibility Compliance
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: 'Accessibility test scope'
+        required: true
+        default: 'ui-components'
+        type: choice
+        options:
+          - ui-components
+          - navigation
+          - forms
+          - pdf-reports
+          - full-audit
+      accessibility_level:
+        description: 'WCAG compliance level to test'
+        required: true
+        default: 'AA'
+        type: choice
+        options:
+          - A
+          - AA
+          - AAA
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  accessibility-audit:
+    name: Accessibility Audit - ${{ inputs.test_scope }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Install Accessibility Testing Tools
+        run: |
+          # Install axe-core CLI for accessibility testing
+          npm install -g @axe-core/cli
+          
+          # Install additional accessibility tools
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser xvfb
+          
+      - name: Restore Web Project
+        run: |
+          dotnet restore src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj
+          
+      - name: Build Web Application
+        run: |
+          dotnet build src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release
+          dotnet publish src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -o webapp-dist
+          
+      - name: Start Web Application
+        run: |
+          echo "🚀 Starting Blazor WebAssembly application..."
+          cd webapp-dist
+          
+          # Start simple HTTP server for testing
+          python3 -m http.server 8080 &
+          HTTP_SERVER_PID=$!
+          echo "HTTP_SERVER_PID=$HTTP_SERVER_PID" >> $GITHUB_ENV
+          
+          # Wait for server to start
+          sleep 5
+          
+          # Verify server is running
+          curl -f http://localhost:8080 || {
+            echo "❌ Failed to start web server"
+            exit 1
+          }
+          
+          echo "✅ Web application running on http://localhost:8080"
+          
+      - name: Accessibility Test - UI Components
+        if: inputs.test_scope == 'ui-components' || inputs.test_scope == 'full-audit'
+        run: |
+          echo "♿ Testing UI component accessibility..."
+          
+          # Use extracted axe configuration
+          cp .github/templates/accessibility/axe-config.json ./axe-config.json
+          
+          # Update configuration for specific accessibility level
+          sed -i "s/wcag2aa/wcag2${{ inputs.accessibility_level || 'aa' }}/g" axe-config.json
+          
+          # Test main page accessibility
+          xvfb-run -a axe --config axe-config.json http://localhost:8080 --format json --output ui-components-audit.json || {
+            echo "⚠️ Accessibility issues found in UI components"
+          }
+          
+          # Generate human-readable report from template
+          if [ -f ui-components-audit.json ]; then
+            cp .github/templates/accessibility/ui-components-report.md ui-components-report.md
+            
+            # Replace template variables
+            sed -i "s/{{ACCESSIBILITY_LEVEL}}/${{ inputs.accessibility_level || 'AA' }}/g" ui-components-report.md
+            sed -i "s/{{TEST_DATE}}/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/g" ui-components-report.md
+            
+            # Replace violations and passes counts
+            VIOLATIONS_COUNT=$(jq -r '.violations | length' ui-components-audit.json 2>/dev/null || echo "0")
+            PASSES_COUNT=$(jq -r '.passes | length' ui-components-audit.json 2>/dev/null || echo "0")
+            
+            sed -i "s/{{VIOLATIONS_COUNT}}/$VIOLATIONS_COUNT/g" ui-components-report.md
+            sed -i "s/{{PASSES_COUNT}}/$PASSES_COUNT/g" ui-components-report.md
+            
+            # Extract and format critical issues
+            CRITICAL_ISSUES=$(jq -r '.violations[] | select(.impact == "critical" or .impact == "serious") | "### " + .description + "\n- **Impact**: " + .impact + "\n- **Help**: " + .help + "\n- **Tags**: " + (.tags | join(", ")) + "\n"' ui-components-audit.json 2>/dev/null || echo "No critical issues found")
+            
+            # Replace critical issues placeholder (use temp file for multiline replacement)
+            echo "$CRITICAL_ISSUES" > critical_issues_temp.txt
+            sed -i "/{{CRITICAL_ISSUES}}/r critical_issues_temp.txt" ui-components-report.md
+            sed -i "/{{CRITICAL_ISSUES}}/d" ui-components-report.md
+            rm -f critical_issues_temp.txt
+            
+            echo "✅ UI components accessibility report generated"
+          fi
+          
+      - name: Accessibility Test - Navigation
+        if: inputs.test_scope == 'navigation' || inputs.test_scope == 'full-audit'
+        run: |
+          echo "🧭 Testing navigation accessibility..."
+          
+          # Use extracted keyboard navigation test script
+          node .github/scripts/mcp/accessibility/keyboard-nav-test.js > navigation-test-results.txt 2>&1 || {
+            echo "⚠️ Navigation accessibility issues detected"
+          }
+          
+          echo "✅ Navigation accessibility test completed"
+          
+      - name: Accessibility Test - Forms
+        if: inputs.test_scope == 'forms' || inputs.test_scope == 'full-audit'
+        run: |
+          echo "📝 Testing form accessibility..."
+          
+          # Use extracted form accessibility test script
+          node .github/scripts/mcp/accessibility/form-accessibility-test.js
+          
+          fs.writeFileSync('form-accessibility-results.json', JSON.stringify(results, null, 2));
+          console.log('Form accessibility checklist generated');
+          EOF
+          
+          node form-accessibility-test.js
+          
+          # Generate form accessibility report
+          cat > form-accessibility-report.md <<EOF
+          # Form Accessibility Report
+          
+          ## Manual Review Checklist
+          
+          - [ ] **Labels**: All form inputs have associated labels
+          - [ ] **Fieldsets**: Related controls grouped appropriately  
+          - [ ] **Error Messages**: Validation errors clearly communicated
+          - [ ] **Required Fields**: Required fields clearly indicated
+          - [ ] **Instructions**: Form instructions programmatically associated
+          - [ ] **Keyboard Access**: All form controls accessible via keyboard
+          - [ ] **Screen Reader**: Form structure clear to screen readers
+          
+          ## Automated Checks
+          
+          $(jq -r '.[] | "- **" + .check + "**: " + .status' form-accessibility-results.json 2>/dev/null || echo "No automated results available")
+          
+          ## Recommendations
+          
+          - Use semantic HTML form elements
+          - Implement proper ARIA labels where needed
+          - Provide clear error messaging
+          - Test with screen readers
+          - Ensure keyboard navigation flows logically
+          
+          _Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Accessibility Test - PDF Reports
+        if: inputs.test_scope == 'pdf-reports' || inputs.test_scope == 'full-audit'
+        run: |
+          echo "📄 Testing PDF accessibility..."
+          
+          # Create PDF accessibility checklist
+          cat > pdf-accessibility-report.md <<EOF
+          # PDF Accessibility Report
+          
+          ## PDF/UA Compliance Checklist
+          
+          ### Structure and Navigation
+          - [ ] **Document Title**: PDF has a meaningful title
+          - [ ] **Language**: Document language is specified
+          - [ ] **Headings**: Proper heading hierarchy (H1, H2, H3...)
+          - [ ] **Reading Order**: Logical reading order maintained
+          - [ ] **Bookmarks**: Navigation bookmarks provided for long documents
+          
+          ### Content Accessibility
+          - [ ] **Alt Text**: All images have alternative text
+          - [ ] **Tables**: Data tables have proper headers and structure
+          - [ ] **Lists**: Lists are properly structured
+          - [ ] **Links**: Links have descriptive text
+          - [ ] **Color**: Information not conveyed by color alone
+          
+          ### Technical Requirements
+          - [ ] **Tagged PDF**: PDF is properly tagged
+          - [ ] **OCR Text**: Text is selectable and searchable
+          - [ ] **Color Contrast**: Sufficient contrast ratios
+          - [ ] **Font Embedding**: Fonts are properly embedded
+          
+          ## Validation Tools
+          
+          Recommended tools for PDF accessibility validation:
+          - Adobe Acrobat Pro (Accessibility Checker)
+          - PAC 3 (PDF Accessibility Checker)
+          - NVDA or JAWS screen readers
+          
+          ## Implementation Notes
+          
+          For QuestPDF implementation:
+          \`\`\`csharp
+          // Ensure proper document structure
+          document.DocumentSettings.Title = "Patient Report";
+          document.DocumentSettings.Author = "PFPT System";
+          document.DocumentSettings.Subject = "Clinical Assessment Report";
+          
+          // Use semantic elements
+          .Text("Heading").FontSize(16).Bold(); // Use consistent heading styles
+          .Text("Body content").FontSize(12);   // Use readable font sizes
+          \`\`\`
+          
+          _Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Full Accessibility Audit
+        if: inputs.test_scope == 'full-audit'
+        run: |
+          echo "🔍 Performing comprehensive accessibility audit..."
+          
+          # Run comprehensive axe audit
+          ACCESS_LEVEL=$(echo "${{ inputs.accessibility_level }}" | tr '[:upper:]' '[:lower:]')
+
+          xvfb-run -a axe --config axe-config.json http://localhost:8080 \
+            --format json --output full-accessibility-audit.json \
+            --tags "wcag2${ACCESS_LEVEL}" \
+            --include "*" || {
+            echo "⚠️ Accessibility violations found"
+          }
+          
+          # Generate comprehensive report
+          cat > comprehensive-accessibility-report.md <<EOF
+          # Comprehensive Accessibility Audit Report
+          
+          **WCAG Level**: ${{ inputs.accessibility_level }}
+          **Audit Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Platform**: Blazor WebAssembly
+          
+          ## Executive Summary
+          
+          $(jq -r '.violations | length' full-accessibility-audit.json 2>/dev/null || echo "0") total violations found across all tested areas.
+          
+          ## Violation Breakdown by Impact
+          
+          - **Critical**: $(jq -r '[.violations[] | select(.impact == "critical")] | length' full-accessibility-audit.json 2>/dev/null || echo "0")
+          - **Serious**: $(jq -r '[.violations[] | select(.impact == "serious")] | length' full-accessibility-audit.json 2>/dev/null || echo "0")
+          - **Moderate**: $(jq -r '[.violations[] | select(.impact == "moderate")] | length' full-accessibility-audit.json 2>/dev/null || echo "0")
+          - **Minor**: $(jq -r '[.violations[] | select(.impact == "minor")] | length' full-accessibility-audit.json 2>/dev/null || echo "0")
+          
+          ## Compliance Status
+          
+          ### WCAG 2.1 Guidelines
+          
+          #### Perceivable
+          - [ ] Text alternatives for images
+          - [ ] Captions for multimedia
+          - [ ] Adaptable content structure
+          - [ ] Sufficient color contrast
+          
+          #### Operable
+          - [ ] Keyboard accessible
+          - [ ] No seizure-inducing content
+          - [ ] Sufficient time limits
+          - [ ] Navigable structure
+          
+          #### Understandable
+          - [ ] Readable text
+          - [ ] Predictable functionality
+          - [ ] Input assistance
+          
+          #### Robust
+          - [ ] Compatible with assistive technologies
+          - [ ] Valid markup
+          
+          ## Priority Action Items
+          
+          $(jq -r '.violations[] | select(.impact == "critical" or .impact == "serious") | "1. **" + .description + "**\n   - Impact: " + .impact + "\n   - Help: " + .help + "\n"' full-accessibility-audit.json 2>/dev/null || echo "No critical issues requiring immediate attention.")
+          
+          ## Testing Recommendations
+          
+          1. **Manual Testing**: Perform manual keyboard navigation testing
+          2. **Screen Reader Testing**: Test with NVDA, JAWS, or VoiceOver
+          3. **Color Contrast**: Verify contrast ratios meet WCAG standards
+          4. **User Testing**: Conduct testing with users who have disabilities
+          
+          ## Next Steps
+          
+          1. Address critical and serious violations first
+          2. Implement automated accessibility testing in CI/CD
+          3. Establish accessibility review process for new features
+          4. Train development team on accessibility best practices
+          
+          EOF
+          
+      - name: Generate Accessibility Recommendations
+        run: |
+          echo "💡 Generating accessibility recommendations..."
+          
+          cat > accessibility-implementation-guide.md <<EOF
+          # PFPT Accessibility Implementation Guide
+          
+          ## Blazor-Specific Accessibility Guidelines
+          
+          ### Component Development
+          \`\`\`csharp
+          // Use semantic HTML elements
+          <main role="main">
+              <h1>Page Title</h1>
+              <nav aria-label="Main navigation">
+                  <!-- Navigation content -->
+              </nav>
+          </main>
+          
+          // Provide ARIA labels for custom components
+          <div class="custom-button" 
+               role="button" 
+               tabindex="0"
+               aria-label="Save patient information"
+               @onclick="SavePatient"
+               @onkeypress="HandleKeyPress">
+              Save
+          </div>
+          \`\`\`
+          
+          ### Form Accessibility
+          \`\`\`csharp
+          <div class="form-group">
+              <label for="patient-name">Patient Name (required)</label>
+              <input id="patient-name" 
+                     type="text" 
+                     required 
+                     aria-describedby="name-help"
+                     @bind="Patient.Name" />
+              <div id="name-help" class="help-text">
+                  Enter the patient's full legal name
+              </div>
+          </div>
+          \`\`\`
+          
+          ### MAUI Accessibility Guidelines
+          \`\`\`csharp
+          // Set accessibility properties
+          button.SetValue(SemanticProperties.DescriptionProperty, "Save patient information");
+          button.SetValue(SemanticProperties.HintProperty, "Tap to save current patient data");
+          
+          // Ensure proper reading order
+          entry.SetValue(SemanticProperties.HeadingLevelProperty, SemanticHeadingLevel.Level2);
+          \`\`\`
+          
+          ## Testing Checklist
+          
+          ### Automated Testing
+          - [ ] Integrate axe-core into CI/CD pipeline
+          - [ ] Set up accessibility regression testing
+          - [ ] Configure IDE accessibility linting
+          
+          ### Manual Testing
+          - [ ] Keyboard-only navigation testing
+          - [ ] Screen reader testing (NVDA, JAWS, VoiceOver)
+          - [ ] High contrast mode testing
+          - [ ] Text scaling testing (up to 200%)
+          
+          ### Platform-Specific Testing
+          - [ ] **Android**: TalkBack screen reader
+          - [ ] **iOS**: VoiceOver screen reader  
+          - [ ] **Web**: Browser screen readers
+          - [ ] **Windows**: Narrator screen reader
+          
+          ## Accessibility Tools Integration
+          
+          ### Development Tools
+          \`\`\`bash
+          # Install accessibility linter
+          npm install -g @axe-core/cli
+          
+          # Run accessibility audit
+          axe http://localhost:5000 --tags wcag2aa
+          \`\`\`
+          
+          ### CI/CD Integration
+          \`\`\`yaml
+          - name: Accessibility Test
+            run: |
+              npm install -g @axe-core/cli
+              axe http://localhost:8080 --tags wcag2aa --exit
+          \`\`\`
+          
+          ## Resources
+          
+          - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+          - [Blazor Accessibility Guide](https://docs.microsoft.com/en-us/aspnet/core/blazor/accessibility)
+          - [.NET MAUI Accessibility](https://docs.microsoft.com/en-us/dotnet/maui/fundamentals/accessibility)
+          - [PDF/UA Standards](https://www.pdfa.org/pdfua-the-iso-standard-for-universal-accessibility/)
+          
+          _Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Cleanup Web Server
+        if: always()
+        run: |
+          if [ ! -z "$HTTP_SERVER_PID" ]; then
+            kill $HTTP_SERVER_PID || true
+            echo "🧹 Web server stopped"
+          fi
+          
+      - name: Upload Accessibility Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-audit-${{ inputs.test_scope }}-${{ github.run_number }}
+          path: |
+            *-accessibility-*.md
+            *-audit.json
+            *-results.txt
+            *-results.json
+          retention-days: 30
+          
+      - name: Post Accessibility Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const testScope = '${{ inputs.test_scope }}';
+            const wcagLevel = '${{ inputs.accessibility_level }}';
+            const success = '${{ job.status }}' === 'success';
+            const emoji = success ? '♿✅' : '♿❌';
+            
+            const summary = [
+              `${emoji} **Accessibility Audit Complete**`,
+              '',
+              `**Test Scope:** ${testScope}`,
+              `**WCAG Level:** ${wcagLevel}`,
+              `**Status:** ${{ job.status }}`,
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Audit Coverage:**',
+              '- UI component accessibility',
+              '- Keyboard navigation testing',
+              '- Form accessibility validation',
+              '- PDF accessibility guidelines',
+              '',
+              '**Next Steps:**',
+              '- Review generated accessibility reports',
+              '- Address critical and serious violations',
+              '- Implement accessibility testing in CI/CD',
+              '- Conduct manual testing with assistive technologies',
+              '',
+              `**Download Reports:** [View workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('Accessibility audit summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }

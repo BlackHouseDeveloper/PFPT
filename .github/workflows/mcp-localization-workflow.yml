@@ -1,0 +1,745 @@
+name: MCP Localization Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Localization operation to perform'
+        required: true
+        default: 'extract'
+        type: choice
+        options:
+          - extract
+          - validate
+          - generate-templates
+          - update-resources
+          - audit-coverage
+      target_locale:
+        description: 'Target locale (e.g., es-ES, fr-FR, de-DE)'
+        required: false
+        type: string
+        default: 'es-ES'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  localization-workflow:
+    name: Localization - ${{ inputs.operation }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Install Localization Tools
+        run: |
+          # Install gettext tools for .po/.pot file handling
+          sudo apt-get update
+          sudo apt-get install -y gettext
+          
+          # Install additional text processing tools
+          sudo apt-get install -y jq xmlstarlet
+          
+      - name: Restore Projects
+        run: |
+          dotnet restore src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj
+          dotnet restore src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj
+          dotnet restore src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj
+          
+      - name: Extract Localizable Strings
+        if: inputs.operation == 'extract' || inputs.operation == 'audit-coverage'
+        run: |
+          echo "🔍 Extracting localizable strings from source code..."
+          
+          mkdir -p localization/extracted
+          
+          # Extract strings from C# files
+          echo "📄 Extracting from C# files..."
+          find src/ -name "*.cs" -exec grep -H -n -E '@Localizer\[|GetString\(|LocalizedString\(' {} \; > localization/extracted/csharp-strings.txt || true
+          
+          # Extract strings from Razor files
+          echo "📄 Extracting from Razor files..."
+          find src/ -name "*.razor" -exec grep -H -n -E '@Localizer\[|@L\[|@localizer\[' {} \; > localization/extracted/razor-strings.txt || true
+          
+          # Extract hardcoded strings (potential localization candidates)
+          echo "📄 Finding hardcoded strings..."
+          find src/ -name "*.cs" -exec grep -H -n -E '"[A-Z][^"]*[a-z][^"]*"' {} \; | \
+            grep -v -E '(using |namespace |//.* |<.*>|\.cs:.*/\*|\.dll|\.exe|test|Test|DEBUG|INFO|ERROR|WARN)' | \
+            head -100 > localization/extracted/hardcoded-candidates.txt || true
+          
+          # Extract strings from XAML files (MAUI)
+          echo "📄 Extracting from XAML files..."
+          find src/ -name "*.xaml" -exec grep -H -n 'Text=' {} \; | \
+            grep -v -E '(x:|{Binding|{x:)' > localization/extracted/xaml-strings.txt || true
+          
+          # Generate extraction summary
+          cat > localization/extracted/extraction-summary.md <<EOF
+          # String Extraction Summary
+          
+          **Operation**: Extract localizable strings
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Extraction Results
+          
+          - **C# files**: $(wc -l < localization/extracted/csharp-strings.txt) potential strings
+          - **Razor files**: $(wc -l < localization/extracted/razor-strings.txt) potential strings  
+          - **XAML files**: $(wc -l < localization/extracted/xaml-strings.txt) potential strings
+          - **Hardcoded candidates**: $(wc -l < localization/extracted/hardcoded-candidates.txt) strings
+          
+          ## Next Steps
+          
+          1. Review extracted strings for localization candidates
+          2. Implement IStringLocalizer in components
+          3. Create resource files for target locales
+          4. Update UI components to use localized strings
+          
+          EOF
+          
+          echo "✅ String extraction completed"
+          
+      - name: Validate Localization Resources
+        if: inputs.operation == 'validate'
+        run: |
+          echo "✅ Validating existing localization resources..."
+          
+          mkdir -p localization/validation
+          
+          # Check for existing resource files
+          echo "📋 Checking for existing resource files..."
+          find src/ -name "*.resx" -o -name "*.json" | grep -i -E "(resource|local|lang)" > localization/validation/existing-resources.txt || true
+          
+          # Validate resource file structure
+          for resx in $(find src/ -name "*.resx"); do
+            echo "🔍 Validating: $resx"
+            if xmlstarlet validate "$resx" 2>/dev/null; then
+              echo "✅ Valid XML: $resx" >> localization/validation/validation-results.txt
+            else
+              echo "❌ Invalid XML: $resx" >> localization/validation/validation-results.txt
+            fi
+          done
+          
+          # Check for missing localizations
+          echo "🔍 Checking for missing localization implementations..."
+          
+          # Look for IStringLocalizer usage
+          localizer_usage=$(find src/ -name "*.cs" -exec grep -l "IStringLocalizer" {} \; | wc -l)
+          echo "IStringLocalizer usage found in $localizer_usage files"
+          
+          # Generate validation report
+          cat > localization/validation/validation-report.md <<EOF
+          # Localization Validation Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Resource Files Found
+          
+          $(cat localization/validation/existing-resources.txt | sed 's|^|- |' || echo "No resource files found")
+          
+          ## Validation Results
+          
+          $(cat localization/validation/validation-results.txt | sed 's|^|- |' || echo "No validation results")
+          
+          ## IStringLocalizer Usage
+          
+          - Files using IStringLocalizer: $localizer_usage
+          
+          ## Recommendations
+          
+          - Implement IStringLocalizer for user-facing text
+          - Create resource files for supported locales
+          - Add localization middleware to Startup/Program.cs
+          - Test locale switching functionality
+          
+          EOF
+          
+          echo "✅ Localization validation completed"
+          
+      - name: Generate Localization Templates
+        if: inputs.operation == 'generate-templates'
+        run: |
+          echo "📝 Generating localization templates..."
+          
+          mkdir -p localization/templates
+          
+          # Create base resource template
+          cat > localization/templates/SharedResources.resx <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <root>
+            <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+              <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+              <xsd:element name="root" msdata:IsDataSet="true">
+                <xsd:complexType>
+                  <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                        </xsd:sequence>
+                        <xsd:attribute name="name" use="required" type="xsd:string" />
+                        <xsd:attribute name="type" type="xsd:string" />
+                        <xsd:attribute name="mimetype" type="xsd:string" />
+                        <xsd:attribute ref="xml:space" />
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                      <xsd:complexType>
+                        <xsd:attribute name="alias" type="xsd:string" />
+                        <xsd:attribute name="name" type="xsd:string" />
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                          <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string" use="required" />
+                        <xsd:attribute name="xml:space" type="xsd:string" />
+                        <xsd:attribute name="type" type="xsd:string" />
+                        <xsd:attribute name="mimetype" type="xsd:string" />
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string" use="required" />
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:choice>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:schema>
+            <resheader name="resmimetype">
+              <value>text/microsoft-resx</value>
+            </resheader>
+            <resheader name="version">
+              <value>2.0</value>
+            </resheader>
+            <resheader name="reader">
+              <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+            </resheader>
+            <resheader name="writer">
+              <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+            </resheader>
+            
+            <!-- PFPT Common Strings -->
+            <data name="AppName" xml:space="preserve">
+              <value>Physically Fit PT</value>
+            </data>
+            <data name="PatientManagement" xml:space="preserve">
+              <value>Patient Management</value>
+            </data>
+            <data name="Assessments" xml:space="preserve">
+              <value>Assessments</value>
+            </data>
+            <data name="Reports" xml:space="preserve">
+              <value>Reports</value>
+            </data>
+            <data name="Settings" xml:space="preserve">
+              <value>Settings</value>
+            </data>
+            <data name="Save" xml:space="preserve">
+              <value>Save</value>
+            </data>
+            <data name="Cancel" xml:space="preserve">
+              <value>Cancel</value>
+            </data>
+            <data name="Delete" xml:space="preserve">
+              <value>Delete</value>
+            </data>
+            <data name="Edit" xml:space="preserve">
+              <value>Edit</value>
+            </data>
+            <data name="Add" xml:space="preserve">
+              <value>Add</value>
+            </data>
+            <data name="Search" xml:space="preserve">
+              <value>Search</value>
+            </data>
+          </root>
+          EOF
+          
+          # Generate locale-specific template
+          target_locale="${{ inputs.target_locale || 'es-ES' }}"
+          cat > "localization/templates/SharedResources.$target_locale.resx" <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <root>
+            <!-- Same schema as base file -->
+            <resheader name="resmimetype">
+              <value>text/microsoft-resx</value>
+            </resheader>
+            <resheader name="version">
+              <value>2.0</value>
+            </resheader>
+            
+            <!-- $target_locale Translations -->
+            <data name="AppName" xml:space="preserve">
+              <value>Physically Fit PT</value>
+            </data>
+            <data name="PatientManagement" xml:space="preserve">
+              <value>[TRANSLATE] Patient Management</value>
+            </data>
+            <data name="Assessments" xml:space="preserve">
+              <value>[TRANSLATE] Assessments</value>
+            </data>
+            <data name="Reports" xml:space="preserve">
+              <value>[TRANSLATE] Reports</value>
+            </data>
+            <data name="Settings" xml:space="preserve">
+              <value>[TRANSLATE] Settings</value>
+            </data>
+            <data name="Save" xml:space="preserve">
+              <value>[TRANSLATE] Save</value>
+            </data>
+            <data name="Cancel" xml:space="preserve">
+              <value>[TRANSLATE] Cancel</value>
+            </data>
+            <data name="Delete" xml:space="preserve">
+              <value>[TRANSLATE] Delete</value>
+            </data>
+            <data name="Edit" xml:space="preserve">
+              <value>[TRANSLATE] Edit</value>
+            </data>
+            <data name="Add" xml:space="preserve">
+              <value>[TRANSLATE] Add</value>
+            </data>
+            <data name="Search" xml:space="preserve">
+              <value>[TRANSLATE] Search</value>
+            </data>
+          </root>
+          EOF
+          
+          # Create localization service template
+          cat > localization/templates/LocalizationService.cs <<EOF
+          using Microsoft.Extensions.Localization;
+          using System.Globalization;
+          
+          namespace PhysicallyFitPT.Shared.Services;
+          
+          public interface ILocalizationService
+          {
+              string GetString(string key);
+              string GetString(string key, params object[] arguments);
+              void SetCulture(string culture);
+              string GetCurrentCulture();
+              IEnumerable<CultureInfo> GetSupportedCultures();
+          }
+          
+          public class LocalizationService : ILocalizationService
+          {
+              private readonly IStringLocalizer<SharedResources> _localizer;
+              
+              public LocalizationService(IStringLocalizer<SharedResources> localizer)
+              {
+                  _localizer = localizer;
+              }
+              
+              public string GetString(string key)
+              {
+                  return _localizer[key].Value;
+              }
+              
+              public string GetString(string key, params object[] arguments)
+              {
+                  return _localizer[key, arguments].Value;
+              }
+              
+              public void SetCulture(string culture)
+              {
+                  var cultureInfo = new CultureInfo(culture);
+                  CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+                  CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+              }
+              
+              public string GetCurrentCulture()
+              {
+                  return CultureInfo.CurrentUICulture.Name;
+              }
+              
+              public IEnumerable<CultureInfo> GetSupportedCultures()
+              {
+                  return new[]
+                  {
+                      new CultureInfo("en-US"),
+                      new CultureInfo("es-ES"),
+                      new CultureInfo("fr-FR"),
+                      new CultureInfo("de-DE")
+                  };
+              }
+          }
+          
+          // Resource class for strongly-typed access
+          public class SharedResources
+          {
+              // This class is used for strongly-typed localization
+          }
+          EOF
+          
+          # Create Blazor localization component template
+          cat > localization/templates/LocalizedComponent.razor <<EOF
+          @using Microsoft.Extensions.Localization
+          @inject IStringLocalizer<SharedResources> Localizer
+          
+          <div class="localized-component">
+              <h3>@Localizer["PatientManagement"]</h3>
+              
+              <button class="btn btn-primary" @onclick="SaveData">
+                  @Localizer["Save"]
+              </button>
+              
+              <button class="btn btn-secondary" @onclick="CancelOperation">
+                  @Localizer["Cancel"]
+              </button>
+              
+              <div class="search-box">
+                  <label for="search">@Localizer["Search"]:</label>
+                  <input id="search" type="text" placeholder="@Localizer["Search"]" />
+              </div>
+          </div>
+          
+          @code {
+              private void SaveData()
+              {
+                  // Implementation
+              }
+              
+              private void CancelOperation()
+              {
+                  // Implementation
+              }
+          }
+          EOF
+          
+          echo "✅ Localization templates generated"
+          
+      - name: Update Resource Files
+        if: inputs.operation == 'update-resources'
+        run: |
+          echo "🔄 Updating localization resources..."
+          
+          # This would typically sync with translation management systems
+          # For now, create a placeholder update process
+          
+          mkdir -p localization/updates
+          
+          cat > localization/updates/update-log.md <<EOF
+          # Resource Update Log
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Target Locale**: ${{ inputs.target_locale || 'es-ES' }}
+          
+          ## Update Process
+          
+          1. **Extract** new strings from source code
+          2. **Compare** with existing resource files
+          3. **Identify** missing translations
+          4. **Update** resource files with new keys
+          5. **Validate** resource file format
+          
+          ## Integration Points
+          
+          - Translation management system (TMS)
+          - Continuous localization workflows
+          - Translator collaboration tools
+          - Quality assurance processes
+          
+          ## Next Steps
+          
+          1. Send new strings to translators
+          2. Review translated content
+          3. Update resource files
+          4. Test localized UI
+          5. Deploy updates
+          
+          EOF
+          
+          echo "✅ Resource update process documented"
+          
+      - name: Audit Localization Coverage
+        if: inputs.operation == 'audit-coverage'
+        run: |
+          echo "📊 Auditing localization coverage..."
+          
+          mkdir -p localization/audit
+          
+          # Count UI strings that need localization
+          ui_strings=$(find src/ -name "*.razor" -o -name "*.xaml" | xargs grep -h '"[A-Z][^"]*"' | wc -l || echo "0")
+          
+          # Count existing localized strings
+          localized_strings=$(find src/ -name "*.cs" | xargs grep -h '@Localizer\|GetString' | wc -l || echo "0")
+          
+          # Calculate coverage percentage
+          if [ "$ui_strings" -gt 0 ]; then
+            coverage=$((localized_strings * 100 / ui_strings))
+          else
+            coverage=0
+          fi
+          
+          # Generate coverage report
+          cat > localization/audit/coverage-report.md <<EOF
+          # Localization Coverage Audit
+          
+          **Audit Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Coverage Metrics
+          
+          - **Total UI strings**: $ui_strings
+          - **Localized strings**: $localized_strings  
+          - **Coverage percentage**: $coverage%
+          
+          ## Coverage by Component
+          
+          $(find src/ -name "*.razor" -exec echo "### {}" \; -exec grep -c '"[A-Z][^"]*"' {} \; 2>/dev/null | paste - - | sed 's|\t| - |' || echo "No component analysis available")
+          
+          ## Localization Gaps
+          
+          ### Hardcoded Strings Requiring Localization
+          $(find src/ -name "*.razor" -o -name "*.cs" | xargs grep -H -n '"[A-Z][^"]*[a-z][^"]*"' | head -20 | sed 's|^|- |' || echo "No gaps identified")
+          
+          ## Recommendations
+          
+          $(if [ "$coverage" -lt 50 ]; then
+            echo "❌ **Low Coverage**: Implement systematic localization strategy"
+          elif [ "$coverage" -lt 80 ]; then  
+            echo "⚠️ **Medium Coverage**: Focus on remaining UI components"
+          else
+            echo "✅ **Good Coverage**: Maintain and extend current approach"
+          fi)
+          
+          ### Action Items
+          
+          1. **Immediate**: Localize high-priority user-facing strings
+          2. **Short-term**: Implement IStringLocalizer in all components
+          3. **Medium-term**: Create comprehensive resource files
+          4. **Long-term**: Establish continuous localization process
+          
+          ## Supported Locales Status
+          
+          - [ ] English (en-US) - Base locale
+          - [ ] Spanish (es-ES) - In progress
+          - [ ] French (fr-FR) - Planned
+          - [ ] German (de-DE) - Planned
+          
+          EOF
+          
+          echo "✅ Localization coverage audit completed"
+          
+      - name: Generate Implementation Guide
+        run: |
+          echo "📚 Generating localization implementation guide..."
+          
+          cat > localization/implementation-guide.md <<EOF
+          # PFPT Localization Implementation Guide
+          
+          ## Setup Process
+          
+          ### 1. Configure Localization Services
+          
+          **Program.cs / Startup.cs**:
+          \`\`\`csharp
+          services.AddLocalization(options => options.ResourcesPath = "Resources");
+          services.Configure<RequestLocalizationOptions>(options =>
+          {
+              var supportedCultures = new[]
+              {
+                  new CultureInfo("en-US"),
+                  new CultureInfo("es-ES"),
+                  new CultureInfo("fr-FR"),
+                  new CultureInfo("de-DE")
+              };
+              
+              options.DefaultRequestCulture = new RequestCulture("en-US");
+              options.SupportedCultures = supportedCultures;
+              options.SupportedUICultures = supportedCultures;
+          });
+          \`\`\`
+          
+          ### 2. Create Resource Files
+          
+          **File Structure**:
+          \`\`\`
+          src/PhysicallyFitPT.Shared/
+          ├── Resources/
+          │   ├── SharedResources.resx
+          │   ├── SharedResources.es-ES.resx
+          │   ├── SharedResources.fr-FR.resx
+          │   └── SharedResources.de-DE.resx
+          \`\`\`
+          
+          ### 3. Implement in Components
+          
+          **Blazor Components**:
+          \`\`\`csharp
+          @using Microsoft.Extensions.Localization
+          @inject IStringLocalizer<SharedResources> Localizer
+          
+          <h1>@Localizer["Welcome"]</h1>
+          <p>@Localizer["Description", Model.PatientName]</p>
+          \`\`\`
+          
+          **MAUI Views**:
+          \`\`\`csharp
+          public partial class PatientPage : ContentPage
+          {
+              private readonly IStringLocalizer<SharedResources> _localizer;
+              
+              public PatientPage(IStringLocalizer<SharedResources> localizer)
+              {
+                  _localizer = localizer;
+                  InitializeComponent();
+                  Title = _localizer["Patients"];
+              }
+          }
+          \`\`\`
+          
+          ## Clinical Terminology Localization
+          
+          ### Medical Terms
+          - Maintain medical accuracy across locales
+          - Use standardized medical terminology
+          - Provide cultural context where needed
+          
+          ### Assessment Labels
+          - Localize assessment instructions
+          - Maintain scoring consistency
+          - Preserve clinical meaning
+          
+          ## Platform-Specific Considerations
+          
+          ### Android
+          - Use Android string resources for native elements
+          - Support RTL languages if needed
+          - Test with different locale settings
+          
+          ### iOS
+          - Leverage iOS localization features
+          - Support Dynamic Type for text scaling
+          - Test with iOS accessibility features
+          
+          ### Web
+          - Implement locale detection
+          - Support URL-based locale switching
+          - Cache localized resources
+          
+          ## Testing Strategy
+          
+          ### Manual Testing
+          1. Switch locale in app settings
+          2. Verify all UI elements are translated
+          3. Test text expansion/contraction
+          4. Validate cultural appropriateness
+          
+          ### Automated Testing
+          \`\`\`csharp
+          [Fact]
+          public void LocalizedStrings_ShouldNotBeEmpty()
+          {
+              var localizer = GetLocalizer<SharedResources>("es-ES");
+              var result = localizer["Welcome"];
+              Assert.False(result.ResourceNotFound);
+              Assert.NotEqual("Welcome", result.Value);
+          }
+          \`\`\`
+          
+          ## Continuous Localization
+          
+          ### Workflow Integration
+          1. **Extract**: Automatically detect new strings
+          2. **Translate**: Send to translation management system
+          3. **Review**: Quality assurance process
+          4. **Deploy**: Update resource files
+          
+          ### Tools Integration
+          - Translation management systems (TMS)
+          - CAT (Computer-Assisted Translation) tools
+          - Terminology databases
+          - Quality assurance tools
+          
+          ## Best Practices
+          
+          1. **Use parameterized strings** for dynamic content
+          2. **Avoid string concatenation** across locales
+          3. **Plan for text expansion** (30-50% longer in some languages)
+          4. **Consider cultural differences** in date/time formats
+          5. **Test with pseudo-localization** for UI layout issues
+          6. **Maintain glossaries** for consistent terminology
+          
+          _Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Upload Localization Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: localization-${{ inputs.operation }}-${{ github.run_number }}
+          path: |
+            localization/
+          retention-days: 30
+          
+      - name: Post Localization Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const operation = '${{ inputs.operation }}';
+            const targetLocale = '${{ inputs.target_locale }}';
+            const success = '${{ job.status }}' === 'success';
+            const emoji = success ? '🌐✅' : '🌐❌';
+            
+            const summary = [
+              `${emoji} **Localization Workflow Complete**`,
+              '',
+              `**Operation:** ${operation}`,
+              `**Target Locale:** ${targetLocale}`,
+              `**Status:** ${{ job.status }}`,
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Generated Artifacts:**',
+              '- String extraction results',
+              '- Localization templates', 
+              '- Resource file validation',
+              '- Coverage audit reports',
+              '- Implementation guidelines',
+              '',
+              '**Next Steps:**',
+              '- Review extracted strings for localization',
+              '- Implement IStringLocalizer in components',
+              '- Create/update resource files for target locales',
+              '- Test localized UI across platforms',
+              '',
+              `**Download:** [View workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('Localization workflow summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }

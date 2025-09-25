@@ -1,0 +1,493 @@
+name: MCP PDF Export Diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'PDF test type to perform'
+        required: true
+        default: 'validate'
+        type: choice
+        options:
+          - validate
+          - performance
+          - templates
+          - accessibility
+          - samples
+      output_format:
+        description: 'PDF output format validation'
+        required: false
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - accessibility
+          - print-optimized
+          - mobile-optimized
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  pdf-diagnostics:
+    name: PDF Export Diagnostics - ${{ inputs.test_type }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Restore dependencies
+        run: |
+          dotnet restore src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj
+          dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj
+          
+      - name: Install PDF Analysis Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qpdf poppler-utils
+          
+      - name: Build PDF Infrastructure
+        run: |
+          dotnet build src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release
+          dotnet build src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Release
+          
+      - name: Create PDF Test Console App
+        run: |
+          mkdir -p pdf-test-app
+          cd pdf-test-app
+          
+          cat > PdfTestApp.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <Nullable>enable</Nullable>
+            </PropertyGroup>
+            <ItemGroup>
+              <ProjectReference Include="../src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" />
+              <ProjectReference Include="../src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj" />
+            </ItemGroup>
+          </Project>
+          EOF
+          
+          cat > Program.cs <<'EOF'
+          using PhysicallyFitPT.Core.Entities;
+          using PhysicallyFitPT.Infrastructure.Services;
+          using QuestPDF.Fluent;
+          using QuestPDF.Helpers;
+          using QuestPDF.Infrastructure;
+          
+          // Configure QuestPDF license
+          QuestPDF.Settings.License = LicenseType.Community;
+          
+          Console.WriteLine("🔍 Starting PDF Export Diagnostics...");
+          
+          try 
+          {
+              // Create test patient data
+              var patient = new Patient
+              {
+                  Id = Guid.NewGuid(),
+                  FirstName = "Test",
+                  LastName = "Patient",
+                  DateOfBirth = DateTime.Now.AddYears(-35),
+                  Email = "test@example.com"
+              };
+              
+              var assessment = new Assessment
+              {
+                  Id = Guid.NewGuid(),
+                  PatientId = patient.Id,
+                  AssessmentDate = DateTime.Now,
+                  AssessmentType = "Initial Evaluation",
+                  Notes = "Test assessment for PDF generation diagnostics."
+              };
+              
+              // Generate test PDF
+              var pdfService = new PdfReportService();
+              var outputPath = $"test-report-{DateTime.Now:yyyyMMdd-HHmmss}.pdf";
+              
+              Console.WriteLine("📄 Generating test PDF report...");
+              await pdfService.GeneratePatientReportAsync(patient, new List<Assessment> { assessment }, outputPath);
+              
+              if (File.Exists(outputPath))
+              {
+                  var fileInfo = new FileInfo(outputPath);
+                  Console.WriteLine($"✅ PDF generated successfully: {outputPath}");
+                  Console.WriteLine($"📊 File size: {fileInfo.Length} bytes ({fileInfo.Length / 1024.0:F2} KB)");
+              }
+              else
+              {
+                  Console.WriteLine("❌ PDF generation failed - file not created");
+                  Environment.Exit(1);
+              }
+          }
+          catch (Exception ex)
+          {
+              Console.WriteLine($"❌ PDF generation error: {ex.Message}");
+              Console.WriteLine($"Stack trace: {ex.StackTrace}");
+              Environment.Exit(1);
+          }
+          EOF
+          
+      - name: Basic PDF Validation
+        if: inputs.test_type == 'validate'
+        run: |
+          echo "📄 Validating PDF generation capabilities..."
+          
+          # Use extracted PDF validation script
+          python3 .github/scripts/mcp/pdf/validate-pdf.py
+          cd pdf-test-app
+          dotnet restore
+          dotnet run
+          
+          # Validate generated PDF
+          for pdf in *.pdf; do
+            if [ -f "$pdf" ]; then
+              echo "🔍 Validating PDF: $pdf"
+              
+              # Check PDF integrity
+              if qpdf --check "$pdf"; then
+                echo "✅ PDF integrity check passed"
+              else
+                echo "❌ PDF integrity check failed"
+                exit 1
+              fi
+              
+              # Extract basic info
+              pdfinfo "$pdf" > pdf_info.txt
+              echo "📋 PDF Information:"
+              cat pdf_info.txt
+              
+              # Check if PDF is accessible
+              if pdftotext "$pdf" extracted_text.txt; then
+                word_count=$(wc -w < extracted_text.txt)
+                echo "📝 Extracted text: $word_count words"
+                if [ "$word_count" -gt 10 ]; then
+                  echo "✅ PDF contains extractable text"
+                else
+                  echo "⚠️ PDF contains minimal text content"
+                fi
+              else
+                echo "❌ Failed to extract text from PDF"
+              fi
+            fi
+          done
+          
+      - name: PDF Performance Testing
+        if: inputs.test_type == 'performance'
+        run: |
+          cd pdf-test-app
+          dotnet restore
+          
+          echo "⏱️ Starting PDF performance testing..."
+          
+          # Generate multiple PDFs and measure performance
+          for i in {1..5}; do
+            echo "🔄 Performance test iteration $i/5"
+            start_time=$(date +%s.%N)
+            
+            timeout 60s dotnet run || {
+              echo "❌ PDF generation timed out on iteration $i"
+              exit 1
+            }
+            
+            end_time=$(date +%s.%N)
+            duration=$(echo "$end_time - $start_time" | bc -l)
+            echo "📊 Iteration $i completed in ${duration} seconds"
+          done
+          
+          # Calculate average file sizes
+          if ls *.pdf 1> /dev/null 2>&1; then
+            total_size=$(du -cb *.pdf | tail -1 | cut -f1)
+            file_count=$(ls *.pdf | wc -l)
+            avg_size=$((total_size / file_count))
+            echo "📈 Average PDF size: $avg_size bytes ($(echo "scale=2; $avg_size/1024" | bc) KB)"
+          fi
+          
+      - name: PDF Template Testing
+        if: inputs.test_type == 'templates'
+        run: |
+          cd pdf-test-app
+          
+          # Create template validation script
+          cat > TemplateTest.cs <<'EOF'
+          using PhysicallyFitPT.Core.Entities;
+          using QuestPDF.Fluent;
+          using QuestPDF.Helpers;
+          using QuestPDF.Infrastructure;
+          
+          QuestPDF.Settings.License = LicenseType.Community;
+          
+          Console.WriteLine("🎨 Testing PDF templates...");
+          
+          var templates = new[]
+          {
+              "Standard Patient Report",
+              "Assessment Summary",
+              "Progress Report",
+              "Treatment Plan"
+          };
+          
+          foreach (var template in templates)
+          {
+              try
+              {
+                  Console.WriteLine($"📄 Testing template: {template}");
+                  
+                  var document = Document.Create(container =>
+                  {
+                      container.Page(page =>
+                      {
+                          page.Size(PageSizes.A4);
+                          page.Margin(2, Unit.Centimetre);
+                          page.PageColor(Colors.White);
+                          page.DefaultTextStyle(x => x.FontSize(12));
+                          
+                          page.Header()
+                              .Text($"PFPT - {template}")
+                              .SemiBold().FontSize(18).FontColor(Colors.Blue.Medium);
+                          
+                          page.Content()
+                              .PaddingVertical(1, Unit.Centimetre)
+                              .Column(x =>
+                              {
+                                  x.Spacing(20);
+                                  x.Item().Text("Patient Information").FontSize(16).SemiBold();
+                                  x.Item().Text("Test Patient Template Content");
+                                  x.Item().Text($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                              });
+                          
+                          page.Footer()
+                              .AlignCenter()
+                              .Text(x =>
+                              {
+                                  x.Span("Page ");
+                                  x.CurrentPageNumber();
+                              });
+                      });
+                  });
+                  
+                  var fileName = $"template-{template.Replace(" ", "-").ToLower()}.pdf";
+                  document.GeneratePdf(fileName);
+                  
+                  if (File.Exists(fileName))
+                  {
+                      Console.WriteLine($"✅ Template '{template}' generated successfully");
+                  }
+                  else
+                  {
+                      Console.WriteLine($"❌ Template '{template}' generation failed");
+                  }
+              }
+              catch (Exception ex)
+              {
+                  Console.WriteLine($"❌ Template '{template}' error: {ex.Message}");
+              }
+          }
+          EOF
+          
+          # Compile and run template test
+          cat > TemplateTest.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+              <StartupObject>Program</StartupObject>
+            </PropertyGroup>
+            <ItemGroup>
+              <ProjectReference Include="../src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj" />
+            </ItemGroup>
+          </Project>
+          EOF
+          
+          dotnet run --project TemplateTest.csproj
+          
+      - name: PDF Accessibility Testing
+        if: inputs.test_type == 'accessibility'
+        run: |
+          cd pdf-test-app
+          dotnet restore
+          dotnet run
+          
+          for pdf in *.pdf; do
+            if [ -f "$pdf" ]; then
+              echo "♿ Testing PDF accessibility: $pdf"
+              
+              # Check for text content (screen reader compatibility)
+              if pdftotext "$pdf" - | wc -w | awk '{if($1>0) print "✅ PDF contains readable text content"; else print "❌ PDF lacks readable text content"}'; then
+                echo "📝 Text extraction successful"
+              fi
+              
+              # Check PDF structure
+              if qpdf --show-all-data "$pdf" > pdf_structure.txt 2>&1; then
+                if grep -q "/Lang" pdf_structure.txt; then
+                  echo "✅ PDF language specified"
+                else
+                  echo "⚠️ PDF language not specified"
+                fi
+                
+                if grep -q "/Title" pdf_structure.txt; then
+                  echo "✅ PDF title specified"
+                else
+                  echo "⚠️ PDF title not specified"
+                fi
+              fi
+              
+              # Basic accessibility recommendations
+              echo "📋 Accessibility recommendations:"
+              echo "  - Ensure proper heading structure"
+              echo "  - Include alt text for images"
+              echo "  - Use sufficient color contrast"
+              echo "  - Provide document title and language"
+              echo "  - Test with screen readers"
+            fi
+          done
+          
+      - name: Generate Sample PDFs
+        if: inputs.test_type == 'samples'
+        run: |
+          cd pdf-test-app
+          
+          # Generate various sample scenarios
+          echo "📋 Generating sample PDFs for different scenarios..."
+          
+          scenarios=(
+            "new-patient-intake"
+            "follow-up-assessment"
+            "discharge-summary"
+            "progress-report"
+            "treatment-plan"
+          )
+          
+          for scenario in "${scenarios[@]}"; do
+            echo "🔄 Generating sample: $scenario"
+            dotnet run > "$scenario.log" 2>&1
+            
+            if [ $? -eq 0 ]; then
+              # Rename the generated PDF
+              latest_pdf=$(ls -t *.pdf | head -1)
+              if [ -f "$latest_pdf" ]; then
+                mv "$latest_pdf" "sample-$scenario.pdf"
+                echo "✅ Generated: sample-$scenario.pdf"
+              fi
+            else
+              echo "❌ Failed to generate: $scenario"
+              cat "$scenario.log"
+            fi
+          done
+          
+      - name: Generate Diagnostic Report
+        if: always()
+        run: |
+          cd pdf-test-app
+          
+          echo "📋 Generating PDF diagnostic report..."
+          
+          cat > pdf_diagnostic_report.md <<EOF
+          # PDF Export Diagnostic Report
+          
+          **Test Type:** ${{ inputs.test_type }}
+          **Output Format:** ${{ inputs.output_format }}
+          **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Generated PDFs
+          EOF
+          
+          # List all generated PDFs with details
+          for pdf in *.pdf; do
+            if [ -f "$pdf" ]; then
+              size=$(du -h "$pdf" | cut -f1)
+              pages=$(pdfinfo "$pdf" 2>/dev/null | grep "Pages:" | awk '{print $2}' || echo "Unknown")
+              echo "- **$pdf**: $size, $pages pages" >> pdf_diagnostic_report.md
+            fi
+          done
+          
+          cat >> pdf_diagnostic_report.md <<EOF
+          
+          ## Quality Checks
+          - PDF integrity validation
+          - Text extraction testing  
+          - Accessibility compliance review
+          - Performance benchmarking
+          
+          ## Recommendations
+          - Validate all templates render correctly
+          - Test with various data scenarios
+          - Ensure accessibility compliance
+          - Monitor PDF generation performance
+          - Test cross-platform compatibility
+          EOF
+          
+          echo "✅ Diagnostic report generated"
+          
+      - name: Upload PDF Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-diagnostics-${{ inputs.test_type }}-${{ github.run_number }}
+          path: |
+            pdf-test-app/*.pdf
+            pdf-test-app/*.md
+            pdf-test-app/*.txt
+            pdf-test-app/*.log
+          retention-days: 7
+          
+      - name: Post Results Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const testType = '${{ inputs.test_type }}';
+            const success = '${{ job.status }}' === 'success';
+            const emoji = success ? '✅' : '❌';
+            
+            const summary = [
+              `${emoji} **PDF Export Diagnostics Complete**`,
+              '',
+              `**Test Type:** ${testType}`,
+              `**Output Format:** ${{ inputs.output_format }}`,
+              `**Status:** ${{ job.status }}`,
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Generated Artifacts:**',
+              '- PDF samples and test reports',
+              '- Quality validation results',
+              '- Performance metrics',
+              '- Accessibility analysis',
+              '',
+              `**Download:** [View workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('Results summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }

@@ -36,7 +36,7 @@ public class Program
 
       // Get services
       var serviceProvider = host.Services;
-      
+
       // Ensure database is ready
       var seederOptions = serviceProvider.GetRequiredService<IOptions<SeederOptions>>().Value;
       await SeederHost.EnsureDatabaseReadyAsync(serviceProvider, seederOptions.UseMigrations);

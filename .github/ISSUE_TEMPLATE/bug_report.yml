@@ -1,0 +1,181 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve PFPT
+title: '[BUG] '
+labels: ['bug']
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! Please fill out the information below to help us diagnose and fix the issue.
+
+  - type: input
+    id: summary
+    attributes:
+      label: 🐛 Bug Summary
+      description: A clear and concise description of the bug
+      placeholder: "Example: Patient data not saving when clicking save button"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 📝 Steps to Reproduce
+      description: Clear steps to reproduce the behavior
+      placeholder: |
+        1. Open PFPT application
+        2. Navigate to patient management
+        3. Click on 'Add New Patient'
+        4. Fill in required fields
+        5. Click 'Save'
+        6. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: ✅ Expected Behavior
+      description: A clear description of what you expected to happen
+      placeholder: "Patient data should be saved successfully and confirmation message displayed"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: ❌ Actual Behavior
+      description: A clear description of what actually happened
+      placeholder: "Error message appears and patient data is lost"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 🖥️ Platform
+      description: Which platform(s) are you using?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web (Blazor WebAssembly)
+        - Windows (Desktop)
+        - macOS (Desktop)
+        - All platforms
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pfpt-version
+    attributes:
+      label: 📱 PFPT Version
+      description: Which version of PFPT are you using?
+      options:
+        - Latest (main branch)
+        - v1.0.0
+        - v0.9.0
+        - v0.8.0
+        - Development build
+        - Unknown
+    validations:
+      required: true
+
+  - type: input
+    id: device-info
+    attributes:
+      label: 📱 Device Information
+      description: Device model and specifications
+      placeholder: "Example: iPhone 14 Pro, Samsung Galaxy S23, Desktop PC"
+
+  - type: input
+    id: os-version
+    attributes:
+      label: 🖥️ OS Version
+      description: Operating system version
+      placeholder: "Example: iOS 17.1, Android 14, Windows 11, macOS Sonoma"
+
+  - type: input
+    id: dotnet-version
+    attributes:
+      label: ⚙️ .NET Version
+      description: .NET runtime version (if known)
+      placeholder: "Example: .NET 8.0"
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: 🚨 Error Messages
+      description: Include any error messages or stack traces
+      placeholder: "Paste any error messages, exception details, or stack traces here"
+      render: text
+
+  - type: dropdown
+    id: clinical-impact
+    attributes:
+      label: 🏥 Clinical Impact
+      description: How does this bug affect clinical workflows?
+      options:
+        - No clinical impact
+        - Minor workflow disruption
+        - Moderate workflow disruption
+        - Major workflow disruption
+        - Critical - blocks patient care
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: data-safety
+    attributes:
+      label: 🔒 Data Safety & Privacy
+      description: Patient data and privacy considerations
+      options:
+        - label: No patient data was lost or compromised
+        - label: Patient data might be affected
+        - label: HIPAA compliance concerns
+        - label: Data privacy issue
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: 🔄 Frequency
+      description: How often does this bug occur?
+      options:
+        - Always (100%)
+        - Usually (75-99%)
+        - Sometimes (25-74%)
+        - Rarely (1-24%)
+        - Once
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: 🔧 Workaround
+      description: Is there a temporary workaround for this issue?
+      placeholder: "Describe any workaround you've found, or write 'None known'"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📋 Additional Context
+      description: Add any other context about the problem
+      placeholder: "Any additional information that might help us understand the issue"
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: ✅ Verification
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have included all relevant environment information
+          required: true
+        - label: I have provided clear steps to reproduce the issue
+          required: true
+        - label: I understand this is healthcare software and patient data privacy is important
+          required: true
