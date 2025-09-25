@@ -286,6 +286,6 @@ public class SeedRunIntegrationTests : IDisposable
   public void Dispose()
   {
     this.dbContext?.Dispose();
-    this.serviceProvider?.GetService<IDisposable>()?.Dispose();
+    if (this.serviceProvider is IDisposable disposable) disposable.Dispose();
   }
 }
