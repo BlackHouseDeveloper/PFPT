@@ -305,7 +305,7 @@ jobs:
     name: Build & Guardrails (${{ matrix.tfm }})
     needs: analyze
     runs-on: ${{ matrix.tfm == 'net8.0' && 'ubuntu-latest' || 'macos-latest' }}
-    timeout-minutes: 30
+    timeout-minutes: ${{ matrix.tfm == 'net8.0-ios' && 60 || 30 }}
     strategy:
       matrix:
         tfm: [net8.0, net8.0-android, net8.0-ios, net8.0-maccatalyst]
