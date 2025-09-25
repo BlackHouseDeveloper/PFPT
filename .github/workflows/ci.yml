@@ -408,7 +408,7 @@ jobs:
             echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
           else
             echo "Restoring full solution for MAUI builds..."
-            dotnet restore ./PFPT.sln --locked-mode
+            dotnet restore ./PFPT.sln --use-lock-file
           fi
 
       - name: Build net8.0 projects (Ubuntu-compatible only)
