@@ -25,7 +25,7 @@ RUN dotnet publish "src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" \
     --no-restore
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS runtime
 WORKDIR /app
 
 # Install dotnet-ef tool for migrations
