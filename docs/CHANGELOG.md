@@ -2,57 +2,57 @@
 
 _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. ✅ indicates success._
 ## CI Outcome Summary
-- Success: 10
-- Failed/Cancelled/Timed out: 28
-- Other/No runs: 18
+- Success: 5
+- Failed/Cancelled/Timed out: 0
+- Other/No runs: 56
 
 
-- 2025-09-06 `9c85b1f` (misc) — scaffolded with errors — CI: failure — jobs: build_test:failure
-- 2025-09-06 `032825d` (misc) — ✅ **Initial plan** — CI: success — jobs: copilot:success
+- 2025-09-06 `9c85b1f` (misc) — scaffolded with errors — CI: no runs
+- 2025-09-06 `032825d` (misc) — Initial plan — CI: no runs
 - 2025-09-06 `a30f93d` (misc) — Update target frameworks from .NET 9.0 to 8.0 for compatibility — CI: no runs
 - 2025-09-06 `d8ba2e6` (misc) — Add comprehensive runtime error analysis and demonstration tests — CI: no runs
 - 2025-09-06 `2ef0ccf` (misc) — Implement comprehensive runtime error fixes and validation — CI: no runs
-- 2025-09-06 `e1a5085` (misc) — Comprehensive Runtime Error Analysis and Fixes for PFPT Application — CI: failure — jobs: build_test:failure
-- 2025-09-06 `e6a374b` (misc) — Merge pull request #1 from BlackHouseDeveloper/copilot/fix-96b9349a-d60f-4341-82dd-cda8e930052b — CI: failure — jobs: build_test:failure
+- 2025-09-06 `e1a5085` (misc) — Comprehensive Runtime Error Analysis and Fixes for PFPT Application — CI: no runs
+- 2025-09-06 `e6a374b` (misc) — Merge pull request #1 from BlackHouseDeveloper/copilot/fix-96b9349a-d60f-4341-82dd-cda8e930052b — CI: no runs
 - 2025-09-07 `32ef0c3` (chore) — chore(gitignore): add MAUI Android/iOS/MacCatalyst and signing exclusions — CI: no runs
-- 2025-09-07 `f3e32c0` (chore) — chore: Android runs on emulator; dashboard shell present — CI: failure — jobs: build_test:failure
-- 2025-09-08 `3d8f054` (fix) — Fix: iOS 18 white screen by updating WebView.Maui to 8.0.80 — CI: failure — jobs: build_test:failure
-- 2025-09-08 `c2d314c` (misc) — ✅ **Initial plan** — CI: success — jobs: copilot:success
+- 2025-09-07 `f3e32c0` (chore) — chore: Android runs on emulator; dashboard shell present — CI: no runs
+- 2025-09-08 `3d8f054` (fix) — Fix: iOS 18 white screen by updating WebView.Maui to 8.0.80 — CI: no runs
+- 2025-09-08 `c2d314c` (misc) — Initial plan — CI: no runs
 - 2025-09-08 `8ce9b1b` (misc) — Initial analysis and plan for adding Blazor WebAssembly support — CI: no runs
 - 2025-09-08 `ffe2aa7` (misc) — Create Blazor WebAssembly project with shared services and components — CI: no runs
-- 2025-09-08 `d012ce9` (misc) — Complete Blazor WebAssembly implementation with working services and demo pages — CI: failure — jobs: build_test:failure
-- 2025-09-08 `8926123` (misc) — Merge pull request #2 from BlackHouseDeveloper/copilot/add-blazor-web-support-physicallyfitpt — CI: failure — jobs: build_test:failure
-- 2025-09-09 `1b092f1` (misc) — Add initial README.md for PFPT documentation — CI: failure — jobs: build_test:failure
-- 2025-09-09 `f5a6bf7` (misc) — Revise PDF export details and branding status — CI: failure — jobs: build_test:failure
+- 2025-09-08 `d012ce9` (misc) — Complete Blazor WebAssembly implementation with working services and demo pages — CI: no runs
+- 2025-09-08 `8926123` (misc) — Merge pull request #2 from BlackHouseDeveloper/copilot/add-blazor-web-support-physicallyfitpt — CI: no runs
+- 2025-09-09 `1b092f1` (misc) — Add initial README.md for PFPT documentation — CI: no runs
+- 2025-09-09 `f5a6bf7` (misc) — Revise PDF export details and branding status — CI: no runs
 - 2025-09-10 `f3426b7` (misc) — Refactor code structure for improved readability and maintainability — CI: no runs
-- 2025-09-10 `a068d13` (misc) — Add goal and patient domain models with status enumeration; refactor services and interfaces — CI: failure — jobs: build_test:failure
-- 2025-09-10 `a7e2a84` (misc) — Remove project.lock.json from .gitignore — CI: failure — jobs: build_test:failure
-- 2025-09-10 `a25d658` (misc) — Implement code changes to enhance functionality and improve performance — CI: failure — jobs: build_test:failure
-- 2025-09-10 `ebb2625` (misc) — Refactor NuGet package restoration to handle multiple projects individually — CI: failure — jobs: build_test:failure
-- 2025-09-10 `a577422` (misc) — Refactor NuGet package restoration steps for individual project handling — CI: failure — jobs: build_test:failure
-- 2025-09-10 `e7849d6` (misc) — Update build workflow to streamline NuGet package restoration process — CI: failure — jobs: build_test:failure
-- 2025-09-10 `0ca103d` (misc) — Fix cache dependency path for NuGet package restoration in build workflow — CI: failure — jobs: build_test:failure
-- 2025-09-10 `3e212d2` (misc) — Add Dotnet Workload Restore step to build workflow — CI: failure — jobs: build_test:failure
-- 2025-09-10 `002fbc6` (misc) — Add XML documentation comments to constructors across multiple services and classes — CI: failure — jobs: build_test:failure
-- 2025-09-10 `a474280` (misc) — Update build workflow to improve NuGet package restoration process — CI: failure — jobs: build_test:failure
-- 2025-09-10 `fe7e1fa` (misc) — Document repository architecture and enhance PFPT-Foundry.sh script with safety checks and .NET 8 support (#4) — CI: failure — jobs: build_test:failure
-- 2025-09-10 `1d17c0c` (misc) — Fix StyleCop compliance: Document public types, resolve file structure and formatting issues (#6) — CI: failure — jobs: build_test:failure
-- 2025-09-10 `8421f76` (misc) — Fix XML documentation warnings and code quality issues across PFPT application (#7) — CI: failure — jobs: build_test:failure
-- 2025-09-10 `a353989` (misc) — ✅ **Fix StyleCop and Roslyn analyzer warnings - achieve zero warnings in all non-MAUI projects (#8)** — CI: success — jobs: copilot:success
-- 2025-09-11 `272e30a` (misc) — Fix StyleCop violations and add comprehensive XML documentation with architectural refactoring (#9) — CI: failure — jobs: build_test:failure
-- 2025-09-11 `9a8faec` (misc) — ✅ **Fix file encoding errors, global using directive placement, CI test runner, and database service exception handling to resolve CI failures (#10)** — CI: success — jobs: build_test:success
-- 2025-09-11 `32f344c` (misc) — Add iOS build step to CI workflow for release configuration — CI: failure — jobs: build_test:failure
-- 2025-09-12 `e8e08c4` (misc) — Enhance iOS/MacCatalyst project configuration and add SQLite support — CI: failure — jobs: build_test:failure
-- 2025-09-12 `f52d704` (misc) — Update .editorconfig to adjust StyleCop severity — CI: failure — jobs: build_test:failure
-- 2025-09-12 `a950103` (misc) — ✅ **Update PhysicallyFitPT.csproj** — CI: success — jobs: build_test:success
-- 2025-09-12 `4cc1629` (misc) — ✅ **Update .editorconfig to ignore generated code** — CI: success — jobs: build_test:success
-- 2025-09-12 `4b8c2d4` (misc) — Configure Java 17 setup in build workflow — CI: failure — jobs: build_test:failure
-- 2025-09-12 `e671ea7` (misc) — ✅ **Fix build.yml by removing duplicate checkout and updating Java (#12)** — CI: success — jobs: build_test:success
-- 2025-09-13 `80af036` (misc) — ✅ **Update pfpt-cleanbuild.sh for improved logging and cleanup steps** — CI: success — jobs: build_test:success
+- 2025-09-10 `a068d13` (misc) — Add goal and patient domain models with status enumeration; refactor services and interfaces — CI: no runs
+- 2025-09-10 `a7e2a84` (misc) — Remove project.lock.json from .gitignore — CI: no runs
+- 2025-09-10 `a25d658` (misc) — Implement code changes to enhance functionality and improve performance — CI: no runs
+- 2025-09-10 `ebb2625` (misc) — Refactor NuGet package restoration to handle multiple projects individually — CI: no runs
+- 2025-09-10 `a577422` (misc) — Refactor NuGet package restoration steps for individual project handling — CI: no runs
+- 2025-09-10 `e7849d6` (misc) — Update build workflow to streamline NuGet package restoration process — CI: no runs
+- 2025-09-10 `0ca103d` (misc) — Fix cache dependency path for NuGet package restoration in build workflow — CI: no runs
+- 2025-09-10 `3e212d2` (misc) — Add Dotnet Workload Restore step to build workflow — CI: no runs
+- 2025-09-10 `002fbc6` (misc) — Add XML documentation comments to constructors across multiple services and classes — CI: no runs
+- 2025-09-10 `a474280` (misc) — Update build workflow to improve NuGet package restoration process — CI: no runs
+- 2025-09-10 `fe7e1fa` (misc) — Document repository architecture and enhance PFPT-Foundry.sh script with safety checks and .NET 8 support (#4) — CI: no runs
+- 2025-09-10 `1d17c0c` (misc) — Fix StyleCop compliance: Document public types, resolve file structure and formatting issues (#6) — CI: no runs
+- 2025-09-10 `8421f76` (misc) — Fix XML documentation warnings and code quality issues across PFPT application (#7) — CI: no runs
+- 2025-09-10 `a353989` (misc) — Fix StyleCop and Roslyn analyzer warnings - achieve zero warnings in all non-MAUI projects (#8) — CI: no runs
+- 2025-09-11 `272e30a` (misc) — Fix StyleCop violations and add comprehensive XML documentation with architectural refactoring (#9) — CI: no runs
+- 2025-09-11 `9a8faec` (misc) — Fix file encoding errors, global using directive placement, CI test runner, and database service exception handling to resolve CI failures (#10) — CI: no runs
+- 2025-09-11 `32f344c` (misc) — Add iOS build step to CI workflow for release configuration — CI: no runs
+- 2025-09-12 `e8e08c4` (misc) — Enhance iOS/MacCatalyst project configuration and add SQLite support — CI: no runs
+- 2025-09-12 `f52d704` (misc) — Update .editorconfig to adjust StyleCop severity — CI: no runs
+- 2025-09-12 `a950103` (misc) — Update PhysicallyFitPT.csproj — CI: no runs
+- 2025-09-12 `4cc1629` (misc) — Update .editorconfig to ignore generated code — CI: no runs
+- 2025-09-12 `4b8c2d4` (misc) — Configure Java 17 setup in build workflow — CI: no runs
+- 2025-09-12 `e671ea7` (misc) — Fix build.yml by removing duplicate checkout and updating Java (#12) — CI: no runs
+- 2025-09-13 `80af036` (misc) — Update pfpt-cleanbuild.sh for improved logging and cleanup steps — CI: no runs
 - 2025-09-14 `c2a8f0f` (feat) — feat(web,ci,docs): DB-stateless Web, CI guardrails, and CI-aware CHANGELOG with target framework build fixes (#14) — CI: no runs
 - 2025-09-14 `6d97510` (docs) — docs: add PFPT Copilot Instructions and implement CI improvements with automatic Copilot triggering (#15) — CI: no runs
-- 2025-09-15 `3e0431f` (misc) — Update .github/workflows/copilot-auto-fix.yml — CI: failure — jobs: Changelog (first, batched, low-API):success, StyleCop Formatting:success, Roslynator Static Analysis:success, Build & Guardrails (net8.0-maccatalyst):success, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-android):success, Build & Guardrails (net8.0-ios):failure, Notify on Failure:success, Auto-Request Review:skipped, Unit Tests:skipped, Diff Summary:skipped
-- 2025-09-15 `620facb` (docs) — ✅ **docs: update CHANGELOG.md [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-15 `3e0431f` (misc) — Update .github/workflows/copilot-auto-fix.yml — CI: no runs
+- 2025-09-15 `620facb` (docs) — docs: update CHANGELOG.md [skip ci] — CI: no runs
 - 2025-09-15 `dc3204c` (misc) — ✅ **Merge development branch into main to synchronize branches (#18)** — CI: success — jobs: Auto-Fix CI Failures:success
 - 2025-09-21 `231d649` (misc) — Enhance MAUI workload installation in CI workflow — CI: action_required
 - 2025-09-21 `28ebbd7` (misc) — Development Shared UI (#71) — CI: action_required
@@ -62,4 +62,9 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-21 `33adab5` (misc) — Complete documentation overhaul with comprehensive build and troubleshooting guides — CI: no runs
 - 2025-09-21 `8ff06d9` (misc) — Update pfpt-cleanbuild.sh — CI: no runs
 - 2025-09-21 `46cb118` (misc) — Update docs/TROUBLESHOOTING.md — CI: no runs
-- 2025-09-21 `78ad157` (misc) — Update docs/BUILD.md — CI: in_progress — jobs: StyleCop Formatting:in_progress, Post-Merge Changelog Generation:in_progress
+- 2025-09-21 `78ad157` (misc) — ✅ **Update docs/BUILD.md** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-21 `e859c16` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-21 `78e8f56` (misc) — ✅ **Enhance CI/CD workflow and unify UI architecture for MAUI and Web (#75)** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-23 `c82b91f` (misc) — ✅ **Functional Development Merger into Main (#89)** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-25 `441712b` (misc) — Fix dotnet-ef tool installation in CI and devcontainer — CI: no runs
+- 2025-09-25 `17fb98b` (misc) — Complete dotnet-ef tool installation fix with comprehensive testing — CI: in_progress — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:in_progress, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Unit Tests (Consolidated with iOS build):skipped, Auto-Request Review:skipped, Notify on Failure:skipped, Diff Summary:skipped
