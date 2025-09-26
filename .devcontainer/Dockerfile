@@ -51,10 +51,6 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 # Install Roslynator CLI globally
 RUN dotnet tool install -g roslynator.dotnet.cli
 
-# Install Entity Framework Core CLI tools globally
-RUN dotnet tool install -g dotnet-ef --version 8.0.8
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
 # Clean up
 RUN apt-get clean
 
