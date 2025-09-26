@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    "net8.0-android34.0": {
+    "net8.0": {
       "Microsoft.AspNetCore.Components.Web": {
         "type": "Direct",
         "requested": "[8.0.20, )",
