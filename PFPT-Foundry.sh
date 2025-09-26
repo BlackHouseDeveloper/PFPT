@@ -352,7 +352,7 @@ dotnet add "$TESTS/$TESTS.csproj" package Microsoft.EntityFrameworkCore.Sqlite
 if [ ! -f .config/dotnet-tools.json ]; then
   dotnet new tool-manifest --force
 fi
-dotnet tool update dotnet-ef || dotnet tool install dotnet-ef
+dotnet tool update dotnet-ef --version 8.0.11 || dotnet tool install dotnet-ef --version 8.0.11
 
 # Add a design-time DbContext factory so `dotnet ef` commands don't require launching the MAUI app
 DTF="$INFRA/Data/DesignTimeDbContextFactory.cs"
@@ -1657,7 +1657,7 @@ EOF
 # 12) (Optional) Create initial migration & update DB
 if $CREATE_MIGRATION; then
   echo "• Ensuring initial EF Core migration is created and applied…"
-  dotnet tool install --global dotnet-ef >/dev/null 2>&1 || true
+  dotnet tool install --global dotnet-ef --version 8.0.11 >/dev/null 2>&1 || true
   if ls "$INFRA"/Data/Migrations/*_Initial*.cs >/dev/null 2>&1; then
     echo "• Initial migration already exists; skipping creation."
   else

@@ -24,12 +24,12 @@ RUN dotnet publish "src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" \
     -o /app/publish \
     --no-restore
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
+# Runtime stage - Use SDK image to support dotnet-ef tool
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS runtime
 WORKDIR /app
 
 # Install dotnet-ef tool for migrations
-RUN dotnet tool install --global dotnet-ef --version 8.0.8
+RUN dotnet tool install --global dotnet-ef --version 8.0.11
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Copy published application

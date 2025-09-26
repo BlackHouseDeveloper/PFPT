@@ -81,7 +81,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Install EF Core tools
-        run: dotnet tool install --global dotnet-ef --version 8.0.8
+        run: dotnet tool install --global dotnet-ef --version 8.0.11
 
       - name: Restore seeder and its dependencies (avoid MAUI projects)
         run: dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
