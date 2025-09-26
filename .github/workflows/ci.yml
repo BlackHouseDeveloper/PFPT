@@ -452,7 +452,10 @@ jobs:
       - name: Verify EF design-time uses Sqlite (run on macOS build only)
         if: matrix.tfm == 'net8.0-ios'
         run: |
-          dotnet tool restore || true
+          if ! dotnet tool restore; then
+            echo "❌ dotnet tool restore failed. Please check your tool manifest and environment."
+            exit 1
+          fi
           dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
 
       - name: Run unit tests (macOS only, since tests require Infrastructure)
