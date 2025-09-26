@@ -2,9 +2,9 @@
 
 _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. ✅ indicates success._
 ## CI Outcome Summary
-- Success: 5
-- Failed/Cancelled/Timed out: 0
-- Other/No runs: 56
+- Success: 6
+- Failed/Cancelled/Timed out: 1
+- Other/No runs: 58
 
 
 - 2025-09-06 `9c85b1f` (misc) — scaffolded with errors — CI: no runs
@@ -67,4 +67,8 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-21 `78e8f56` (misc) — ✅ **Enhance CI/CD workflow and unify UI architecture for MAUI and Web (#75)** — CI: success — jobs: Auto-Fix CI Failures:success
 - 2025-09-23 `c82b91f` (misc) — ✅ **Functional Development Merger into Main (#89)** — CI: success — jobs: Auto-Fix CI Failures:success
 - 2025-09-25 `441712b` (misc) — Fix dotnet-ef tool installation in CI and devcontainer — CI: no runs
-- 2025-09-25 `17fb98b` (misc) — Complete dotnet-ef tool installation fix with comprehensive testing — CI: in_progress — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:in_progress, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Unit Tests (Consolidated with iOS build):skipped, Auto-Request Review:skipped, Notify on Failure:skipped, Diff Summary:skipped
+- 2025-09-25 `17fb98b` (misc) — Complete dotnet-ef tool installation fix with comprehensive testing — CI: failure — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:success, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Unit Tests (Consolidated with iOS build):skipped, Auto-Request Review:skipped, Notify on Failure:skipped, Diff Summary:skipped
+- 2025-09-25 `1a012c0` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-26 `52cc005` (misc) — Revert "Complete dotnet-ef tool installation fix with comprehensive testing" — CI: no runs
+- 2025-09-26 `e5ed14f` (misc) — Revert "Fix dotnet-ef tool installation in CI and devcontainer" — CI: no runs
+- 2025-09-26 `838d83a` (misc) — Update .github/workflows/ci.yml — CI: in_progress — jobs: Post-Merge Changelog Generation:in_progress, StyleCop Formatting:failure, Roslynator Static Analysis:skipped, Unit Tests (Consolidated with iOS build):skipped, Notify on Failure:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Auto-Request Review:skipped, Diff Summary:skipped
