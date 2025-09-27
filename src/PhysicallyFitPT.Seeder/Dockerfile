@@ -8,6 +8,7 @@ WORKDIR /src
 # Copy project files
 COPY ["src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj", "src/PhysicallyFitPT.Core/"]
 COPY ["src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj", "src/PhysicallyFitPT.Infrastructure/"]
+COPY ["src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj", "src/PhysicallyFitPT.Shared/"]
 COPY ["src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj", "src/PhysicallyFitPT.Seeder/"]
 COPY ["Directory.Packages.props", "./"]
 COPY ["Directory.Build.props", "./"]
@@ -24,13 +25,16 @@ RUN dotnet publish "src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" \
     -o /app/publish \
     --no-restore
 
+# Install dotnet-ef tool in build stage so it can be copied later
+RUN dotnet tool install --tool-path /tmp/dotnet-tools dotnet-ef --version 8.0.8
+
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 WORKDIR /app
 
-# Install dotnet-ef tool for migrations
-RUN dotnet tool install --global dotnet-ef --version 8.0.8
-ENV PATH="${PATH}:/root/.dotnet/tools"
+# Bring dotnet-ef tool into runtime image
+COPY --from=build /tmp/dotnet-tools/ /root/.dotnet/tools/
+ENV PATH="/root/.dotnet/tools:${PATH}"
 
 # Copy published application
 COPY --from=build /app/publish .

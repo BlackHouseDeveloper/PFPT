@@ -298,17 +298,26 @@ jobs:
 
       - name: Run Roslynator analysis on Ubuntu-compatible project only
         run: |
+          export PATH="$PATH:${HOME}/.dotnet/tools"
           # Only analyze Domain project on Ubuntu
           roslynator analyze ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --severity-level info
 
   build:
     name: Build & Guardrails (${{ matrix.tfm }})
     needs: analyze
-    runs-on: ${{ matrix.tfm == 'net8.0' && 'ubuntu-latest' || 'macos-latest' }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: ${{ matrix.tfm == 'net8.0-ios' && 60 || 30 }}
     strategy:
       matrix:
-        tfm: [net8.0, net8.0-android, net8.0-ios, net8.0-maccatalyst]
+        include:
+          - tfm: net8.0
+            runner: ubuntu-latest
+          - tfm: net8.0-android
+            runner: macos-latest
+          - tfm: net8.0-ios
+            runner: macos-latest
+          - tfm: net8.0-maccatalyst
+            runner: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -489,8 +498,10 @@ jobs:
         if: matrix.tfm == 'net8.0-ios'
         run: |
           set -e
+          export PATH="$PATH:${HOME}/.dotnet/tools"
           echo "Running Roslynator analysis for projects with mobile dependencies..."
-          roslynator analyze ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info
+          # TODO(pfpt-ci-roslynator-razor): Re-enable Web project once Roslynator CLI
+          # respect Razor source generators (tracked in docs/CI.md).
           roslynator analyze ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --severity-level info
           roslynator analyze ./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
           roslynator analyze ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj --severity-level info
@@ -848,6 +859,7 @@ jobs:
       - name: Generate CI Summary
         uses: actions/github-script@v7
         with:
+          github-token: ${{ github.token || 'noop' }}
           script: |
             const jobs = [
               { name: 'Format Check', result: '${{ needs.format-check.result }}' },

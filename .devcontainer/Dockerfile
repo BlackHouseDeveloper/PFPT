@@ -51,6 +51,12 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 # Install Roslynator CLI globally
 RUN dotnet tool install -g roslynator.dotnet.cli
 
+RUN wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh -O dotnet-install.sh
+RUN bash dotnet-install.sh --version 8.0.8
+ENV PATH="$PATH:/root/.dotnet"
+ENV DOTNET_ROOT="/root/.dotnet"
+RUN dotnet --version # Should output 8.0.8
+
 # Install Entity Framework CLI globally (for migrations)
 RUN dotnet tool install -g dotnet-ef --version 8.0.8
 
