@@ -122,7 +122,7 @@ This starts a local development server. Open the displayed URL (typically `http:
 PFPT follows Clean Architecture principles with clear separation of concerns:
 PhysicallyFitPT – The .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst, etc.). This is the primary app project.
 PhysicallyFitPT.Web – The Blazor WebAssembly app for running PFPT in a web browser.
-PhysicallyFitPT.Domain – The domain entities (business models) with no EF Core or UI dependencies.
+PhysicallyFitPT.Core – The domain entities (business models) with no EF Core or UI dependencies.
 PhysicallyFitPT.Infrastructure – Implements the persistence (EF Core ApplicationDbContext), domain services, and PDF generation. It references the Domain project.
 PhysicallyFitPT.Shared – Shared libraries, such as predefined lists (e.g., goal templates, interventions, outcome measures) that can be used by both the app and other projects.
 PhysicallyFitPT.Tests – XUnit test project containing unit tests (runs on .NET 8.0).

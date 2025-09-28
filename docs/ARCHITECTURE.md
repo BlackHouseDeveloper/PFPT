@@ -9,7 +9,7 @@
 ```
 PFPT/
 ├── PhysicallyFitPT/                    # .NET MAUI Blazor App (Multi-platform)
-├── PhysicallyFitPT.Domain/             # Domain Entities (Clean Architecture Core)
+├── PhysicallyFitPT.Core/             # Domain Entities (Clean Architecture Core)
 ├── PhysicallyFitPT.Infrastructure/     # Data Access, EF Core, Services
 ├── PhysicallyFitPT.Shared/             # Shared DTOs and Clinical Libraries
 ├── PhysicallyFitPT.Tests/              # Unit and Integration Tests (xUnit)
@@ -43,7 +43,7 @@ PFPT/
 - **iOS** - Native iOS application  
 - **macOS (Mac Catalyst)** - Native macOS desktop application
 
-### 2. PhysicallyFitPT.Domain (Domain Layer)
+### 2. PhysicallyFitPT.Core (Domain Layer)
 
 **Target Framework:** `net8.0`
 
