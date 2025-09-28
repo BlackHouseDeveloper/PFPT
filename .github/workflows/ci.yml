@@ -467,10 +467,12 @@ jobs:
 
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
+        env:
+          RUNTIME_IDENTIFIER: ${{ matrix.runtimeIdentifier }}
         run: |
           RID_ARG=""
-          if [ -n "${{ matrix.runtimeIdentifier || '' }}" ]; then
-            RID_ARG="-r ${{ matrix.runtimeIdentifier }}"
+          if [ -n "${RUNTIME_IDENTIFIER}" ] && [ "${RUNTIME_IDENTIFIER}" != "null" ]; then
+            RID_ARG="-r ${RUNTIME_IDENTIFIER}"
           fi
           dotnet build ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
@@ -542,10 +544,12 @@ jobs:
 
       - name: Publish (mobile targets)
         if: matrix.tfm != 'net8.0'
+        env:
+          RUNTIME_IDENTIFIER: ${{ matrix.runtimeIdentifier }}
         run: |
           RID_ARG=""
-          if [ -n "${{ matrix.runtimeIdentifier || '' }}" ]; then
-            RID_ARG="-r ${{ matrix.runtimeIdentifier }}"
+          if [ -n "${RUNTIME_IDENTIFIER}" ] && [ "${RUNTIME_IDENTIFIER}" != "null" ]; then
+            RID_ARG="-r ${RUNTIME_IDENTIFIER}"
           fi
           dotnet publish ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
