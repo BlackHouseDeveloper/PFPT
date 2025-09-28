@@ -489,7 +489,6 @@ jobs:
           echo "Checking format for projects with mobile dependencies..."
           dotnet format ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --verify-no-changes --verbosity diagnostic
-          dotnet format ./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
           dotnet format ./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic

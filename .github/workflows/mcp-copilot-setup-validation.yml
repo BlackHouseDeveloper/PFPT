@@ -37,6 +37,8 @@ jobs:
     name: Copilot Development Environment Validation
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      VALIDATION_SCOPE: ${{ inputs.validation_scope || 'full' }}
     
     steps:
       - name: Checkout code
@@ -107,7 +109,7 @@ jobs:
       
       - name: Validate .NET MAUI Workloads
         id: maui-validation
-        if: inputs.validation_scope == 'full' || inputs.validation_scope == 'maui-only'
+        if: env.VALIDATION_SCOPE == 'full' || env.VALIDATION_SCOPE == 'maui-only'
         run: |
           echo "🔍 Validating .NET MAUI workloads..."
           
@@ -133,7 +135,7 @@ jobs:
       
       - name: Validate PFPT Dependencies
         id: deps-validation
-        if: inputs.validation_scope == 'full' || inputs.validation_scope == 'dependencies-only'
+        if: env.VALIDATION_SCOPE == 'full' || env.VALIDATION_SCOPE == 'dependencies-only'
         run: |
           echo "🔍 Validating PFPT-specific dependencies..."
           
@@ -253,11 +255,85 @@ jobs:
           echo "📊 Generating comprehensive validation report..."
 
           DOTNET_VALID="${{ steps.dotnet-validation.outputs.DOTNET_VALID }}"
+          DOTNET_VERSION="${{ steps.dotnet-validation.outputs.DOTNET_VERSION }}"
           MAUI_AVAILABLE="${{ steps.maui-validation.outputs.MAUI_AVAILABLE }}"
-          VALIDATION_SCOPE="${{ inputs.validation_scope }}"
+          MAUI_OUTCOME="${{ steps.maui-validation.outcome }}"
+          VALIDATION_SCOPE="${{ env.VALIDATION_SCOPE }}"
+          DEPS_OUTCOME="${{ steps.deps-validation.outcome }}"
+          CORE_RESTORE="${{ steps.deps-validation.outputs.CORE_RESTORE }}"
           CORE_BUILD="${{ steps.deps-validation.outputs.CORE_BUILD }}"
+          EF_TOOLS="${{ steps.deps-validation.outputs.EF_TOOLS }}"
           TOOLS_VALID="${{ steps.tools-validation.outputs.TOOLS_VALID }}"
           MISSING_TOOLS="${{ steps.tools-validation.outputs.MISSING_TOOLS }}"
+          STRUCTURE_VALID="${{ steps.structure-validation.outputs.STRUCTURE_VALID }}"
+
+          if [ "$DOTNET_VALID" = "true" ]; then
+            DOTNET_STATUS="✅ Valid"
+          else
+            DOTNET_STATUS="❌ Invalid"
+          fi
+
+          if [ "$MAUI_OUTCOME" = "success" ]; then
+            if [ "$MAUI_AVAILABLE" = "true" ]; then
+              MAUI_STATUS="✅ Available"
+              MAUI_DETAIL="Validated"
+            else
+              MAUI_STATUS="❌ Issues"
+              MAUI_DETAIL="Validation failed"
+            fi
+          else
+            MAUI_STATUS="⚪ Not run"
+            MAUI_DETAIL="Not tested in this scope"
+          fi
+
+          if [ "$DEPS_OUTCOME" = "success" ]; then
+            if [ "$CORE_RESTORE" = "true" ]; then
+              CORE_RESTORE_STATUS="✅"
+              CORE_RESTORE_DETAIL="Successful"
+            else
+              CORE_RESTORE_STATUS="❌"
+              CORE_RESTORE_DETAIL="Failed"
+            fi
+
+            if [ "$CORE_BUILD" = "true" ]; then
+              CORE_BUILD_STATUS="✅ Builds"
+              CORE_BUILD_DETAIL="Successful"
+            else
+              CORE_BUILD_STATUS="❌ Failed"
+              CORE_BUILD_DETAIL="Failed"
+            fi
+
+            if [ "$EF_TOOLS" = "true" ]; then
+              EF_TOOLS_STATUS="✅ Available"
+              EF_TOOLS_DETAIL="Available"
+            else
+              EF_TOOLS_STATUS="❌ Missing"
+              EF_TOOLS_DETAIL="Missing"
+            fi
+          else
+            CORE_RESTORE_STATUS="⚪"
+            CORE_RESTORE_DETAIL="Not run"
+            CORE_BUILD_STATUS="⚪ Not run"
+            CORE_BUILD_DETAIL="Not run"
+            EF_TOOLS_STATUS="⚪ Not run"
+            EF_TOOLS_DETAIL="Not run"
+          fi
+
+          if [ "$TOOLS_VALID" = "true" ]; then
+            TOOLS_STATUS="✅ Complete"
+            ESSENTIAL_TOOLS_DETAIL="All present"
+          else
+            TOOLS_STATUS="❌ Missing"
+            ESSENTIAL_TOOLS_DETAIL="Missing: $MISSING_TOOLS"
+          fi
+
+          if [ "$STRUCTURE_VALID" = "true" ]; then
+            STRUCTURE_STATUS="✅ Valid"
+            STRUCTURE_DETAIL="Valid PFPT structure"
+          else
+            STRUCTURE_STATUS="❌ Issues"
+            STRUCTURE_DETAIL="Structure issues detected"
+          fi
 
           DOTNET_SECTION=""
           if [ "$DOTNET_VALID" != "true" ]; then
@@ -267,14 +343,14 @@ jobs:
           fi
 
           MAUI_SECTION=""
-          if [ "$MAUI_AVAILABLE" != "true" ] && [ "$VALIDATION_SCOPE" = "full" ]; then
+          if [ "$MAUI_OUTCOME" = "success" ] && [ "$MAUI_AVAILABLE" != "true" ] && [ "$VALIDATION_SCOPE" = "full" ]; then
             MAUI_SECTION+=$'### .NET MAUI Workloads\n'
             MAUI_SECTION+=$'- Install MAUI workloads: `dotnet workload install maui`\n'
             MAUI_SECTION+=$'- Verify workload installation: `dotnet workload list`\n\n'
           fi
 
           DEPENDENCIES_SECTION=""
-          if [ "$CORE_BUILD" != "true" ]; then
+          if [ "$DEPS_OUTCOME" = "success" ] && [ "$CORE_BUILD" != "true" ]; then
             DEPENDENCIES_SECTION+=$'### PFPT Dependencies\n'
             DEPENDENCIES_SECTION+=$'- Check project dependencies in .csproj files\n'
             DEPENDENCIES_SECTION+=$'- Verify package compatibility with .NET 8.0\n'
@@ -300,12 +376,12 @@ jobs:
           
           | Component | Status | Details |
           |-----------|--------|---------|
-          | .NET SDK | ${{ steps.dotnet-validation.outputs.DOTNET_VALID == 'true' && '✅ Valid' || '❌ Invalid' }} | Version: ${{ steps.dotnet-validation.outputs.DOTNET_VERSION }} |
-          | MAUI Workloads | ${{ steps.maui-validation.outputs.MAUI_AVAILABLE == 'true' && '✅ Available' || '⚪ Skipped/Unavailable' }} | ${{ inputs.validation_scope == 'full' || inputs.validation_scope == 'maui-only' && 'Validated' || 'Not tested in this scope' }} |
-          | Core Project | ${{ steps.deps-validation.outputs.CORE_BUILD == 'true' && '✅ Builds' || '❌ Failed' }} | Restore: ${{ steps.deps-validation.outputs.CORE_RESTORE == 'true' && '✅' || '❌' }} |
-          | EF Tools | ${{ steps.deps-validation.outputs.EF_TOOLS == 'true' && '✅ Available' || '❌ Missing' }} | dotnet-ef global tool |
-          | Dev Tools | ${{ steps.tools-validation.outputs.TOOLS_VALID == 'true' && '✅ Complete' || '❌ Missing' }} | Essential development tools |
-          | Project Structure | ${{ steps.structure-validation.outputs.STRUCTURE_VALID == 'true' && '✅ Valid' || '❌ Issues' }} | PFPT directory and file structure |
+          | .NET SDK | $DOTNET_STATUS | Version: $DOTNET_VERSION |
+          | MAUI Workloads | $MAUI_STATUS | $MAUI_DETAIL |
+          | Core Project | $CORE_BUILD_STATUS | Restore: $CORE_RESTORE_STATUS |
+          | EF Tools | $EF_TOOLS_STATUS | dotnet-ef global tool |
+          | Dev Tools | $TOOLS_STATUS | Essential development tools |
+          | Project Structure | $STRUCTURE_STATUS | $STRUCTURE_DETAIL |
           
           ## Detailed Findings
           
@@ -314,13 +390,13 @@ jobs:
           - **Status**: ${{ steps.dotnet-validation.outputs.DOTNET_VALID == 'true' && 'Compatible with PFPT requirements' || 'Version compatibility issues detected' }}
           
           ### PFPT Dependencies
-          - **Core Project Restore**: ${{ steps.deps-validation.outputs.CORE_RESTORE == 'true' && 'Successful' || 'Failed' }}
-          - **Core Project Build**: ${{ steps.deps-validation.outputs.CORE_BUILD == 'true' && 'Successful' || 'Failed' }}
-          - **EF Core Tools**: ${{ steps.deps-validation.outputs.EF_TOOLS == 'true' && 'Available' || 'Missing' }}
-          
+          - **Core Project Restore**: $CORE_RESTORE_DETAIL
+          - **Core Project Build**: $CORE_BUILD_DETAIL
+          - **EF Core Tools**: $EF_TOOLS_DETAIL
+
           ### Development Environment
-          - **Essential Tools**: ${{ steps.tools-validation.outputs.TOOLS_VALID == 'true' && 'All present' || 'Missing: ${{ steps.tools-validation.outputs.MISSING_TOOLS }}' }}
-          - **Project Structure**: ${{ steps.structure-validation.outputs.STRUCTURE_VALID == 'true' && 'Valid PFPT structure' || 'Structure issues detected' }}
+          - **Essential Tools**: $ESSENTIAL_TOOLS_DETAIL
+          - **Project Structure**: $STRUCTURE_DETAIL
           
           ## Recommendations
           
@@ -363,12 +439,16 @@ jobs:
           script: |
             const scope = '${{ inputs.validation_scope || 'auto-triggered' }}';
             const dotnetValid = '${{ steps.dotnet-validation.outputs.DOTNET_VALID }}' === 'true';
-            const coreBuilds = '${{ steps.deps-validation.outputs.CORE_BUILD }}' === 'true';
+            const depsOutcome = '${{ steps.deps-validation.outcome }}';
+            const coreBuildOutput = '${{ steps.deps-validation.outputs.CORE_BUILD }}';
+            const coreBuilds = depsOutcome === 'success' ? coreBuildOutput === 'true' : null;
             const toolsValid = '${{ steps.tools-validation.outputs.TOOLS_VALID }}' === 'true';
             const structureValid = '${{ steps.structure-validation.outputs.STRUCTURE_VALID }}' === 'true';
             
-            const overallValid = dotnetValid && coreBuilds && toolsValid && structureValid;
+            const overallValid = dotnetValid && (coreBuilds !== false) && toolsValid && structureValid;
             const emoji = overallValid ? '✅' : '❌';
+
+            const coreBuildStatus = coreBuilds === true ? '✅' : coreBuilds === false ? '❌' : '⚪ Not run';
             
             const summary = [
               `${emoji} **Copilot Development Environment Validation Complete**`,
@@ -379,7 +459,7 @@ jobs:
               '',
               '**Component Status:**',
               `- .NET SDK 8.0: ${dotnetValid ? '✅' : '❌'} (${{ steps.dotnet-validation.outputs.DOTNET_VERSION }})`,
-              `- Core Project Build: ${coreBuilds ? '✅' : '❌'}`,
+              `- Core Project Build: ${coreBuildStatus}`,
               `- Development Tools: ${toolsValid ? '✅' : '❌'}`,
               `- Project Structure: ${structureValid ? '✅' : '❌'}`,
               '',
