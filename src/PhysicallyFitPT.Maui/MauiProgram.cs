@@ -4,7 +4,6 @@
 
 namespace PhysicallyFitPT
 {
-
   using System;
   using System.IO;
   using Microsoft.AspNetCore.Components.WebView.Maui;
