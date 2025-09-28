@@ -1459,7 +1459,122 @@
         }
       }
     },
-    "net8.0-android34.0/ios-arm64": {
+    "net8.0-android34.0/android-arm": {
+      "SkiaSharp.NativeAssets.Android": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-android34.0/android-arm64": {
+      "SkiaSharp.NativeAssets.Android": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-android34.0/android-x64": {
+      "SkiaSharp.NativeAssets.Android": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-android34.0/android-x86": {
+      "SkiaSharp.NativeAssets.Android": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-android34.0/iossimulator-arm64": {
+      "SkiaSharp.NativeAssets.Android": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-android34.0/maccatalyst-arm64": {
       "SkiaSharp.NativeAssets.Android": {
         "type": "Transitive",
         "resolved": "3.119.1",
@@ -2066,7 +2181,122 @@
         }
       }
     },
-    "net8.0-ios18.0/ios-arm64": {
+    "net8.0-ios18.0/android-arm": {
+      "SkiaSharp.NativeAssets.iOS": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-ios18.0/android-arm64": {
+      "SkiaSharp.NativeAssets.iOS": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-ios18.0/android-x64": {
+      "SkiaSharp.NativeAssets.iOS": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-ios18.0/android-x86": {
+      "SkiaSharp.NativeAssets.iOS": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-ios18.0/iossimulator-arm64": {
+      "SkiaSharp.NativeAssets.iOS": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-ios18.0/maccatalyst-arm64": {
       "SkiaSharp.NativeAssets.iOS": {
         "type": "Transitive",
         "resolved": "3.119.1",
@@ -2673,7 +2903,122 @@
         }
       }
     },
-    "net8.0-maccatalyst18.0/ios-arm64": {
+    "net8.0-maccatalyst18.0/android-arm": {
+      "SkiaSharp.NativeAssets.MacCatalyst": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-maccatalyst18.0/android-arm64": {
+      "SkiaSharp.NativeAssets.MacCatalyst": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-maccatalyst18.0/android-x64": {
+      "SkiaSharp.NativeAssets.MacCatalyst": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-maccatalyst18.0/android-x86": {
+      "SkiaSharp.NativeAssets.MacCatalyst": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-maccatalyst18.0/iossimulator-arm64": {
+      "SkiaSharp.NativeAssets.MacCatalyst": {
+        "type": "Transitive",
+        "resolved": "3.119.1",
+        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
+      },
+      "SourceGear.sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "QuestPDF": {
+        "type": "CentralTransitive",
+        "requested": "[2025.7.1, )",
+        "resolved": "2025.7.1",
+        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
+      }
+    },
+    "net8.0-maccatalyst18.0/maccatalyst-arm64": {
       "SkiaSharp.NativeAssets.MacCatalyst": {
         "type": "Transitive",
         "resolved": "3.119.1",

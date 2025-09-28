@@ -26,6 +26,15 @@
     {
         // Since we merged PhysicallyFitPT.UI into PhysicallyFitPT.Shared,
         // we don't need to load additional assemblies
-        return Array.Empty<Assembly>();
+        try
+        {
+            Console.WriteLine("ResolveAdditionalAssemblies: No additional assemblies to load.");
+            return Array.Empty<Assembly>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error resolving additional assemblies: {ex}");
+            return Array.Empty<Assembly>();
+        }
     }
 }

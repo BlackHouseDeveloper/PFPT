@@ -47,7 +47,7 @@ public class PatientSeedTask : BaseSeedTask
   public override string Name => TaskName;
 
   /// <inheritdoc/>
-  public override IReadOnlyList<string> AllowedEnvironments { get; } = new[] { EnvDetector.Environments.Development };
+  public override IReadOnlyList<string> AllowedEnvironments { get; } = [EnvDetector.Environments.Development];
 
   /// <inheritdoc/>
   public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
