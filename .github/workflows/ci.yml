@@ -20,13 +20,18 @@ jobs:
   changelog-post-merge:
     name: Post-Merge Changelog Generation
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    concurrency:
+      group: changelog-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Generate post-merge CHANGELOG with success emphasis
+        id: generate
         uses: actions/github-script@v7
         env:
           MAX_COMMITS: "500"
@@ -154,8 +159,22 @@ jobs:
             lines.splice(3, 0, ...summary);
 
             const content = lines.join("\n") + "\n";
+            core.setOutput('content', Buffer.from(content, 'utf8').toString('base64'));
+            core.setOutput('path', 'docs/CHANGELOG.md');
+            return content;
 
-            const path = "docs/CHANGELOG.md";
+      - name: Update CHANGELOG file
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const path = 'docs/CHANGELOG.md';
+            // Decode the content from base64, then re-encode to base64 to avoid double encoding
+            const rawContent = Buffer.from('${{ steps.generate.outputs.content }}', 'base64').toString('utf-8');
+            const content = Buffer.from(rawContent, 'utf-8').toString('base64');
             
             // Retry logic for file updates with exponential backoff
             let maxRetries = 3;
@@ -177,7 +196,7 @@ jobs:
                 const updateParams = {
                   owner, repo, path,
                   message: "docs: update CHANGELOG.md post-merge [skip ci]",
-                  content: Buffer.from(content, "utf8").toString("base64"),
+                  content: content,
                   branch: 'main'
                 };
                 
@@ -215,6 +234,7 @@ jobs:
   format-check:
     name: StyleCop Formatting
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -224,22 +244,31 @@ jobs:
           dotnet-version: "8.0.x"
           cache: true
           cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore Ubuntu-compatible projects only
         run: |
           # Only Domain project can build on Ubuntu without mobile dependencies
-          dotnet restore ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+          dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder formatted on macOS due to mobile dependencies"
 
       - name: Check code formatting (StyleCop) - Ubuntu-compatible project only
         run: |
           # Only format Domain project on Ubuntu
-          dotnet format ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --verify-no-changes --verbosity diagnostic
 
   analyze:
     name: Roslynator Static Analysis
     needs: format-check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -249,6 +278,14 @@ jobs:
           dotnet-version: "8.0.x"
           cache: true
           cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Install Roslynator
         run: dotnet tool install -g roslynator.dotnet.cli
@@ -256,21 +293,32 @@ jobs:
       - name: Restore Ubuntu-compatible projects only  
         run: |
           # Only Domain project can build on Ubuntu without mobile dependencies
-          dotnet restore ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+          dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder analyzed on macOS due to mobile dependencies"
 
       - name: Run Roslynator analysis on Ubuntu-compatible project only
         run: |
+          export PATH="$PATH:${HOME}/.dotnet/tools"
           # Only analyze Domain project on Ubuntu
-          roslynator analyze ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --severity-level info
+          roslynator analyze ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --severity-level info
 
   build:
     name: Build & Guardrails (${{ matrix.tfm }})
     needs: analyze
-    runs-on: ${{ matrix.tfm == 'net8.0' && 'ubuntu-latest' || 'macos-latest' }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.tfm == 'net8.0-ios' && 60 || 30 }}
     strategy:
       matrix:
-        tfm: [net8.0, net8.0-android, net8.0-ios, net8.0-maccatalyst]
+        include:
+          - tfm: net8.0
+            runner: ubuntu-latest
+          - tfm: net8.0-android
+            runner: macos-latest
+          - tfm: net8.0-ios
+            runner: macos-latest
+            runtimeIdentifier: iossimulator-arm64
+          - tfm: net8.0-maccatalyst
+            runner: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -280,6 +328,23 @@ jobs:
           dotnet-version: "8.0.x"
           cache: true
           cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      
+      - name: Cache MAUI workloads (macOS only)
+        if: runner.os == 'macOS'
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet/toolResolverCache
+          key: ${{ runner.os }}-dotnet-workloads-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-workloads-
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -287,61 +352,109 @@ jobs:
           distribution: microsoft
           java-version: "17"
 
-      - name: Install MAUI workload (only for Android builds)
-        if: matrix.tfm == 'net8.0-android'
+      - name: Install MAUI workload (all mobile builds)
+        if: matrix.tfm != 'net8.0'
         run: |
-          echo "Installing MAUI workloads..."
-          # First, update workload manifests
-          dotnet workload update --skip-sign-check || echo "Workload update failed, continuing..."
-           
-           # Install MAUI workload with multiple fallback strategies
-           if ! dotnet workload install maui --skip-sign-check; then
-             echo "Standard MAUI workload installation failed, trying individual components..."
-             
-             # Try installing individual Android/iOS/macCatalyst workloads
-             dotnet workload install android --skip-sign-check || echo "Android workload failed"
-             dotnet workload install ios --skip-sign-check || echo "iOS workload failed" 
-             dotnet workload install maccatalyst --skip-sign-check || echo "macCatalyst workload failed"
-             
-             # Verify we have at least some workloads installed
-             if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
-               echo "❌ No mobile workloads installed. This may cause build failures."
-               echo "Available workloads:"
-               dotnet workload search
-               exit 1
-             fi
-           fi
-           
-           echo "✅ Successfully installed workloads:"
-           dotnet workload list
+          set -e
+          echo "Installing MAUI workloads for macOS platform..."
+          
+          # Update workload manifests first with retry
+          echo "🔄 Updating workload manifests..."
+          for attempt in {1..3}; do
+            echo "Attempt $attempt: Updating workload manifests..."
+            if dotnet workload update --skip-sign-check; then
+              echo "✅ Workload manifests updated successfully"
+              break
+            else
+              echo "⚠️ Workload manifest update failed on attempt $attempt"
+              if [ $attempt -eq 3 ]; then
+                echo "⚠️ All manifest update attempts failed, continuing with installation..."
+              else
+                sleep 10
+              fi
+            fi
+          done
+          
+          # Install all MAUI workloads since solution contains projects with multiple target frameworks
+          # On macOS, we can install all workloads and then build specific target frameworks
+          echo "📦 Installing MAUI meta-workload (includes android, ios, maccatalyst)..."
+          if dotnet workload install maui --skip-sign-check; then
+            echo "✅ MAUI meta-workload installed successfully"
+            echo "📋 Installed workload:"
+            dotnet workload list
+          else
+            echo "⚠️ MAUI meta-workload failed, installing individual components..."
+            # Install each workload individually with error handling
+            for workload in android ios maccatalyst maui-android maui-ios maui-maccatalyst; do
+              echo "📦 Installing $workload workload..."
+              if dotnet workload install $workload --skip-sign-check; then
+                echo "✅ $workload workload installed"
+              else
+                echo "⚠️ $workload workload installation failed"
+              fi
+            done
+            echo "📋 Final workload list after individual installations:"
+            dotnet workload list
+          fi
            
       - name: Verify MAUI workloads (mobile builds only)
         if: matrix.tfm != 'net8.0'
         run: |
-          echo "Verifying MAUI workloads are available..."
-          if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst|maui)"; then
-            echo "❌ No MAUI workloads found. Install failed in previous job."
-            echo "Available workloads:"
-            dotnet workload search
-            exit 1
-          else
-            echo "✅ MAUI workloads verified:"
+          echo "Verifying MAUI workloads are available for target: ${{ matrix.tfm }}..."
+          
+          # Check if MAUI meta-workload is installed (this includes all platform-specific workloads)
+          if dotnet workload list | grep -q "maui"; then
+            echo "✅ MAUI meta-workload found - includes all platform support"
+            echo "✅ MAUI workloads verified for ${{ matrix.tfm }}:"
             dotnet workload list
+            exit 0
           fi
-      - name: Restore .NET workloads (mobile builds only)
-        if: matrix.tfm != 'net8.0'
-        run: dotnet workload restore
+          
+          # Fallback: Check if individual platform workloads are installed
+          echo "MAUI meta-workload not found, checking individual platform workloads..."
+          if ! dotnet workload list | grep -q -E "(android|ios|maccatalyst)"; then
+            echo "❌ No MAUI workloads found. This should not happen on macOS."
+            echo "Available workloads:"
+            dotnet workload search maui || true
+            exit 1
+          fi
+          
+          # Verify specific workload for target framework (fallback verification)
+          case "${{ matrix.tfm }}" in
+            "net8.0-android")
+              if ! dotnet workload list | grep -q -E "(android|maui-android)"; then
+                echo "❌ Android workloads not found for net8.0-android build"
+                exit 1
+              fi
+              ;;
+            "net8.0-ios")
+              if ! dotnet workload list | grep -q -E "(ios|maui-ios)"; then
+                echo "❌ iOS workloads not found for net8.0-ios build"
+                exit 1
+              fi
+              ;;
+            "net8.0-maccatalyst")
+              if ! dotnet workload list | grep -q -E "(maccatalyst|maui-maccatalyst)"; then
+                echo "❌ macCatalyst workloads not found for net8.0-maccatalyst build"
+                exit 1
+              fi
+              ;;
+          esac
+          
+          echo "✅ MAUI workloads verified for ${{ matrix.tfm }}:"
+          dotnet workload list
          
       - name: Restore projects (strategy based on matrix.tfm)
         run: |
           if [ "${{ matrix.tfm }}" == "net8.0" ]; then
             echo "Restoring Ubuntu-compatible project (Domain only)..."
             # Only Domain project can build on Ubuntu without mobile dependencies
-            dotnet restore ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+            dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
             echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
           else
             echo "Restoring full solution for MAUI builds..."
-            dotnet restore ./PhysicallyFitPT.sln --use-lock-file
+            # Now that all workloads are installed, we can restore the full solution
+            dotnet restore ./PFPT.sln --use-lock-file
           fi
 
       - name: Build net8.0 projects (Ubuntu-compatible only)
@@ -349,125 +462,102 @@ jobs:
         run: |
           # Build only Domain project that doesn't have mobile dependencies
           echo "Building Ubuntu-compatible net8.0 project..."
-          dotnet build ./PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Release -f net8.0 --nologo
+          dotnet build ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Release -f net8.0 --nologo
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
 
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
-        run: dotnet build ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
+        env:
+          RUNTIME_IDENTIFIER: ${{ matrix.runtimeIdentifier }}
+        run: |
+          RID_ARG=""
+          if [ -n "${RUNTIME_IDENTIFIER}" ] && [ "${RUNTIME_IDENTIFIER}" != "null" ]; then
+            RID_ARG="-r ${RUNTIME_IDENTIFIER}"
+          fi
+          dotnet build ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
       - name: Build net8.0 projects on macOS (projects with mobile dependencies)
         if: matrix.tfm == 'net8.0-ios'
         run: |
           echo "Building net8.0 projects that have mobile dependencies..."
-          dotnet build ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release -f net8.0 --nologo
-          dotnet build ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj -c Release -f net8.0 --nologo
-
-      - name: Check format for projects with mobile dependencies (macOS only, consolidated)
-        if: matrix.tfm == 'net8.0-ios'
-        run: |
-          # Consolidated format checking for projects with mobile dependencies
-          dotnet format ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic &
-          dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic &
-          
-          # Wait for all background jobs
-          wait
+          dotnet build ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj -c Release -f net8.0 --nologo
+          dotnet build ./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj -c Release -f net8.0 --nologo
+          dotnet build ./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj -c Release -f net8.0 --nologo
+          dotnet build ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj -c Release -f net8.0 --nologo
+          dotnet build ./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj -c Release -f net8.0 --nologo
 
       - name: Install Roslynator for macOS analysis (iOS build only)
         if: matrix.tfm == 'net8.0-ios'
         run: dotnet tool install -g roslynator.dotnet.cli
 
-      - name: Run Roslynator analysis on projects with mobile dependencies (macOS only, consolidated)
+      - name: Check format for projects with mobile dependencies (macOS only, sequential)
         if: matrix.tfm == 'net8.0-ios'
         run: |
-          # Consolidated analysis for projects with mobile dependencies
-          roslynator analyze ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info &
-          roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning &
-          
-          # Wait for all background jobs
-          wait
+          set -e
+          echo "Checking format for projects with mobile dependencies..."
+          dotnet format ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
 
-      - name: Check MAUI project formatting (macOS only)
+      - name: Run Roslynator analysis on projects with mobile dependencies (macOS only, sequential)
         if: matrix.tfm == 'net8.0-ios'
-        run: dotnet format ./PhysicallyFitPT/PhysicallyFitPT.csproj --verify-no-changes --verbosity diagnostic
-
-      - name: Check Infrastructure project formatting (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: dotnet format ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --verify-no-changes --verbosity diagnostic
-
-      - name: Install Roslynator for MAUI analysis (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: dotnet tool install -g roslynator.dotnet.cli
-
-      - name: Run Roslynator analysis on MAUI project (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT/PhysicallyFitPT.csproj --severity-level info
-
-      - name: Run Roslynator analysis on Infrastructure project (macOS only)
-        if: matrix.tfm == 'net8.0-ios'
-        run: roslynator analyze ./PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
+        run: |
+          set -e
+          export PATH="$PATH:${HOME}/.dotnet/tools"
+          echo "Running Roslynator analysis for projects with mobile dependencies..."
+          # TODO(pfpt-ci-roslynator-razor): Re-enable Web project once Roslynator CLI
+          # respect Razor source generators (tracked in docs/CI.md).
+          roslynator analyze ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --severity-level info
+          roslynator analyze ./src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --severity-level info
+          roslynator analyze ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj --severity-level info
+          roslynator analyze ./src/PhysicallyFitPT.Shared/PhysicallyFitPT.Shared.csproj --severity-level info
+          roslynator analyze ./src/PhysicallyFitPT.Infrastructure/PhysicallyFitPT.Infrastructure.csproj --severity-level warning
 
       - name: Assert Web does not reference Infrastructure
         if: matrix.tfm == 'net8.0'
         run: |
-          ! grep -q 'PhysicallyFitPT.Infrastructure' ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj || { echo "Web references Infrastructure"; exit 1; }
+          ! grep -q 'PhysicallyFitPT.Infrastructure' ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj || { echo "❌ Web references Infrastructure"; exit 1; }
 
       - name: Assert NO EF packages in Web
         if: matrix.tfm == 'net8.0'
         run: |
-          dotnet list ./PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj package --include-transitive \
-            | grep -Ei 'EntityFrameworkCore|SQLitePCL|Sqlite' && { echo "EF/Sqlite leaked into Web"; exit 1; } || exit 0
+          dotnet list ./src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj package --include-transitive \
+            | grep -Ei 'EntityFrameworkCore|SQLitePCL|Sqlite' && { echo "❌ EF/Sqlite leaked into Web"; exit 1; } || exit 0
 
       - name: Assert no DbContext usage in Web code
         if: matrix.tfm == 'net8.0'
         run: |
-          ! grep -R --include='*.cs' -E 'AddDbContext|UseSqlite|UseInMemoryDatabase' ./PhysicallyFitPT.Web || { echo "DbContext usage found in Web"; exit 1; }
+          ! grep -R --include='*.cs' -E 'AddDbContext|UseSqlite|UseInMemoryDatabase' ./src/PhysicallyFitPT.Web || { echo "❌ DbContext usage found in Web"; exit 1; }
 
       - name: Assert Sqlite present on device TFMs only
         if: matrix.tfm != 'net8.0'
         run: |
           echo "Validating SQLite presence for device target: ${{ matrix.tfm }}"
-          if ! dotnet list ./PhysicallyFitPT/PhysicallyFitPT.csproj package --include-transitive | grep -i 'Microsoft.EntityFrameworkCore.Sqlite'; then
+          if ! dotnet list ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj package --include-transitive | grep -i 'Microsoft.EntityFrameworkCore.Sqlite'; then
             echo "❌ SQLite package not found in device build"
             exit 1
           else
             echo "✅ SQLite package verified for device TFM"
           fi
 
-      - name: Publish (devices)
-        if: matrix.tfm != 'net8.0'
-        run: dotnet publish ./PhysicallyFitPT/PhysicallyFitPT.csproj -c Release -f ${{ matrix.tfm }} --nologo
+      - name: Publish (mobile targets)
+        if: matrix.tfm != 'net8.0' && matrix.tfm != 'net8.0-ios'
+        env:
+          RUNTIME_IDENTIFIER: ${{ matrix.runtimeIdentifier }}
+        run: |
+          RID_ARG=""
+          if [ -n "${RUNTIME_IDENTIFIER}" ] && [ "${RUNTIME_IDENTIFIER}" != "null" ]; then
+            RID_ARG="-r ${RUNTIME_IDENTIFIER}"
+          fi
+          dotnet publish ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
       - name: Verify EF design-time uses Sqlite (run on macOS build only)
         if: matrix.tfm == 'net8.0-ios'
         run: |
           dotnet tool restore || true
-          dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
-
-      - name: Run unit tests (macOS only, since tests require Infrastructure)
-        if: matrix.tfm == 'net8.0-ios'
-        run: |
-          echo "Running unit tests..."
-          dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
-          
-      - name: Upload test results on failure
-        if: failure() && matrix.tfm == 'net8.0-ios'
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: TestResults/
-          retention-days: 7
+          dotnet ef dbcontext info -p ./src/PhysicallyFitPT.Infrastructure
 
       - name: Upload build logs on failure
         if: failure()
@@ -480,19 +570,51 @@ jobs:
           retention-days: 7
 
   test:
-    name: Unit Tests (Consolidated with iOS build)
+    name: Unit Tests
     needs: build
-    runs-on: ubuntu-latest
-    if: false  # Disabled - tests now run as part of iOS build to avoid duplicate macOS runner
+    runs-on: macos-latest
+    timeout-minutes: 15
     steps:
-      - name: Tests moved to iOS build
-        run: echo "Unit tests now run as part of the iOS build job to optimize runner usage"
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore test dependencies
+        run: |
+          dotnet restore ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --use-lock-file
+
+      - name: Run unit tests
+        run: |
+          echo "Running unit tests..."
+          dotnet test ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj -c Release --logger trx --results-directory TestResults
+          
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 7
 
   notify-failure:
     name: Notify on Failure
     if: failure() && github.event_name == 'pull_request'
-    needs: [format-check, analyze, build]
+    needs: [format-check, analyze, build, test]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Get failed jobs and notify
         uses: actions/github-script@v7
@@ -653,8 +775,9 @@ jobs:
   request-review:
     name: Auto-Request Review
     if: success() && github.event_name == 'pull_request'
-    needs: [format-check, analyze, build]
+    needs: [format-check, analyze, build, test]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Request reviewers on success
         uses: actions/github-script@v7
@@ -710,8 +833,9 @@ jobs:
   diff-summary:
     name: Diff Summary
     if: github.event_name == 'pull_request'
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
@@ -738,3 +862,41 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+
+  summary:
+    name: CI Summary
+    if: always()
+    needs: [format-check, analyze, build, test, notify-failure, request-review, diff-summary]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Generate CI Summary
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token || 'noop' }}
+          script: |
+            const jobs = [
+              { name: 'Format Check', result: '${{ needs.format-check.result }}' },
+              { name: 'Analysis', result: '${{ needs.analyze.result }}' },
+              { name: 'Build', result: '${{ needs.build.result }}' },
+              { name: 'Tests', result: '${{ needs.test.result }}' },
+            ];
+            
+            let summary = '## CI Results Summary\n\n';
+            let passCount = 0;
+            let failCount = 0;
+            
+            for (const job of jobs) {
+              const emoji = job.result === 'success' ? '✅' : job.result === 'failure' ? '❌' : job.result === 'skipped' ? '⏭️' : '⚠️';
+              summary += `- ${emoji} **${job.name}**: ${job.result}\n`;
+              
+              if (job.result === 'success') passCount++;
+              else if (job.result === 'failure') failCount++;
+            }
+            
+            summary += `\n**Overall**: ${failCount === 0 ? '✅ PASS' : '❌ FAIL'} (${passCount} passed, ${failCount} failed)\n`;
+            
+            await core.summary
+              .addHeading('CI Workflow Summary')
+              .addRaw(summary)
+              .write();

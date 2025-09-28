@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Community Discussions
+    url: https://github.com/BlackHouseDeveloper/PFPT/discussions
+    about: Ask questions and discuss PFPT with the community
+  - name: 🏥 Healthcare Provider Support
+    url: https://github.com/BlackHouseDeveloper/PFPT/discussions/categories/healthcare-providers
+    about: Specialized support for healthcare providers and clinical workflows
+  - name: 🔒 Security Issues
+    url: https://github.com/BlackHouseDeveloper/PFPT/security/advisories/new
+    about: Report security vulnerabilities (not for general issues)
+  - name: 📚 Documentation
+    url: https://github.com/BlackHouseDeveloper/PFPT/tree/main/docs
+    about: Read the documentation and development guides

@@ -76,6 +76,14 @@ Applies to this repository. Do not request reviews or merge until all required c
 - On CI failure, automatically comment with inline log tails (1000 chars) and artifact links.
 - Enforce StyleCop and Roslynator.
 - Reference `changelog.md` in PRs for context.
+- **NEW**: Use comprehensive MCP workflows for advanced diagnostics:
+  - `mcp-database-diagnostics.yml` for database operations
+  - `mcp-pdf-diagnostics.yml` for PDF export testing
+  - `mcp-accessibility-compliance.yml` for accessibility audits
+  - `mcp-localization-workflow.yml` for localization management
+  - `mcp-error-reproduction.yml` for debugging assistance
+  - `mcp-documentation-automation.yml` for documentation updates
+- **NEW**: Follow comprehensive guidelines in `.github/copilot-agent-instructions.md`
 
 Notes:
 - No teams are used. The CI defaults to requesting/mentioning: @BlackHouseDeveloper
