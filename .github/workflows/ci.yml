@@ -543,7 +543,7 @@ jobs:
           fi
 
       - name: Publish (mobile targets)
-        if: matrix.tfm != 'net8.0'
+        if: matrix.tfm != 'net8.0' && matrix.tfm != 'net8.0-ios'
         env:
           RUNTIME_IDENTIFIER: ${{ matrix.runtimeIdentifier }}
         run: |
