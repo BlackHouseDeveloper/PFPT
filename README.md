@@ -4,42 +4,13 @@
 
 ## 🎯 Key Features
 
-### 🏥 Clinical Documentation & Workflows
-- **Comprehensive patient management** with HIPAA-compliant documentation
-- **Assessment and outcome tracking** with standardized clinical tools  
-- **Treatment planning and progress monitoring** with automated reporting
-- **Clinical decision support** with evidence-based assessment integration
-
-### 📱 Multi-Platform Support
-- **Native iOS and Android** applications for mobile clinical use
-- **macOS desktop** application for comprehensive clinic management
-- **Web application** for browser-based access and administration
-- **Cross-platform synchronization** with offline capabilities
-
-### 📄 Professional Reporting & Documentation
-- **PDF report generation** using QuestPDF with clinical templates
-- **Accessibility-compliant documents** meeting PDF/UA standards
-- **Customizable clinical templates** for different therapy specialties
-- **Automated report generation** with patient progress summaries
-
-### 🤖 Enterprise Automation & MCP Framework
-- **11 production-ready MCP workflows** for development automation
-- **Intelligent issue triage** with healthcare-specific categorization
-- **Automated code formatting** and quality assurance
-- **Release notes generation** with clinical impact assessment
-- **Comprehensive testing automation** across all platforms
-
-### 🔒 Healthcare Compliance & Security
-- **HIPAA-compliant architecture** with patient data protection
-- **Local SQLite encryption** with audit trail capabilities
-- **Accessibility compliance** (WCAG 2.1 AA/AAA) for inclusive healthcare
-- **Clinical data validation** with medical terminology support
-
-### 🛠️ Developer Experience & Architecture
-- **Clean Architecture** with domain-driven design principles
-- **Modular component system** with shared clinical libraries
-- **Comprehensive testing framework** with xUnit and automated validation
-- **Enterprise-level CI/CD** with automated quality gates
+- **🏥 Clinical Documentation**: Comprehensive patient notes, appointment tracking, and treatment planning
+- **📱 Multi-Platform Support**: Native iOS, Android, macOS desktop, and web applications
+- **📄 PDF Export**: Professional patient reports and documentation export using QuestPDF
+- **🗄️ SQLite Database**: Local data storage with Entity Framework Core for offline capabilities
+- **🔧 Automation Tools**: Automated messaging workflows and assessment management
+- **🎯 Modular Architecture**: Clean separation of concerns with domain-driven design
+- **🔒 Data Security**: Local SQLite encryption support and audit trail capabilities
 
 ## Prerequisites
 
@@ -148,171 +119,15 @@ This starts a local development server. Open the displayed URL (typically `http:
 - **Code Changes**: Re-run `dotnet build` or restart the development server after changes
 ### 4. Enterprise Architecture & Project Structure
 
-PFPT follows Clean Architecture principles with a modular, healthcare-focused design:
-
-```
-PFPT/
-├── src/
-│   ├── PhysicallyFitPT.Maui/           # .NET MAUI Blazor (iOS, Android, macOS)
-│   ├── PhysicallyFitPT.Web/            # Blazor WebAssembly (Browser)
-│   ├── PhysicallyFitPT.Api/            # Web API (Future: Cloud Services)
-│   ├── PhysicallyFitPT.Core/           # Domain Entities & Business Logic
-│   ├── PhysicallyFitPT.Infrastructure/ # Data Access, EF Core, PDF Services
-│   ├── PhysicallyFitPT.Shared/         # Clinical Libraries & DTOs
-│   ├── PhysicallyFitPT.AI/             # AI/ML Services (Clinical Intelligence)
-│   └── PhysicallyFitPT.Seeder/         # Database Seeding Console App
-├── tests/
-│   ├── PhysicallyFitPT.Core.Tests/     # Unit Tests (xUnit)
-│   ├── PhysicallyFitPT.Api.Tests/      # API Integration Tests
-│   └── PhysicallyFitPT.Maui.Tests/     # UI and Platform Tests
-├── docs/                               # Comprehensive Documentation
-├── .github/workflows/                  # 14 Enterprise MCP Workflows
-└── PFPT-Foundry.sh                    # Development Environment Setup
-```
-
-#### Core Projects
-
-**PhysicallyFitPT.Core** (Domain Layer)
-- Clean domain entities with no external dependencies
-- Healthcare-specific business logic and clinical workflows  
-- HIPAA-compliant data models and patient privacy rules
-
-**PhysicallyFitPT.Infrastructure** (Data Layer)
-- Entity Framework Core with SQLite provider
-- QuestPDF integration for clinical report generation
-- Clinical data repositories and healthcare services
-
-**PhysicallyFitPT.Maui** (Presentation Layer - Native)
-- Cross-platform mobile and desktop applications
-- Native platform integrations for iOS, Android, macOS
-- Offline-first architecture with local data synchronization
-
-**PhysicallyFitPT.Web** (Presentation Layer - Browser)
-- Blazor WebAssembly for web-based clinical access
-- Progressive Web App (PWA) capabilities
-- Real-time collaboration features for clinical teams
-
-**PhysicallyFitPT.AI** (Intelligence Layer)
-- Clinical decision support and assessment automation
-- Natural language processing for clinical documentation
-- Predictive analytics for patient outcomes
-
-#### Enterprise MCP Automation Framework
-
-PFPT includes a comprehensive automation framework with 14 production-ready workflows:
-
-**Development Automation:**
-- `mcp-auto-format-pr.yml` - Automatic code formatting on PRs
-- `mcp-daily-formatting.yml` - Daily maintenance formatting
-- `mcp-copilot-setup-validation.yml` - Development environment validation
-
-**Healthcare-Specific Automation:**
-- `mcp-accessibility-compliance.yml` - WCAG 2.1 compliance testing  
-- `mcp-pdf-diagnostics.yml` - Clinical report validation
-- `mcp-database-diagnostics.yml` - HIPAA-compliant data management
-
-**Enterprise Operations:**
-- `mcp-release-notes-generation.yml` - Clinical impact release notes
-- `mcp-triage.yml` - Intelligent issue categorization
-- `mcp-documentation-automation.yml` - Clinical documentation generation
-
-**Quality Assurance:**
-- `mcp-error-reproduction.yml` - Comprehensive debugging automation
-- `mcp-localization-workflow.yml` - Multi-language clinical terminology
-- `ci.yml` - Multi-platform CI/CD with healthcare compliance
-
-## 🤖 Enterprise MCP Workflows & Automation
-
-PFPT includes a comprehensive Model Context Protocol (MCP) framework designed for healthcare software development:
-
-### Development Automation
-```bash
-# Validate development environment
-gh workflow run mcp-copilot-setup-validation.yml -f validation_scope=full
-
-# Auto-format code on PR submission  
-gh workflow run mcp-auto-format-pr.yml
-
-# Daily code maintenance
-gh workflow run mcp-daily-formatting.yml
-```
-
-### Healthcare-Specific Automation
-```bash
-# WCAG 2.1 accessibility compliance testing
-gh workflow run mcp-accessibility-compliance.yml -f test_scope=full-audit
-
-# Clinical PDF report validation
-gh workflow run mcp-pdf-diagnostics.yml -f test_type=accessibility
-
-# HIPAA-compliant database diagnostics
-gh workflow run mcp-database-diagnostics.yml -f operation=validate
-```
-
-### Enterprise Operations
-```bash
-# Generate clinical impact release notes
-gh workflow run mcp-release-notes-generation.yml -f release_type=feature -f from_tag=v1.0.0 -f to_tag=v1.1.0
-
-# Clinical documentation automation
-gh workflow run mcp-documentation-automation.yml -f doc_type=all
-
-# Multi-language clinical terminology management
-gh workflow run mcp-localization-workflow.yml -f operation=audit-coverage
-```
-
-### Quality Assurance & Debugging
-```bash
-# Comprehensive error reproduction and analysis
-gh workflow run mcp-error-reproduction.yml -f error_type=platform-specific -f platform=android
-
-# Automated issue triage with healthcare categorization
-# (Runs automatically on issue creation)
-```
-
-All workflows include:
-- **Healthcare compliance** considerations (HIPAA, accessibility)
-- **Clinical workflow** impact assessment
-- **Multi-platform** testing and validation
-- **Comprehensive reporting** with actionable insights
-
-### 5. Development Environment Setup
-
-#### Automated Setup (Recommended)
-```bash
-git clone https://github.com/BlackHouseDeveloper/PFPT.git
-cd PFPT
-./PFPT-Foundry.sh
-```
-
-#### Manual Setup
-```bash
-# Install .NET MAUI workloads
-dotnet workload install maui
-
-# Create database migration
-./PFPT-Foundry.sh --create-migration
-
-# Seed with clinical test data  
-./PFPT-Foundry.sh --seed
-
-# Set database path (optional)
-export PFP_DB_PATH="$(pwd)/dev.physicallyfitpt.db"
-```
-
-#### Environment Validation
-```bash
-# Comprehensive environment check
-gh workflow run mcp-copilot-setup-validation.yml -f validation_scope=full
-```
-
-This validates:
-- .NET SDK and MAUI workloads
-- PFPT dependencies (QuestPDF, EF Core, SQLite)
-- Project structure and build capabilities
-- Development tool accessibility
-
-### 6. Using the PFPT-Foundry.sh Script
+PFPT follows Clean Architecture principles with clear separation of concerns:
+PhysicallyFitPT – The .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst, etc.). This is the primary app project.
+PhysicallyFitPT.Web – The Blazor WebAssembly app for running PFPT in a web browser.
+PhysicallyFitPT.Domain – The domain entities (business models) with no EF Core or UI dependencies.
+PhysicallyFitPT.Infrastructure – Implements the persistence (EF Core ApplicationDbContext), domain services, and PDF generation. It references the Domain project.
+PhysicallyFitPT.Shared – Shared libraries, such as predefined lists (e.g., goal templates, interventions, outcome measures) that can be used by both the app and other projects.
+PhysicallyFitPT.Tests – XUnit test project containing unit tests (runs on .NET 8.0).
+PhysicallyFitPT.Seeder – A console application to seed the SQLite database with initial data for development/testing.
+5. Using the PFPT-Foundry.sh Script
 As mentioned, the repository includes a script (PFPT-Foundry.sh) to automate environment setup tasks. Here’s a quick reference on using it:
 Running the script with no arguments will scaffold or update the solution structure (adding missing files, normalizing project settings). It’s idempotent – it won’t overwrite existing code, and you can run it after pulling updates to ensure your local projects match the expected configuration.
 --create-migration: Generates the initial EF Core migration (if not already present) and updates the database. This is typically done once at project setup. If an initial migration already exists, the script will skip creating a duplicate.

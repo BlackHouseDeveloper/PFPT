@@ -8,34 +8,15 @@
 
 ```
 PFPT/
-├── src/                                 # Source Code
-│   ├── PhysicallyFitPT.Maui/           # .NET MAUI Blazor App (iOS, Android, macOS)
-│   ├── PhysicallyFitPT.Web/            # Blazor WebAssembly (Progressive Web App)
-│   ├── PhysicallyFitPT.Api/            # Web API (Cloud Services & Integration)
-│   ├── PhysicallyFitPT.Core/           # Domain Entities & Business Logic
-│   ├── PhysicallyFitPT.Infrastructure/ # Data Access, EF Core, PDF Services
-│   ├── PhysicallyFitPT.Shared/         # Clinical Libraries & DTOs
-│   ├── PhysicallyFitPT.AI/             # AI/ML Services (Clinical Intelligence)
-│   └── PhysicallyFitPT.Seeder/         # Database Seeding Console App
-├── tests/                               # Comprehensive Test Suite
-│   ├── PhysicallyFitPT.Core.Tests/     # Unit Tests (xUnit)
-│   ├── PhysicallyFitPT.Api.Tests/      # API Integration Tests
-│   └── PhysicallyFitPT.Maui.Tests/     # UI and Platform Tests
-├── docs/                               # Enterprise Documentation
-│   ├── ARCHITECTURE.md                 # This file
-│   ├── DEVELOPMENT.md                  # Development guide
-│   ├── BUILD.md                        # Build instructions
-│   ├── CI.md                          # CI/CD documentation
-│   ├── TROUBLESHOOTING.md             # Troubleshooting guide
-│   └── CHANGELOG.md                   # Automated changelog
-├── .github/                            # Enterprise MCP Framework
-│   ├── workflows/                      # 14 Enterprise Automation Workflows
-│   ├── ISSUE_TEMPLATE/                 # Healthcare-Specific Issue Templates
-│   ├── copilot-agent-instructions.md  # Copilot Integration Guide
-│   └── pull_request_template.md       # PR Template with Clinical Validation
-├── PFPT-Foundry.sh                    # Development Environment Setup
-├── Makefile                           # Build automation
-└── PFPT.sln                          # Enterprise Solution File
+├── PhysicallyFitPT/                    # .NET MAUI Blazor App (Multi-platform)
+├── PhysicallyFitPT.Domain/             # Domain Entities (Clean Architecture Core)
+├── PhysicallyFitPT.Infrastructure/     # Data Access, EF Core, Services
+├── PhysicallyFitPT.Shared/             # Shared DTOs and Clinical Libraries
+├── PhysicallyFitPT.Tests/              # Unit and Integration Tests (xUnit)
+├── PhysicallyFitPT.Seeder/             # Database Seeding Console App
+├── PhysicallyFitPT.Web/                # Blazor WebAssembly Client
+├── PFPT-Foundry.sh                     # Development Environment Setup Script
+└── PhysicallyFitPT.sln                 # Solution File
 ```
 
 ## Enterprise Architecture Layers
@@ -57,48 +38,35 @@ PFPT/
   - `Clinical/` - Assessment tools and outcome measures
   - `Reports/` - PDF generation and report viewing
 
-**Platform-Specific Features:**
-- **Android** - Native Android notifications and file system integration
-- **iOS** - HealthKit integration and native UI patterns  
-- **macOS** - Desktop-optimized clinical workflows and multi-window support
+**Platform Support:**
+- **Android** - Native Android application
+- **iOS** - Native iOS application  
+- **macOS (Mac Catalyst)** - Native macOS desktop application
 
-#### PhysicallyFitPT.Web (Progressive Web Application)
-**Target Framework:** `net8.0`
-
-**Purpose:** Browser-based clinical access with offline capabilities and real-time collaboration.
-
-**Key Features:**
-- Progressive Web App (PWA) with offline functionality
-- Real-time clinical collaboration features
-- Responsive design for tablets and desktop clinical workstations
-- Browser-based PDF generation and clinical document management
-
-### 2. Domain Layer (PhysicallyFitPT.Core)
+### 2. PhysicallyFitPT.Domain (Domain Layer)
 
 **Target Framework:** `net8.0`
 
-**Purpose:** Pure domain entities following Domain-Driven Design with healthcare-specific business logic.
+**Purpose:** Contains pure domain entities following Domain-Driven Design principles. No external dependencies or EF Core attributes.
 
-**Core Healthcare Entities:**
-- `Patient.cs` - Core patient entity with HIPAA-compliant demographics and audit trails
-- `Appointment.cs` - Clinical appointment scheduling with outcome tracking
-- `NoteAndSections.cs` - Structured clinical documentation with standardized formats
-- `Goal.cs` - Evidence-based treatment goals with measurable outcomes
-- `Assessment.cs` - Standardized clinical assessments (TUG, BBS, NPRS, Custom)
-- `Codes.cs` - Healthcare billing codes (CPT, ICD-10, HCPCS)
-- `Questionnaires.cs` - Patient-reported outcome measures (PROMs)
-- `ClinicalDecision.cs` - Clinical decision support and care pathways
-- `Messaging.cs` - HIPAA-compliant communication and notifications
-- `Audit.cs` - Comprehensive audit trail for healthcare compliance
+**Key Entities:**
+- `Patient.cs` - Core patient entity with demographics and audit fields
+- `Appointment.cs` - Patient appointment scheduling and tracking
+- `NoteAndSections.cs` - Clinical documentation and progress notes
+- `Goal.cs` - Patient treatment goals and outcomes
+- `Codes.cs` - Medical billing codes (CPT, ICD-10)
+- `Questionnaires.cs` - Patient assessment forms and surveys
+- `Messaging.cs` - Communication and notification entities
+- `Common.cs` - Shared value objects and enumerations
 
-**Healthcare-Specific Business Rules:**
-- HIPAA compliance validation for all patient data operations
-- Clinical terminology standardization and validation
-- Evidence-based assessment scoring and interpretation
-- Automated clinical decision support workflows
-- Healthcare data retention and archival policies
+**Design Principles:**
+- Pure POCOs (Plain Old CLR Objects)
+- No infrastructure dependencies
+- Rich domain behavior
+- Immutable where appropriate
+- Comprehensive audit trail support
 
-### 3. Infrastructure Layer (PhysicallyFitPT.Infrastructure)
+### 3. PhysicallyFitPT.Infrastructure (Infrastructure Layer)
 
 **Target Framework:** `net8.0`
 

@@ -256,13 +256,13 @@ jobs:
       - name: Restore Ubuntu-compatible projects only
         run: |
           # Only Domain project can build on Ubuntu without mobile dependencies
-          dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder formatted on macOS due to mobile dependencies"
 
       - name: Check code formatting (StyleCop) - Ubuntu-compatible project only
         run: |
           # Only format Domain project on Ubuntu
-          dotnet format ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --verify-no-changes --verbosity diagnostic
+          dotnet format ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --verify-no-changes --verbosity diagnostic
 
   analyze:
     name: Roslynator Static Analysis
@@ -293,14 +293,14 @@ jobs:
       - name: Restore Ubuntu-compatible projects only  
         run: |
           # Only Domain project can build on Ubuntu without mobile dependencies
-          dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+          dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder analyzed on macOS due to mobile dependencies"
 
       - name: Run Roslynator analysis on Ubuntu-compatible project only
         run: |
           export PATH="$PATH:${HOME}/.dotnet/tools"
           # Only analyze Domain project on Ubuntu
-          roslynator analyze ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --severity-level info
+          roslynator analyze ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --severity-level info
 
   build:
     name: Build & Guardrails (${{ matrix.tfm }})
@@ -449,7 +449,7 @@ jobs:
           if [ "${{ matrix.tfm }}" == "net8.0" ]; then
             echo "Restoring Ubuntu-compatible project (Domain only)..."
             # Only Domain project can build on Ubuntu without mobile dependencies
-            dotnet restore ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --use-lock-file
+            dotnet restore ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj --use-lock-file
             echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
           else
             echo "Restoring full solution for MAUI builds..."
@@ -462,7 +462,7 @@ jobs:
         run: |
           # Build only Domain project that doesn't have mobile dependencies
           echo "Building Ubuntu-compatible net8.0 project..."
-          dotnet build ./src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Release -f net8.0 --nologo
+          dotnet build ./PhysicallyFitPT.Domain/PhysicallyFitPT.Domain.csproj -c Release -f net8.0 --nologo
           echo "Note: Web, Infrastructure, Shared, Tests, and Seeder built on macOS due to mobile dependencies"
 
       - name: Build mobile app (MAUI)
@@ -557,7 +557,21 @@ jobs:
         if: matrix.tfm == 'net8.0-ios'
         run: |
           dotnet tool restore || true
-          dotnet ef dbcontext info -p ./src/PhysicallyFitPT.Infrastructure
+          dotnet ef dbcontext info -p ./PhysicallyFitPT.Infrastructure
+
+      - name: Run unit tests (macOS only, since tests require Infrastructure)
+        if: matrix.tfm == 'net8.0-ios'
+        run: |
+          echo "Running unit tests..."
+          dotnet test ./PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
+          
+      - name: Upload test results on failure
+        if: failure() && matrix.tfm == 'net8.0-ios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 7
 
       - name: Upload build logs on failure
         if: failure()

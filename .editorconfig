@@ -22,40 +22,6 @@ insert_final_newline = true
 [*.cs]
 dotnet_analyzer_diagnostic.category-StyleCop.severity = warning
 
-[src/PhysicallyFitPT.Api/**/*.cs]
-; TODO: Restore StyleCop warnings once the API has real functionality.
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
-
-[tests/**/*.cs]
-; TODO: Restore StyleCop warnings once test projects contain meaningful coverage.
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
-
-[src/PhysicallyFitPT.Infrastructure/Migrations/**/*.cs]
-dotnet_analyzer_diagnostic.severity = none
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
-dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1413.severity = none
-dotnet_diagnostic.SA1633.severity = none
-generated_code = true
-
-[src/PhysicallyFitPT.Seeder/**/*.cs]
-dotnet_analyzer_diagnostic.severity = none
-dotnet_analyzer_diagnostic.category-StyleCop.severity = none
-dotnet_analyzer_diagnostic.category-Roslynator.severity = none
-dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1202.severity = none
-dotnet_diagnostic.SA1413.severity = none
-dotnet_diagnostic.SA1513.severity = none
-dotnet_diagnostic.SA1518.severity = none
-dotnet_diagnostic.SA1028.severity = none
-dotnet_diagnostic.SA1116.severity = none
-dotnet_diagnostic.SA1117.severity = none
-dotnet_diagnostic.SA1408.severity = none
-dotnet_diagnostic.SA1402.severity = none
-dotnet_diagnostic.SA1204.severity = none
-dotnet_diagnostic.SA1101.severity = none
-dotnet_diagnostic.RCS1102.severity = none
-
 [*.g.cs]
 dotnet_diagnostic.SA1633.severity = none
 
