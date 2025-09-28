@@ -369,6 +369,14 @@
         "resolved": "8.0.20",
         "contentHash": "0jdxTuYqGKmPVuiMMzz0G3k0X/hcrXWm8H1kPFzQQHoN72DDZJ+os/i2yM7CWznnvAdRkSNfCKnYJt7Q7Qhr0g=="
       },
+      "Microsoft.JSInterop.WebAssembly": {
+        "type": "Transitive",
+        "resolved": "8.0.20",
+        "contentHash": "MP/3NQ7b6gsHiDO0BpV1QbKffXNaE4RfAy9gBSep9GZ8+Ao2fifkHRXZqzoq3Ns1o2QVz8dukPNWrqefjibpzA==",
+        "dependencies": {
+          "Microsoft.JSInterop": "8.0.20"
+        }
+      },
       "Mono.TextTemplating": {
         "type": "Transitive",
         "resolved": "2.2.1",
@@ -547,6 +555,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "[8.0.20, )",
+          "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.20, )",
           "PhysicallyFitPT.Core": "[1.0.0, )"
         }
       },
@@ -562,6 +571,19 @@
           "Microsoft.Extensions.Primitives": "8.0.0",
           "Microsoft.JSInterop": "8.0.20",
           "System.IO.Pipelines": "8.0.0"
+        }
+      },
+      "Microsoft.AspNetCore.Components.WebAssembly": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.20, )",
+        "resolved": "8.0.20",
+        "contentHash": "57JM6RaOVkZgE6l+B7xzyVcHuX9N1331NBuSqTLAU/k6EMV50SZiP/h6gKO/Ck5O+CScI7sHz6XTWhzXAaqmvg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components.Web": "8.0.20",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.Configuration.Json": "8.0.1",
+          "Microsoft.Extensions.Logging": "8.0.1",
+          "Microsoft.JSInterop.WebAssembly": "8.0.20"
         }
       },
       "Microsoft.EntityFrameworkCore": {
@@ -608,8 +630,8 @@
       "Microsoft.Extensions.Configuration.Binder": {
         "type": "CentralTransitive",
         "requested": "[8.0.2, )",
-        "resolved": "8.0.0",
-        "contentHash": "mBMoXLsr5s1y2zOHWmKsE9veDcx8h1x/c3rz4baEdQKTeDcmQAPNbB54Pi/lhFO3K431eEq6PFbMgLaa6PHFfA==",
+        "resolved": "8.0.2",
+        "contentHash": "7IQhGK+wjyGrNsPBjJcZwWAr+Wf6D4+TwOptUt77bWtgNkiV8tDEbhFS+dDamtQFZ2X7kWG9m71iZQRj2x3zgQ==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
         }

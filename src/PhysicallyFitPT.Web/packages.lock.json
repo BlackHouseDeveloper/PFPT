@@ -207,6 +207,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "[8.0.20, )",
+          "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.20, )",
           "PhysicallyFitPT.Core": "[1.0.0, )"
         }
       },
