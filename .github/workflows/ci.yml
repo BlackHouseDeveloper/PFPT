@@ -316,6 +316,7 @@ jobs:
             runner: macos-latest
           - tfm: net8.0-ios
             runner: macos-latest
+            runtimeIdentifier: iossimulator-arm64
           - tfm: net8.0-maccatalyst
             runner: macos-latest
     steps:
@@ -466,7 +467,12 @@ jobs:
 
       - name: Build mobile app (MAUI)
         if: matrix.tfm != 'net8.0'
-        run: dotnet build ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} --nologo
+        run: |
+          RID_ARG=""
+          if [ -n "${{ matrix.runtimeIdentifier || '' }}" ]; then
+            RID_ARG="-r ${{ matrix.runtimeIdentifier }}"
+          fi
+          dotnet build ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
       - name: Build net8.0 projects on macOS (projects with mobile dependencies)
         if: matrix.tfm == 'net8.0-ios'
@@ -534,9 +540,14 @@ jobs:
             echo "✅ SQLite package verified for device TFM"
           fi
 
-      - name: Publish (devices)
+      - name: Publish (mobile targets)
         if: matrix.tfm != 'net8.0'
-        run: dotnet publish ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} --nologo
+        run: |
+          RID_ARG=""
+          if [ -n "${{ matrix.runtimeIdentifier || '' }}" ]; then
+            RID_ARG="-r ${{ matrix.runtimeIdentifier }}"
+          fi
+          dotnet publish ./src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -c Release -f ${{ matrix.tfm }} ${RID_ARG} --nologo
 
       - name: Verify EF design-time uses Sqlite (run on macOS build only)
         if: matrix.tfm == 'net8.0-ios'
