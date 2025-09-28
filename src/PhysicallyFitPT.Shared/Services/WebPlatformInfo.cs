@@ -16,7 +16,7 @@ public class WebPlatformInfo : IPlatformInfo
   public PlatformType Platform => PlatformType.Web;
 
   /// <inheritdoc/>
-  public DeviceType Device => this.DetermineDeviceType();
+  public DeviceType Device => DetermineDeviceType();
 
   /// <inheritdoc/>
   public bool SupportsOffline => true; // PWA support
@@ -33,7 +33,7 @@ public class WebPlatformInfo : IPlatformInfo
   /// <inheritdoc/>
   public int? ScreenHeight => null; // Would need JS interop to determine
 
-  private DeviceType DetermineDeviceType()
+  private static DeviceType DetermineDeviceType()
   {
     // Default to desktop for web, would normally use JS interop for detection
     return DeviceType.Desktop;
