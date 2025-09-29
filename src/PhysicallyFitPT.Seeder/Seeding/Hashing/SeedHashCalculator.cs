@@ -36,7 +36,7 @@ public class SeedHashCalculator
   /// </summary>
   /// <param name="filePath">Path to the file.</param>
   /// <returns>A SHA256 hash of the file content, or null if file doesn't exist.</returns>
-  public async Task<string?> ComputeFileHashAsync(string filePath)
+  public static async Task<string?> ComputeFileHashAsync(string filePath)
   {
     if (!File.Exists(filePath))
     {
@@ -54,7 +54,7 @@ public class SeedHashCalculator
   /// <param name="fallbackSignature">A signature representing the inline data.</param>
   /// <param name="versionToken">Optional version token for breaking changes.</param>
   /// <returns>A SHA256 hash string.</returns>
-  public string ComputeFallbackHash(string taskId, string fallbackSignature, string? versionToken = null)
+  public static string ComputeFallbackHash(string taskId, string fallbackSignature, string? versionToken = null)
   {
     var inputs = new List<string> { taskId, fallbackSignature };
     if (!string.IsNullOrEmpty(versionToken))
