@@ -21,7 +21,6 @@ public class HashChangeReplayTests : IDisposable
 {
   private readonly ApplicationDbContext dbContext;
   private readonly SeedRunner seedRunner;
-  private readonly SeedHashCalculator hashCalculator;
   private readonly IServiceProvider serviceProvider;
 
   /// <summary>
@@ -46,7 +45,6 @@ public class HashChangeReplayTests : IDisposable
 
     this.serviceProvider = services.BuildServiceProvider();
     this.seedRunner = this.serviceProvider.GetRequiredService<SeedRunner>();
-    this.hashCalculator = this.serviceProvider.GetRequiredService<SeedHashCalculator>();
   }
 
   /// <summary>
@@ -184,7 +182,7 @@ public class HashChangeReplayTests : IDisposable
     var versionToken = "v1.0";
 
     // Act
-    var hash = this.hashCalculator.ComputeFallbackHash(taskId, fallbackSignature, versionToken);
+    var hash = SeedHashCalculator.ComputeFallbackHash(taskId, fallbackSignature, versionToken);
 
     // Assert
     hash.Should().NotBeNullOrEmpty();
@@ -203,8 +201,8 @@ public class HashChangeReplayTests : IDisposable
     var fallbackSignature = "inline-data-signature";
 
     // Act
-    var hashV1 = this.hashCalculator.ComputeFallbackHash(taskId, fallbackSignature, "v1.0");
-    var hashV2 = this.hashCalculator.ComputeFallbackHash(taskId, fallbackSignature, "v2.0");
+    var hashV1 = SeedHashCalculator.ComputeFallbackHash(taskId, fallbackSignature, "v1.0");
+    var hashV2 = SeedHashCalculator.ComputeFallbackHash(taskId, fallbackSignature, "v2.0");
 
     // Assert
     hashV1.Should().NotBe(hashV2);

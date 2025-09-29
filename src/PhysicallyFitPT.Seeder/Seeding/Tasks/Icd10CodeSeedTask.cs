@@ -87,7 +87,7 @@ public class Icd10CodeSeedTask : BaseSeedTask
   public override async Task<string> ComputeContentDescriptorAsync()
   {
     var filePath = JsonDataLoader.GetDataFilePath(DataFileName);
-    var fileHash = await HashCalculator.ComputeFileHashAsync(filePath);
+    var fileHash = await SeedHashCalculator.ComputeFileHashAsync(filePath);
 
     if (fileHash != null)
     {
@@ -96,7 +96,7 @@ public class Icd10CodeSeedTask : BaseSeedTask
 
     // Use fallback signature
     var fallbackSignature = GetFallbackSignature();
-    return HashCalculator.ComputeFallbackHash(Id, fallbackSignature);
+    return SeedHashCalculator.ComputeFallbackHash(Id, fallbackSignature);
   }
 
   private static Icd10CodeSeedData[] GetFallbackData()

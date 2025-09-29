@@ -77,7 +77,7 @@ public class CompositeClinicalReferenceSeedTask : BaseSeedTask
   public override Task<string> ComputeContentDescriptorAsync()
   {
     // This task's hash is based on the logic version, not external data
-    var hash = HashCalculator.ComputeFallbackHash(Id, "reference-summary-logic", VersionToken);
+    var hash = SeedHashCalculator.ComputeFallbackHash(Id, "reference-summary-logic", VersionToken);
     return Task.FromResult(hash);
   }
 }
