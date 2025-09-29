@@ -563,7 +563,15 @@ jobs:
         if: matrix.tfm == 'net8.0-ios'
         run: |
           echo "Running unit tests..."
-          dotnet test ./src/PhysicallyFitPT.Tests/PhysicallyFitPT.Tests.csproj -c Release --logger trx --results-directory TestResults
+          for test_project in \
+            ./tests/PhysicallyFitPT.Api.Tests/PhysicallyFitPT.Api.Tests.csproj \
+            ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj \
+            ./tests/PhysicallyFitPT.Maui.Tests/PhysicallyFitPT.Maui.Tests.csproj \
+            ./tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj
+          do
+            echo "Running tests for $test_project"
+            dotnet test "$test_project" -c Release --logger trx --results-directory TestResults
+          done
           
       - name: Upload test results on failure
         if: failure() && matrix.tfm == 'net8.0-ios'
@@ -608,12 +616,28 @@ jobs:
 
       - name: Restore test dependencies
         run: |
-          dotnet restore ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj --use-lock-file
+          for test_project in \
+            ./tests/PhysicallyFitPT.Api.Tests/PhysicallyFitPT.Api.Tests.csproj \
+            ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj \
+            ./tests/PhysicallyFitPT.Maui.Tests/PhysicallyFitPT.Maui.Tests.csproj \
+            ./tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj
+          do
+            echo "Restoring $test_project"
+            dotnet restore "$test_project" --use-lock-file
+          done
 
       - name: Run unit tests
         run: |
           echo "Running unit tests..."
-          dotnet test ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj -c Release --logger trx --results-directory TestResults
+          for test_project in \
+            ./tests/PhysicallyFitPT.Api.Tests/PhysicallyFitPT.Api.Tests.csproj \
+            ./tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj \
+            ./tests/PhysicallyFitPT.Maui.Tests/PhysicallyFitPT.Maui.Tests.csproj \
+            ./tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj
+          do
+            echo "Running tests for $test_project"
+            dotnet test "$test_project" -c Release --logger trx --results-directory TestResults
+          done
           
       - name: Upload test results
         if: always()
