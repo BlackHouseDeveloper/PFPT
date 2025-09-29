@@ -91,7 +91,7 @@ public class CptCodeSeedTask : BaseSeedTask
 
     if (fileHash != null)
     {
-      return HashCalculator.ComputeHash(Id, fileHash);
+      return SeedHashCalculator.ComputeHash(Id, fileHash);
     }
 
     // Use fallback signature

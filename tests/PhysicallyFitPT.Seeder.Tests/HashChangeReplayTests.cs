@@ -60,8 +60,8 @@ public class HashChangeReplayTests : IDisposable
     var content = "test content";
 
     // Act
-    var hash1 = this.hashCalculator.ComputeHash(taskId, content);
-    var hash2 = this.hashCalculator.ComputeHash(taskId, content);
+    var hash1 = SeedHashCalculator.ComputeHash(taskId, content);
+    var hash2 = SeedHashCalculator.ComputeHash(taskId, content);
 
     // Assert
     hash1.Should().Be(hash2);
@@ -80,8 +80,8 @@ public class HashChangeReplayTests : IDisposable
     var content2 = "test content 2";
 
     // Act
-    var hash1 = this.hashCalculator.ComputeHash(taskId, content1);
-    var hash2 = this.hashCalculator.ComputeHash(taskId, content2);
+    var hash1 = SeedHashCalculator.ComputeHash(taskId, content1);
+    var hash2 = SeedHashCalculator.ComputeHash(taskId, content2);
 
     // Assert
     hash1.Should().NotBe(hash2);

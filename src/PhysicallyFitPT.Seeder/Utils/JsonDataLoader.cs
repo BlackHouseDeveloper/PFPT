@@ -12,6 +12,14 @@ namespace PhysicallyFitPT.Seeder.Utils;
 /// </summary>
 public class JsonDataLoader
 {
+  private static readonly JsonSerializerOptions DeserializerOptions = new()
+  {
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    PropertyNameCaseInsensitive = true,
+    AllowTrailingCommas = true,
+    ReadCommentHandling = JsonCommentHandling.Skip,
+  };
+
   private readonly ILogger<JsonDataLoader> logger;
 
   /// <summary>
@@ -47,13 +55,7 @@ public class JsonDataLoader
         return fallbackData;
       }
 
-      var data = JsonSerializer.Deserialize<T[]>(jsonContent, new JsonSerializerOptions
-      {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-      });
+      var data = JsonSerializer.Deserialize<T[]>(jsonContent, DeserializerOptions);
 
       if (data == null || data.Length == 0)
       {

@@ -167,7 +167,13 @@ echo -e "${YELLOW}${BOLD}▶ Shutting down build servers...${RESET}" | tee -a "$
 dotnet build-server shutdown >>"$logfile" 2>&1
 
 echo -e "${YELLOW}${BOLD}▶ Removing Android lp/ intermediates (if present)...${RESET}" | tee -a "$logfile"
-rm -rf "PhysicallyFitPT/obj/Debug/net8.0-android/lp" 2>>"$logfile"
+android_lp_dirs=(
+  "src/PhysicallyFitPT.Maui/obj/Debug/net8.0-android/lp"
+  "src/PhysicallyFitPT.Maui/obj/Release/net8.0-android/lp"
+)
+for lp_dir in "${android_lp_dirs[@]}"; do
+  rm -rf "$lp_dir" 2>>"$logfile"
+done
 
 echo -e "${YELLOW}${BOLD}▶ Removing bin/ and obj/ folders...${RESET}" | tee -a "$logfile"
 find . -type d \( -name bin -o -name obj \) -exec rm -rf {} + 2>>"$logfile"

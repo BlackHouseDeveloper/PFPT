@@ -17,7 +17,7 @@ public class SeedHashCalculator
   /// </summary>
   /// <param name="inputs">String inputs to hash.</param>
   /// <returns>A SHA256 hash string in lowercase hex format.</returns>
-  public string ComputeHash(params string[] inputs)
+  public static string ComputeHash(params string[] inputs)
   {
     if (inputs == null || inputs.Length == 0)
     {
@@ -27,8 +27,7 @@ public class SeedHashCalculator
     var combined = string.Join("|", inputs.Where(i => !string.IsNullOrEmpty(i)));
     var bytes = Encoding.UTF8.GetBytes(combined);
 
-    using var sha256 = SHA256.Create();
-    var hashBytes = sha256.ComputeHash(bytes);
+    var hashBytes = SHA256.HashData(bytes);
     return Convert.ToHexString(hashBytes).ToLowerInvariant();
   }
 

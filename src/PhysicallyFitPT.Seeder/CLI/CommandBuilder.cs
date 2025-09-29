@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.CommandLine;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,9 @@ namespace PhysicallyFitPT.Seeder.CLI;
 /// </summary>
 public static class CommandBuilder
 {
+  private static readonly string[] RequiredBaselineTaskIds = new[] { "001.cpt.codes", "002.icd10.codes" };
+  private static readonly JsonSerializerOptions IndentedJsonOptions = new() { WriteIndented = true };
+
   /// <summary>
   /// Creates the root command with all subcommands.
   /// </summary>
@@ -160,10 +164,9 @@ public static class CommandBuilder
         var env = EnvDetector.GetCurrentEnvironment();
         var taskStatuses = await seedRunner.ListTasksAsync(env);
 
-        var requiredTasks = new[] { "001.cpt.codes", "002.icd10.codes" };
         var missingTasks = new List<string>();
 
-        foreach (var requiredTask in requiredTasks)
+        foreach (var requiredTask in RequiredBaselineTaskIds)
         {
           var status = taskStatuses.FirstOrDefault(t => t.Id == requiredTask);
           if (status == null || !status.Applied)
@@ -252,16 +255,16 @@ public static class CommandBuilder
 
     // Export CPT codes
     var cptCodes = await dbContext.CptCodes.ToListAsync();
-    var cptJson = System.Text.Json.JsonSerializer.Serialize(
+    var cptJson = JsonSerializer.Serialize(
       cptCodes.Select(c => new { code = c.Code, description = c.Description }),
-      new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+      IndentedJsonOptions);
     await File.WriteAllTextAsync(Path.Combine(outPath, "cpt.json"), cptJson);
 
     // Export ICD-10 codes
     var icd10Codes = await dbContext.Icd10Codes.ToListAsync();
-    var icd10Json = System.Text.Json.JsonSerializer.Serialize(
+    var icd10Json = JsonSerializer.Serialize(
       icd10Codes.Select(c => new { code = c.Code, description = c.Description }),
-      new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+      IndentedJsonOptions);
     await File.WriteAllTextAsync(Path.Combine(outPath, "icd10.json"), icd10Json);
 
     // Export patients only in Development
@@ -269,9 +272,9 @@ public static class CommandBuilder
     if (env.Equals("Development", StringComparison.OrdinalIgnoreCase))
     {
       var patients = await dbContext.Patients.ToListAsync();
-      var patientsJson = System.Text.Json.JsonSerializer.Serialize(
+      var patientsJson = JsonSerializer.Serialize(
         patients.Select(p => new { mrn = p.MRN, firstName = p.FirstName, lastName = p.LastName, email = p.Email }),
-        new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        IndentedJsonOptions);
       await File.WriteAllTextAsync(Path.Combine(outPath, "patients.dev.json"), patientsJson);
     }
 
