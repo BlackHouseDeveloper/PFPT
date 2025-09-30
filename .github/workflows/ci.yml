@@ -306,7 +306,7 @@ jobs:
     name: Build & Guardrails (${{ matrix.tfm }})
     needs: analyze
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: ${{ matrix.tfm == 'net8.0-ios' && 60 || 30 }}
+    timeout-minutes: ${{ matrix.tfm == 'net8.0-ios' && 120 || 30 }}
     strategy:
       matrix:
         include:
