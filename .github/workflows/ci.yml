@@ -614,6 +614,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      - name: Ensure MAUI workloads for tests
+        run: |
+          echo "Restoring required workloads for MAUI test projects..."
+          dotnet workload restore ./tests/PhysicallyFitPT.Maui.Tests/PhysicallyFitPT.Maui.Tests.csproj
+      
       - name: Restore test dependencies
         run: |
           for test_project in \
