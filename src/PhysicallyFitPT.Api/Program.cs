@@ -25,6 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add Health Checks
+builder.Services.AddHealthChecks();
+
 // Configure Entity Framework
 var configuredConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 var environmentDbPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");
@@ -67,6 +70,41 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
+
+// Map Health Check endpoint
+app.MapHealthChecks("/health");
+
+// Minimal API for application statistics
+app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        
+        var patientCount = await db.Patients.CountAsync(cancellationToken);
+        var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
+        var lastPatientUpdated = await db.Patients
+            .OrderByDescending(p => p.UpdatedAt ?? p.CreatedAt)
+            .Select(p => p.UpdatedAt ?? p.CreatedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        var stats = new
+        {
+            Patients = patientCount,
+            Appointments = appointmentCount,
+            LastPatientUpdated = lastPatientUpdated,
+            ApiHealthy = true,
+        };
+
+        return Results.Ok(stats);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetAppStats")
+.WithOpenApi();
 
 // Minimal APIs for patients
 app.MapGet("/api/patients/search", async (string? query, int take, IPatientService patientService) =>

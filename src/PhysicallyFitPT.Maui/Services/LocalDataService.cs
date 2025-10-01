@@ -101,4 +101,33 @@ public sealed class LocalDataService : IDataService
   {
     return await this.dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
   }
+
+  /// <inheritdoc />
+  public async Task<AppStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      await using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
+      
+      var patientCount = await db.Patients.CountAsync(cancellationToken);
+      var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
+      var lastPatientUpdated = await db.Patients
+        .OrderByDescending(p => p.UpdatedAt ?? p.CreatedAt)
+        .Select(p => p.UpdatedAt ?? p.CreatedAt)
+        .FirstOrDefaultAsync(cancellationToken);
+
+      return new AppStatsDto
+      {
+        Patients = patientCount,
+        Appointments = appointmentCount,
+        LastPatientUpdated = lastPatientUpdated,
+        ApiHealthy = true,
+      };
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error retrieving application statistics");
+      return new AppStatsDto { ApiHealthy = false };
+    }
+  }
 }

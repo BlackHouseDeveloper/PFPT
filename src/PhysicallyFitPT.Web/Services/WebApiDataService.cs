@@ -249,4 +249,30 @@ public class WebApiDataService : IDataService
       return new DashboardStatsDto();
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<AppStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting application statistics");
+
+      var response = await this.httpClient.GetAsync("api/stats", cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var stats = await response.Content.ReadFromJsonAsync<AppStatsDto>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved application statistics");
+        return stats ?? new AppStatsDto { ApiHealthy = true };
+      }
+
+      this.logger.LogWarning("Failed to get app stats with status: {StatusCode}", response.StatusCode);
+      return new AppStatsDto { ApiHealthy = false };
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting application statistics");
+      return new AppStatsDto { ApiHealthy = false };
+    }
+  }
 }
