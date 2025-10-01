@@ -22,10 +22,11 @@ COPY src/ src/
 # Build and publish the seeder application
 RUN dotnet publish "src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj" \
     -c Release \
-    -o /app/publish
+    -o /app/publish \
+    --no-restore
 
 # Install dotnet-ef tool in build stage so it can be copied later
-RUN dotnet tool install --tool-path /tmp/dotnet-tools dotnet-ef --version 8.0.16
+RUN dotnet tool install --tool-path /tmp/dotnet-tools dotnet-ef --version 8.0.8
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime

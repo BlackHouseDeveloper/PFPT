@@ -1395,13 +1395,6 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "physicallyfitpt.ai": {
-        "type": "Project",
-        "dependencies": {
-          "PhysicallyFitPT.Core": "[1.0.0, )",
-          "PhysicallyFitPT.Shared": "[1.0.0, )"
-        }
-      },
       "physicallyfitpt.core": {
         "type": "Project"
       },
@@ -1413,6 +1406,7 @@
           "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",
           "QuestPDF": "[2025.7.1, )",
+          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.2, )",
           "SkiaSharp": "[3.119.1, )"
         }
       },
@@ -1424,7 +1418,6 @@
           "Microsoft.Extensions.Logging.Debug": "[8.0.1, )",
           "Microsoft.Maui.Controls": "[8.0.100, )",
           "Microsoft.Maui.Controls.Compatibility": "[8.0.100, )",
-          "PhysicallyFitPT.AI": "[1.0.0, )",
           "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Infrastructure": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",

@@ -28,7 +28,6 @@
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
     <!-- Test stack (stable picks that work well with .NET 8) -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
@@ -54,9 +53,6 @@
     <!-- API and OpenAPI -->
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <!-- Feature Management -->
-    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.0.0" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0" />
     <!-- Testing packages -->
     <PackageVersion Include="Moq" Version="4.20.70" />
     <!-- Seeder-specific packages -->
