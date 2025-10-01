@@ -79,8 +79,11 @@ app.UseCors();
 // Map Health Check endpoint
 app.MapHealthChecks("/health");
 
-// Minimal API for application statistics
-app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+// API v1 endpoints with versioning
+var v1 = app.MapGroup("/api/v1");
+
+// Application statistics endpoint
+v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
 {
     try
     {
@@ -115,6 +118,44 @@ app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContex
     }
 })
 .WithName("GetAppStats")
+.WithOpenApi();
+
+// Legacy endpoint for backwards compatibility
+app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        
+        var patientCount = await db.Patients.CountAsync(cancellationToken);
+        var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
+        
+        // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
+        var patients = await db.Patients
+            .Select(p => new { p.UpdatedAt, p.CreatedAt })
+            .ToListAsync(cancellationToken);
+        
+        var lastPatientUpdated = patients
+            .Select(p => p.UpdatedAt ?? p.CreatedAt)
+            .OrderByDescending(d => d)
+            .FirstOrDefault();
+
+        var stats = new
+        {
+            Patients = patientCount,
+            Appointments = appointmentCount,
+            LastPatientUpdated = lastPatientUpdated,
+            ApiHealthy = true,
+        };
+
+        return Results.Ok(stats);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetAppStatsLegacy")
 .WithOpenApi();
 
 // Minimal APIs for patients
@@ -312,3 +353,8 @@ public record AppointmentCreateRequest(
 #pragma warning restore SA1633 // The file name must match the first type name
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning restore SA1600 // Elements should be documented
+
+// Make Program accessible for integration tests
+public partial class Program
+{
+}
