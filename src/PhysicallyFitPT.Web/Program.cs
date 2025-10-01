@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Http;
+using Microsoft.FeatureManagement;
 using PhysicallyFitPT.Shared;
 using PhysicallyFitPT.Web.Services;
 using Polly;
@@ -18,6 +19,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Configuration
 builder.Services.Configure<ApiConfiguration>(
     builder.Configuration.GetSection("Api"));
+
+// Feature Management
+builder.Services.AddFeatureManagement();
 
 // Platform services
 builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfo>();

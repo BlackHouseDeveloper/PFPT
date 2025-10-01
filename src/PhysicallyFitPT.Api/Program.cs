@@ -13,6 +13,7 @@
 #pragma warning disable SA1400 // Access modifier should be declared
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
@@ -27,6 +28,9 @@ builder.Services.AddSwaggerGen();
 
 // Add Health Checks
 builder.Services.AddHealthChecks();
+
+// Add Feature Management
+builder.Services.AddFeatureManagement();
 
 // Configure Entity Framework
 var configuredConnection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -47,6 +51,7 @@ builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
 builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
 builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
 builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+builder.Services.AddScoped<PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer, PhysicallyFitPT.Infrastructure.Pdf.QuestPdfRenderer>();
 
 // Add CORS for development
 builder.Services.AddCors(options =>
@@ -200,6 +205,48 @@ app.MapGet("/api/notes/appointment/{appointmentId}", (Guid appointmentId, INoteB
     }
 })
 .WithName("GetNoteByAppointment")
+.WithOpenApi();
+
+// PDF export endpoint (behind feature flag)
+app.MapGet("/api/notes/export/{id}", async (Guid id, PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer pdfRenderer, IFeatureManager featureManager, CancellationToken cancellationToken) =>
+{
+    if (!await featureManager.IsEnabledAsync("PDFExport"))
+    {
+        return Results.NotFound(new { error = "PDF export feature is not enabled" });
+    }
+
+    try
+    {
+        var pdfBytes = await pdfRenderer.RenderNoteAsync(id, cancellationToken);
+        return Results.File(pdfBytes, "application/pdf", $"note-{id}.pdf");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("ExportNotePdf")
+.WithOpenApi();
+
+// Demo PDF endpoint (behind feature flag)
+app.MapGet("/api/pdf/demo", async (PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer pdfRenderer, IFeatureManager featureManager, CancellationToken cancellationToken) =>
+{
+    if (!await featureManager.IsEnabledAsync("PDFExport"))
+    {
+        return Results.NotFound(new { error = "PDF export feature is not enabled" });
+    }
+
+    try
+    {
+        var pdfBytes = await pdfRenderer.RenderDemoAsync(cancellationToken);
+        return Results.File(pdfBytes, "application/pdf", "pfpt-demo.pdf");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("DemoPdf")
 .WithOpenApi();
 
 // Minimal APIs for questionnaires
