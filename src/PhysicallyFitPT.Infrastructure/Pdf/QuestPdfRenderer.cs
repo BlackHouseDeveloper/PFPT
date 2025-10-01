@@ -26,7 +26,7 @@ public class QuestPdfRenderer : IPdfRenderer
   public QuestPdfRenderer(ILogger<QuestPdfRenderer> logger)
   {
     this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    
+
     // Set QuestPDF license (Community license for free use)
     QuestPDF.Settings.License = LicenseType.Community;
   }
