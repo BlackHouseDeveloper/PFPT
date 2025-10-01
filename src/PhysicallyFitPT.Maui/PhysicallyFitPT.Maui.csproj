@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>PhysicallyFitPT</RootNamespace>
     <ApplicationTitle>PhysicallyFitPT</ApplicationTitle>
-    <ApplicationId>com.companyname.physicallyfitpt</ApplicationId>
+    <ApplicationId>com.BlackHouseDevelopers.physicallyfitpt</ApplicationId>
 
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
@@ -134,7 +134,9 @@
 
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="PhysicallyFitPT.Shared" />
+    <TrimmerRootAssembly Include="PhysicallyFitPT.Shared">
+      <RootMode>Library</RootMode>
+    </TrimmerRootAssembly>
   </ItemGroup>
 
 

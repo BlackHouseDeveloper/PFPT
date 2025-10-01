@@ -1,0 +1,274 @@
+name: MCP Issue Triage & Labeling
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  triage:
+    name: Automated Issue Triage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Triage Issue or PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const isIssue = context.eventName === 'issues';
+            const isPR = context.eventName === 'pull_request';
+            const number = context.issue.number;
+            
+            // Get issue/PR data
+            const item = isIssue ? context.payload.issue : context.payload.pull_request;
+            const title = item.title.toLowerCase();
+            const body = (item.body || '').toLowerCase();
+            const fullText = title + ' ' + body;
+            
+            console.log(`Triaging ${isIssue ? 'issue' : 'PR'} #${number}: ${item.title}`);
+            
+            const labelsToAdd = [];
+            const labelsToRemove = [];
+            
+            // Healthcare/Clinical specific labels
+            const healthcareTerms = ['hipaa', 'patient data', 'phi'];
+            if (healthcareTerms.some(term => fullText.includes(term))) {
+              labelsToAdd.push('healthcare-compliance');
+            }
+            
+            const clinicalTerms = ['clinical', 'therapy', 'assessment'];
+            if (clinicalTerms.some(term => fullText.includes(term))) {
+              labelsToAdd.push('clinical-workflow');
+            }
+            
+            // Platform-specific labels
+            if (fullText.includes('android')) labelsToAdd.push('platform-android');
+            if (fullText.includes('ios')) labelsToAdd.push('platform-ios');
+            if (fullText.includes('web') || fullText.includes('blazor')) labelsToAdd.push('platform-web');
+            if (fullText.includes('maui') || fullText.includes('cross-platform')) labelsToAdd.push('platform-maui');
+            
+            // Component-specific labels
+            if (fullText.includes('pdf') || fullText.includes('report') || fullText.includes('questpdf')) {
+              labelsToAdd.push('component-pdf');
+            }
+            
+            if (fullText.includes('database') || fullText.includes('sqlite') || fullText.includes('ef core') || fullText.includes('migration')) {
+              labelsToAdd.push('component-database');
+            }
+            
+            if (fullText.includes('accessibility') || fullText.includes('a11y') || fullText.includes('wcag')) {
+              labelsToAdd.push('accessibility');
+            }
+            
+            if (fullText.includes('security') || fullText.includes('auth') || fullText.includes('encryption')) {
+              labelsToAdd.push('security');
+            }
+            
+            if (fullText.includes('performance') || fullText.includes('slow') || fullText.includes('optimization')) {
+              labelsToAdd.push('performance');
+            }
+            
+            // Bug/Issue type detection
+            if (isIssue) {
+              if (title.includes('[bug]') || fullText.includes('error') || fullText.includes('crash') || fullText.includes('exception')) {
+                labelsToAdd.push('bug');
+              }
+              
+              if (title.includes('[feature]') || fullText.includes('enhancement') || fullText.includes('new feature')) {
+                labelsToAdd.push('enhancement');
+              }
+              
+              if (title.includes('[docs]') || fullText.includes('documentation') || fullText.includes('readme')) {
+                labelsToAdd.push('documentation');
+              }
+              
+              // Priority detection
+              if (fullText.includes('urgent') || fullText.includes('critical') || fullText.includes('blocking')) {
+                labelsToAdd.push('priority-high');
+              } else if (fullText.includes('nice to have') || fullText.includes('minor')) {
+                labelsToAdd.push('priority-low');
+              }
+              
+              // Help wanted detection
+              if (fullText.includes('help wanted') || fullText.includes('good first issue')) {
+                labelsToAdd.push('help wanted');
+              }
+            }
+            
+            // PR-specific labels
+            if (isPR) {
+              const prFiles = await github.rest.pulls.listFiles({
+                owner,
+                repo,
+                pull_number: number
+              });
+              
+              const changedFiles = prFiles.data.map(f => f.filename.toLowerCase());
+              
+              // Detect areas affected by PR
+              if (changedFiles.some(f => f.includes('test'))) {
+                labelsToAdd.push('tests');
+              }
+              
+              if (changedFiles.some(f => f.includes('.md') || f.includes('docs/'))) {
+                labelsToAdd.push('documentation');
+              }
+              
+              if (changedFiles.some(f => f.includes('workflow') || f.includes('.github/'))) {
+                labelsToAdd.push('ci-cd');
+              }
+              
+              if (changedFiles.some(f => f.includes('pdf') || f.includes('questpdf'))) {
+                labelsToAdd.push('component-pdf');
+              }
+              
+              if (changedFiles.some(f => f.includes('infrastructure') || f.includes('data'))) {
+                labelsToAdd.push('component-database');
+              }
+            }
+            
+            // Size estimation for PRs
+            if (isPR) {
+              const prDetails = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: number
+              });
+              
+              const additions = prDetails.data.additions;
+              const deletions = prDetails.data.deletions;
+              const totalChanges = additions + deletions;
+              
+              if (totalChanges < 10) {
+                labelsToAdd.push('size-xs');
+              } else if (totalChanges < 50) {
+                labelsToAdd.push('size-s');
+              } else if (totalChanges < 200) {
+                labelsToAdd.push('size-m');
+              } else if (totalChanges < 500) {
+                labelsToAdd.push('size-l');
+              } else {
+                labelsToAdd.push('size-xl');
+              }
+            }
+            
+            // Apply labels
+            if (labelsToAdd.length > 0) {
+              console.log(`Adding labels: ${labelsToAdd.join(', ')}`);
+              
+              try {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: number,
+                  labels: labelsToAdd
+                });
+                
+                console.log('✅ Labels applied successfully');
+              } catch (error) {
+                console.log(`❌ Error applying labels: ${error.message}`);
+              }
+            }
+            
+            // Auto-assign for specific types
+            if (isIssue) {
+              // Auto-assign clinical workflow issues to healthcare specialist
+              if (labelsToAdd.includes('clinical-workflow') || labelsToAdd.includes('healthcare-compliance')) {
+                try {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    body: `🏥 **Healthcare-Related Issue Detected**
+                    
+                    This issue has been automatically categorized as related to healthcare workflows or compliance.
+                    
+                    **Detected Categories:**
+                    ${labelsToAdd.filter(l => l.includes('clinical') || l.includes('healthcare')).map(l => `- ${l}`).join('\n')}
+                    
+                    **Next Steps:**
+                    - This issue will be prioritized for review
+                    - Healthcare compliance considerations will be evaluated
+                    - Clinical workflow impact will be assessed
+                    
+                    For urgent healthcare/compliance issues, please use the \`priority-high\` label.`
+                  });
+                } catch (error) {
+                  console.log(`Could not post healthcare comment: ${error.message}`);
+                }
+              }
+              
+              // Welcome new contributors
+              const authorAssociation = context.payload.issue.author_association;
+              if (authorAssociation === 'FIRST_TIME_CONTRIBUTOR') {
+                try {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: number,
+                    body: `👋 **Welcome to PFPT!**
+                    
+                    Thank you for your first contribution to the PFPT project! We're excited to have you join our community of healthcare technology contributors.
+                    
+                    **Getting Started:**
+                    - 📖 Check out our [Contributing Guidelines](.github/CONTRIBUTING.md)
+                    - 🔧 See [Development Setup](.github/copilot-agent-instructions.md) for environment setup
+                    - 💬 Join discussions in our community channels
+                    
+                    **For Healthcare Contributors:**
+                    - 🏥 Review our healthcare compliance guidelines
+                    - 📋 Understand clinical workflow requirements
+                    - 🔒 Familiarize yourself with HIPAA considerations
+                    
+                    A maintainer will review your issue soon. Thank you for helping make healthcare technology more accessible!`
+                  });
+                } catch (error) {
+                  console.log(`Could not post welcome comment: ${error.message}`);
+                }
+              }
+            }
+            
+            // Summary
+            console.log(`Triage complete for ${isIssue ? 'issue' : 'PR'} #${number}`);
+            console.log(`Applied ${labelsToAdd.length} labels: ${labelsToAdd.join(', ')}`);
+            
+            return {
+              number: number,
+              type: isIssue ? 'issue' : 'pull_request',
+              labelsAdded: labelsToAdd,
+              title: item.title
+            };
+      
+      - name: Update Project Board
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // This would integrate with GitHub Projects if available
+            // For now, we'll log the action
+            const issueNumber = context.issue.number;
+            const labels = context.payload.issue.labels.map(l => l.name);
+            
+            console.log(`Issue #${issueNumber} triaged with labels: ${labels.join(', ')}`);
+            
+            // Future enhancement: Add to project boards based on labels
+            if (labels.includes('healthcare-compliance') || labels.includes('clinical-workflow')) {
+              console.log('🏥 Issue flagged for healthcare team review');
+            }
+            
+            if (labels.includes('bug') && labels.includes('priority-high')) {
+              console.log('🚨 High priority bug flagged for immediate attention');
+            }
+            
+            if (labels.includes('help wanted') || labels.includes('good first issue')) {
+              console.log('👥 Issue marked as community contribution opportunity');
+            }

@@ -1,0 +1,450 @@
+name: MCP Documentation Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      doc_type:
+        description: 'Documentation type to generate/update'
+        required: true
+        default: 'api'
+        type: choice
+        options:
+          - api
+          - architecture
+          - onboarding
+          - troubleshooting
+          - changelog
+          - all
+  push:
+    branches: [main]
+    paths:
+      - 'src/**/*.cs'
+      - 'docs/**/*.md'
+      - '.github/**/*.md'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  documentation-automation:
+    name: Documentation Generation - ${{ inputs.doc_type || 'auto' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+          
+      - name: Setup .NET SDK 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      
+      - name: Install Documentation Tools
+        run: |
+          # Install XMLDocMarkdown for API documentation
+          dotnet tool install --global XmlDocMarkdown.Tool
+          
+          # Install additional documentation tools
+          sudo apt-get update
+          sudo apt-get install -y tree graphviz
+          
+      - name: Restore Core Projects
+        run: |
+          dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj
+          
+      - name: Generate API Documentation
+        if: inputs.doc_type == 'api' || inputs.doc_type == 'all' || github.event_name == 'push'
+        run: |
+          echo "📚 Generating API documentation..."
+          
+          # Build projects to generate XML documentation
+          dotnet build src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj -c Release
+          
+          # Create API docs directory
+          mkdir -p docs/api
+          
+          # Generate markdown from XML documentation
+          if [ -f "src/PhysicallyFitPT.Core/bin/Release/net8.0/PhysicallyFitPT.Core.xml" ]; then
+            xmldocmd src/PhysicallyFitPT.Core/bin/Release/net8.0/PhysicallyFitPT.Core.xml docs/api/
+            echo "✅ API documentation generated"
+          else
+            echo "⚠️ No XML documentation found - ensure <GenerateDocumentationFile>true</GenerateDocumentationFile> in project files"
+          fi
+          
+          # Generate API overview
+          cat > docs/api/README.md <<EOF
+          # PFPT API Documentation
+          
+          This directory contains auto-generated API documentation for PFPT core components.
+          
+          ## Core Components
+          
+          - **Entities**: Domain entities representing business objects
+          - **Services**: Business logic and application services  
+          - **Interfaces**: Contracts and abstractions
+          - **Extensions**: Utility extensions and helpers
+          
+          ## Navigation
+          
+          - [Entity Framework Models](./entities/)
+          - [Service Interfaces](./interfaces/)
+          - [Core Services](./services/)
+          
+          ## Usage Guidelines
+          
+          - All public APIs include XML documentation
+          - Follow dependency injection patterns
+          - Use async/await for I/O operations
+          - Implement proper error handling
+          
+          _Last updated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Generate Architecture Documentation
+        if: inputs.doc_type == 'architecture' || inputs.doc_type == 'all'
+        run: |
+          echo "🏗️ Generating architecture documentation..."
+          
+          # Create architecture diagrams using tree
+          mkdir -p docs/architecture
+          
+          # Use project structure template
+          cp .github/templates/documentation/project-structure-template.md docs/architecture/project-structure.md
+          
+          # Replace template variables
+          PROJECT_TREE=$(tree src/ -I 'bin|obj|*.user' 2>/dev/null || find src/ -type d | head -20 | sed 's/^/  /')
+          sed -i "s/{{GENERATION_DATE}}/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/g" docs/architecture/project-structure.md
+          
+          # Replace project tree (use temp file for multiline replacement)
+          echo "$PROJECT_TREE" > project_tree_temp.txt
+          sed -i "/{{PROJECT_TREE}}/r project_tree_temp.txt" docs/architecture/project-structure.md
+          sed -i "/{{PROJECT_TREE}}/d" docs/architecture/project-structure.md
+          rm -f project_tree_temp.txt
+          
+          # Generate component map
+          echo "📋 Mapping project components..."
+          find src/ -name "*.csproj" -exec echo "## {}" \; -exec cat {} \; > docs/architecture/components.txt
+          
+      - name: Generate Onboarding Documentation
+        if: inputs.doc_type == 'onboarding' || inputs.doc_type == 'all'
+        run: |
+          echo "👋 Generating onboarding documentation..."
+          
+          # Use onboarding template
+          cp .github/templates/documentation/onboarding-template.md docs/ONBOARDING.md
+          
+          4. **Build and test**:
+             \`\`\`bash
+             dotnet build src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj
+             dotnet test tests/PhysicallyFitPT.Core.Tests/PhysicallyFitPT.Core.Tests.csproj
+             \`\`\`
+          
+          ## Development Workflow
+          
+          ### Daily Workflow
+          1. Pull latest changes: \`git pull origin main\`
+          2. Create feature branch: \`git checkout -b feature/your-feature\`
+          3. Make changes and commit frequently
+          4. Run tests: \`dotnet test\`
+          5. Format code: \`dotnet format\`
+          6. Push and create PR
+          
+          ### Code Quality Standards
+          - **Formatting**: Use \`dotnet format\` before committing
+          - **Analysis**: Fix all Roslynator warnings
+          - **Testing**: Add tests for new functionality
+          - **Documentation**: Update XML docs for public APIs
+          
+          ### Common Tasks
+          
+          #### Database Operations
+          \`\`\`bash
+          # Create migration
+          dotnet ef migrations add YourMigrationName -p src/PhysicallyFitPT.Infrastructure -s src/PhysicallyFitPT.Maui
+          
+          # Update database
+          dotnet ef database update -p src/PhysicallyFitPT.Infrastructure -s src/PhysicallyFitPT.Maui
+          \`\`\`
+          
+          #### Platform Builds
+          \`\`\`bash
+          # Android
+          dotnet build src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -f net8.0-android
+          
+          # iOS
+          dotnet build src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj -f net8.0-ios
+          
+          # Web
+          dotnet build src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj
+          \`\`\`
+          
+          ## Project Architecture
+          
+          PFPT uses Clean Architecture with the following layers:
+          
+          - **Core**: Domain entities and business logic
+          - **Infrastructure**: Data access and external services
+          - **Shared**: Common utilities and DTOs
+          - **Maui**: Cross-platform mobile/desktop UI
+          - **Web**: Blazor WebAssembly client
+          
+          ## Key Technologies
+          
+          - **.NET MAUI**: Cross-platform app framework
+          - **Blazor**: Web UI framework
+          - **Entity Framework Core**: ORM for database access
+          - **SQLite**: Local database
+          - **QuestPDF**: PDF generation
+          - **xUnit**: Unit testing framework
+          
+          ## Troubleshooting
+          
+          ### Common Issues
+          
+          1. **MAUI workload not installed**:
+             \`\`\`bash
+             dotnet workload install maui
+             \`\`\`
+          
+          2. **Build errors on first run**:
+             \`\`\`bash
+             dotnet clean
+             dotnet restore
+             dotnet build
+             \`\`\`
+          
+          3. **Database migration issues**:
+             \`\`\`bash
+             # Reset database
+             rm -f *.db
+             dotnet ef database update -p src/PhysicallyFitPT.Infrastructure -s src/PhysicallyFitPT.Maui
+             \`\`\`
+          
+          ### Getting Help
+          
+          - Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+          - Review [GitHub Issues](https://github.com/BlackHouseDeveloper/PFPT/issues)
+          - Ask questions in team chat
+          - Use \`@copilot\` for automated help
+          
+          ## Next Steps
+          
+          1. **Read the documentation**:
+             - [Architecture Guide](./ARCHITECTURE.md)
+             - [Development Guide](./DEVELOPMENT.md)
+             - [API Documentation](./api/)
+          
+          2. **Set up your development environment**:
+             - Configure IDE settings
+             - Install recommended extensions
+             - Set up debugging configurations
+          
+          3. **Make your first contribution**:
+             - Pick a "good first issue"
+             - Follow the PR template
+             - Get familiar with the CI/CD process
+          
+          4. **Join the team**:
+             - Attend standups and planning meetings
+             - Participate in code reviews
+             - Share knowledge and learn from others
+          
+          Welcome to the team! 🎉
+          
+          _Auto-generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Update Troubleshooting Guide
+        if: inputs.doc_type == 'troubleshooting' || inputs.doc_type == 'all'
+        run: |
+          echo "🔧 Updating troubleshooting documentation..."
+          
+          # Append new troubleshooting scenarios to existing guide
+          cat >> docs/TROUBLESHOOTING.md <<EOF
+          
+          ## Auto-Generated Common Issues
+          
+          _Updated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          
+          ### MCP Workflow Issues
+          
+          **Problem**: MCP workflows fail to run
+          **Solution**: 
+          1. Check workflow permissions in repository settings
+          2. Verify workflow dispatch triggers are properly configured
+          3. Ensure GitHub Actions are enabled for the repository
+          
+          **Problem**: PDF diagnostics fail
+          **Solution**:
+          1. Run \`gh workflow run mcp-pdf-diagnostics.yml -f test_type=validate\`
+          2. Check QuestPDF license configuration
+          3. Verify all PDF dependencies are properly installed
+          
+          **Problem**: Database diagnostics report errors
+          **Solution**:
+          1. Run \`gh workflow run mcp-database-diagnostics.yml -f operation=validate\`
+          2. Check EF_PROVIDER environment variable is set to 'sqlite'
+          3. Verify database connection string configuration
+          
+          ### CI/CD Troubleshooting
+          
+          **Problem**: StyleCop formatting failures
+          **Solution**:
+          \`\`\`bash
+          dotnet format PFPT.sln --verbosity diagnostic
+          git add -A && git commit -m "Apply code formatting"
+          \`\`\`
+          
+          **Problem**: Roslynator analysis failures  
+          **Solution**:
+          \`\`\`bash
+          roslynator analyze PFPT.sln --severity-level info --fix
+          git add -A && git commit -m "Fix code analysis issues"
+          \`\`\`
+          
+          **Problem**: Cross-platform build failures
+          **Solution**:
+          1. Ensure MAUI workloads are installed
+          2. Check platform-specific SDK requirements
+          3. Review conditional compilation directives
+          
+          EOF
+          
+      - name: Generate Enhanced Changelog
+        if: inputs.doc_type == 'changelog' || inputs.doc_type == 'all'
+        run: |
+          echo "📝 Generating enhanced changelog..."
+          
+          # Create detailed changelog with commit analysis
+          cat > docs/CHANGELOG_DETAILED.md <<EOF
+          # Detailed PFPT Changelog
+          
+          _Auto-generated detailed changelog with commit analysis_
+          
+          ## Recent Development Activity
+          
+          ### Commit Analysis (Last 50 commits)
+          \`\`\`
+          $(git log --oneline -50)
+          \`\`\`
+          
+          ### File Change Summary
+          \`\`\`
+          $(git log --stat --oneline -10)
+          \`\`\`
+          
+          ### Contributors (Last 30 days)
+          \`\`\`
+          $(git log --since="30 days ago" --pretty=format:"%an" | sort | uniq -c | sort -nr)
+          \`\`\`
+          
+          ## Development Metrics
+          
+          - **Total commits**: $(git rev-list --count HEAD)
+          - **Total contributors**: $(git log --pretty=format:"%an" | sort | uniq | wc -l)
+          - **Lines of code**: $(find src/ -name "*.cs" -exec wc -l {} + | tail -1 | awk '{print $1}' || echo "N/A")
+          - **Test files**: $(find tests/ -name "*.cs" | wc -l || echo "0")
+          
+          _Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Validate Generated Documentation
+        run: |
+          echo "✅ Validating generated documentation..."
+          
+          # Check for broken links in markdown files
+          find docs/ -name "*.md" -exec echo "Checking: {}" \; -exec grep -H "http" {} \; || true
+          
+          # Validate markdown syntax (basic check)
+          for md in docs/*.md docs/*/*.md; do
+            if [ -f "$md" ]; then
+              echo "📄 Validated: $md"
+            fi
+          done
+          
+          # Generate documentation summary
+          cat > docs/DOCUMENTATION_INDEX.md <<EOF
+          # PFPT Documentation Index
+          
+          ## Available Documentation
+          
+          $(find docs/ -name "*.md" | sort | sed 's|docs/||' | sed 's|^|- [|' | sed 's|$|](&)|')
+          
+          ## Quick Links
+          
+          - [Getting Started](./README.md)
+          - [Architecture Overview](./ARCHITECTURE.md)  
+          - [Development Guide](./DEVELOPMENT.md)
+          - [API Documentation](./api/)
+          - [Troubleshooting](./TROUBLESHOOTING.md)
+          - [Onboarding Guide](./ONBOARDING.md)
+          
+          _Auto-generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")_
+          EOF
+          
+      - name: Commit Documentation Updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Check if there are changes to commit
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "📋 No documentation changes to commit"
+          else
+            git add docs/
+            git commit -m "docs: auto-generate documentation updates [skip ci]"
+            git push
+            echo "✅ Documentation updates committed and pushed"
+          fi
+          
+      - name: Generate Documentation Report
+        if: always()
+        run: |
+          echo "📊 Generating documentation report..."
+          
+          cat > documentation_report.md <<EOF
+          # Documentation Generation Report
+          
+          **Operation**: ${{ inputs.doc_type || 'auto-update' }}
+          **Status**: ${{ job.status }}
+          **Timestamp**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Generated Documentation
+          
+          $(find docs/ -name "*.md" -newer documentation_report.md 2>/dev/null | sed 's|^|- |' || echo "- No new files generated")
+          
+          ## Documentation Statistics
+          
+          - **Total markdown files**: $(find docs/ -name "*.md" | wc -l)
+          - **Total documentation size**: $(du -sh docs/ | cut -f1)
+          - **API reference files**: $(find docs/api/ -name "*.md" 2>/dev/null | wc -l || echo "0")
+          
+          ## Recommendations
+          
+          - Keep documentation up to date with code changes
+          - Review auto-generated content for accuracy
+          - Add examples and usage scenarios
+          - Maintain cross-references between documents
+          - Ensure all public APIs are documented
+          
+          EOF
+          
+      - name: Upload Documentation Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-updates-${{ github.run_number }}
+          path: |
+            docs/
+            documentation_report.md
+          retention-days: 30

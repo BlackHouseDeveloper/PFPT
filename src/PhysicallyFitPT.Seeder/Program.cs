@@ -2,47 +2,63 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using PhysicallyFitPT.Core;
-using PhysicallyFitPT.Infrastructure.Data;
-
-var envPath = Environment.GetEnvironmentVariable("PFP_DB_PATH");
-var dbPath = string.IsNullOrWhiteSpace(envPath)
-  ? Path.Combine(Directory.GetCurrentDirectory(), "dev.physicallyfitpt.db")
-  : envPath!;
-Console.WriteLine($"[Seeder] Using DB: {dbPath}");
-
-var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-  .UseSqlite($"Data Source={dbPath}")
-  .Options;
-
-await using var db = new ApplicationDbContext(options);
-await db.Database.EnsureCreatedAsync();
-
-if (!await db.CptCodes.AnyAsync())
+namespace PhysicallyFitPT.Seeder
 {
-  db.CptCodes.AddRange(
-    new CptCode { Code = "97110", Description = "Therapeutic exercise" },
-    new CptCode { Code = "97140", Description = "Manual therapy" },
-    new CptCode { Code = "97530", Description = "Therapeutic activities" });
-}
 
-if (!await db.Icd10Codes.AnyAsync())
-{
-  db.Icd10Codes.AddRange(
-    new Icd10Code { Code = "M25.561", Description = "Pain in right knee" },
-    new Icd10Code { Code = "M25.562", Description = "Pain in left knee" });
-}
+  using System.CommandLine;
+  using Microsoft.Extensions.DependencyInjection;
+  using Microsoft.Extensions.Hosting;
+  using Microsoft.Extensions.Options;
+  using PhysicallyFitPT.Seeder.CLI;
+  using PhysicallyFitPT.Seeder.Configuration;
 
-if (!await db.Patients.AnyAsync())
-{
-  db.Patients.AddRange(
-    new Patient { MRN = "A1001", FirstName = "Jane", LastName = "Doe", Email = "jane@example.com" },
-    new Patient { MRN = "A1002", FirstName = "John", LastName = "Smith", Email = "john@example.com" });
-}
+  /// <summary>
+  /// Main program class for the PFPT Seeder application.
+  /// </summary>
+  public class Program
+  {
+    /// <summary>
+    /// Application entry point.
+    /// </summary>
+    /// <param name="args">Command line arguments.</param>
+    /// <returns>Exit code.</returns>
+    public static async Task<int> Main(string[] args)
+    {
+      // Special case: if no arguments provided, show help
+      if (args.Length == 0)
+      {
+        args = new[] { "--help" };
+      }
 
-await db.SaveChangesAsync();
-Console.WriteLine("[Seeder] Seed complete.");
+      try
+      {
+        // Build and start the host
+        using var host = SeederHost.CreateHostBuilder(args).Build();
+        await host.StartAsync();
+
+        // Get services
+        var serviceProvider = host.Services;
+
+        // Ensure database is ready
+        var seederOptions = serviceProvider.GetRequiredService<IOptions<SeederOptions>>().Value;
+        await SeederHost.EnsureDatabaseReadyAsync(serviceProvider, seederOptions.UseMigrations);
+
+        // Create command with service provider
+        var rootCommand = CommandBuilder.CreateRootCommand(serviceProvider);
+
+        // Invoke the command
+        return await rootCommand.InvokeAsync(args);
+      }
+      catch (Exception ex)
+      {
+        // Fallback error handling if DI isn't available
+        Console.Error.WriteLine($"Fatal error: {ex.Message}");
+        if (Environment.GetEnvironmentVariable("PFP_LOGLEVEL")?.Equals("Debug", StringComparison.OrdinalIgnoreCase) == true)
+        {
+          Console.Error.WriteLine(ex.ToString());
+        }
+        return 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,331 @@
+name: MCP Release Notes Generation
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of release notes to generate'
+        required: true
+        default: 'feature'
+        type: choice
+        options:
+          - feature
+          - hotfix
+          - maintenance
+          - major
+      from_tag:
+        description: 'Previous release tag (e.g., v1.0.0)'
+        required: true
+        type: string
+      to_tag:
+        description: 'Current release tag (e.g., v1.1.0)'
+        required: true
+        type: string
+      include_clinical:
+        description: 'Include clinical workflow categorization'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  generate-release-notes:
+    name: Generate Release Notes - ${{ inputs.release_type }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for commit analysis
+      
+      - name: Setup Release Notes Environment
+        run: |
+          echo "📝 Setting up release notes generation..."
+          mkdir -p release-notes/{raw,processed,final}
+          
+          # Create generation context from template
+          cp .github/templates/release-notes/generation-context-template.md release-notes/generation-context.md
+          
+          # Replace template variables
+          sed -i "s/{{RELEASE_TYPE}}/${{ inputs.release_type }}/g" release-notes/generation-context.md
+          sed -i "s/{{FROM_TAG}}/${{ inputs.from_tag }}/g" release-notes/generation-context.md
+          sed -i "s/{{TO_TAG}}/${{ inputs.to_tag }}/g" release-notes/generation-context.md
+          sed -i "s/{{INCLUDE_CLINICAL}}/${{ inputs.include_clinical }}/g" release-notes/generation-context.md
+          sed -i "s/{{GENERATION_DATE}}/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/g" release-notes/generation-context.md
+          sed -i "s/{{CLINICAL_STATUS}}/${{ inputs.include_clinical && 'enabled' || 'disabled' }}/g" release-notes/generation-context.md
+      
+      - name: Extract Commit History
+        id: extract-commits
+        run: |
+          echo "📋 Extracting commit history between ${{ inputs.from_tag }} and ${{ inputs.to_tag }}..."
+          
+          # Generate commit log with detailed format
+          git log --pretty=format:"%h|%s|%an|%ae|%cd|%b" --date=short "${{ inputs.from_tag }}..${{ inputs.to_tag }}" > release-notes/raw/commits.txt
+          
+          # Count commits
+          commit_count=$(wc -l < release-notes/raw/commits.txt)
+          echo "COMMIT_COUNT=$commit_count" >> $GITHUB_OUTPUT
+          
+          if [ "$commit_count" -eq 0 ]; then
+            echo "❌ No commits found between ${{ inputs.from_tag }} and ${{ inputs.to_tag }}"
+            exit 1
+          fi
+          
+          echo "✅ Found $commit_count commits to analyze"
+      
+      - name: Analyze and Categorize Commits
+        run: |
+          echo "🔍 Analyzing and categorizing commits..."
+          
+          # Use extracted script
+          python3 .github/scripts/mcp/release-notes/categorize-commits.py
+      
+      - name: Generate Formatted Release Notes
+        run: |
+          echo "📝 Generating formatted release notes..."
+          
+          # Set environment variables for the script
+          export RELEASE_TYPE="${{ inputs.release_type }}"
+          export FROM_TAG="${{ inputs.from_tag }}"
+          export TO_TAG="${{ inputs.to_tag }}"
+          export INCLUDE_CLINICAL="${{ inputs.include_clinical }}"
+          
+          # Use extracted script
+          python3 .github/scripts/mcp/release-notes/generate-notes.py
+          notes.append("")
+          
+          total_commits = 0
+          for category_key, category_name in category_order:
+              if category_key in categories and categories[category_key]:
+                  commits = categories[category_key]
+                  total_commits += len(commits)
+                  
+                  notes.append(f"### {category_name}")
+                  notes.append("")
+                  
+                  for commit in commits[:10]:  # Limit to top 10 per category
+                      # Clean up commit message
+                      message = commit['message'].strip()
+                      if message.startswith(commit['hash']):
+                          message = message[len(commit['hash']):].strip()
+                      
+                      # Format author (prefer name over email)
+                      author = commit['author'] if commit['author'] != 'unknown' else commit['email'].split('@')[0]
+                      
+                      notes.append(f"- {message} by @{author} ({commit['hash']})")
+                  
+                  if len(commits) > 10:
+                      notes.append(f"- ... and {len(commits) - 10} more commits in this category")
+                  
+                  notes.append("")
+          
+          # Add summary
+          notes.append("## 📊 Release Statistics")
+          notes.append("")
+          notes.append(f"- **Total Commits**: {total_commits}")
+          notes.append(f"- **Categories**: {len([c for c in categories if categories[c]])}")
+          notes.append(f"- **Contributors**: {len(set(commit['author'] for commits in categories.values() for commit in commits))}")
+          notes.append("")
+          
+          # Add clinical compliance notes if enabled
+          if include_clinical:
+              notes.append("## 🔒 Compliance & Healthcare Standards")
+              notes.append("")
+              notes.append("- **HIPAA Compliance**: All patient data handling follows HIPAA guidelines")
+              notes.append("- **Accessibility**: Features tested for WCAG 2.1 AA compliance")
+              notes.append("- **Data Security**: Local SQLite storage with encryption support")
+              notes.append("- **Audit Trail**: Comprehensive logging for clinical documentation")
+              notes.append("")
+          
+          notes.append("## 🚀 Upgrade Instructions")
+          notes.append("")
+          notes.append(f"1. **Backup your data**: Export current patient data before upgrading")
+          notes.append(f"2. **Download release**: Get {to_tag} from the releases page")
+          notes.append(f"3. **Database migration**: Run any required database migrations")
+          notes.append(f"4. **Test functionality**: Verify all features work as expected")
+          notes.append("")
+          
+          notes.append("## 🆘 Support & Documentation")
+          notes.append("")
+          notes.append("- **Documentation**: See `docs/` folder for updated guides")
+          notes.append("- **Issues**: Report bugs in GitHub Issues")
+          notes.append("- **Discussions**: Join community discussions for questions")
+          notes.append("- **Clinical Support**: Contact support for healthcare-specific assistance")
+          notes.append("")
+          
+          notes.append(f"**Full Changelog**: https://github.com/${{ github.repository }}/compare/{from_tag}...{to_tag}")
+          
+          # Write release notes
+          with open('release-notes/final/RELEASE_NOTES.md', 'w') as f:
+              f.write('\n'.join(notes))
+          
+          print("✅ Release notes generated successfully")
+          EOF
+          
+          python3 release-notes/generate-notes.py
+      
+      - name: Create Release Notes PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const releaseNotes = fs.readFileSync('release-notes/final/RELEASE_NOTES.md', 'utf8');
+            const summary = fs.readFileSync('release-notes/processed/summary.txt', 'utf8');
+            
+            const branchName = `release-notes/${{ inputs.to_tag }}-${Date.now()}`;
+            const fromTag = '${{ inputs.from_tag }}';
+            const toTag = '${{ inputs.to_tag }}';
+            const releaseType = '${{ inputs.release_type }}';
+            
+            // Create the release notes file in docs
+            const { execSync } = require('child_process');
+            execSync(`git config --local user.email "action@github.com"`);
+            execSync(`git config --local user.name "Release Notes Bot"`);
+            execSync(`git checkout -b "${branchName}"`);
+            
+            // Copy release notes to docs folder
+            fs.writeFileSync(`docs/RELEASE_NOTES_${toTag.replace(/[^a-zA-Z0-9]/g, '_')}.md`, releaseNotes);
+            
+            execSync(`git add docs/RELEASE_NOTES_${toTag.replace(/[^a-zA-Z0-9]/g, '_')}.md`);
+            execSync(`git commit -m "📝 Add release notes for ${toTag}
+
+            - Generated release notes for ${releaseType} release
+            - Covers changes from ${fromTag} to ${toTag}
+            - Includes clinical workflow categorization
+            - Healthcare compliance and accessibility focus
+            
+            Automated by MCP Release Notes Generation workflow"`);
+            
+            execSync(`git push origin "${branchName}"`);
+            
+            // Create pull request
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📝 Release Notes for ${toTag}`,
+              head: branchName,
+              base: 'main',
+              body: `## 📝 Release Notes Generation
+              
+              **Release**: ${toTag} (${releaseType})
+              **Previous**: ${fromTag}
+              **Generated**: ${new Date().toISOString().split('T')[0]}
+              
+              ### 📊 Summary
+              ${summary}
+              
+              ### 🏥 Clinical Focus
+              ${{ inputs.include_clinical && '✅ Clinical workflow categorization included' || '❌ Clinical categorization disabled' }}
+              
+              ### 📋 Release Notes Preview
+              
+              The generated release notes include:
+              - 🏥 Clinical features and healthcare workflow improvements
+              - ✨ New features and general improvements  
+              - 📄 PDF reporting and documentation enhancements
+              - 🗄️ Database and data management changes
+              - ♿ Accessibility and compliance updates
+              - 🔒 Security and privacy enhancements
+              
+              ### ✅ Review Checklist
+              
+              - [ ] **Accuracy**: Verify all changes are accurately categorized
+              - [ ] **Clinical Focus**: Ensure healthcare-specific changes are highlighted
+              - [ ] **Compliance**: Check HIPAA and accessibility mentions are appropriate
+              - [ ] **Completeness**: Confirm no major changes are missing
+              - [ ] **Format**: Review markdown formatting and links
+              
+              ### 🚀 Next Steps
+              
+              1. Review the generated release notes
+              2. Make any necessary edits for accuracy
+              3. Approve and merge this PR
+              4. Create the actual GitHub release using these notes
+              
+              ---
+              
+              *Generated by MCP Release Notes Generation workflow*`
+            });
+            
+            console.log(`Created release notes PR: ${pr.data.html_url}`);
+      
+      - name: Upload Release Notes Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes-${{ inputs.to_tag }}-${{ github.run_number }}
+          path: |
+            release-notes/
+          retention-days: 90
+      
+      - name: Post Generation Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const releaseType = '${{ inputs.release_type }}';
+            const fromTag = '${{ inputs.from_tag }}';
+            const toTag = '${{ inputs.to_tag }}';
+            const commitCount = '${{ steps.extract-commits.outputs.COMMIT_COUNT }}';
+            const includeClinical = '${{ inputs.include_clinical }}' === 'true';
+            const success = '${{ job.status }}' === 'success';
+            
+            const summary = [
+              `📝 **Release Notes Generation Complete**`,
+              '',
+              `**Release**: ${toTag} (${releaseType})`,
+              `**Version Range**: ${fromTag} → ${toTag}`,
+              `**Commits Analyzed**: ${commitCount}`,
+              `**Clinical Focus**: ${includeClinical ? '✅ Enabled' : '❌ Disabled'}`,
+              `**Status**: ${success ? '✅ Success' : '❌ Failed'}`,
+              '',
+              '**Generated Categories:**',
+              '- 🏥 Clinical Features & Healthcare Workflows',
+              '- ✨ New Features & Improvements',
+              '- 📄 PDF Reports & Documentation',
+              '- 🗄️ Database & Data Management',
+              '- 🎨 User Interface & Experience',
+              '- ♿ Accessibility & Compliance',
+              '- 🔒 Security & Privacy',
+              '- ⚡ Performance Optimizations',
+              '',
+              '**Healthcare Focus:**',
+              '- HIPAA compliance considerations',
+              '- Clinical workflow improvements',
+              '- Accessibility and inclusive design',
+              '- Professional documentation standards',
+              '',
+              success ? 
+                '✅ **Release notes PR created!** Review and merge when ready.' :
+                '❌ **Generation failed.** Check workflow logs for details.',
+              '',
+              `**Download:** [View artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('Release notes generation summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }

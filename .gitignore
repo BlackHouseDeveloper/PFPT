@@ -520,4 +520,7 @@ DerivedData/
 .fleet/
 reference/manifest.json
 reference/memory.db
+.act/
+.act.secrets
+.act.env
 build-output-*

@@ -1,15 +1,15 @@
-# Physically Fit PT (PFPT) – Clinician Documentation App
+# Physically Fit PT (PFPT) – Enterprise Healthcare Documentation Platform
 
-**Physically Fit PT (PFPT)** is a modern, cross-platform clinician documentation application designed specifically for physical therapy practice. Built with .NET MAUI Blazor for native mobile and desktop experiences, and Blazor WebAssembly for web deployment, PFPT follows Clean Architecture principles to ensure maintainability and scalability.
+**Physically Fit PT (PFPT)** is a modern, enterprise-grade clinician documentation platform designed specifically for physical therapy practices. Built with .NET MAUI Blazor for native mobile and desktop experiences, Blazor WebAssembly for web deployment, and a comprehensive automation framework, PFPT follows Clean Architecture principles to ensure maintainability, scalability, and healthcare compliance.
 
-## Key Features
+## 🎯 Key Features
 
 - **🏥 Clinical Documentation**: Comprehensive patient notes, appointment tracking, and treatment planning
 - **📱 Multi-Platform Support**: Native iOS, Android, macOS desktop, and web applications
 - **📄 PDF Export**: Professional patient reports and documentation export using QuestPDF
 - **🗄️ SQLite Database**: Local data storage with Entity Framework Core for offline capabilities
 - **🔧 Automation Tools**: Automated messaging workflows and assessment management
-- **🎯 Modular Architecture**: Clean separation of concerns with core-driven design
+- **🎯 Modular Architecture**: Clean separation of concerns with domain-driven design
 - **🔒 Data Security**: Local SQLite encryption support and audit trail capabilities
 
 ## Prerequisites
@@ -117,13 +117,13 @@ This starts a local development server. Open the displayed URL (typically `http:
 - **Hot Reload**: Supported in Visual Studio and VS Code for MAUI projects
 - **Web Hot Reload**: Automatic when using `dotnet run` with the web project
 - **Code Changes**: Re-run `dotnet build` or restart the development server after changes
-### 4. Project Structure
+### 4. Enterprise Architecture & Project Structure
 
 PFPT follows Clean Architecture principles with clear separation of concerns:
 PhysicallyFitPT – The .NET MAUI Blazor app (multi-targeted for Android, iOS, MacCatalyst, etc.). This is the primary app project.
 PhysicallyFitPT.Web – The Blazor WebAssembly app for running PFPT in a web browser.
-PhysicallyFitPT.Core – The core entities (business models) with no EF Core or UI dependencies.
-PhysicallyFitPT.Infrastructure – Implements the persistence (EF Core ApplicationDbContext), core services, and PDF generation. It references the Domain project.
+PhysicallyFitPT.Core – The domain entities (business models) with no EF Core or UI dependencies.
+PhysicallyFitPT.Infrastructure – Implements the persistence (EF Core ApplicationDbContext), domain services, and PDF generation. It references the Domain project.
 PhysicallyFitPT.Shared – Shared libraries, such as predefined lists (e.g., goal templates, interventions, outcome measures) that can be used by both the app and other projects.
 PhysicallyFitPT.Tests – XUnit test project containing unit tests (runs on .NET 8.0).
 PhysicallyFitPT.Seeder – A console application to seed the SQLite database with initial data for development/testing.
@@ -148,25 +148,58 @@ For any other issues, please check the repository’s issue tracker or contact t
 
 ## Contributing
 
-We welcome contributions! Please see our contributing guidelines for development standards, branch naming conventions, and pull request process.
+We welcome contributions to PFPT! Our enterprise-grade development environment includes automated workflows to ensure healthcare compliance and code quality.
 
-### Quick Steps
+### Quick Start for Contributors
 
 1. **Fork and Clone**: Fork the repository and clone your fork
 2. **Environment Setup**: Run `./PFPT-Foundry.sh` to set up development environment
-3. **Create Branch**: Use conventional naming (`feat/`, `fix/`, `docs/`)
-4. **Make Changes**: Follow coding standards and write tests
-5. **Test Thoroughly**: Run `dotnet test` and verify all platforms build
-6. **Submit PR**: Include clear description and reference any related issues
+3. **Validate Setup**: Run `gh workflow run mcp-copilot-setup-validation.yml -f validation_scope=full`
+4. **Create Branch**: Use conventional naming (`feat/`, `fix/`, `docs/`, `clinical/`)
+5. **Make Changes**: Follow coding standards and write tests
+6. **Auto-formatting**: Our MCP workflows will auto-format code on PR submission
+7. **Test Thoroughly**: Run `dotnet test` and verify all platforms build
+8. **Submit PR**: Include clear description and reference any related issues
 
-### Standards
+### Enterprise Development Standards
 
-- **Code Style**: Enforced via StyleCop and Roslynator analyzers
-- **Testing**: Maintain test coverage for new features using xUnit
-- **Documentation**: Update relevant docs for any changes
-- **Architecture**: Follow Clean Architecture and DDD principles
+- **Code Style**: Auto-enforced via MCP workflows with StyleCop and Roslynator
+- **Healthcare Compliance**: HIPAA considerations validated in all changes
+- **Testing**: Comprehensive test coverage with platform-specific validation
+- **Architecture**: Clean Architecture with healthcare-focused domain modeling
+- **Accessibility**: WCAG 2.1 AA/AAA compliance for inclusive healthcare technology
+- **Documentation**: Clinical documentation standards and API documentation
 
-For detailed contribution guidelines, see `DEVELOPMENT.md`.
+### Automated Quality Assurance
+
+Our MCP framework automatically:
+- **Validates environment setup** for all contributors
+- **Formats code** according to healthcare software standards
+- **Tests accessibility compliance** for clinical users
+- **Validates PDF reports** for clinical documentation standards
+- **Checks database changes** for HIPAA compliance
+- **Generates comprehensive release notes** with clinical impact assessment
+
+### Healthcare-Specific Contribution Guidelines
+
+- **Clinical Workflow Impact**: Assess how changes affect clinical workflows
+- **Patient Data Privacy**: Ensure all changes maintain HIPAA compliance
+- **Accessibility**: Test with screen readers and keyboard navigation
+- **Multi-platform Testing**: Validate changes across iOS, Android, macOS, and web
+- **Clinical Terminology**: Use standardized medical terminology and coding systems
+
+For detailed contribution guidelines and healthcare-specific development practices, see:
+- `docs/DEVELOPMENT.md` - Comprehensive development guide
+- `docs/ARCHITECTURE.md` - Technical architecture and patterns
+- `.github/copilot-agent-instructions.md` - Copilot and MCP usage guide
+- `docs/pfpt-script-usage-reference.md` - Quick reference for PFPT helper scripts and options
+
+### Community & Support
+
+- **Discussions**: Join community discussions for questions and ideas
+- **Healthcare Provider Support**: Specialized support for clinical workflow questions
+- **Security Issues**: Report security vulnerabilities via GitHub Security Advisories
+- **Documentation**: Comprehensive guides in the `docs/` directory
 
 ---
 

@@ -1,0 +1,208 @@
+name: Seeder Tests and Verification
+
+on:
+  pull_request:
+    branches: [main, development]
+    paths:
+      - 'src/PhysicallyFitPT.Seeder/**'
+      - 'src/PhysicallyFitPT.Core/**'
+      - 'src/PhysicallyFitPT.Infrastructure/**'
+      - 'tests/PhysicallyFitPT.Seeder.Tests/**'
+      - '.github/workflows/seeder.yml'
+  push:
+    branches: [main, development]
+    paths:
+      - 'src/PhysicallyFitPT.Seeder/**'
+      - 'src/PhysicallyFitPT.Core/**'
+      - 'src/PhysicallyFitPT.Infrastructure/**'
+      - 'tests/PhysicallyFitPT.Seeder.Tests/**'
+      - '.github/workflows/seeder.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  seeder-tests:
+    name: Seeder Integration Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore seeder and its dependencies (avoid MAUI projects)
+        run: |
+          dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+          dotnet restore tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj --use-lock-file
+
+      - name: Build solution (seeder and tests only)
+        run: |
+          dotnet build src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --configuration Release --no-restore
+          dotnet build tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj --configuration Release --no-restore
+
+      - name: Run seeder tests
+        run: |
+          dotnet test tests/PhysicallyFitPT.Seeder.Tests/PhysicallyFitPT.Seeder.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --logger trx \
+            --results-directory TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seeder-test-results
+          path: TestResults/*.trx
+
+  seeder-verification:
+    name: Seeder Verification Workflow
+    runs-on: ubuntu-latest
+    needs: seeder-tests
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef --version 8.0.8
+
+      - name: Restore seeder and its dependencies (avoid MAUI projects)
+        run: dotnet restore src/PhysicallyFitPT.Seeder/PhysicallyFitPT.Seeder.csproj --use-lock-file
+
+      - name: Build seeder
+        run: dotnet build src/PhysicallyFitPT.Seeder --configuration Release --no-restore
+
+      - name: Run database migrations
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- migrate
+        
+      - name: Run seeder (Development environment)
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- seed --env Development
+        
+      - name: Verify seeder idempotency (second run should do nothing)
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          echo "Running seeder second time - should be idempotent"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- seed --env Development
+
+      - name: Verify baseline tasks are applied
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- verify
+
+      - name: List seed task status
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- seed --list
+
+      - name: Test Production environment (should block patients)
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-prod.db"
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- migrate
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- seed --env Production
+
+      - name: Test data export functionality
+        run: |
+          export PFP_DB_PATH="${{ runner.temp }}/test-ci.db"
+          mkdir -p ${{ runner.temp }}/export
+          dotnet run --project src/PhysicallyFitPT.Seeder --configuration Release -- dump --out ${{ runner.temp }}/export
+          
+      - name: Verify exported files exist
+        run: |
+          ls -la ${{ runner.temp }}/export/
+          test -f ${{ runner.temp }}/export/cpt.json
+          test -f ${{ runner.temp }}/export/icd10.json
+          test -f ${{ runner.temp }}/export/patients.dev.json
+          echo "All export files present"
+
+      - name: Upload exported data as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: seeder-exported-data
+          path: ${{ runner.temp }}/export/
+
+  docker-verification:
+    name: Docker Container Verification
+    runs-on: ubuntu-latest
+    needs: seeder-verification
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build seeder Docker image
+        run: |
+          docker build -f src/PhysicallyFitPT.Seeder/Dockerfile -t pfpt-seeder:test .
+
+      - name: Test Docker container - migrate
+        run: |
+          mkdir -p ${{ runner.temp }}/docker-data
+          docker run --rm \
+            -v ${{ runner.temp }}/docker-data:/data \
+            -e PFP_DB_PATH=/data/test-docker.db \
+            pfpt-seeder:test migrate
+
+      - name: Test Docker container - seed
+        run: |
+          docker run --rm \
+            -v ${{ runner.temp }}/docker-data:/data \
+            -e PFP_DB_PATH=/data/test-docker.db \
+            pfpt-seeder:test seed --env Production
+
+      - name: Test Docker container - verify
+        run: |
+          docker run --rm \
+            -v ${{ runner.temp }}/docker-data:/data \
+            -e PFP_DB_PATH=/data/test-docker.db \
+            pfpt-seeder:test verify
+
+      - name: Test Docker container - list tasks
+        run: |
+          docker run --rm \
+            -v ${{ runner.temp }}/docker-data:/data \
+            -e PFP_DB_PATH=/data/test-docker.db \
+            pfpt-seeder:test seed --list
+
+  summary:
+    name: Seeder Verification Summary
+    runs-on: ubuntu-latest
+    needs: [seeder-tests, seeder-verification, docker-verification]
+    if: always()
+    
+    steps:
+      - name: Report success
+        if: needs.seeder-tests.result == 'success' && needs.seeder-verification.result == 'success' && needs.docker-verification.result == 'success'
+        run: |
+          echo "✅ All seeder verification checks passed!"
+          echo "- Integration tests: ${{ needs.seeder-tests.result }}"
+          echo "- CLI verification: ${{ needs.seeder-verification.result }}"
+          echo "- Docker verification: ${{ needs.docker-verification.result }}"
+
+      - name: Report failure
+        if: needs.seeder-tests.result != 'success' || needs.seeder-verification.result != 'success' || needs.docker-verification.result != 'success'
+        run: |
+          echo "❌ Seeder verification failed!"
+          echo "- Integration tests: ${{ needs.seeder-tests.result }}"
+          echo "- CLI verification: ${{ needs.seeder-verification.result }}"
+          echo "- Docker verification: ${{ needs.docker-verification.result }}"
+          exit 1

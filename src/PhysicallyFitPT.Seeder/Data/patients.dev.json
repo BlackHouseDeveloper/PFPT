@@ -1,0 +1,20 @@
+[
+  {
+    "mrn": "A1001",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane@example.com"
+  },
+  {
+    "mrn": "A1002",
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john@example.com"
+  },
+  {
+    "mrn": "A1003",
+    "firstName": "Sam",
+    "lastName": "Sample",
+    "email": "sam@example.com"
+  }
+]

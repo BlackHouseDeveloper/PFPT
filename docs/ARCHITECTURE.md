@@ -1,10 +1,10 @@
-# PFPT Architecture Documentation
+# PFPT Enterprise Architecture Documentation
 
 ## Overview
 
-**Physically Fit PT (PFPT)** is a cross-platform clinician documentation application designed for physical therapy practice. It follows Clean Architecture principles and is built with .NET MAUI Blazor for mobile/desktop and Blazor WebAssembly for web deployment.
+**Physically Fit PT (PFPT)** is an enterprise-grade, cross-platform healthcare documentation platform designed specifically for physical therapy practices. PFPT is built with .NET MAUI Blazor for mobile and desktop, and Blazor WebAssembly for web deployment. The platform follows Clean Architecture principles, with healthcare compliance, enterprise automation, and clinical workflow optimization at its core.
 
-## Solution Structure
+## Enterprise Solution Structure
 
 ```
 PFPT/
@@ -19,22 +19,24 @@ PFPT/
 └── PhysicallyFitPT.sln                 # Solution File
 ```
 
-## Projects Detail
+## Enterprise Architecture Layers
 
-### 1. PhysicallyFitPT (MAUI Blazor App)
+### 1. Presentation Layer
 
+#### PhysicallyFitPT.Maui (Native Applications)
 **Target Frameworks:** `net8.0-android;net8.0-ios;net8.0-maccatalyst`
 
-**Purpose:** Multi-platform application providing native mobile and desktop experiences.
+**Purpose:** Multi-platform native applications providing optimal clinical user experience.
 
 **Key Components:**
-- `App.xaml` - Application entry point
+- `App.xaml` - Application lifecycle and dependency injection
 - `MainPage.xaml` - Main page hosting Blazor WebView
-- `MauiProgram.cs` - Dependency injection and service configuration
-- `Components/` - Blazor components for UI
-  - `Layout/` - Application layout components
-  - `Pages/` - Application pages and views
-  - `Routes.razor` - Client-side routing configuration
+- `MauiProgram.cs` - Platform-specific service configuration
+- `Components/` - Healthcare-focused Blazor components
+  - `Layout/` - Clinical application layouts
+  - `Pages/` - Patient management and clinical workflow pages
+  - `Clinical/` - Assessment tools and outcome measures
+  - `Reports/` - PDF generation and report viewing
 
 **Platform Support:**
 - **Android** - Native Android application
@@ -45,7 +47,7 @@ PFPT/
 
 **Target Framework:** `net8.0`
 
-**Purpose:** Contains pure core entities following Domain-Driven Design principles. No external dependencies or EF Core attributes.
+**Purpose:** Contains pure domain entities following Domain-Driven Design principles. No external dependencies or EF Core attributes.
 
 **Key Entities:**
 - `Patient.cs` - Core patient entity with demographics and audit fields
@@ -60,7 +62,7 @@ PFPT/
 **Design Principles:**
 - Pure POCOs (Plain Old CLR Objects)
 - No infrastructure dependencies
-- Rich core behavior
+- Rich domain behavior
 - Immutable where appropriate
 - Comprehensive audit trail support
 
@@ -68,23 +70,61 @@ PFPT/
 
 **Target Framework:** `net8.0`
 
-**Purpose:** Implements data access patterns, external service integrations, and cross-cutting concerns.
+**Purpose:** Implements healthcare-compliant data access, clinical service integrations, and enterprise infrastructure concerns.
 
 **Key Components:**
 
 #### Data Access (`Data/`)
-- `ApplicationDbContext.cs` - EF Core database context with entity configurations
-- `DesignTimeDbContextFactory.cs` - Design-time factory for EF Core tools
-- `Migrations/` - Entity Framework database migrations
+- `ApplicationDbContext.cs` - EF Core context with healthcare entity configurations
+- `DesignTimeDbContextFactory.cs` - Design-time factory for clinical database tools
+- `Migrations/` - Healthcare-compliant database schema migrations
+- `Configurations/` - Entity type configurations with HIPAA considerations
+- `Interceptors/` - Audit trail and data privacy interceptors
 
-#### Services (`Services/`)
-- `PatientService.cs` - Patient management operations
-- `AppointmentService.cs` - Appointment scheduling and management
-- `NoteBuilderService.cs` - Clinical note creation and formatting
-- `QuestionnaireService.cs` - Assessment form management
-- `AutoMessagingService.cs` - Automated communication workflows
-- `PdfRenderer.cs` - PDF report generation using QuestPDF
-- `BaseService.cs` - Common service functionality
+#### Clinical Services (`Services/`)
+- `PatientService.cs` - HIPAA-compliant patient management operations
+- `ClinicalAssessmentService.cs` - Standardized assessment administration and scoring
+- `AppointmentService.cs` - Clinical appointment scheduling with outcome tracking
+- `NoteBuilderService.cs` - Structured clinical note creation with templates
+- `QuestionnaireService.cs` - Patient-reported outcome measure management
+- `ClinicalDecisionService.cs` - Evidence-based clinical decision support
+- `AutoMessagingService.cs` - HIPAA-compliant automated communication workflows
+- `PdfRenderer.cs` - Clinical report generation with accessibility compliance
+- `AuditService.cs` - Comprehensive healthcare audit trail management
+
+#### Enterprise Infrastructure (`Infrastructure/`)
+- `HealthcareComplianceService.cs` - HIPAA validation and compliance checking
+- `ClinicalTerminologyService.cs` - Medical terminology validation and standardization
+- `AccessibilityService.cs` - WCAG 2.1 compliance validation for clinical interfaces
+- `DataEncryptionService.cs` - Healthcare data encryption and key management
+- `IntegrationService.cs` - External healthcare system integration (HL7, FHIR)
+
+### 4. Application Services Layer (PhysicallyFitPT.Api)
+
+**Target Framework:** `net8.0`
+
+**Purpose:** Web API for cloud services, external integrations, and administrative functions.
+
+**Key Features:**
+- RESTful API for clinical data synchronization
+- HL7 FHIR integration for healthcare interoperability
+- Administrative dashboard for clinical practice management
+- External EHR system integration endpoints
+- Healthcare analytics and reporting services
+
+### 5. Shared Libraries (PhysicallyFitPT.Shared)
+
+**Target Framework:** `net8.0`
+
+**Purpose:** Cross-platform clinical libraries and standardized healthcare components.
+
+**Clinical Libraries:**
+- `ClinicalAssessments/` - Standardized assessment tools and scoring algorithms
+- `HealthcareStandards/` - Medical coding systems (ICD-10, CPT, SNOMED)
+- `ClinicalTemplates/` - Evidence-based documentation templates
+- `OutcomeMeasures/` - Patient-reported and performance-based outcome measures
+- `ComplianceValidators/` - HIPAA and accessibility compliance validation
+- `ClinicalDecisionSupport/` - Evidence-based care pathway algorithms
 
 #### Interfaces (`Services/Interfaces/`)
 - Service contracts defining application capabilities
@@ -428,8 +468,135 @@ Patient Check-in
 │ Outcome         │    │ Report           │    │ Follow-up       │
 │ Tracking        │    │ Generation       │    │ Coordination    │
 │                 │    │                  │    │                 │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+### 6. Enterprise AI/ML Layer (PhysicallyFitPT.AI)
+
+**Target Framework:** `net8.0`
+
+**Purpose:** AI-powered clinical intelligence and decision support systems.
+
+**Key Features:**
+- Natural language processing for clinical documentation
+- Predictive analytics for patient outcomes
+- Clinical decision support algorithms
+- Automated assessment scoring and interpretation
+- Evidence-based treatment recommendation engines
+
+## Enterprise MCP Framework Architecture
+
+PFPT includes a comprehensive Model Context Protocol (MCP) framework with 14 production-ready workflows designed specifically for healthcare software development.
+
+### MCP Framework Structure
+
 ```
+.github/workflows/
+├── Development Automation
+│   ├── mcp-auto-format-pr.yml           # Automatic code formatting on PRs
+│   ├── mcp-daily-formatting.yml         # Daily maintenance formatting
+│   └── mcp-copilot-setup-validation.yml # Development environment validation
+├── Healthcare-Specific Automation
+│   ├── mcp-accessibility-compliance.yml # WCAG 2.1 compliance testing
+│   ├── mcp-pdf-diagnostics.yml         # Clinical report validation
+│   └── mcp-database-diagnostics.yml    # HIPAA-compliant data management
+├── Enterprise Operations
+│   ├── mcp-release-notes-generation.yml # Clinical impact release notes
+│   ├── mcp-triage.yml                  # Intelligent issue categorization
+│   └── mcp-documentation-automation.yml # Clinical documentation generation
+├── Quality Assurance
+│   ├── mcp-error-reproduction.yml       # Comprehensive debugging automation
+│   ├── mcp-localization-workflow.yml   # Multi-language clinical terminology
+│   └── mcp-ci.yml                      # Multi-platform CI/CD with compliance
+└── Copilot Integration
+    ├── copilot-auto-fix.yml            # Automated code issue resolution
+    └── copilot-mention.yml             # Intelligent development assistance
+```
+
+### Healthcare Compliance Integration
+
+Each MCP workflow includes:
+- **HIPAA Compliance Validation** - Ensures patient data protection standards
+- **Clinical Workflow Assessment** - Evaluates impact on healthcare processes
+- **Accessibility Testing** - WCAG 2.1 AA/AAA compliance validation
+- **Medical Terminology Validation** - Standardized healthcare coding verification
+- **Audit Trail Generation** - Comprehensive change tracking for healthcare compliance
+
+### Enterprise Automation Capabilities
+
+#### 1. Development Environment Automation
+- **Automated Setup Validation** - Comprehensive development environment verification
+- **Dependency Management** - .NET MAUI workloads, healthcare libraries, PDF tools
+- **Code Quality Enforcement** - StyleCop, Roslynator, accessibility analyzers
+- **Multi-platform Build Validation** - iOS, Android, macOS, Web compatibility
+
+#### 2. Healthcare-Specific Quality Assurance
+- **Clinical Report Validation** - PDF accessibility, clinical template compliance
+- **Database Schema Compliance** - HIPAA audit trail, healthcare data standards
+- **Accessibility Testing** - Screen reader compatibility, keyboard navigation
+- **Clinical Terminology Validation** - ICD-10, CPT, SNOMED code verification
+
+#### 3. Enterprise Release Management
+- **Clinical Impact Assessment** - Automated evaluation of healthcare workflow changes
+- **Release Notes Generation** - Healthcare-focused change categorization
+- **Regulatory Compliance Tracking** - FDA, HIPAA, accessibility compliance monitoring
+- **Clinical Documentation Updates** - Automated clinical guide generation
+
+### MCP Workflow Categories
+
+#### Development Automation (4 workflows)
+Automate code quality, formatting, and development environment management with healthcare-specific standards.
+
+#### Healthcare Compliance (3 workflows)  
+Ensure HIPAA compliance, accessibility standards, and clinical documentation requirements are met.
+
+#### Enterprise Operations (3 workflows)
+Manage releases, documentation, and issue triage with clinical workflow considerations.
+
+#### Quality Assurance (4 workflows)
+Comprehensive testing, debugging, and validation with healthcare-specific requirements.
+
+## Technology Stack & Dependencies
+
+### Core Technologies
+- **.NET 8.0** - Primary development platform
+- **.NET MAUI** - Cross-platform native application framework
+- **Blazor WebAssembly** - Web application framework
+- **Entity Framework Core** - Object-relational mapping
+- **SQLite** - Embedded database with healthcare data encryption
+- **QuestPDF** - Healthcare-compliant PDF generation
+
+### Healthcare-Specific Libraries
+- **SNOMED CT Integration** - Standardized clinical terminology
+- **ICD-10 & CPT Coding** - Medical billing and diagnosis codes
+- **HL7 FHIR** - Healthcare interoperability standards
+- **Clinical Assessment Libraries** - Standardized outcome measures
+
+### Enterprise Development Tools
+- **xUnit** - Comprehensive test framework
+- **StyleCop & Roslynator** - Code quality analyzers
+- **GitHub Actions** - Enterprise CI/CD pipeline
+- **Docker** - Containerization for deployment
+- **Accessibility Testing Tools** - WCAG 2.1 compliance validation
+
+## Security & Compliance Architecture
+
+### Healthcare Data Protection
+- **HIPAA Compliance** - Comprehensive patient data protection
+- **Data Encryption** - At-rest and in-transit encryption for all patient data
+- **Audit Trails** - Complete healthcare compliance audit logging
+- **Access Controls** - Role-based access with clinical privilege management
+
+### Accessibility Compliance
+- **WCAG 2.1 AA/AAA** - Full accessibility compliance for healthcare users
+- **Screen Reader Compatibility** - Comprehensive assistive technology support
+- **Keyboard Navigation** - Complete keyboard accessibility for clinical workflows
+- **High Contrast Support** - Visual accessibility for clinical environments
+
+### Quality Assurance
+- **Multi-platform Testing** - Comprehensive testing across all supported platforms
+- **Healthcare Workflow Validation** - Clinical process testing and validation
+- **Performance Monitoring** - Clinical application performance optimization
+- **Regulatory Compliance Testing** - FDA, HIPAA, accessibility compliance validation
+
+This enterprise architecture ensures PFPT maintains the highest standards of healthcare compliance, clinical usability, and technical excellence while providing comprehensive automation and quality assurance through the integrated MCP framework.
 
 ### Integration Points
 

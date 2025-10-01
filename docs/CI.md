@@ -44,3 +44,7 @@ Due to the multi-targeted nature of shared components, the build strategy is:
   - PhysicallyFitPT MAUI app (mobile TFMs)
   
 This provides cost optimization while maintaining compatibility.
+
+## Known Follow-ups
+
+- `pfpt-ci-roslynator-razor` (2025-09-27): Roslynator CLI does not yet load Razor-generated components from `PhysicallyFitPT.Shared` when analyzing `PhysicallyFitPT.Web`. The net8.0-ios guardrail temporarily skips that project to keep the workflow green. Re-enable the Web analysis once an upstream Roslynator release confirms Razor RCL support, then run **Build & Guardrails (net8.0-ios)** to verify.

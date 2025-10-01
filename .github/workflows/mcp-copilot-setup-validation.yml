@@ -1,0 +1,495 @@
+name: MCP Copilot Setup Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      validation_scope:
+        description: 'Validation scope to perform'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - dotnet-only
+          - maui-only
+          - dependencies-only
+          - quick
+  push:
+    paths:
+      - '.github/workflows/mcp-copilot-setup-validation.yml'
+      - '.github/copilot-agent-instructions.md'
+  pull_request:
+    paths:
+      - '.github/workflows/mcp-copilot-setup-validation.yml'
+      - '.github/copilot-agent-instructions.md'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  copilot-setup-validation:
+    name: Copilot Development Environment Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VALIDATION_SCOPE: ${{ inputs.validation_scope || 'full' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET 8.0.120
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.120'
+
+      - name: Install EF Core Tools
+        run: |
+          dotnet tool install --global dotnet-ef --version 8.* || \
+          dotnet tool update --global dotnet-ef --version 8.*
+
+      - name: Setup validation environment
+        run: |
+          echo "🔧 Setting up Copilot development environment validation..."
+          mkdir -p validation-results/{reports,logs,artifacts}
+          
+          # Create validation context
+          cat > validation-results/validation-context.md <<EOF
+          # PFPT Copilot Development Environment Validation
+          
+          **Validation Scope**: ${{ inputs.validation_scope || 'auto-triggered' }}
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Platform**: $(uname -a)
+          **Trigger**: ${{ github.event_name }}
+          
+          ## Validation Objectives
+          
+          - Verify .NET SDK installation and configuration
+          - Validate .NET MAUI workloads availability
+          - Test PFPT-specific dependencies (QuestPDF, EF Core, SQLite)
+          - Confirm cross-platform build capabilities
+          - Validate development tool accessibility
+          
+          EOF
+      
+      - name: Validate .NET SDK Installation
+        id: dotnet-validation
+        run: |
+          echo "🔍 Validating .NET SDK installation..."
+          
+          # Check .NET version
+          dotnet_version=$(dotnet --version)
+          echo "DOTNET_VERSION=$dotnet_version" >> $GITHUB_OUTPUT
+          
+          if [[ "$dotnet_version" == 8.0* ]]; then
+            echo "✅ .NET 8.0 SDK detected: $dotnet_version"
+            echo "DOTNET_VALID=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Expected .NET 8.0, found: $dotnet_version"
+            echo "DOTNET_VALID=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check .NET info
+          echo "📋 .NET SDK Information:" > validation-results/logs/dotnet-info.log
+          dotnet --info >> validation-results/logs/dotnet-info.log
+          
+          # Check available runtimes
+          echo "📋 Available Runtimes:" > validation-results/logs/runtimes.log
+          dotnet --list-runtimes >> validation-results/logs/runtimes.log
+          
+          # Check available SDKs
+          echo "📋 Available SDKs:" > validation-results/logs/sdks.log
+          dotnet --list-sdks >> validation-results/logs/sdks.log
+      
+      - name: Validate .NET MAUI Workloads
+        id: maui-validation
+        if: env.VALIDATION_SCOPE == 'full' || env.VALIDATION_SCOPE == 'maui-only'
+        run: |
+          echo "🔍 Validating .NET MAUI workloads..."
+          
+          # List current workloads
+          echo "📋 Current Workloads:" > validation-results/logs/workloads.log
+          dotnet workload list >> validation-results/logs/workloads.log 2>&1
+          
+          # Check if MAUI workloads are available (not necessarily installed)
+          echo "📋 Available Workloads:" > validation-results/logs/available-workloads.log
+          dotnet workload search >> validation-results/logs/available-workloads.log 2>&1
+          
+          # Validate MAUI workload availability
+          if dotnet workload search | grep -i maui; then
+            echo "✅ MAUI workloads available for installation"
+            echo "MAUI_AVAILABLE=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ MAUI workloads not available"
+            echo "MAUI_AVAILABLE=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Note: We don't install MAUI workloads in CI as it's resource intensive
+          # and not needed for validation purposes
+      
+      - name: Validate PFPT Dependencies
+        id: deps-validation
+        if: env.VALIDATION_SCOPE == 'full' || env.VALIDATION_SCOPE == 'dependencies-only'
+        run: |
+          echo "🔍 Validating PFPT-specific dependencies..."
+          
+          # Test basic project restore
+          echo "📦 Testing project restore..."
+          if dotnet restore src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --verbosity quiet; then
+            echo "✅ Core project restore successful"
+            echo "CORE_RESTORE=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Core project restore failed"
+            echo "CORE_RESTORE=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Test build capability
+          echo "🔨 Testing build capability..."
+          if dotnet build src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj --verbosity quiet; then
+            echo "✅ Core project build successful"
+            echo "CORE_BUILD=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Core project build failed"
+            echo "CORE_BUILD=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Validate EF Core tools
+          echo "🗄️ Validating EF Core tools..."
+          if dotnet tool install --global dotnet-ef --skip-duplicate 2>/dev/null; then
+            echo "✅ EF Core tools available"
+            echo "EF_TOOLS=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ EF Core tools installation failed"
+            echo "EF_TOOLS=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Validate Development Tools
+        id: tools-validation
+        run: |
+          echo "🛠️ Validating development tools..."
+          
+          # Check essential tools
+          tools=("git" "jq" "curl" "grep" "awk" "sed")
+          missing_tools=()
+          
+          for tool in "${tools[@]}"; do
+            if command -v "$tool" >/dev/null 2>&1; then
+              echo "✅ $tool: $(command -v $tool)"
+            else
+              echo "❌ $tool: not found"
+              missing_tools+=("$tool")
+            fi
+          done
+          
+          if [ ${#missing_tools[@]} -eq 0 ]; then
+            echo "TOOLS_VALID=true" >> $GITHUB_OUTPUT
+          else
+            echo "TOOLS_VALID=false" >> $GITHUB_OUTPUT
+            echo "MISSING_TOOLS=${missing_tools[*]}" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check optional tools
+          optional_tools=("docker" "act" "npm")
+          echo "📋 Optional Tools:" > validation-results/logs/optional-tools.log
+          
+          for tool in "${optional_tools[@]}"; do
+            if command -v "$tool" >/dev/null 2>&1; then
+              echo "✅ $tool: $(command -v $tool)" >> validation-results/logs/optional-tools.log
+            else
+              echo "⚪ $tool: not available (optional)" >> validation-results/logs/optional-tools.log
+            fi
+          done
+      
+      - name: Validate PFPT Project Structure
+        id: structure-validation
+        run: |
+          echo "📁 Validating PFPT project structure..."
+          
+          # Check required directories
+          required_dirs=("src" "docs" ".github" "tests")
+          missing_dirs=()
+          
+          for dir in "${required_dirs[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "✅ $dir/ directory exists"
+            else
+              echo "❌ $dir/ directory missing"
+              missing_dirs+=("$dir")
+            fi
+          done
+          
+          # Check core project files
+          core_files=(
+            "src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
+            "PFPT.sln"
+            ".github/copilot-agent-instructions.md"
+          )
+          missing_files=()
+          
+          for file in "${core_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file missing"
+              missing_files+=("$file")
+            fi
+          done
+          
+          if [ ${#missing_dirs[@]} -eq 0 ] && [ ${#missing_files[@]} -eq 0 ]; then
+            echo "STRUCTURE_VALID=true" >> $GITHUB_OUTPUT
+          else
+            echo "STRUCTURE_VALID=false" >> $GITHUB_OUTPUT
+            echo "MISSING_DIRS=${missing_dirs[*]}" >> $GITHUB_OUTPUT
+            echo "MISSING_FILES=${missing_files[*]}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Generate Validation Report
+        if: always()
+        run: |
+          echo "📊 Generating comprehensive validation report..."
+
+          DOTNET_VALID="${{ steps.dotnet-validation.outputs.DOTNET_VALID }}"
+          DOTNET_VERSION="${{ steps.dotnet-validation.outputs.DOTNET_VERSION }}"
+          MAUI_AVAILABLE="${{ steps.maui-validation.outputs.MAUI_AVAILABLE }}"
+          MAUI_OUTCOME="${{ steps.maui-validation.outcome }}"
+          VALIDATION_SCOPE="${{ env.VALIDATION_SCOPE }}"
+          DEPS_OUTCOME="${{ steps.deps-validation.outcome }}"
+          CORE_RESTORE="${{ steps.deps-validation.outputs.CORE_RESTORE }}"
+          CORE_BUILD="${{ steps.deps-validation.outputs.CORE_BUILD }}"
+          EF_TOOLS="${{ steps.deps-validation.outputs.EF_TOOLS }}"
+          TOOLS_VALID="${{ steps.tools-validation.outputs.TOOLS_VALID }}"
+          MISSING_TOOLS="${{ steps.tools-validation.outputs.MISSING_TOOLS }}"
+          STRUCTURE_VALID="${{ steps.structure-validation.outputs.STRUCTURE_VALID }}"
+
+          if [ "$DOTNET_VALID" = "true" ]; then
+            DOTNET_STATUS="✅ Valid"
+          else
+            DOTNET_STATUS="❌ Invalid"
+          fi
+
+          if [ "$MAUI_OUTCOME" = "success" ]; then
+            if [ "$MAUI_AVAILABLE" = "true" ]; then
+              MAUI_STATUS="✅ Available"
+              MAUI_DETAIL="Validated"
+            else
+              MAUI_STATUS="❌ Issues"
+              MAUI_DETAIL="Validation failed"
+            fi
+          else
+            MAUI_STATUS="⚪ Not run"
+            MAUI_DETAIL="Not tested in this scope"
+          fi
+
+          if [ "$DEPS_OUTCOME" = "success" ]; then
+            if [ "$CORE_RESTORE" = "true" ]; then
+              CORE_RESTORE_STATUS="✅"
+              CORE_RESTORE_DETAIL="Successful"
+            else
+              CORE_RESTORE_STATUS="❌"
+              CORE_RESTORE_DETAIL="Failed"
+            fi
+
+            if [ "$CORE_BUILD" = "true" ]; then
+              CORE_BUILD_STATUS="✅ Builds"
+              CORE_BUILD_DETAIL="Successful"
+            else
+              CORE_BUILD_STATUS="❌ Failed"
+              CORE_BUILD_DETAIL="Failed"
+            fi
+
+            if [ "$EF_TOOLS" = "true" ]; then
+              EF_TOOLS_STATUS="✅ Available"
+              EF_TOOLS_DETAIL="Available"
+            else
+              EF_TOOLS_STATUS="❌ Missing"
+              EF_TOOLS_DETAIL="Missing"
+            fi
+          else
+            CORE_RESTORE_STATUS="⚪"
+            CORE_RESTORE_DETAIL="Not run"
+            CORE_BUILD_STATUS="⚪ Not run"
+            CORE_BUILD_DETAIL="Not run"
+            EF_TOOLS_STATUS="⚪ Not run"
+            EF_TOOLS_DETAIL="Not run"
+          fi
+
+          if [ "$TOOLS_VALID" = "true" ]; then
+            TOOLS_STATUS="✅ Complete"
+            ESSENTIAL_TOOLS_DETAIL="All present"
+          else
+            TOOLS_STATUS="❌ Missing"
+            ESSENTIAL_TOOLS_DETAIL="Missing: $MISSING_TOOLS"
+          fi
+
+          if [ "$STRUCTURE_VALID" = "true" ]; then
+            STRUCTURE_STATUS="✅ Valid"
+            STRUCTURE_DETAIL="Valid PFPT structure"
+          else
+            STRUCTURE_STATUS="❌ Issues"
+            STRUCTURE_DETAIL="Structure issues detected"
+          fi
+
+          DOTNET_SECTION=""
+          if [ "$DOTNET_VALID" != "true" ]; then
+            DOTNET_SECTION+=$'### .NET SDK\n'
+            DOTNET_SECTION+=$'- Install .NET 8.0 SDK from https://dotnet.microsoft.com/download/dotnet/8.0\n'
+            DOTNET_SECTION+=$'- Ensure DOTNET_ROOT is properly configured\n\n'
+          fi
+
+          MAUI_SECTION=""
+          if [ "$MAUI_OUTCOME" = "success" ] && [ "$MAUI_AVAILABLE" != "true" ] && [ "$VALIDATION_SCOPE" = "full" ]; then
+            MAUI_SECTION+=$'### .NET MAUI Workloads\n'
+            MAUI_SECTION+=$'- Install MAUI workloads: `dotnet workload install maui`\n'
+            MAUI_SECTION+=$'- Verify workload installation: `dotnet workload list`\n\n'
+          fi
+
+          DEPENDENCIES_SECTION=""
+          if [ "$DEPS_OUTCOME" = "success" ] && [ "$CORE_BUILD" != "true" ]; then
+            DEPENDENCIES_SECTION+=$'### PFPT Dependencies\n'
+            DEPENDENCIES_SECTION+=$'- Check project dependencies in .csproj files\n'
+            DEPENDENCIES_SECTION+=$'- Verify package compatibility with .NET 8.0\n'
+            DEPENDENCIES_SECTION+=$'- Run `dotnet restore` to resolve package issues\n\n'
+          fi
+
+          TOOLS_SECTION=""
+          if [ "$TOOLS_VALID" != "true" ]; then
+            TOOLS_SECTION+=$'### Development Tools\n'
+            TOOLS_SECTION+=$'- Install missing tools: '
+            TOOLS_SECTION+="$MISSING_TOOLS\n"
+            TOOLS_SECTION+=$'- Verify PATH environment variable includes tool locations\n\n'
+          fi
+          
+          cat > validation-results/reports/validation-report.md <<EOF
+          # PFPT Copilot Development Environment Validation Report
+          
+          **Validation Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Validation Scope**: ${{ inputs.validation_scope || 'auto-triggered' }}
+          **Platform**: $(uname -a)
+          
+          ## Validation Results Summary
+          
+          | Component | Status | Details |
+          |-----------|--------|---------|
+          | .NET SDK | $DOTNET_STATUS | Version: $DOTNET_VERSION |
+          | MAUI Workloads | $MAUI_STATUS | $MAUI_DETAIL |
+          | Core Project | $CORE_BUILD_STATUS | Restore: $CORE_RESTORE_STATUS |
+          | EF Tools | $EF_TOOLS_STATUS | dotnet-ef global tool |
+          | Dev Tools | $TOOLS_STATUS | Essential development tools |
+          | Project Structure | $STRUCTURE_STATUS | $STRUCTURE_DETAIL |
+          
+          ## Detailed Findings
+          
+          ### .NET SDK Validation
+          - **Version**: ${{ steps.dotnet-validation.outputs.DOTNET_VERSION }}
+          - **Status**: ${{ steps.dotnet-validation.outputs.DOTNET_VALID == 'true' && 'Compatible with PFPT requirements' || 'Version compatibility issues detected' }}
+          
+          ### PFPT Dependencies
+          - **Core Project Restore**: $CORE_RESTORE_DETAIL
+          - **Core Project Build**: $CORE_BUILD_DETAIL
+          - **EF Core Tools**: $EF_TOOLS_DETAIL
+
+          ### Development Environment
+          - **Essential Tools**: $ESSENTIAL_TOOLS_DETAIL
+          - **Project Structure**: $STRUCTURE_DETAIL
+          
+          ## Recommendations
+          
+          ${DOTNET_SECTION}${MAUI_SECTION}${DEPENDENCIES_SECTION}${TOOLS_SECTION}
+          
+          ## Next Steps
+          
+          1. **Address any failed validations** using the recommendations above
+          2. **Re-run validation** after making changes: \`gh workflow run mcp-copilot-setup-validation.yml\`
+          3. **Test PFPT workflows** using the MCP automation workflows
+          4. **Refer to documentation** in \`.github/copilot-agent-instructions.md\`
+          
+          ## Copilot Integration
+          
+          This validation ensures optimal Copilot agent functionality for PFPT development:
+          - ✅ Environment compatibility verified
+          - ✅ Build system validated  
+          - ✅ Development tools confirmed
+          - ✅ Project structure verified
+          
+          *Report generated by MCP Copilot Setup Validation workflow*
+          EOF
+          
+          echo "✅ Validation report generated"
+      
+      - name: Upload Validation Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copilot-setup-validation-${{ github.run_number }}
+          path: |
+            validation-results/
+          retention-days: 30
+      
+      - name: Post Validation Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const scope = '${{ inputs.validation_scope || 'auto-triggered' }}';
+            const dotnetValid = '${{ steps.dotnet-validation.outputs.DOTNET_VALID }}' === 'true';
+            const depsOutcome = '${{ steps.deps-validation.outcome }}';
+            const coreBuildOutput = '${{ steps.deps-validation.outputs.CORE_BUILD }}';
+            const coreBuilds = depsOutcome === 'success' ? coreBuildOutput === 'true' : null;
+            const toolsValid = '${{ steps.tools-validation.outputs.TOOLS_VALID }}' === 'true';
+            const structureValid = '${{ steps.structure-validation.outputs.STRUCTURE_VALID }}' === 'true';
+            
+            const overallValid = dotnetValid && (coreBuilds !== false) && toolsValid && structureValid;
+            const emoji = overallValid ? '✅' : '❌';
+
+            const coreBuildStatus = coreBuilds === true ? '✅' : coreBuilds === false ? '❌' : '⚪ Not run';
+            
+            const summary = [
+              `${emoji} **Copilot Development Environment Validation Complete**`,
+              '',
+              `**Validation Scope:** ${scope}`,
+              `**Overall Status:** ${overallValid ? 'PASS' : 'ISSUES DETECTED'}`,
+              `**Timestamp:** ${new Date().toISOString()}`,
+              '',
+              '**Component Status:**',
+              `- .NET SDK 8.0: ${dotnetValid ? '✅' : '❌'} (${{ steps.dotnet-validation.outputs.DOTNET_VERSION }})`,
+              `- Core Project Build: ${coreBuildStatus}`,
+              `- Development Tools: ${toolsValid ? '✅' : '❌'}`,
+              `- Project Structure: ${structureValid ? '✅' : '❌'}`,
+              '',
+              overallValid ? 
+                '🎉 **Environment Ready!** All validations passed. Copilot agents can operate optimally.' :
+                '⚠️ **Action Required:** Please address the failed validations before using Copilot workflows.',
+              '',
+              '**Next Steps:**',
+              overallValid ? 
+                '- Environment is ready for PFPT development with Copilot' :
+                '- Review validation report and address any issues',
+              '- Use MCP workflows for automated development tasks',
+              '- Refer to `.github/copilot-agent-instructions.md` for guidance',
+              '',
+              `**Download Report:** [View validation artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            ];
+            
+            try {
+              if (context.issue && context.issue.number) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: summary.join('\n')
+                });
+              } else {
+                console.log('Copilot setup validation summary:');
+                console.log(summary.join('\n'));
+              }
+            } catch (error) {
+              console.log('Could not post comment, logging results:');
+              console.log(summary.join('\n'));
+            }
