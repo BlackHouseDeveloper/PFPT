@@ -58,9 +58,21 @@
         </NavLink>
       </li>
       <li class="pfp-nav-item">
+        <NavLink href="/login" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">🔐</span>
+          Login
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
         <NavLink href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">👥</span>
           Patients
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/intake" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📋</span>
+          Patient Intake
         </NavLink>
       </li>
       <li class="pfp-nav-item">
@@ -73,6 +85,42 @@
         <NavLink href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
           <span class="pfp-nav-icon">📝</span>
           Eval Note
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/notes/daily" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📄</span>
+          Daily Note
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/notes/progress" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📈</span>
+          Progress Note
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/notes/discharge" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">📋</span>
+          Discharge Note
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/ai/summary" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">🤖</span>
+          AI Summary
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/admin/settings" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">⚙️</span>
+          Settings
+        </NavLink>
+      </li>
+      <li class="pfp-nav-item">
+        <NavLink href="/admin/users" class="pfp-nav-link" @onclick="CloseMobileNav">
+          <span class="pfp-nav-icon">👤</span>
+          User Management
         </NavLink>
       </li>
       <li class="pfp-nav-item">
