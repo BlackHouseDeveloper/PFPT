@@ -108,15 +108,15 @@ public sealed class LocalDataService : IDataService
     try
     {
       await using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
-      
+
       var patientCount = await db.Patients.CountAsync(cancellationToken);
       var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
-      
+
       // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
       var patients = await db.Patients
         .Select(p => new { p.UpdatedAt, p.CreatedAt })
         .ToListAsync(cancellationToken);
-      
+
       var lastPatientUpdated = patients
         .Select(p => p.UpdatedAt ?? p.CreatedAt)
         .OrderByDescending(d => d)
