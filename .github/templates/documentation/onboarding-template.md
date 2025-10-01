@@ -82,8 +82,7 @@ PFPT includes 11+ automated workflows for development assistance:
 1. **Architecture**: [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
 2. **Development**: [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
 3. **CI/CD**: [docs/CI.md](../docs/CI.md)
-4. **Copilot Guide**: [.github/Copilot-Instructions.md](../.github/Copilot-Instructions.md)
-5. **Agent Guide**: [PFPT/Agents.md](PFPT/Agents.md)
+4. **Copilot Guide**: [.github/copilot-agent-instructions.md](../.github/copilot-agent-instructions.md)
 
 ## Getting Help
 
