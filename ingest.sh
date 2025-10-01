@@ -211,7 +211,7 @@ EOF
   while IFS= read -r r; do
     [[ -z "$r" ]] && continue
     # normalize reference path relative to repo root
-    rrel="$(python3 -"$rel" "$r" <<EOF
+    rrel="$(python3 - "$rel" "$r" <<EOF
 import os,sys
 base = sys.argv[1]
 ref  = sys.argv[2]
