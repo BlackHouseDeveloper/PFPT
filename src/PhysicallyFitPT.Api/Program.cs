@@ -13,6 +13,7 @@
 #pragma warning disable SA1400 // Access modifier should be declared
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
@@ -24,6 +25,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add Health Checks
+builder.Services.AddHealthChecks();
+
+// Add Feature Management
+builder.Services.AddFeatureManagement();
 
 // Configure Entity Framework
 var configuredConnection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -44,6 +51,7 @@ builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
 builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
 builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
 builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+builder.Services.AddScoped<PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer, PhysicallyFitPT.Infrastructure.Pdf.QuestPdfRenderer>();
 
 // Add CORS for development
 builder.Services.AddCors(options =>
@@ -67,6 +75,68 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
+
+// Map Health Check endpoint
+app.MapHealthChecks("/health");
+
+// API v1 endpoints with versioning
+var v1 = app.MapGroup("/api/v1");
+
+// Application statistics endpoint
+v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        return Results.Ok(stats);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetAppStats")
+.WithOpenApi();
+
+v1.MapGet("/sync/snapshot", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, IDashboardMetricsService dashboardMetricsService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var appStats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        var dashboardStats = await dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
+
+        var snapshot = new SyncSnapshotDto
+        {
+            AppStats = appStats,
+            DashboardStats = dashboardStats,
+            GeneratedAt = DateTimeOffset.UtcNow,
+        };
+
+        return Results.Ok(snapshot);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetSyncSnapshot")
+.WithOpenApi();
+
+// Legacy endpoint for backwards compatibility
+app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        return Results.Ok(stats);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetAppStatsLegacy")
+.WithOpenApi();
 
 // Minimal APIs for patients
 app.MapGet("/api/patients/search", async (string? query, int take, IPatientService patientService) =>
@@ -164,6 +234,48 @@ app.MapGet("/api/notes/appointment/{appointmentId}", (Guid appointmentId, INoteB
 .WithName("GetNoteByAppointment")
 .WithOpenApi();
 
+// PDF export endpoint (behind feature flag)
+app.MapGet("/api/notes/export/{id}", async (Guid id, PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer pdfRenderer, IFeatureManager featureManager, CancellationToken cancellationToken) =>
+{
+    if (!await featureManager.IsEnabledAsync("PDFExport"))
+    {
+        return Results.NotFound(new { error = "PDF export feature is not enabled" });
+    }
+
+    try
+    {
+        var pdfBytes = await pdfRenderer.RenderNoteAsync(id, cancellationToken);
+        return Results.File(pdfBytes, "application/pdf", $"note-{id}.pdf");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("ExportNotePdf")
+.WithOpenApi();
+
+// Demo PDF endpoint (behind feature flag)
+app.MapGet("/api/pdf/demo", async (PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer pdfRenderer, IFeatureManager featureManager, CancellationToken cancellationToken) =>
+{
+    if (!await featureManager.IsEnabledAsync("PDFExport"))
+    {
+        return Results.NotFound(new { error = "PDF export feature is not enabled" });
+    }
+
+    try
+    {
+        var pdfBytes = await pdfRenderer.RenderDemoAsync(cancellationToken);
+        return Results.File(pdfBytes, "application/pdf", "pfpt-demo.pdf");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("DemoPdf")
+.WithOpenApi();
+
 // Minimal APIs for questionnaires
 app.MapGet("/api/questionnaires",  (IQuestionnaireService questionnaireService) =>
 {
@@ -196,6 +308,32 @@ app.MapGet("/api/dashboard/stats", async (IDashboardMetricsService dashboardMetr
 .WithName("GetDashboardStats")
 .WithOpenApi();
 
+static async Task<AppStatsDto> ComputeAppStatsAsync(IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken)
+{
+    await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+    var patientCount = await db.Patients.CountAsync(cancellationToken);
+    var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
+
+    // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
+    var patients = await db.Patients
+        .Select(p => new { p.UpdatedAt, p.CreatedAt })
+        .ToListAsync(cancellationToken);
+
+    var lastPatientUpdated = patients
+        .Select(p => p.UpdatedAt ?? p.CreatedAt)
+        .OrderByDescending(d => d)
+        .FirstOrDefault();
+
+    return new AppStatsDto
+    {
+        Patients = patientCount,
+        Appointments = appointmentCount,
+        LastPatientUpdated = lastPatientUpdated,
+        ApiHealthy = true,
+    };
+}
+
 app.Run();
 
 // Request DTOs for API endpoints
@@ -221,3 +359,11 @@ public record AppointmentCreateRequest(
 #pragma warning restore SA1633 // The file name must match the first type name
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning restore SA1600 // Elements should be documented
+
+// Make Program accessible for integration tests
+/// <summary>
+/// Allows test assemblies to reference the application's entry point.
+/// </summary>
+public partial class Program
+{
+}

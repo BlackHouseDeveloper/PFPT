@@ -11,6 +11,15 @@
           "Microsoft.OpenApi": "1.4.3"
         }
       },
+      "Microsoft.FeatureManagement.AspNetCore": {
+        "type": "Direct",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "BI4zVyKPrLrCGeIbBAgc9wC/ctm+MY2biJY1ZTxaUjMWwyZlwWrPAKsiuSUCu7aJtW/4z6kbpLNOhXTM2GwhvA==",
+        "dependencies": {
+          "Microsoft.FeatureManagement": "4.0.0"
+        }
+      },
       "Roslynator.Analyzers": {
         "type": "Direct",
         "requested": "[4.12.4, )",
@@ -65,6 +74,11 @@
         "type": "Transitive",
         "resolved": "8.0.20",
         "contentHash": "0tULF+2scqnCEDbvd6w6+wU12O3KJgTle3UsrsglJElhXI1w5otkOrfyAKk4UyWhexKUXl99ttXzScP3X3+7gA=="
+      },
+      "Microsoft.Bcl.TimeProvider": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "C7kWHJnMRY7EvJev2S8+yJHZ1y7A4ZlLbA4NE+O23BDIAN5mHeqND1m+SKv1ChRS5YlCDW7yAMUe7lttRsJaAA=="
       },
       "Microsoft.Data.Sqlite.Core": {
         "type": "Transitive",
@@ -230,6 +244,11 @@
         "type": "Transitive",
         "resolved": "6.6.2",
         "contentHash": "mBBb+/8Hm2Q3Wygag+hu2jj69tZW5psuv0vMRXY07Wy+Rrj40vRP8ZTbKBhs91r45/HXT4aY4z0iSBYx1h6JvA=="
+      },
+      "System.Diagnostics.DiagnosticSource": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "vaoWjvkG1aenR2XdjaVivlCV9fADfgyhW5bZtXT23qaEea0lWiUljdQuze4E31vKM7ZWJaSUsbYIKE3rnzfZUg=="
       },
       "System.IO.Pipelines": {
         "type": "Transitive",
@@ -410,6 +429,19 @@
         "requested": "[8.0.0, )",
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
+      },
+      "Microsoft.FeatureManagement": {
+        "type": "CentralTransitive",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "NUm3m815Qx9Y63W0WArpwv6auyK/mRInlqadHFf3oiC8z6hpy61LVDY3JgWE/PV4PVKKUg2MO9LkI6q92O60Hg==",
+        "dependencies": {
+          "Microsoft.Bcl.TimeProvider": "8.0.1",
+          "Microsoft.Extensions.Caching.Memory": "2.1.23",
+          "Microsoft.Extensions.Configuration.Binder": "2.1.10",
+          "Microsoft.Extensions.Logging": "2.1.1",
+          "System.Diagnostics.DiagnosticSource": "8.0.1"
+        }
       },
       "QuestPDF": {
         "type": "CentralTransitive",

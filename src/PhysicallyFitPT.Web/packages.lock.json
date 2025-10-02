@@ -46,6 +46,19 @@
           "Polly.Extensions.Http": "3.0.0"
         }
       },
+      "Microsoft.FeatureManagement": {
+        "type": "Direct",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "NUm3m815Qx9Y63W0WArpwv6auyK/mRInlqadHFf3oiC8z6hpy61LVDY3JgWE/PV4PVKKUg2MO9LkI6q92O60Hg==",
+        "dependencies": {
+          "Microsoft.Bcl.TimeProvider": "8.0.1",
+          "Microsoft.Extensions.Caching.Memory": "2.1.23",
+          "Microsoft.Extensions.Configuration.Binder": "2.1.10",
+          "Microsoft.Extensions.Logging": "2.1.1",
+          "System.Diagnostics.DiagnosticSource": "8.0.1"
+        }
+      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[8.0.20, )",
@@ -109,6 +122,29 @@
         "type": "Transitive",
         "resolved": "8.0.20",
         "contentHash": "0tULF+2scqnCEDbvd6w6+wU12O3KJgTle3UsrsglJElhXI1w5otkOrfyAKk4UyWhexKUXl99ttXzScP3X3+7gA=="
+      },
+      "Microsoft.Bcl.TimeProvider": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "C7kWHJnMRY7EvJev2S8+yJHZ1y7A4ZlLbA4NE+O23BDIAN5mHeqND1m+SKv1ChRS5YlCDW7yAMUe7lttRsJaAA=="
+      },
+      "Microsoft.Extensions.Caching.Abstractions": {
+        "type": "Transitive",
+        "resolved": "2.1.2",
+        "contentHash": "3d5xYNZhqosir31mohbApOE1Iuci/WOfWit+/Cj6ZxS5SR28SbgskgP8M+ZmBZ5Gy7l1DT7fYikgqpC2tQE/nA==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.1.1"
+        }
+      },
+      "Microsoft.Extensions.Caching.Memory": {
+        "type": "Transitive",
+        "resolved": "2.1.23",
+        "contentHash": "00E3Y0sUISXmSL+BHaesNae1x06g8Bp3b6e9G3rlEn4FePu4TZ14su0PeeD8dgN9WUxbwRWMR6hf6r7QiTVQLQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "2.1.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.1.1",
+          "Microsoft.Extensions.Options": "2.1.1"
+        }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
@@ -194,6 +230,11 @@
         "type": "Transitive",
         "resolved": "1.2.0.556",
         "contentHash": "zvn9Mqs/ox/83cpYPignI8hJEM2A93s2HkHs8HYMOAQW0PkampyoErAiIyKxgTLqbbad29HX/shv/6LGSjPJNQ=="
+      },
+      "System.Diagnostics.DiagnosticSource": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "vaoWjvkG1aenR2XdjaVivlCV9fADfgyhW5bZtXT23qaEea0lWiUljdQuze4E31vKM7ZWJaSUsbYIKE3rnzfZUg=="
       },
       "System.IO.Pipelines": {
         "type": "Transitive",

@@ -71,4 +71,11 @@ public interface IDataService
   /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>Dashboard statistics DTO.</returns>
   Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets application statistics for diagnostics and monitoring.
+  /// </summary>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>Application statistics DTO.</returns>
+  Task<AppStatsDto> GetStatsAsync(CancellationToken cancellationToken = default);
 }

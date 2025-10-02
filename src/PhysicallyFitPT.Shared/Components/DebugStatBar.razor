@@ -1,0 +1,79 @@
+@inject IDataService Data
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@implements IDisposable
+@using Microsoft.Extensions.Configuration
+
+@* Only show in development mode *@
+@if (isDeveloperModeEnabled)
+{
+  <div class="debug-bar" style="background-color: #f0f0f0; border: 1px solid #ccc; padding: 8px; margin-bottom: 16px; font-size: 12px; font-family: monospace;">
+    <span style="background-color: #ff6b6b; color: white; padding: 2px 6px; margin-right: 8px; border-radius: 3px; font-weight: bold;">DEV</span>
+    Patients: @(stats?.Patients ?? 0) |
+    Last Updated: @(stats?.LastPatientUpdated?.ToLocalTime().ToString("g") ?? "Never") |
+    Appointments: @(stats?.Appointments ?? 0) |
+    API: @(stats?.ApiHealthy == true ? "✓ Healthy" : "✗ Unhealthy")
+  </div>
+}
+
+@code {
+  private AppStatsDto? stats;
+  private Timer? updateTimer;
+  private bool disposed;
+  private bool isDeveloperModeEnabled;
+  private readonly Random random = new Random();
+
+  protected override async Task OnInitializedAsync()
+  {
+#if DEBUG
+    // Check configuration for developer mode setting
+    isDeveloperModeEnabled = Configuration.GetSection("App:DeveloperMode").Get<bool?>() ?? true;
+#else
+    // Never show in release builds
+    isDeveloperModeEnabled = false;
+#endif
+
+    if (isDeveloperModeEnabled)
+    {
+      await LoadStatsAsync();
+      
+      // Start polling with jitter to avoid thundering herd
+      var baseInterval = 10000; // 10 seconds
+      var jitter = random.Next(0, 2000); // 0-2 second jitter
+      
+      updateTimer = new Timer(async _ =>
+      {
+        await LoadStatsAsync();
+        await InvokeAsync(StateHasChanged);
+      }, null, TimeSpan.FromMilliseconds(baseInterval + jitter), TimeSpan.FromMilliseconds(baseInterval));
+    }
+  }
+
+  private async Task LoadStatsAsync()
+  {
+    try
+    {
+      stats = await Data.GetStatsAsync();
+    }
+    catch
+    {
+      // If we fail to get stats, mark API as unhealthy
+      if (stats != null)
+      {
+        stats.ApiHealthy = false;
+      }
+      else
+      {
+        stats = new AppStatsDto { ApiHealthy = false };
+      }
+    }
+  }
+
+  public void Dispose()
+  {
+    if (!disposed)
+    {
+      updateTimer?.Dispose();
+      disposed = true;
+    }
+  }
+}
