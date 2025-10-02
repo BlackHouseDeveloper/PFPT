@@ -27,6 +27,7 @@ public sealed class LocalDataService : IDataService
   private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
   private readonly ILogger<LocalDataService> logger;
   private readonly IDashboardMetricsService dashboardMetricsService;
+  private readonly ISyncService syncService;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="LocalDataService"/> class.
@@ -35,18 +36,21 @@ public sealed class LocalDataService : IDataService
   /// <param name="appointmentService">Domain service that manages appointment persistence.</param>
   /// <param name="dbContextFactory">Factory that produces EF Core contexts targeting the local database.</param>
   /// <param name="dashboardMetricsService">Service that computes dashboard metrics from the local store.</param>
+  /// <param name="syncService">Synchronization coordinator that surfaces remote aggregate data.</param>
   /// <param name="logger">Logger used to capture unexpected errors from local queries.</param>
   public LocalDataService(
     IPatientService patientService,
     IAppointmentService appointmentService,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IDashboardMetricsService dashboardMetricsService,
+    ISyncService syncService,
     ILogger<LocalDataService> logger)
   {
     this.patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
     this.appointmentService = appointmentService ?? throw new ArgumentNullException(nameof(appointmentService));
     this.dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     this.dashboardMetricsService = dashboardMetricsService ?? throw new ArgumentNullException(nameof(dashboardMetricsService));
+    this.syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
     this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
   }
 
@@ -99,12 +103,37 @@ public sealed class LocalDataService : IDataService
   /// <inheritdoc />
   public async Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default)
   {
+    var snapshot = this.syncService.LatestSnapshot;
+    if (snapshot?.DashboardStats is DashboardStatsDto remoteDashboard)
+    {
+      return new DashboardStatsDto
+      {
+        TodaysAppointments = remoteDashboard.TodaysAppointments,
+        ActivePatients = remoteDashboard.ActivePatients,
+        PendingNotes = remoteDashboard.PendingNotes,
+        OverdueOutcomeMeasures = remoteDashboard.OverdueOutcomeMeasures,
+      };
+    }
+
     return await this.dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
   }
 
   /// <inheritdoc />
   public async Task<AppStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
   {
+    var snapshot = this.syncService.LatestSnapshot;
+    if (snapshot?.AppStats is AppStatsDto remoteStats)
+    {
+      var status = this.syncService.Status;
+      return new AppStatsDto
+      {
+        Patients = remoteStats.Patients,
+        Appointments = remoteStats.Appointments,
+        LastPatientUpdated = remoteStats.LastPatientUpdated,
+        ApiHealthy = status != SyncStatus.Failed && remoteStats.ApiHealthy,
+      };
+    }
+
     try
     {
       await using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);

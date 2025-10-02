@@ -53,6 +53,46 @@ namespace PhysicallyFitPT
 
       builder.Services.AddDbContextFactory<ApplicationDbContext>(opt => opt.UseSqlite($"Data Source={dbPath}"));
 
+      var defaultApiUri = new Uri("https://api.physicallyfitpt.com");
+      var configuredApiBase = Environment.GetEnvironmentVariable("PFPT_API_BASE_URL");
+
+      Uri apiBaseUri;
+      if (!string.IsNullOrWhiteSpace(configuredApiBase) && Uri.TryCreate(configuredApiBase, UriKind.Absolute, out var configuredUri))
+      {
+        apiBaseUri = configuredUri;
+      }
+      else
+      {
+#if DEBUG
+        var debugFallback = OperatingSystem.IsAndroid()
+          ? "http://10.0.2.2:7001"
+          : "http://localhost:7001";
+
+        if (!Uri.TryCreate(debugFallback, UriKind.Absolute, out var debugUri))
+        {
+          System.Diagnostics.Debug.WriteLine($"PFPT: Unable to parse debug API base URL '{debugFallback}', using default production endpoint.");
+          apiBaseUri = defaultApiUri;
+        }
+        else
+        {
+          apiBaseUri = debugUri;
+        }
+#else
+        if (!string.IsNullOrWhiteSpace(configuredApiBase))
+        {
+          System.Diagnostics.Debug.WriteLine($"PFPT: Invalid PFPT_API_BASE_URL value '{configuredApiBase}', falling back to production endpoint.");
+        }
+
+        apiBaseUri = defaultApiUri;
+#endif
+      }
+
+      builder.Services.AddHttpClient("api", client =>
+      {
+        client.BaseAddress = apiBaseUri;
+        client.Timeout = TimeSpan.FromSeconds(15);
+      });
+
       // DI: services
       builder.Services.AddScoped<IPatientService, PatientService>();
       builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -60,6 +100,7 @@ namespace PhysicallyFitPT
       builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
       builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
       builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+      builder.Services.AddSingleton<ISyncService, HybridSyncService>();
       builder.Services.AddScoped<IDataService, LocalDataService>();
       builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
       builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();

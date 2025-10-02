@@ -65,6 +65,11 @@ public interface ISyncService
   string? LastError { get; }
 
   /// <summary>
+  /// Gets the most recent snapshot retrieved from the remote API.
+  /// </summary>
+  SyncSnapshotDto? LatestSnapshot { get; }
+
+  /// <summary>
   /// Performs a manual synchronization operation.
   /// </summary>
   /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>

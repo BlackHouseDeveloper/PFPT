@@ -87,29 +87,7 @@ v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFact
 {
     try
     {
-        await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        
-        var patientCount = await db.Patients.CountAsync(cancellationToken);
-        var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
-        
-        // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
-        var patients = await db.Patients
-            .Select(p => new { p.UpdatedAt, p.CreatedAt })
-            .ToListAsync(cancellationToken);
-        
-        var lastPatientUpdated = patients
-            .Select(p => p.UpdatedAt ?? p.CreatedAt)
-            .OrderByDescending(d => d)
-            .FirstOrDefault();
-
-        var stats = new
-        {
-            Patients = patientCount,
-            Appointments = appointmentCount,
-            LastPatientUpdated = lastPatientUpdated,
-            ApiHealthy = true,
-        };
-
+        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
         return Results.Ok(stats);
     }
     catch (Exception ex)
@@ -120,34 +98,36 @@ v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFact
 .WithName("GetAppStats")
 .WithOpenApi();
 
+v1.MapGet("/sync/snapshot", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, IDashboardMetricsService dashboardMetricsService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var appStats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        var dashboardStats = await dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
+
+        var snapshot = new SyncSnapshotDto
+        {
+            AppStats = appStats,
+            DashboardStats = dashboardStats,
+            GeneratedAt = DateTimeOffset.UtcNow,
+        };
+
+        return Results.Ok(snapshot);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("GetSyncSnapshot")
+.WithOpenApi();
+
 // Legacy endpoint for backwards compatibility
 app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
 {
     try
     {
-        await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        
-        var patientCount = await db.Patients.CountAsync(cancellationToken);
-        var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
-        
-        // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
-        var patients = await db.Patients
-            .Select(p => new { p.UpdatedAt, p.CreatedAt })
-            .ToListAsync(cancellationToken);
-        
-        var lastPatientUpdated = patients
-            .Select(p => p.UpdatedAt ?? p.CreatedAt)
-            .OrderByDescending(d => d)
-            .FirstOrDefault();
-
-        var stats = new
-        {
-            Patients = patientCount,
-            Appointments = appointmentCount,
-            LastPatientUpdated = lastPatientUpdated,
-            ApiHealthy = true,
-        };
-
+        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
         return Results.Ok(stats);
     }
     catch (Exception ex)
@@ -328,6 +308,32 @@ app.MapGet("/api/dashboard/stats", async (IDashboardMetricsService dashboardMetr
 .WithName("GetDashboardStats")
 .WithOpenApi();
 
+static async Task<AppStatsDto> ComputeAppStatsAsync(IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken)
+{
+    await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+    var patientCount = await db.Patients.CountAsync(cancellationToken);
+    var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
+
+    // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
+    var patients = await db.Patients
+        .Select(p => new { p.UpdatedAt, p.CreatedAt })
+        .ToListAsync(cancellationToken);
+
+    var lastPatientUpdated = patients
+        .Select(p => p.UpdatedAt ?? p.CreatedAt)
+        .OrderByDescending(d => d)
+        .FirstOrDefault();
+
+    return new AppStatsDto
+    {
+        Patients = patientCount,
+        Appointments = appointmentCount,
+        LastPatientUpdated = lastPatientUpdated,
+        ApiHealthy = true,
+    };
+}
+
 app.Run();
 
 // Request DTOs for API endpoints
@@ -355,6 +361,9 @@ public record AppointmentCreateRequest(
 #pragma warning restore SA1600 // Elements should be documented
 
 // Make Program accessible for integration tests
+/// <summary>
+/// Allows test assemblies to reference the application's entry point.
+/// </summary>
 public partial class Program
 {
 }
