@@ -28,6 +28,7 @@ public sealed class LocalDataService : IDataService
   private readonly ILogger<LocalDataService> logger;
   private readonly IDashboardMetricsService dashboardMetricsService;
   private readonly ISyncService syncService;
+  private readonly IAppStatsService appStatsService;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="LocalDataService"/> class.
@@ -37,6 +38,7 @@ public sealed class LocalDataService : IDataService
   /// <param name="dbContextFactory">Factory that produces EF Core contexts targeting the local database.</param>
   /// <param name="dashboardMetricsService">Service that computes dashboard metrics from the local store.</param>
   /// <param name="syncService">Synchronization coordinator that surfaces remote aggregate data.</param>
+  /// <param name="appStatsService">Shared statistics service used when remote sync data is unavailable.</param>
   /// <param name="logger">Logger used to capture unexpected errors from local queries.</param>
   public LocalDataService(
     IPatientService patientService,
@@ -44,6 +46,7 @@ public sealed class LocalDataService : IDataService
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IDashboardMetricsService dashboardMetricsService,
     ISyncService syncService,
+    IAppStatsService appStatsService,
     ILogger<LocalDataService> logger)
   {
     this.patientService = patientService ?? throw new ArgumentNullException(nameof(patientService));
@@ -51,6 +54,7 @@ public sealed class LocalDataService : IDataService
     this.dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     this.dashboardMetricsService = dashboardMetricsService ?? throw new ArgumentNullException(nameof(dashboardMetricsService));
     this.syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
+    this.appStatsService = appStatsService ?? throw new ArgumentNullException(nameof(appStatsService));
     this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
   }
 
@@ -125,39 +129,15 @@ public sealed class LocalDataService : IDataService
     if (snapshot?.AppStats is AppStatsDto remoteStats)
     {
       var status = this.syncService.Status;
-      return new AppStatsDto
+      return remoteStats with
       {
-        Patients = remoteStats.Patients,
-        Appointments = remoteStats.Appointments,
-        LastPatientUpdated = remoteStats.LastPatientUpdated,
         ApiHealthy = status != SyncStatus.Failed && remoteStats.ApiHealthy,
       };
     }
 
     try
     {
-      await using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
-
-      var patientCount = await db.Patients.CountAsync(cancellationToken);
-      var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
-
-      // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
-      var patients = await db.Patients
-        .Select(p => new { p.UpdatedAt, p.CreatedAt })
-        .ToListAsync(cancellationToken);
-
-      var lastPatientUpdated = patients
-        .Select(p => p.UpdatedAt ?? p.CreatedAt)
-        .OrderByDescending(d => d)
-        .FirstOrDefault();
-
-      return new AppStatsDto
-      {
-        Patients = patientCount,
-        Appointments = appointmentCount,
-        LastPatientUpdated = lastPatientUpdated,
-        ApiHealthy = true,
-      };
+      return await this.appStatsService.GetAppStatsAsync(cancellationToken);
     }
     catch (Exception ex)
     {

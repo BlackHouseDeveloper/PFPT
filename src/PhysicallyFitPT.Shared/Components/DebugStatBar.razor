@@ -1,11 +1,16 @@
 @inject IDataService Data
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject Microsoft.Extensions.Logging.ILogger<DebugStatBar> Logger
 @implements IDisposable
 @using Microsoft.Extensions.Configuration
+@using PhysicallyFitPT.Shared.Diagnostics
 
 @* Only show in development mode *@
 @if (isDeveloperModeEnabled)
 {
+  <div role="status" aria-live="polite" style="background:#4b2c92;color:#fff;padding:4px 8px;font-size:11px;font-family:monospace;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px 4px 0 0;display:inline-block;margin-bottom:4px;border:1px solid currentColor;">
+    Developer diagnostics active
+  </div>
   <div class="debug-bar" style="background-color: #f0f0f0; border: 1px solid #ccc; padding: 8px; margin-bottom: 16px; font-size: 12px; font-family: monospace;">
     <span style="background-color: #ff6b6b; color: white; padding: 2px 6px; margin-right: 8px; border-radius: 3px; font-weight: bold;">DEV</span>
     Patients: @(stats?.Patients ?? 0) |
@@ -21,16 +26,16 @@
   private bool disposed;
   private bool isDeveloperModeEnabled;
   private readonly Random random = new Random();
+  private const string HostIdentifier = nameof(DebugStatBar);
+#if DEBUG
+  private const bool IsDebugBuild = true;
+#else
+  private const bool IsDebugBuild = false;
+#endif
 
   protected override async Task OnInitializedAsync()
   {
-#if DEBUG
-    // Check configuration for developer mode setting
-    isDeveloperModeEnabled = Configuration.GetSection("App:DeveloperMode").Get<bool?>() ?? true;
-#else
-    // Never show in release builds
-    isDeveloperModeEnabled = false;
-#endif
+    isDeveloperModeEnabled = ResolveDeveloperModeFlag();
 
     if (isDeveloperModeEnabled)
     {
@@ -57,14 +62,7 @@
     catch
     {
       // If we fail to get stats, mark API as unhealthy
-      if (stats != null)
-      {
-        stats.ApiHealthy = false;
-      }
-      else
-      {
-        stats = new AppStatsDto { ApiHealthy = false };
-      }
+      stats = (stats ?? new AppStatsDto()) with { ApiHealthy = false };
     }
   }
 
@@ -75,5 +73,19 @@
       updateTimer?.Dispose();
       disposed = true;
     }
+  }
+
+  private bool ResolveDeveloperModeFlag()
+  {
+    var environmentOverridesSupported = !OperatingSystem.IsBrowser();
+
+    return DeveloperModeGuard.Resolve(
+      Configuration,
+      key => Environment.GetEnvironmentVariable(key),
+      Logger,
+      IsDebugBuild,
+      environmentOverridesSupported,
+      DeveloperModeGuard.EnvironmentVariableName,
+      HostIdentifier);
   }
 }

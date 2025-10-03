@@ -107,4 +107,12 @@ public class ApiEndpointTests : IClassFixture<WebApplicationFactory<Program>>
                 error.TryGetProperty("error", out _));
         }
     }
+
+    [Fact]
+    public async Task HealthInfo_Endpoint_Returns_Status()
+    {
+        var response = await this.client.GetAsync("/health/info");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 }

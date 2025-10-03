@@ -150,15 +150,50 @@ skip_step() {
 # ---- Pre-Build Cleanup Operations -----------------------------------------
 
 extract_test_summary () {
-  # Try to pull a friendly test summary from the log
-  # Covers xUnit/VSTest formats commonly seen
-  local summary=""
-  summary="$(grep -E 'Passed!.*Failed:|Total tests:|Summary:' "$logfile" | tail -n 1 || true)"
-  if [ -n "$summary" ]; then
-    echo "$summary"
-  else
-    echo "See full test details in $logfile"
-  fi
+  python3 - "$logfile" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+log_path = Path(sys.argv[1])
+if not log_path.exists():
+    print(f"See full test details in {log_path}")
+    raise SystemExit(0)
+
+pattern = re.compile(r'(?:Passed|Failed)!  - Failed:\s*(\d+), Passed:\s*(\d+), Skipped:\s*(\d+), Total:\s*(\d+)')
+failed = passed = skipped = total = 0
+assemblies = 0
+
+lines = log_path.read_text(encoding='utf-8', errors='ignore').splitlines()
+
+for line in lines:
+    match = pattern.search(line)
+    if match:
+        assemblies += 1
+        f, p, s, t = map(int, match.groups())
+        failed += f
+        passed += p
+        skipped += s
+        total += t
+
+if assemblies:
+    status = "FAIL" if failed else "PASS"
+    print(f"{status} across {assemblies} test assemblies → Passed: {passed}, Failed: {failed}, Skipped: {skipped}, Total: {total}")
+    raise SystemExit(0)
+
+fallback_pattern = re.compile(r'Total tests:\s*(\d+)[^0-9]+Passed:\s*(\d+)[^0-9]+Failed:\s*(\d+)')
+fallback = None
+for line in lines:
+    match = fallback_pattern.search(line)
+    if match:
+        fallback = match
+
+if fallback:
+    total, passed, failed = map(int, fallback.groups())
+    print(f"Aggregate totals → Passed: {passed}, Failed: {failed}, Total: {total}")
+else:
+    print(f"See full test details in {log_path}")
+PY
 }
 
 

@@ -16,6 +16,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<PhysicallyFitPT.Shared.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+ApiRoutes.ConfigureBasePath(builder.Configuration["Api:BasePath"]);
+
 // Configuration
 builder.Services.Configure<ApiConfiguration>(
     builder.Configuration.GetSection("Api"));

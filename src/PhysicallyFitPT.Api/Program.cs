@@ -12,19 +12,26 @@
 #pragma warning disable SA1111 // Closing parenthesis should be on its own line
 #pragma warning disable SA1400 // Access modifier should be declared
 
+using System.IO;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Options;
 using PhysicallyFitPT.Core;
 using PhysicallyFitPT.Infrastructure.Data;
 using PhysicallyFitPT.Infrastructure.Services;
+using PhysicallyFitPT.Infrastructure.Services.Configuration;
 using PhysicallyFitPT.Infrastructure.Services.Interfaces;
 using PhysicallyFitPT.Shared;
+using PhysicallyFitPT.Shared.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
+builder.Services.Configure<AppStatsOptions>(builder.Configuration.GetSection("AppStats"));
 
 // Add Health Checks
 builder.Services.AddHealthChecks();
@@ -39,10 +46,21 @@ var connectionString = !string.IsNullOrWhiteSpace(environmentDbPath)
     ? $"Data Source={environmentDbPath}"
     : configuredConnection ?? "Data Source=pfpt.db";
 
+// Normalize relative SQLite paths to the application content root so the API
+// can locate the database regardless of the current working directory.
+if (!string.IsNullOrWhiteSpace(connectionString) && connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+{
+    var sqliteBuilder = new SqliteConnectionStringBuilder(connectionString);
+    sqliteBuilder.DataSource = ResolveSqlitePath(sqliteBuilder.DataSource, builder.Environment.ContentRootPath);
+    connectionString = sqliteBuilder.ToString();
+}
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
     options.UseSqlite(connectionString);
 });
+
+Console.WriteLine($"[PFPT.Api] Using SQLite data source: {new SqliteConnectionStringBuilder(connectionString).DataSource}");
 
 // DI Setup for services
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -51,6 +69,8 @@ builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
 builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
 builder.Services.AddScoped<IAutoMessagingService, AutoMessagingService>();
 builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+builder.Services.AddScoped<IAppStatsService, AppStatsService>();
+builder.Services.AddScoped<IAppStatsInvalidator>(sp => (IAppStatsInvalidator)sp.GetRequiredService<IAppStatsService>());
 builder.Services.AddScoped<PhysicallyFitPT.Infrastructure.Pdf.IPdfRenderer, PhysicallyFitPT.Infrastructure.Pdf.QuestPdfRenderer>();
 
 // Add CORS for development
@@ -83,11 +103,11 @@ app.MapHealthChecks("/health");
 var v1 = app.MapGroup("/api/v1");
 
 // Application statistics endpoint
-v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+v1.MapGet("/stats", async (IAppStatsService appStatsService, CancellationToken cancellationToken) =>
 {
     try
     {
-        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        var stats = await appStatsService.GetAppStatsAsync(cancellationToken);
         return Results.Ok(stats);
     }
     catch (Exception ex)
@@ -98,11 +118,11 @@ v1.MapGet("/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFact
 .WithName("GetAppStats")
 .WithOpenApi();
 
-v1.MapGet("/sync/snapshot", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, IDashboardMetricsService dashboardMetricsService, CancellationToken cancellationToken) =>
+v1.MapGet("/sync/snapshot", async (IAppStatsService appStatsService, IDashboardMetricsService dashboardMetricsService, CancellationToken cancellationToken) =>
 {
     try
     {
-        var appStats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        var appStats = await appStatsService.GetAppStatsAsync(cancellationToken);
         var dashboardStats = await dashboardMetricsService.GetDashboardStatsAsync(cancellationToken);
 
         var snapshot = new SyncSnapshotDto
@@ -123,11 +143,11 @@ v1.MapGet("/sync/snapshot", async (IDbContextFactory<ApplicationDbContext> dbCon
 .WithOpenApi();
 
 // Legacy endpoint for backwards compatibility
-app.MapGet("/api/stats", async (IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken) =>
+app.MapGet("/api/stats", async (IAppStatsService appStatsService, CancellationToken cancellationToken) =>
 {
     try
     {
-        var stats = await ComputeAppStatsAsync(dbContextFactory, cancellationToken);
+        var stats = await appStatsService.GetAppStatsAsync(cancellationToken);
         return Results.Ok(stats);
     }
     catch (Exception ex)
@@ -308,30 +328,95 @@ app.MapGet("/api/dashboard/stats", async (IDashboardMetricsService dashboardMetr
 .WithName("GetDashboardStats")
 .WithOpenApi();
 
-static async Task<AppStatsDto> ComputeAppStatsAsync(IDbContextFactory<ApplicationDbContext> dbContextFactory, CancellationToken cancellationToken)
+v1.MapGet("/diagnostics/info", (HttpContext httpContext, IOptionsMonitor<AppStatsOptions> appStatsOptions, IConfiguration configuration, ILogger<Program> logger) =>
 {
-    await using var db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-
-    var patientCount = await db.Patients.CountAsync(cancellationToken);
-    var appointmentCount = await db.Appointments.CountAsync(cancellationToken);
-
-    // Get the most recent patient update using ToListAsync to work around SQLite DateTimeOffset limitation
-    var patients = await db.Patients
-        .Select(p => new { p.UpdatedAt, p.CreatedAt })
-        .ToListAsync(cancellationToken);
-
-    var lastPatientUpdated = patients
-        .Select(p => p.UpdatedAt ?? p.CreatedAt)
-        .OrderByDescending(d => d)
-        .FirstOrDefault();
-
-    return new AppStatsDto
+    if (!app.Environment.IsDevelopment())
     {
-        Patients = patientCount,
-        Appointments = appointmentCount,
-        LastPatientUpdated = lastPatientUpdated,
-        ApiHealthy = true,
-    };
+        if (!(httpContext.User?.Identity?.IsAuthenticated ?? false))
+        {
+            return Results.Unauthorized();
+        }
+
+        var requiredRole = configuration.GetValue<string?>("App:DiagnosticsRequiredRole");
+        if (!string.IsNullOrWhiteSpace(requiredRole) && !httpContext.User.IsInRole(requiredRole))
+        {
+            return Results.Forbid();
+        }
+    }
+
+    var diagnosticsEnabled = DeveloperModeGuard.Resolve(
+        configuration,
+        Environment.GetEnvironmentVariable,
+        logger,
+        app.Environment.IsDevelopment(),
+        environmentOverridesSupported: true,
+        DeveloperModeGuard.EnvironmentVariableName,
+        "DiagnosticsInfoEndpoint");
+
+    if (!diagnosticsEnabled)
+    {
+        return Results.NotFound();
+    }
+
+    httpContext.Response.Headers["PFPT-Diagnostics"] = "true";
+
+    var payload = new DiagnosticsInfoDto(true, appStatsOptions.CurrentValue.CacheTtlSeconds);
+    return Results.Ok(payload);
+})
+.WithName("GetDiagnosticsInfo")
+.WithOpenApi();
+
+app.MapGet("/health/info", (IOptionsMonitor<AppStatsOptions> appStatsOptions, IConfiguration configuration, ILogger<Program> logger) =>
+{
+    var diagnosticsEnabled = DeveloperModeGuard.Resolve(
+        configuration,
+        Environment.GetEnvironmentVariable,
+        logger,
+        app.Environment.IsDevelopment(),
+        environmentOverridesSupported: true,
+        DeveloperModeGuard.EnvironmentVariableName,
+        "HealthInfoEndpoint");
+
+var payload = new DiagnosticsInfoDto(diagnosticsEnabled, appStatsOptions.CurrentValue.CacheTtlSeconds);
+    return Results.Ok(payload);
+})
+.WithName("GetHealthInfo")
+.WithOpenApi();
+
+static string ResolveSqlitePath(string dataSource, string contentRootPath)
+{
+    if (string.IsNullOrWhiteSpace(dataSource))
+    {
+        return dataSource;
+    }
+
+    if (Path.IsPathRooted(dataSource))
+    {
+        return dataSource;
+    }
+
+    // First try relative to the content root (e.g. src/PhysicallyFitPT.Api)
+    var candidate = Path.GetFullPath(Path.Combine(contentRootPath, dataSource));
+    if (File.Exists(candidate))
+    {
+        return candidate;
+    }
+
+    // Walk up the directory tree looking for a matching file (covers solution-root configuration files)
+    var current = Directory.GetParent(contentRootPath);
+    while (current is not null)
+    {
+        var alternative = Path.GetFullPath(Path.Combine(current.FullName, dataSource));
+        if (File.Exists(alternative))
+        {
+            return alternative;
+        }
+
+        current = current.Parent;
+    }
+
+    // If the file does not exist yet, EF will create it at the candidate path under the content root.
+    return candidate;
 }
 
 app.Run();

@@ -15,8 +15,57 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
   DOTNET_NOLOGO: "1"
   EF_PROVIDER: sqlite
+  DEV_MODE_OVERRIDE_ALLOWLIST: "refs/heads/development"
 
 jobs:
+  guard-developer-mode:
+    name: Guard Developer Diagnostics Override
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure PFPT_DEVELOPER_MODE is not enabled in CI
+        env:
+          DEV_MODE_ALLOWLIST: ${{ env.DEV_MODE_OVERRIDE_ALLOWLIST }}
+        run: |
+          branch="${GITHUB_REF}"
+          allowlist="$DEV_MODE_ALLOWLIST"
+
+          if [[ -n "$allowlist" ]]; then
+            IFS=',' read -ra allowed <<< "$allowlist"
+            for allowed_branch in "${allowed[@]}"; do
+              if [[ "$branch" == "${allowed_branch}" ]]; then
+                echo "::notice::Developer diagnostics override allowed for branch $branch by DEV_MODE_OVERRIDE_ALLOWLIST."
+                exit 0
+              fi
+            done
+          fi
+
+          value="${PFPT_DEVELOPER_MODE:-}"
+          if [[ -n "$value" ]]; then
+            lower=$(echo "$value" | tr '[:upper:]' '[:lower:]')
+            if [[ "$lower" == "true" || "$lower" == "1" ]]; then
+              echo "::error::PFPT_DEVELOPER_MODE must remain disabled in CI and production pipelines. Unset the variable or move diagnostics overrides to appsettings.Development.json. See docs/CI.md#guardrails for remediation steps."
+              exit 1
+            fi
+            echo "::notice::PFPT_DEVELOPER_MODE appears to be set. Verify that diagnostics overrides are restricted to development scenarios."
+          fi
+
+  verify-database-paths:
+    name: Verify Database Targets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inspect API database configuration
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+        run: |
+          scripts/check_db_status.py --context api --environment Development --require-data --require-tables Patients --require-nonzero
+
+      - name: Inspect Seeder database configuration
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+        run: |
+          scripts/check_db_status.py --context seeder --environment Development --require-data --require-tables Patients --require-nonzero
   changelog-post-merge:
     name: Post-Merge Changelog Generation
     runs-on: ubuntu-latest

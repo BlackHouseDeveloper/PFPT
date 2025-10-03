@@ -8,6 +8,7 @@ namespace PhysicallyFitPT
   using System.IO;
   using Microsoft.AspNetCore.Components.WebView.Maui;
   using Microsoft.EntityFrameworkCore;
+  using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection; // needed for AddHttpClient ext method
   using Microsoft.Extensions.Logging;
   using Microsoft.Maui.Controls.Hosting;
@@ -15,6 +16,7 @@ namespace PhysicallyFitPT
   using Microsoft.Maui.Storage;
   using PhysicallyFitPT.Infrastructure.Data;
   using PhysicallyFitPT.Infrastructure.Services;
+  using PhysicallyFitPT.Infrastructure.Services.Configuration;
   using PhysicallyFitPT.Infrastructure.Services.Interfaces;
   using PhysicallyFitPT.Services;
   using PhysicallyFitPT.Shared;
@@ -39,6 +41,8 @@ namespace PhysicallyFitPT
         .UseMauiApp<App>()
         .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
+      ApiRoutes.ConfigureBasePath(builder.Configuration["Api:BasePath"]);
+
 #if DEBUG
       builder.Services.AddBlazorWebViewDeveloperTools();
       builder.Logging.AddDebug();
@@ -52,6 +56,8 @@ namespace PhysicallyFitPT
         : Path.Combine(FileSystem.AppDataDirectory, "physicallyfitpt.db");
 
       builder.Services.AddDbContextFactory<ApplicationDbContext>(opt => opt.UseSqlite($"Data Source={dbPath}"));
+      builder.Services.AddMemoryCache();
+      builder.Services.Configure<AppStatsOptions>(builder.Configuration.GetSection("AppStats"));
 
       var defaultApiUri = new Uri("https://api.physicallyfitpt.com");
       var configuredApiBase = Environment.GetEnvironmentVariable("PFPT_API_BASE_URL");
@@ -65,8 +71,8 @@ namespace PhysicallyFitPT
       {
 #if DEBUG
         var debugFallback = OperatingSystem.IsAndroid()
-          ? "http://10.0.2.2:7001"
-          : "http://localhost:7001";
+          ? "http://10.0.2.2:5114"
+          : "http://localhost:5114";
 
         if (!Uri.TryCreate(debugFallback, UriKind.Absolute, out var debugUri))
         {
@@ -100,6 +106,8 @@ namespace PhysicallyFitPT
       builder.Services.AddScoped<INoteBuilderService, NoteBuilderService>();
       builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
       builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
+      builder.Services.AddScoped<IAppStatsService, AppStatsService>();
+      builder.Services.AddScoped<IAppStatsInvalidator>(sp => (IAppStatsInvalidator)sp.GetRequiredService<IAppStatsService>());
       builder.Services.AddSingleton<ISyncService, HybridSyncService>();
       builder.Services.AddScoped<IDataService, LocalDataService>();
       builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();

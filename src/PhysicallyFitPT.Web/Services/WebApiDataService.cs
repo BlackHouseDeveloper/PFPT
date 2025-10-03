@@ -57,8 +57,9 @@ public class WebApiDataService : IDataService
     {
       this.logger.LogInformation("Searching patients with query: {Query}, take: {Take}", query, take);
 
+      var searchRoute = ApiRoutes.Combine("patients", "search");
       var response = await this.httpClient.GetAsync(
-        $"api/patients/search?query={Uri.EscapeDataString(query ?? string.Empty)}&take={take}",
+        $"{searchRoute}?query={Uri.EscapeDataString(query ?? string.Empty)}&take={take}",
         cancellationToken);
 
       if (response.IsSuccessStatusCode)
@@ -95,7 +96,7 @@ public class WebApiDataService : IDataService
     {
       this.logger.LogInformation("Getting patient by ID: {PatientId}", patientId);
 
-      var response = await this.httpClient.GetAsync($"api/patients/{patientId}", cancellationToken);
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("patients", patientId.ToString()), cancellationToken);
 
       if (response.IsSuccessStatusCode)
       {
@@ -146,7 +147,7 @@ public class WebApiDataService : IDataService
         ClinicianNpi = clinicianNpi,
       };
 
-      var response = await this.httpClient.PostAsJsonAsync("api/appointments", request, this.jsonOptions, cancellationToken);
+      var response = await this.httpClient.PostAsJsonAsync(ApiRoutes.Combine("appointments"), request, this.jsonOptions, cancellationToken);
 
       if (response.IsSuccessStatusCode)
       {
@@ -178,8 +179,9 @@ public class WebApiDataService : IDataService
       this.logger.LogInformation("Getting upcoming appointments for patient: {PatientId}", patientId);
 
       var fromIso = fromUtc.ToString("O");
+      var upcomingRoute = ApiRoutes.Combine("patients", patientId.ToString(), "appointments", "upcoming");
       var response = await this.httpClient.GetAsync(
-        $"api/patients/{patientId}/appointments/upcoming?from={Uri.EscapeDataString(fromIso)}&take={take}",
+        $"{upcomingRoute}?from={Uri.EscapeDataString(fromIso)}&take={take}",
         cancellationToken);
 
       if (response.IsSuccessStatusCode)
@@ -206,7 +208,7 @@ public class WebApiDataService : IDataService
     {
       this.logger.LogInformation("Cancelling appointment: {AppointmentId}", appointmentId);
 
-      var response = await this.httpClient.DeleteAsync($"api/appointments/{appointmentId}", cancellationToken);
+      var response = await this.httpClient.DeleteAsync(ApiRoutes.Combine("appointments", appointmentId.ToString()), cancellationToken);
 
       if (response.IsSuccessStatusCode)
       {
@@ -231,7 +233,7 @@ public class WebApiDataService : IDataService
     {
       this.logger.LogInformation("Getting dashboard statistics");
 
-      var response = await this.httpClient.GetAsync("api/dashboard/stats", cancellationToken);
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("dashboard", "stats"), cancellationToken);
 
       if (response.IsSuccessStatusCode)
       {
@@ -257,7 +259,7 @@ public class WebApiDataService : IDataService
     {
       this.logger.LogInformation("Getting application statistics");
 
-      var response = await this.httpClient.GetAsync("api/stats", cancellationToken);
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("stats"), cancellationToken);
 
       if (response.IsSuccessStatusCode)
       {

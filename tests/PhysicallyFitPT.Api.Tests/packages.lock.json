@@ -19,6 +19,15 @@
           "Microsoft.Extensions.Hosting": "8.0.0"
         }
       },
+      "Microsoft.EntityFrameworkCore.InMemory": {
+        "type": "Direct",
+        "requested": "[8.0.16, )",
+        "resolved": "8.0.16",
+        "contentHash": "Wcaw6zMy9cAQ/wNGgYoH0dQed3C2RIh0h8UtnGLhgDbPEW1IjxgA7jVw0wAiZr+mGHDk8QA3Y3/F4B3SUNJd2A==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "8.0.16"
+        }
+      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[17.14.1, )",

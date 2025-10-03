@@ -84,7 +84,7 @@ public sealed class HybridSyncService : ISyncService, IDisposable
     try
     {
       var client = this.httpClientFactory.CreateClient(ApiClientName);
-      using var response = await client.GetAsync("api/v1/sync/snapshot", cancellationToken).ConfigureAwait(false);
+      using var response = await client.GetAsync(ApiRoutes.V1("sync", "snapshot"), cancellationToken).ConfigureAwait(false);
 
       if (!response.IsSuccessStatusCode)
       {
@@ -105,7 +105,7 @@ public sealed class HybridSyncService : ISyncService, IDisposable
         return false;
       }
 
-      snapshot.AppStats.ApiHealthy = true;
+      snapshot.AppStats = snapshot.AppStats with { ApiHealthy = true };
       this.LatestSnapshot = snapshot;
       this.LastSyncTime = DateTimeOffset.UtcNow;
       this.Status = SyncStatus.Success;
