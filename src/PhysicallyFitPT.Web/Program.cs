@@ -28,6 +28,10 @@ builder.Services.AddFeatureManagement();
 // Platform services
 builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfo>();
 
+// Week 2: Authentication and AI services
+builder.Services.AddSingleton<IUserService, PhysicallyFitPT.Infrastructure.Services.UserService>();
+builder.Services.AddSingleton<IAiNoteService, PhysicallyFitPT.AI.AiNoteService>();
+
 // HTTP client with Polly resilience patterns
 builder.Services.AddHttpClient<IDataService, WebApiDataService>(client =>
 {
