@@ -1,4 +1,4 @@
-﻿// <copyright file="ApiRoutes.cs" company="PlaceholderCompany">
+// <copyright file="ApiRoutes.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
