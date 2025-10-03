@@ -112,7 +112,7 @@ namespace PhysicallyFitPT
       builder.Services.AddScoped<IDataService, LocalDataService>();
       builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
       builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();
-      
+
       // Week 2: Authentication and AI services
       builder.Services.AddSingleton<IUserService, UserService>();
       builder.Services.AddSingleton<IAiNoteService, PhysicallyFitPT.AI.AiNoteService>();
