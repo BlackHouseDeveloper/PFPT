@@ -1,4 +1,4 @@
-﻿// <copyright file="AppStatsEventIds.cs" company="PlaceholderCompany">
+// <copyright file="AppStatsEventIds.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

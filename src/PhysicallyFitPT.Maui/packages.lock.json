@@ -1260,6 +1260,13 @@
           "Xamarin.Kotlin.StdLib.Jdk8": "1.9.0.1"
         }
       },
+      "physicallyfitpt.ai": {
+        "type": "Project",
+        "dependencies": {
+          "PhysicallyFitPT.Core": "[1.0.0, )",
+          "PhysicallyFitPT.Shared": "[1.0.0, )"
+        }
+      },
       "physicallyfitpt.core": {
         "type": "Project"
       },
@@ -1271,7 +1278,6 @@
           "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",
           "QuestPDF": "[2025.7.1, )",
-          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.2, )",
           "SkiaSharp": "[3.119.1, )"
         }
       },
@@ -1963,6 +1969,13 @@
         "resolved": "4.6.3",
         "contentHash": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A=="
       },
+      "physicallyfitpt.ai": {
+        "type": "Project",
+        "dependencies": {
+          "PhysicallyFitPT.Core": "[1.0.0, )",
+          "PhysicallyFitPT.Shared": "[1.0.0, )"
+        }
+      },
       "physicallyfitpt.core": {
         "type": "Project"
       },
@@ -1974,7 +1987,6 @@
           "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",
           "QuestPDF": "[2025.7.1, )",
-          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.2, )",
           "SkiaSharp": "[3.119.1, )"
         }
       },
@@ -2663,6 +2675,13 @@
         "resolved": "4.6.3",
         "contentHash": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A=="
       },
+      "physicallyfitpt.ai": {
+        "type": "Project",
+        "dependencies": {
+          "PhysicallyFitPT.Core": "[1.0.0, )",
+          "PhysicallyFitPT.Shared": "[1.0.0, )"
+        }
+      },
       "physicallyfitpt.core": {
         "type": "Project"
       },
@@ -2674,7 +2693,6 @@
           "PhysicallyFitPT.Core": "[1.0.0, )",
           "PhysicallyFitPT.Shared": "[1.0.0, )",
           "QuestPDF": "[2025.7.1, )",
-          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.2, )",
           "SkiaSharp": "[3.119.1, )"
         }
       },

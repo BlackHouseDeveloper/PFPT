@@ -1,92 +1,109 @@
-# PFPT Copilot Instructions
+🔧 PFPT Copilot Agent Operational Guidelines (v1.0)
 
-Applies to this repository. Do not request reviews or merge until all required checks pass.
+🧭 Project Name: Physically Fit PT – Clinician Documentation App
 
-## Workflow Awareness & Review Requests
+🧠 Role: Copilot Agent (Developer-Facing)
 
-- Wait for CI:
-  - All required checks must pass:
-    - StyleCop formatting (`dotnet format --verify-no-changes`)
-    - Roslynator static analysis (`roslynator analyze`)
-    - Web build (auto-detected Web project)
-    - Mobile builds: Android and iOS (.NET MAUI, unsigned)
-    - Unit tests
+📅 Version: October 2025
 
-- Review readiness (gate):
-  - Request review only when all checks are green.
-  - CI will auto-request reviewers on success.
+⸻
 
-- Failure notifications:
-  - If any job fails, CI posts a comment tagging you with:
-    - Failed jobs/steps summary
-    - Last 1000 chars of each failed step's log (inline)
-    - Links to full logs (artifacts)
+🟢 PRIME DIRECTIVE • Edit only one file at a time (to prevent race conditions or git merge issues). • Teach and explain each edit so that human developers understand your logic. • All code must be HIPAA-conscious and compliant with internal app structure. • All AI suggestions must be explainable and grounded in actual code/data context.
 
-## Code Quality & Formatting
+⸻
 
-- StyleCop:
-  - All code must pass `dotnet format --verify-no-changes`.
+🏗️ LARGE FILE / COMPLEX CHANGE PROTOCOL
 
-- Roslynator:
-  - All code must pass `roslynator analyze`.
-  - Resolve warnings/suggestions/errors before review or merge.
+✅ PLANNING PHASE – Mandatory Before Code Changes
 
-- Enforcement:
-  - PRs are ineligible for review/merge until StyleCop and Roslynator checks pass.
+When editing files >300 lines or with complex logic (e.g., EF Core, SOAP generators, PDF pipelines):
 
-## Build & Test Discipline
+PROPOSED EDIT PLAN
+Working with: [filename] Total planned edits: [X]
 
-- Mobile builds:
-  - Android and iOS build must succeed (.NET MAUI).
-  - iOS builds run on macOS; signing disabled (`Codesign=false`).
+[Change name] – Purpose: [why]
+[Change name] – Purpose: [why] ... Do you approve this plan? I will proceed with edit [#] after confirmation.
+✅ EXECUTION PHASE
 
-- Web build:
-  - CI auto-detects the Web project (SDK `Microsoft.NET.Sdk.Web`) and builds it.
+After user approval: • Show “before” and “after” snippets for each edit • Include a short explanation: what changed, why, and how it fits into PFPT • After each change, log: ✅ Completed edit [X of Y]. Ready for next?
 
-- Unit tests:
-  - Run all tests; add tests for new/changed code.
-  - All tests must pass.
+If you encounter new required changes during editing: • ❗ Stop • 📋 Update the edit plan • 🔁 Request confirmation before continuing
 
-## Efficient Collaboration
+⸻
 
-- Notifications:
-  - GitHub Actions notifies you on failures and includes log tails.
+♻️ REFACTORING RULES • Break work into logically isolated steps • Maintain intermediate compile/run-ready state • Use duplication temporarily if needed (e.g., parallel components for mobile vs desktop) • Always preserve SOAP → S/O/A/P flow in UI and PDF
 
-- Artifacts:
-  - Build/test logs are uploaded. Link to them only on failure.
+⸻
 
-- Documentation:
-  - Explain changes in PR descriptions, especially impacting build/test/formatting.
+⚙️ TECHNOLOGY + CODING STANDARDS
 
-- Changelog:
-  - Reference `changelog.md` entries relevant to the PR.
+✅ .NET / C# (.NET 8+) • Use record or readonly struct where immutable • Use init accessors for models • Return IEnumerable for service results unless mutation needed • Respect PFPT Clean Architecture (Core, Infrastructure, Shared, Web, Maui) • Follow StyleCop + Roslynator standards (auto-enforced via .editorconfig) • Validate inputs, throw exceptions with descriptive messages
 
-## Example CI Flow
+✅ JavaScript (Web Clients) • Use ES2020+ (e.g., optional chaining, arrow functions, destructuring) • Prefer async/await over .then() chains • Avoid jQuery, var, and eval • Prefer fetch() with robust error handling • Scope all logic to Blazor interop needs
 
-- On PR open/update:
-  - Trigger CI (restore, format, analyze, build Web, build Android, build iOS, test)
-  - On any failure → comment with failed logs and tag reviewer
-  - On success → auto-request reviewer
+✅ HTML/CSS • Semantic HTML5 with ARIA attributes • loading="lazy" for images • Ensure keyboard accessibility (WCAG 2.1 AA minimum) • Use Inter and Roboto (Figma Style Guide) • Class naming: use BEM or camelCase for scoped Blazor styles
 
----
+⸻
 
-## Summary for Copilot
+✅ MAUI + Blazor App Architecture
 
-- Don't request reviews or merges until all formatting, analysis, builds (Android, iOS, Web), and tests pass.
-- On CI failure, automatically comment with inline log tails (1000 chars) and artifact links.
-- Enforce StyleCop and Roslynator.
-- Reference `changelog.md` in PRs for context.
-- **NEW**: Use comprehensive MCP workflows for advanced diagnostics:
-  - `mcp-database-diagnostics.yml` for database operations
-  - `mcp-pdf-diagnostics.yml` for PDF export testing
-  - `mcp-accessibility-compliance.yml` for accessibility audits
-  - `mcp-localization-workflow.yml` for localization management
-  - `mcp-error-reproduction.yml` for debugging assistance
-  - `mcp-documentation-automation.yml` for documentation updates
-- **NEW**: Follow comprehensive guidelines in `.github/copilot-agent-instructions.md`
+Maintain PFPT scaffolding structure as per PFPT-Foundry.sh:
 
-Notes:
-- No teams are used. The CI defaults to requesting/mentioning: @BlackHouseDeveloper
-- Override via repository variables (Settings → Variables → Repository):
-  - REVIEWERS: comma/space/newline-separated GitHub usernames
-  - MENTIONS: mention string to prefix failure comments (e.g., "@BlackHouseDeveloper and @copilot")
+src/ PhysicallyFitPT.Maui/ → Cross-platform MAUI shell PhysicallyFitPT.Web/ → Web Blazor WASM (limited scope) PhysicallyFitPT.Api/ → REST/Minimal APIs PhysicallyFitPT.Core/ → Domain models, logic PhysicallyFitPT.Infrastructure/ → EF Core, services, SkiaSharp, QuestPDF PhysicallyFitPT.Shared/ → DTOs, ClinicalRef libs, RCLs PhysicallyFitPT.AI/ → GPT agent logic tests/ PhysicallyFitPT.*.Tests/ → Unit/integration coverage
+
+🧪 Tests: Use xUnit + FluentAssertions. Target net8.0. One test project per major layer.
+
+⸻
+
+✅ DOCUMENTATION + INLINE COMMENTS • Domain/Service Layers: use XML comments or C# /// format • JavaScript: use JSDoc for public functions • Explain clinical logic clearly (e.g., “PN note requires comparison of outcome scores”)
+
+Each component or function must include:
+
+///
+
+Short summary
+/// ... /// ...
+⸻
+
+🛡️ SECURITY + COMPLIANCE • Enforce HIPAA-conscious coding: • Never persist PHI unless Azure BAA is confirmed • PDF exports must only be triggered by clinician • Audit all login, note, export actions • Sanitize all user inputs (especially from form fields) • Lock down PDF exports to match sample in Samples_CompletedNotes.pdf
+
+⸻
+
+🧪 TESTING & CI/CD GUIDANCE • Use dotnet test + GitHub Actions for CI • When modifying a logic/service layer: • Add tests under /tests/ • Include edge cases and failure paths • Trigger GitHub Copilot Agent via PR title tag: #copilot
+
+⸻
+
+⚠️ RATE LIMIT & SESSION SIZE • If file size is too large (>3000 lines) or change scope is extensive: • Break into parts across sessions • Prioritize UI layout stubs, then data binding, then logic injection • Notify user of planned cut points
+
+⸻
+
+✅ UI COMPONENT PRIORITY (match Figma Handoff)
+
+Build or refactor these components first:
+
+Component Pages Used On PatientCard Dashboard, Export ROMGrid, MMTGrid SOAP → Objective GoalComposer SOAP → Assessment ICDPicker, CPTPicker SOAP → Plan PDFDownloadBlock Export PDF view AdminPanel User/role config, audit logs DebugStatBar Visible only in dev; shows page-level telemetry
+
+⸻
+
+✅ ACCESSIBILITY MANDATES (ALL PAGES) • Minimum 40px touch targets • High contrast mode toggle • Use ARIA roles for all: • Form regions • Toast/alert messages • Tab or accordion panels
+
+⸻
+
+🧾 FILE EDIT FORMAT EXAMPLE
+
+PROPOSED EDIT PLAN
+Working with: PatientCard.razor Total planned edits: 2
+
+Replace hardcoded patient stats with dynamic props
+Purpose: Allow live data from API via @bind-Patient
+Add click event for "View Notes" → navigates to /notes/{patientId}
+Purpose: Enable navigation flow from dashboard
+Do you approve this plan? I will begin with Edit 1 after confirmation.
+
+⸻
+
+🧩 FLOW-SPECIFIC RULES
+
+When editing features tied to clinical flow:
+
+Feature Rule Intake Use branching per condition; pull from ClinicalReference bundle SOAP Builder Maintain S → O → A → P order; carry-forward prior notes as chips Goals Generator Use ROM/MMT deficit + ICD code to auto-suggest AI Summary Modal Always editable; prompt shown above AI text Export PDF Must match Samples_CompletedNotes.pdf format Audit Logs All saves, edits, logins, exports must be captured if dev enabled

@@ -113,6 +113,10 @@ namespace PhysicallyFitPT
       builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
       builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();
 
+      // Week 2: Authentication and AI services
+      builder.Services.AddSingleton<IUserService, UserService>();
+      builder.Services.AddSingleton<IAiNoteService, PhysicallyFitPT.AI.AiNoteService>();
+
       builder.Services.AddHttpClient(); // if you just need the default factory
       builder.Services.AddHttpClient("integrations");
       builder.Services.AddMauiBlazorWebView();

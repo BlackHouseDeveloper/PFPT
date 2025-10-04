@@ -1,4 +1,4 @@
-﻿﻿// <copyright file="AppStatsService.cs" company="PlaceholderCompany">
+// <copyright file="AppStatsService.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 

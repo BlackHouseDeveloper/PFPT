@@ -1,5 +1,7 @@
 @page "/login"
 @layout ResponsiveMainLayout
+@inject IUserService UserService
+@inject NavigationManager Navigation
 
 <PageTitle>Login</PageTitle>
 
@@ -10,15 +12,98 @@
   <p>Authenticate to access the Physically Fit PT system</p>
 </div>
 
-<div class="pfp-card">
+<div class="pfp-card" style="max-width: 500px; margin: 0 auto;">
   <div class="pfp-card-body">
-    <p>Login functionality will be implemented here.</p>
-    <p><small>This page will integrate with IAuthService for authentication.</small></p>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+      <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
+        <strong>⚠️ Login Failed:</strong> @errorMessage
+      </div>
+    }
+
+    @if (isLoading)
+    {
+      <div style="text-align: center; padding: 20px;">
+        <p>Authenticating...</p>
+      </div>
+    }
+    else
+    {
+      <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+        
+        <div style="margin-bottom: 16px;">
+          <label for="username" style="display: block; margin-bottom: 4px; font-weight: 500;">Username / Email</label>
+          <input id="username" @bind="loginModel.Username" 
+                 style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
+                 placeholder="clinician@demo.com" />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label for="password" style="display: block; margin-bottom: 4px; font-weight: 500;">Password</label>
+          <input id="password" type="password" @bind="loginModel.Password" 
+                 style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
+                 placeholder="Enter password" />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <button type="submit" class="pfp-btn" style="width: 100%; padding: 10px;">
+            Login
+          </button>
+        </div>
+
+        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; padding: 12px; border-radius: 4px; font-size: 12px;">
+          <strong>Demo Credentials (Week 2):</strong><br/>
+          Username: clinician@demo.com<br/>
+          Password: demo123
+        </div>
+      </EditForm>
+    }
   </div>
 </div>
 
 @code {
-  // TODO: Wire to IAuthService
-  // TODO: Add authentication form
-  // TODO: Handle login logic
+  private LoginModel loginModel = new();
+  private string? errorMessage;
+  private bool isLoading = false;
+
+  private async Task HandleLogin()
+  {
+    isLoading = true;
+    errorMessage = null;
+    StateHasChanged();
+
+    try
+    {
+      await Task.Delay(500); // Simulate network delay
+      
+      var success = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
+      
+      if (success)
+      {
+        Navigation.NavigateTo("/");
+      }
+      else
+      {
+        errorMessage = "Invalid username or password. Please check the demo credentials above.";
+      }
+    }
+    catch (Exception ex)
+    {
+      errorMessage = $"An error occurred: {ex.Message}";
+    }
+    finally
+    {
+      isLoading = false;
+      StateHasChanged();
+    }
+  }
+
+  private class LoginModel
+  {
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Username is required")]
+    public string Username { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Password is required")]
+    public string Password { get; set; } = string.Empty;
+  }
 }

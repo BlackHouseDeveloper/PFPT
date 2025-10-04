@@ -1,0 +1,51 @@
+@page "/admin/export"
+@layout ResponsiveMainLayout
+
+<PageTitle>Data Export</PageTitle>
+
+<DebugStatBar />
+
+<div class="pfp-page-header">
+  <h1>Data Export</h1>
+  <p>Export patient data, notes, and appointments for reporting and backup</p>
+</div>
+
+<div class="pfp-card">
+  <div class="pfp-card-body">
+    <h3 style="margin-top: 0;">Export Options</h3>
+    <p style="font-size: 14px; color: #666;">Select the data you want to export. Files will be generated in CSV or JSON format.</p>
+
+    <div style="margin-bottom: 24px;">
+      <button class="pfp-btn" style="margin-right: 8px; margin-bottom: 8px;">
+        📊 Export Patients
+      </button>
+      <button class="pfp-btn" style="margin-right: 8px; margin-bottom: 8px;">
+        📝 Export Notes
+      </button>
+      <button class="pfp-btn" style="margin-right: 8px; margin-bottom: 8px;">
+        📅 Export Appointments
+      </button>
+      <button class="pfp-btn" style="margin-right: 8px; margin-bottom: 8px;">
+        📦 Export All Data
+      </button>
+    </div>
+
+    <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin-top: 16px;">
+      <h4 style="margin-top: 0;">Export History</h4>
+      <p style="font-size: 13px; color: #666; margin: 0;">Last export: Never</p>
+      <p style="font-size: 13px; color: #666; margin: 4px 0 0 0;">Total records available: 0 patients, 0 notes, 0 appointments</p>
+    </div>
+
+    <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 12px; border-radius: 4px; margin-top: 16px; font-size: 12px;">
+      <strong>ℹ️ Week 2 Stub:</strong> Export functionality will be fully implemented in Week 6 per the roadmap. 
+      This page will use ExportService to generate CSV/JSON files with patient data.
+    </div>
+  </div>
+</div>
+
+@code {
+  // TODO Week 6: Wire to IExportService
+  // TODO Week 6: Implement CSV/JSON generation
+  // TODO Week 6: Add file download functionality
+  // TODO Week 6: Add export history tracking
+}
