@@ -48,10 +48,8 @@ public static class ApiRoutes
   /// </summary>
   internal static void ResetForTests()
   {
-#if DEBUG
     basePath = null;
     Cache.Clear();
-#endif
   }
 
   private static string[] BaseSegments(params string[] additional)
