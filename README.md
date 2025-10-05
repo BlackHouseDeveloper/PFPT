@@ -206,7 +206,7 @@ Our MCP framework automatically:
 For detailed contribution guidelines and healthcare-specific development practices, see:
 - `docs/DEVELOPMENT.md` - Comprehensive development guide
 - `docs/ARCHITECTURE.md` - Technical architecture and patterns
-- `.github/copilot-agent-instructions.md` - Copilot and MCP usage guide
+- `.github/Copilot-Instructions.md` - Copilot and MCP usage guide
 - `docs/pfpt-script-usage-reference.md` - Quick reference for PFPT helper scripts and options
 
 ### Community & Support

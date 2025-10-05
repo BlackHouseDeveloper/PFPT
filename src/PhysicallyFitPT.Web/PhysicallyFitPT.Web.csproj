@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
     <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.AI\PhysicallyFitPT.AI.csproj" />
   </ItemGroup>
 
 

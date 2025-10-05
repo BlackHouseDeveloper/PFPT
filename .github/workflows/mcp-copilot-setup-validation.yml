@@ -17,11 +17,11 @@ on:
   push:
     paths:
       - '.github/workflows/mcp-copilot-setup-validation.yml'
-      - '.github/copilot-agent-instructions.md'
+      - '.github/Copilot-Instructions.md'
   pull_request:
     paths:
       - '.github/workflows/mcp-copilot-setup-validation.yml'
-      - '.github/copilot-agent-instructions.md'
+      - '.github/Copilot-Instructions.md'
 
 permissions:
   contents: read
@@ -228,7 +228,7 @@ jobs:
           core_files=(
             "src/PhysicallyFitPT.Core/PhysicallyFitPT.Core.csproj"
             "PFPT.sln"
-            ".github/copilot-agent-instructions.md"
+            ".github/Copilot-Instructions.md"
           )
           missing_files=()
           
@@ -407,7 +407,7 @@ jobs:
           1. **Address any failed validations** using the recommendations above
           2. **Re-run validation** after making changes: \`gh workflow run mcp-copilot-setup-validation.yml\`
           3. **Test PFPT workflows** using the MCP automation workflows
-          4. **Refer to documentation** in \`.github/copilot-agent-instructions.md\`
+          4. **Refer to documentation** in \`.github/Copilot-Instructions.md\`
           
           ## Copilot Integration
           
@@ -472,7 +472,7 @@ jobs:
                 '- Environment is ready for PFPT development with Copilot' :
                 '- Review validation report and address any issues',
               '- Use MCP workflows for automated development tasks',
-              '- Refer to `.github/copilot-agent-instructions.md` for guidance',
+              '- Refer to `.github/Copilot-Instructions.md` for guidance',
               '',
               `**Download Report:** [View validation artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
             ];
