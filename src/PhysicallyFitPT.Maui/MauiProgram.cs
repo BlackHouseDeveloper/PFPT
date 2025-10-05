@@ -150,7 +150,7 @@ namespace PhysicallyFitPT
     }
 #endif
 
-    private static HttpMessageHandler CreateHttpMessageHandler(Uri apiBaseUri)
+    private static HttpClientHandler CreateHttpMessageHandler(Uri apiBaseUri)
     {
       var handler = new HttpClientHandler();
 
