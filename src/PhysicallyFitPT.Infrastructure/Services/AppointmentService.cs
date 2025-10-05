@@ -23,16 +23,22 @@ using PhysicallyFitPT.Shared;
 public class AppointmentService : BaseService, IAppointmentService
 {
   private readonly IDbContextFactory<ApplicationDbContext> factory;
+  private readonly IAppStatsInvalidator statsInvalidator;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="AppointmentService"/> class.
   /// </summary>
   /// <param name="factory">Database context factory for data access.</param>
   /// <param name="logger">Logger instance for logging operations.</param>
-  public AppointmentService(IDbContextFactory<ApplicationDbContext> factory, ILogger<AppointmentService> logger)
+  /// <param name="statsInvalidator">Cache invalidator that keeps statistics dashboards fresh after write operations.</param>
+  public AppointmentService(
+    IDbContextFactory<ApplicationDbContext> factory,
+    ILogger<AppointmentService> logger,
+    IAppStatsInvalidator statsInvalidator)
       : base(logger)
   {
     this.factory = factory;
+    this.statsInvalidator = statsInvalidator ?? throw new ArgumentNullException(nameof(statsInvalidator));
   }
 
   /// <inheritdoc/>
@@ -77,6 +83,7 @@ public class AppointmentService : BaseService, IAppointmentService
       };
       db.Appointments.Add(appt);
       await db.SaveChangesAsync(cancellationToken);
+      this.statsInvalidator.InvalidateCache();
 
       // Map to DTO
       return appt.ToDto();
@@ -107,6 +114,7 @@ public class AppointmentService : BaseService, IAppointmentService
 
       db.Appointments.Remove(appt);
       await db.SaveChangesAsync(cancellationToken);
+      this.statsInvalidator.InvalidateCache();
       return true;
     }
     catch (Exception ex)

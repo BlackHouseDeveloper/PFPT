@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Http;
+using Microsoft.FeatureManagement;
 using PhysicallyFitPT.Shared;
 using PhysicallyFitPT.Web.Services;
 using Polly;
@@ -15,12 +16,21 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<PhysicallyFitPT.Shared.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+ApiRoutes.ConfigureBasePath(builder.Configuration["Api:BasePath"]);
+
 // Configuration
 builder.Services.Configure<ApiConfiguration>(
     builder.Configuration.GetSection("Api"));
 
+// Feature Management
+builder.Services.AddFeatureManagement();
+
 // Platform services
 builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfo>();
+
+// Week 2: Authentication and AI services
+builder.Services.AddSingleton<IUserService, DemoUserService>();
+builder.Services.AddSingleton<IAiNoteService, PhysicallyFitPT.AI.AiNoteService>();
 
 // HTTP client with Polly resilience patterns
 builder.Services.AddHttpClient<IDataService, WebApiDataService>(client =>

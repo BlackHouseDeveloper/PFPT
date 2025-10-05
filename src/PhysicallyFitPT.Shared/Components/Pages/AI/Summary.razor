@@ -1,0 +1,131 @@
+@page "/ai/summary"
+@layout ResponsiveMainLayout
+@inject IAiNoteService AiService
+
+<PageTitle>AI Summary</PageTitle>
+
+<DebugStatBar />
+
+<div class="pfp-page-header">
+  <h1>AI Summary</h1>
+  <p>AI-powered clinical note summarization and insights</p>
+</div>
+
+<div class="pfp-card">
+  <div class="pfp-card-body">
+    <h3 style="margin-top: 0;">Generate AI Note Summary</h3>
+    <p style="font-size: 14px; color: #666;">Enter raw clinical notes below and click Generate to create an AI-powered SOAP note summary.</p>
+
+    <div style="margin-bottom: 16px;">
+      <label for="patientContext" style="display: block; margin-bottom: 4px; font-weight: 500;">Patient Context (Optional)</label>
+      <input id="patientContext" @bind="patientContext" 
+             style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
+             placeholder="e.g., 40yo PT patient with lower back pain" />
+    </div>
+
+    <div style="margin-bottom: 16px;">
+      <label for="noteInput" style="display: block; margin-bottom: 4px; font-weight: 500;">Clinical Notes</label>
+      <textarea id="noteInput" @bind="noteInput" rows="8" 
+                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 13px;"
+                placeholder="Enter raw clinical notes here... For example: Patient presents with complaints of persistent lower back pain radiating down left leg. Pain started 3 weeks ago after lifting heavy object. ROM limited, positive SLR test on left side."></textarea>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+      <button @onclick="GenerateSummary" disabled="@isGenerating" class="pfp-btn">
+        @if (isGenerating)
+        {
+          <span>⏳ Generating...</span>
+        }
+        else
+        {
+          <span>🤖 Generate AI Summary</span>
+        }
+      </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+      <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
+        <strong>⚠️ Error:</strong> @errorMessage
+      </div>
+    }
+
+    @if (lastResult != null && lastResult.Success)
+    {
+      <div style="border-top: 2px solid #4b2c92; padding-top: 16px; margin-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="margin: 0; color: #4b2c92;">AI Generated Summary</h4>
+          <div style="font-size: 11px; color: #666;">
+            Generated: @lastResult.Timestamp.ToLocalTime().ToString("g") | 
+            Processing: @lastResult.ProcessingTimeMs ms | 
+            Input: @lastResult.WordCount words
+          </div>
+        </div>
+        
+        <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 16px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.5;">@lastResult.Summary</div>
+        
+        <div style="margin-top: 12px;">
+          <button @onclick="CopySummary" class="pfp-btn" style="font-size: 12px; padding: 6px 12px;">
+            📋 Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    }
+
+    <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 12px; border-radius: 4px; margin-top: 16px; font-size: 12px;">
+      <strong>ℹ️ Week 2 Prototype Notice:</strong> This is a mock AI service that simulates note generation. 
+      Real AI integration with OpenAI or Azure OpenAI will be implemented in future iterations per the roadmap.
+    </div>
+  </div>
+</div>
+
+@code {
+  private string noteInput = string.Empty;
+  private string patientContext = string.Empty;
+  private bool isGenerating = false;
+  private string? errorMessage;
+  private AiNoteSummaryResult? lastResult;
+
+  private async Task GenerateSummary()
+  {
+    if (string.IsNullOrWhiteSpace(noteInput))
+    {
+      errorMessage = "Please enter clinical notes to generate a summary.";
+      return;
+    }
+
+    isGenerating = true;
+    errorMessage = null;
+    StateHasChanged();
+
+    try
+    {
+      lastResult = await AiService.GenerateNoteSummaryAsync(
+        noteInput, 
+        string.IsNullOrWhiteSpace(patientContext) ? null : patientContext);
+      
+      if (!lastResult.Success)
+      {
+        errorMessage = "AI generation failed. Please try again.";
+      }
+    }
+    catch (Exception ex)
+    {
+      errorMessage = $"An error occurred: {ex.Message}";
+      lastResult = null;
+    }
+    finally
+    {
+      isGenerating = false;
+      StateHasChanged();
+    }
+  }
+
+  private void CopySummary()
+  {
+    // Note: Clipboard API requires JavaScript interop in real implementation
+    // For now, this is a placeholder
+    errorMessage = null;
+    // In a real implementation: await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", lastResult.Summary);
+  }
+}

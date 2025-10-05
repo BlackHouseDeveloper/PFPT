@@ -388,3 +388,4 @@ ls -la *.db
 - **Stack Overflow**: Tag questions with `dotnet-maui`, `entity-framework-core`, `blazor`
 - **.NET Community**: [.NET Discord](https://discord.gg/dotnet) and [Reddit r/dotnet](https://reddit.com/r/dotnet)
 - **MAUI Community**: [.NET MAUI GitHub Discussions](https://github.com/dotnet/maui/discussions)
+- When calling `/api/v1/diagnostics/info`, a `PFPT-Diagnostics: true` response header indicates diagnostics are intentionally enabled; absence of the header (or a 404/401/403) means diagnostics remain secured.

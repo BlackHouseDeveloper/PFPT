@@ -106,20 +106,27 @@ public sealed class DashboardMetricsService : IDashboardMetricsService
       hadChanges = true;
     }
 
-    var patients = await db.Patients.ToListAsync(cancellationToken);
-    if (patients.Count == 0)
+    const int seedPatientSampleSize = 8;
+
+    var patientIds = await db.Patients.AsNoTracking()
+      .Select(p => p.Id)
+      .Take(seedPatientSampleSize)
+      .ToListAsync(cancellationToken);
+
+    if (patientIds.Count == 0)
     {
-      patients = new List<Patient>
+      var seededPatients = new List<Patient>
       {
         new() { MRN = "A1001", FirstName = "Jane", LastName = "Doe", Email = "jane@example.com" },
         new() { MRN = "A1002", FirstName = "John", LastName = "Smith", Email = "john@example.com" },
       };
 
-      await db.Patients.AddRangeAsync(patients, cancellationToken);
+      await db.Patients.AddRangeAsync(seededPatients, cancellationToken);
+      patientIds = seededPatients.Select(p => p.Id).ToList();
       hadChanges = true;
     }
 
-    if (!await db.Appointments.AnyAsync(cancellationToken) && patients.Count > 0)
+    if (!await db.Appointments.AnyAsync(cancellationToken) && patientIds.Count > 0)
     {
       var utcNow = DateTimeOffset.UtcNow;
       var startOfDay = new DateTimeOffset(utcNow.Date, utcNow.Offset).AddHours(8);
@@ -128,7 +135,7 @@ public sealed class DashboardMetricsService : IDashboardMetricsService
         .Select(
           index => new Appointment
           {
-            PatientId = patients[index % patients.Count].Id,
+            PatientId = patientIds[index % patientIds.Count],
             VisitType = index == 0 ? VisitType.Eval : VisitType.Daily,
             ScheduledStart = startOfDay.AddHours(index),
             ScheduledEnd = startOfDay.AddHours(index).AddMinutes(45),

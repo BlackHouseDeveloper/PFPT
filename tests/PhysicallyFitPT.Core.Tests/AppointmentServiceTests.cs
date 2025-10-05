@@ -33,7 +33,8 @@ public class AppointmentServiceTests
 
     var factory = new TestDbContextFactory(options);
     var mockLogger = new NullLogger<AppointmentService>();
-    IAppointmentService svc = new AppointmentService(factory, mockLogger);
+    var invalidator = new NoOpStatsInvalidator();
+    IAppointmentService svc = new AppointmentService(factory, mockLogger, invalidator);
 
     await using var db = factory.CreateDbContext();
     var patient = new Patient { FirstName = "A", LastName = "B" };
@@ -45,4 +46,14 @@ public class AppointmentServiceTests
 
     (await svc.CancelAsync(apptDto.Id)).Should().BeTrue();
   }
+}
+
+/// <summary>
+/// Simple stats invalidator used by unit tests.
+/// </summary>
+internal sealed class NoOpStatsInvalidator : IAppStatsInvalidator
+{
+  public int Calls { get; private set; }
+
+  public void InvalidateCache() => this.Calls++;
 }

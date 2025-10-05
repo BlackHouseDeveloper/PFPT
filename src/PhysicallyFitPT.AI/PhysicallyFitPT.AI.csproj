@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PhysicallyFitPT.Core\PhysicallyFitPT.Core.csproj" />
+    <ProjectReference Include="..\PhysicallyFitPT.Shared\PhysicallyFitPT.Shared.csproj" />
   </ItemGroup>
 
 </Project>

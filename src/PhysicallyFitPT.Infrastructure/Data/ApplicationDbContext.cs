@@ -106,6 +106,7 @@ public class ApplicationDbContext : DbContext
 
     // Indexes
     b.Entity<Patient>().HasIndex(p => new { p.LastName, p.FirstName });
+    b.Entity<Patient>().HasIndex(p => new { p.UpdatedAt, p.CreatedAt });
     b.Entity<Appointment>().HasIndex(a => new { a.PatientId, a.ScheduledStart });
     b.Entity<QuestionnaireResponse>().HasIndex(q => q.AppointmentId);
 

@@ -6,6 +6,9 @@
 - Web source contains no `AddDbContext`, `.UseSqlite()`, or `.UseInMemoryDatabase()`.
 - Device TFMs include SQLite and publish successfully.
 - EF design-time gate passes with `EF_PROVIDER=sqlite`.
+- CI fails fast if `PFPT_DEVELOPER_MODE` is enabled in the build environment.
+- CI validates that both the API and seeder resolve seeded SQLite databases via `scripts/check_db_status.py`.
+- Allowlist for diagnostics overrides: set `DEV_MODE_OVERRIDE_ALLOWLIST` (comma-delimited refs) to permit non-production branches to run with developer diagnostics enabled.
 
 ## Performance Optimizations
 

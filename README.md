@@ -58,17 +58,22 @@ bash
 Copy code
 ./PFPT-Foundry.sh --seed
 This uses the PhysicallyFitPT.Seeder console project to populate the SQLite database with initial test data. By default, the data file is created at dev.physicallyfitpt.db in the project root. If the file already exists, the seeder will add any missing data without duplicating existing entries.
-#### Configure Database Path
+#### Verify the Database Path
 
-After setup, you'll have a SQLite database (`dev.physicallyfitpt.db`) with the latest schema and seed data. To have the app use this database, set the environment variable:
+The seeder creates `dev.physicallyfitpt.db` in the repo root. The API resolves its SQLite path in this order:
+
+1. `PFP_DB_PATH` environment variable (CI/CD or container override)
+2. `ConnectionStrings:DefaultConnection` in `appsettings.{Environment}.json`
+3. Fallback `Data Source=pfpt.db`
+
+For development, `appsettings.Development.json` already points at `dev.physicallyfitpt.db`, so the API immediately serves the seeded data. Use the helper to confirm what each context is using:
 
 ```bash
-export PFP_DB_PATH="$(pwd)/dev.physicallyfitpt.db"
+scripts/check_db_status.py --context api --require-data --require-tables Patients --require-nonzero
+scripts/check_db_status.py --context seeder --require-data --require-tables Patients --require-nonzero
 ```
 
-If `PFP_DB_PATH` is not set:
-- **MAUI app**: Uses `FileSystem.AppDataDirectory` for local storage
-- **Web app**: Uses in-memory database (no persistence across sessions)
+The script prints the resolved path and row counts, making it easy to spot mismatches.
 
 ### 3. Running the Application
 
@@ -82,23 +87,29 @@ Run as a native macOS desktop application:
 dotnet build -t:Run -f net8.0-maccatalyst PhysicallyFitPT/PhysicallyFitPT.csproj
 ```
 
-This compiles and launches the app as a Mac Catalyst desktop application. The app will use the SQLite database if `PFP_DB_PATH` is set, otherwise it uses local app storage.
+This compiles and launches the app as a Mac Catalyst desktop application. The UI displays remote statistics from the API; the local SQLite cache remains in the app sandbox unless you explicitly override `PFP_DB_PATH`.
 
 **Alternative**: Open `PhysicallyFitPT.sln` in Visual Studio 2022 (Mac) and run the PhysicallyFitPT project targeting Mac Catalyst.
 
 #### Mobile Applications
 
-Deploy to iOS or Android devices/simulators via Visual Studio:
+Deploy to iOS or Android once the API is running and reachable:
 
 ```bash
-# iOS Simulator
-dotnet build -t:Run -f net8.0-ios PhysicallyFitPT/PhysicallyFitPT.csproj
+# Terminal 1 – start the API (Development config uses dev.physicallyfitpt.db)
+dotnet run --project src/PhysicallyFitPT.Api --urls http://localhost:5114
 
-# Android Emulator/Device  
+# Terminal 2 – launch a platform target
+dotnet build -t:Run -f net8.0-ios PhysicallyFitPT/PhysicallyFitPT.csproj
 dotnet build -t:Run -f net8.0-android PhysicallyFitPT/PhysicallyFitPT.csproj
 ```
 
-*Ensure you have the respective SDKs and devices/simulators configured.*
+The MAUI bootstraper chooses the correct base URL:
+
+- iOS simulator → http://localhost:5114
+- Android emulator → http://10.0.2.2:5114
+
+Override with `PFPT_API_BASE_URL` if you need to target a different host.
 
 #### Web Application (Browser)
 
@@ -110,7 +121,7 @@ dotnet run --project PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj
 
 This starts a local development server. Open the displayed URL (typically `http://localhost:5000`) in your browser.
 
-**Note**: The web version uses an in-memory database with no persistence across sessions. This is designed for demo and development convenience.
+**Note**: The web version talks to the same API instance. Configure the base URL in `wwwroot/appsettings.json` (or at deployment time) to point at the correct environment.
 
 #### Development Tips
 
@@ -139,9 +150,13 @@ Branding in the application is still in progress:
 We have defined design tokens in CSS (see wwwroot/css/design-tokens.css) for colors and styles that match the intended brand palette (for example, a lime green accent color, certain font choices, etc.).
 The current UI and PDF are using placeholder styling. Expectations: As the project evolves, logos and polished styles will be incorporated. For now, the focus is on functionality – the UI is minimalist (“Pre-Figma shell”) and the PDF export is for demonstration. In future updates, we plan to include clinic branding (e.g., logo, header) in PDF outputs and apply a consistent design system across the app.
 7. Troubleshooting & FAQ
-Database not found / issues: Ensure you have run the migration (--create-migration) at least once. The SQLite database file dev.physicallyfitpt.db should be present in the project root after running the script. Also set the PFP_DB_PATH environment variable so the app knows where to find the database file.
+Database not found / issues: Ensure you have run the migration (--create-migration) and seeding steps. The SQLite database file dev.physicallyfitpt.db should be present in the project root and referenced by `appsettings.Development.json`. Use `scripts/check_db_status.py` to confirm the resolved path, or override it via PFP_DB_PATH if you need a different location.
 iOS build issues: If building for iOS, make sure you’ve opened the project in Xcode at least once to accept any license agreements, and that you have an iOS simulator selected. You might also need to adjust code signing settings in Xcode for the iOS target if you deploy to a physical device.
 Hot Reload/Live Reload: When running the MAUI app, .NET Hot Reload should work if you launch from Visual Studio. For the Blazor Web app, code changes generally require rebuilding (dotnet run will pick up changes on restart). Develop with the approach that suits you (for quick UI iteration, the Web app is convenient; for testing native features, use the MAUI app).
+Developer diagnostics bar: See `docs/developer-mode.md` for enabling the debug stats bar and understanding override precedence.
+App stats cache: Override `AppStats:CacheTtlSeconds` (default 15) to tune dashboard refresh cadence; write operations automatically invalidate the cache.
+Diagnostics health endpoint: `/api/v1/diagnostics/info` reports whether developer diagnostics are active (adds `PFPT-Diagnostics: true` when enabled) along with the current cache TTL; optionally gate it with `App:DiagnosticsRequiredRole` for operator-only access.
+Reverse-proxy hosting: Set `Api:BasePath` (e.g. `/pfpt`) to ensure generated client routes align with your deployment prefix.
 For any other issues, please check the repository’s issue tracker or contact the maintainers. Happy documenting!
 
 ---

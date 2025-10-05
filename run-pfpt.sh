@@ -7,7 +7,7 @@ ROOT_DIR="$SCRIPT_DIR"
 WEB_CSPROJ="$ROOT_DIR/src/PhysicallyFitPT.Web/PhysicallyFitPT.Web.csproj"
 MAUI_CSPROJ="$ROOT_DIR/src/PhysicallyFitPT.Maui/PhysicallyFitPT.Maui.csproj"
 API_CSPROJ="$ROOT_DIR/src/PhysicallyFitPT.Api/PhysicallyFitPT.Api.csproj"
-API_URL="${API_URL:-http://localhost:7001}"
+API_URL="${API_URL:-http://localhost:5114}"
 API_PORT="${API_URL##*:}"
 API_PID=""
 
