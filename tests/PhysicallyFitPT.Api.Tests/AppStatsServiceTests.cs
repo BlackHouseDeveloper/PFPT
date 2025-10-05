@@ -122,7 +122,7 @@ public class AppStatsServiceTests
 
   private static (AppStatsService Service, CountingDbContextFactory Factory) CreateService(int cacheTtlSeconds = 15)
   {
-    var dbName = Guid.NewGuid().ToString("N");
+    var dbName = CreateUniqueDatabaseName();
     var options = new DbContextOptionsBuilder<ApplicationDbContext>()
       .UseInMemoryDatabase(dbName)
       .Options;
@@ -139,6 +139,14 @@ public class AppStatsServiceTests
 
     return (service, factory);
   }
+
+  private static string CreateUniqueDatabaseName()
+  {
+    var sequence = Interlocked.Increment(ref databaseCounter);
+    return $"AppStatsServiceTests_{sequence}";
+  }
+
+  private static int databaseCounter;
 
   private sealed class CountingDbContextFactory : IDbContextFactory<ApplicationDbContext>
   {

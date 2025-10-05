@@ -15,6 +15,8 @@ using PhysicallyFitPT.Shared;
 /// </summary>
 public class DemoUserService : IUserService
 {
+  // WARNING: These credentials are for DEMO/DEVELOPMENT use only. Replace or remove
+  // before any production deployment to prevent exposing hard-coded users.
   private const string DemoUsername = "clinician@demo.com";
   private const string DemoPassword = "demo123";
   private const string DemoDisplayName = "Dr. Demo Clinician";

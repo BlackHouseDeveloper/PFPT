@@ -23,16 +23,25 @@ using PhysicallyFitPT.Shared;
 /// Computes aggregated statistics for the Physically Fit PT application while applying in-memory caching to reduce database load.
 /// </summary>
 /// <remarks>Cache duration defaults to 15 seconds and can be tuned via <c>AppStats:CacheTtlSeconds</c>. Mutating services invalidate the cache after completing persistence.</remarks>
-public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator
+public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator, IDisposable
 {
   private const string CacheKey = "app-stats";
-  private static readonly Meter MetricsMeter = new("PhysicallyFitPT.AppStats", "1.0");
-  private static readonly Counter<long> CacheWaitCounter = MetricsMeter.CreateCounter<long>("appstats.cache_wait_exceeded.count");
+  private static readonly object MeterSync = new();
+  private static Meter? metricsMeter;
+  private static Counter<long>? cacheWaitCounter;
   private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
   private readonly ILogger<AppStatsService> logger;
   private readonly IMemoryCache memoryCache;
   private readonly IOptionsMonitor<AppStatsOptions> optionsMonitor;
   private readonly SemaphoreSlim cacheGate = new(1, 1);
+  private bool disposed;
+
+  static AppStatsService()
+  {
+    InitializeMetrics();
+    AppDomain.CurrentDomain.ProcessExit += OnAppDomainShutdown;
+    AppDomain.CurrentDomain.DomainUnload += OnAppDomainShutdown;
+  }
   // Note: swap IMemoryCache with IDistributedCache when multiple API nodes are deployed.
 
   /// <summary>
@@ -48,6 +57,7 @@ public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator
     IMemoryCache memoryCache,
     IOptionsMonitor<AppStatsOptions> optionsMonitor)
   {
+    InitializeMetrics();
     this.dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
@@ -82,7 +92,7 @@ public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator
           var waitDuration = Stopwatch.GetElapsedTime(waitStart);
           if (waitDuration > TimeSpan.FromMilliseconds(250))
           {
-            CacheWaitCounter.Add(1);
+            cacheWaitCounter?.Add(1);
             if (this.logger.IsEnabled(LogLevel.Debug))
             {
               this.logger.LogDebug(AppStatsEventIds.CacheGateContention, "App stats cache gate lock was held for {Duration}ms", waitDuration.TotalMilliseconds);
@@ -109,6 +119,19 @@ public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator
   public void InvalidateCache()
   {
     this.memoryCache.Remove(CacheKey);
+  }
+
+  /// <inheritdoc />
+  public void Dispose()
+  {
+    if (this.disposed)
+    {
+      return;
+    }
+
+    this.cacheGate.Dispose();
+    this.disposed = true;
+    GC.SuppressFinalize(this);
   }
 
   private TimeSpan GetCacheDuration()
@@ -150,5 +173,39 @@ public sealed class AppStatsService : IAppStatsService, IAppStatsInvalidator
   private static AppStatsDto Clone(AppStatsDto source)
   {
     return source with { };
+  }
+
+  private static void InitializeMetrics()
+  {
+    if (metricsMeter is not null)
+    {
+      return;
+    }
+
+    lock (MeterSync)
+    {
+      if (metricsMeter is null)
+      {
+        var meter = new Meter("PhysicallyFitPT.AppStats", "1.0");
+        metricsMeter = meter;
+        cacheWaitCounter = meter.CreateCounter<long>("appstats.cache_wait_exceeded.count");
+      }
+    }
+  }
+
+  private static void OnAppDomainShutdown(object? sender, EventArgs e)
+  {
+    lock (MeterSync)
+    {
+      var meter = metricsMeter;
+      if (meter is null)
+      {
+        return;
+      }
+
+      metricsMeter = null;
+      cacheWaitCounter = null;
+      meter.Dispose();
+    }
   }
 }

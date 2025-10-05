@@ -60,7 +60,11 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
-Console.WriteLine($"[PFPT.Api] Using SQLite data source: {new SqliteConnectionStringBuilder(connectionString).DataSource}");
+var sqliteDataSource = new SqliteConnectionStringBuilder(connectionString).DataSource;
+var sqliteDataSourceDisplay = string.IsNullOrEmpty(sqliteDataSource)
+    ? "(unspecified)"
+    : Path.GetFileName(sqliteDataSource);
+Console.WriteLine($"[PFPT.Api] Using SQLite data source file: {sqliteDataSourceDisplay}");
 
 // DI Setup for services
 builder.Services.AddScoped<IPatientService, PatientService>();

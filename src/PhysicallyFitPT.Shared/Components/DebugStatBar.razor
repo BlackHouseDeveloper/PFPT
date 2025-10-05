@@ -27,6 +27,8 @@
   private bool isDeveloperModeEnabled;
   private readonly Random random = new Random();
   private const string HostIdentifier = nameof(DebugStatBar);
+  private const int BasePollingIntervalMilliseconds = 10_000;
+  private const int MaxPollingJitterMilliseconds = 2_000;
 #if DEBUG
   private const bool IsDebugBuild = true;
 #else
@@ -42,14 +44,15 @@
       await LoadStatsAsync();
       
       // Start polling with jitter to avoid thundering herd
-      var baseInterval = 10000; // 10 seconds
-      var jitter = random.Next(0, 2000); // 0-2 second jitter
-      
+      var jitter = random.Next(0, MaxPollingJitterMilliseconds); // 0-2 second jitter
+      var pollInterval = TimeSpan.FromMilliseconds(BasePollingIntervalMilliseconds);
+      var initialDelay = TimeSpan.FromMilliseconds(BasePollingIntervalMilliseconds + jitter);
+
       updateTimer = new Timer(async _ =>
       {
         await LoadStatsAsync();
         await InvokeAsync(StateHasChanged);
-      }, null, TimeSpan.FromMilliseconds(baseInterval + jitter), TimeSpan.FromMilliseconds(baseInterval));
+      }, null, initialDelay, pollInterval);
     }
   }
 
