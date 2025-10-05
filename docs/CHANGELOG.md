@@ -2,9 +2,9 @@
 
 _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. ✅ indicates success._
 ## CI Outcome Summary
-- Success: 5
-- Failed/Cancelled/Timed out: 1
-- Other/No runs: 61
+- Success: 26
+- Failed/Cancelled/Timed out: 5
+- Other/No runs: 111
 
 
 - 2025-09-06 `9c85b1f` (misc) — scaffolded with errors — CI: no runs
@@ -53,8 +53,18 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-14 `6d97510` (docs) — docs: add PFPT Copilot Instructions and implement CI improvements with automatic Copilot triggering (#15) — CI: no runs
 - 2025-09-15 `3e0431f` (misc) — Update .github/workflows/copilot-auto-fix.yml — CI: no runs
 - 2025-09-15 `620facb` (docs) — docs: update CHANGELOG.md [skip ci] — CI: no runs
+- 2025-09-15 `d0011e4` (docs) — docs: add PFPT Copilot Instructions and implement CI improvements wit… (#16) — CI: no runs
 - 2025-09-15 `dc3204c` (misc) — Merge development branch into main to synchronize branches (#18) — CI: no runs
+- 2025-09-15 `8c52700` (misc) — Merge main branch into development to synchronize branches (#19) — CI: no runs
+- 2025-09-15 `b6f191d` (feat) — feat: update package versions and add development documentation — CI: no runs
+- 2025-09-16 `8680e77` (misc) — Implement unified UI architecture with Razor Class Library for MAUI and Web platforms (#24) — CI: no runs
+- 2025-09-18 `b4cb60f` (feat) — feat: enhance Android emulator startup process with boot completion check — CI: no runs
+- 2025-09-18 `4d73949` (misc) — Remove index.html and add App.razor for Blazor routing; introduce Copilot instructions for CI/CD workflow; update _Imports.razor with necessary namespaces; log build output with errors related to missing App reference and iOS simulator runtime. — CI: no runs
 - 2025-09-21 `231d649` (misc) — Enhance MAUI workload installation in CI workflow — CI: no runs
+- 2025-09-21 `b0c9d15` (misc) — Copilot/fix 40 (#42) — CI: no runs
+- 2025-09-21 `ddec753` (fix) — fix: add autostart attribute to Blazor webview script in index.html — CI: no runs
+- 2025-09-21 `d41e699` (misc) — Update PhysicallyFitPT/wwwroot/index.html — CI: no runs
+- 2025-09-21 `c4be50b` (misc) — Merge branch 'main' into development — CI: no runs
 - 2025-09-21 `28ebbd7` (misc) — Development Shared UI (#71) — CI: no runs
 - 2025-09-21 `9de8764` (misc) — Initial analysis and documentation update plan — CI: no runs
 - 2025-09-21 `0b0da47` (misc) — Update README.md with modern structure and key features — CI: no runs
@@ -64,8 +74,43 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-21 `46cb118` (misc) — Update docs/TROUBLESHOOTING.md — CI: no runs
 - 2025-09-21 `78ad157` (misc) — Update docs/BUILD.md — CI: no runs
 - 2025-09-21 `e859c16` (docs) — docs: update CHANGELOG.md post-merge [skip ci] — CI: no runs
-- 2025-09-21 `78e8f56` (misc) — ✅ **Enhance CI/CD workflow and unify UI architecture for MAUI and Web (#75)** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-21 `bddb81f` (fix) — fix: close ensure_maui_tfms function in PFPT-Foundry.sh — CI: no runs
+- 2025-09-21 `6acbea0` (misc) — Initial analysis and documentation update plan — CI: no runs
+- 2025-09-21 `6ee2f26` (misc) — Update README.md with modern structure and key features — CI: no runs
+- 2025-09-21 `2f232f4` (misc) — Enhance scripts and documentation with automation features and cross-platform support — CI: no runs
+- 2025-09-21 `ec6fee9` (misc) — Complete documentation overhaul with comprehensive build and troubleshooting guides — CI: no runs
+- 2025-09-21 `d897b5b` (misc) — Update pfpt-cleanbuild.sh — CI: no runs
+- 2025-09-21 `c70957d` (misc) — Update docs/TROUBLESHOOTING.md — CI: no runs
+- 2025-09-21 `f2e766f` (misc) — Update docs/BUILD.md — CI: no runs
+- 2025-09-21 `984a7d3` (docs) — docs: update CHANGELOG.md post-merge [skip ci] — CI: no runs
+- 2025-09-21 `6d7831b` (misc) — Refactor project structure and add indexing functionality — CI: no runs
+- 2025-09-21 `cca234e` (fix) — fix: improve relative path calculations in ingest script — CI: no runs
+- 2025-09-21 `a5c90e7` (fix) — Fix: pass argv to Python in ingest.sh — CI: no runs
+- 2025-09-21 `c4c278d` (chore) — chore: update .gitignore to exclude reference files and add .editorconfig for RepoMemory.Indexer — CI: no runs
+- 2025-09-21 `4b6b00b` (chore) — chore: remove PFPT Copilot Instructions document — CI: no runs
+- 2025-09-21 `60e3ca3` (misc) — Merge branch 'main' into development — CI: no runs
+- 2025-09-21 `78e8f56` (misc) — Enhance CI/CD workflow and unify UI architecture for MAUI and Web (#75) — CI: no runs
+- 2025-09-22 `94349ca` (misc) — Adopt Scalable Project Layout for PFPT - Modular Architecture Implementation (#77) — CI: no runs
+- 2025-09-22 `d7336f4` (misc) — Refactor domain references and update migrations — CI: no runs
+- 2025-09-22 `994d60e` (misc) — Initial analysis and plan for SPA navigation fixes — CI: no runs
+- 2025-09-22 `2104525` (feat) — feat(routing): replace anchor tags with NavLink components and add stub pages — CI: no runs
+- 2025-09-22 `bc685b4` (fix) — fix(dependencies): update Microsoft.NET.Sdk.WebAssembly.Pack to version 8.0.20 — CI: no runs
+- 2025-09-22 `f67377d` (misc) — Initial analysis and plan for creating missing stub pages — CI: no runs
+- 2025-09-22 `c1d3527` (misc) — Create stub pages for all navigation menu items — CI: no runs
+- 2025-09-22 `f7a812b` (feat) — feat(layout): add ResponsiveMainLayout to AutoMessaging and Eval pages — CI: no runs
+- 2025-09-23 `2ea63de` (misc) — Complete API endpoints and frontend integration for PFPT application (#87) — CI: no runs
+- 2025-09-23 `c5d5b45` (misc) — Merge branch 'main' into development — CI: no runs
 - 2025-09-23 `c82b91f` (misc) — ✅ **Functional Development Merger into Main (#89)** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-09-24 `1b86620` (misc) — Initial analysis and plan for seeder refactoring — CI: no runs
+- 2025-09-24 `b2f086a` (misc) — Phase 1 complete: Add seeding infrastructure entities and dependencies — CI: no runs
+- 2025-09-24 `db9962a` (misc) — Phase 2 & 3 complete: Core seeding framework and task implementations — CI: no runs
+- 2025-09-24 `b7b245d` (misc) — Phase 4 complete: CLI, configuration, and host-based application structure — CI: no runs
+- 2025-09-24 `d24af34` (misc) — Complete comprehensive seeding framework - all phases implemented — CI: no runs
+- 2025-09-24 `0f11cd8` (misc) — Add comprehensive seeder testing, Docker support, and CI integration — CI: no runs
+- 2025-09-25 `6cb3832` (misc) — Add script to synchronize seeded SQLite database with MAUI targets — CI: no runs
+- 2025-09-25 `fa5c9ab` (misc) — Update tests/PhysicallyFitPT.Seeder.Tests/SeedRunIntegrationTests.cs — CI: no runs
+- 2025-09-25 `422dda1` (misc) — Update tests/PhysicallyFitPT.Seeder.Tests/HashChangeReplayTests.cs — CI: failure — jobs: Seeder Integration Tests:failure, Seeder Verification Workflow:skipped, Seeder Verification Summary:failure, Docker Container Verification:skipped
+- 2025-09-25 `13da21e` (feat) — feat(gitignore): add entries for ACT files and build output — CI: failure — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Auto-Request Review:skipped, Unit Tests (Consolidated with iOS build):skipped, Diff Summary:skipped, Notify on Failure:skipped
 - 2025-09-25 `441712b` (misc) — Fix dotnet-ef tool installation in CI and devcontainer — CI: no runs
 - 2025-09-25 `17fb98b` (misc) — Complete dotnet-ef tool installation fix with comprehensive testing — CI: failure — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:success, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Unit Tests (Consolidated with iOS build):skipped, Auto-Request Review:skipped, Notify on Failure:skipped, Diff Summary:skipped
 - 2025-09-25 `1a012c0` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
@@ -73,4 +118,34 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-26 `e5ed14f` (misc) — Revert "Fix dotnet-ef tool installation in CI and devcontainer" — CI: no runs
 - 2025-09-26 `838d83a` (misc) — ✅ **Update .github/workflows/ci.yml** — CI: success — jobs: Auto-Fix CI Failures:success
 - 2025-09-26 `68ca4c2` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Process Copilot Mention:success
-- 2025-10-01 `9f85529` (misc) — Implement scalable project layout and enhance CI/CD workflow (#149) — CI: in_progress — jobs: StyleCop Formatting:in_progress, Post-Merge Changelog Generation:in_progress
+- 2025-09-28 `2d4bcfe` (misc) — ✅ **Working Dev ci Merge into Dev  (#92)** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-09-28 `ba87af3` (refactor) — ✅ **refactor: clean up packages.lock.json and improve PatientSeedTask environment handling** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-09-28 `48db21a` (misc) — ✅ **Add Microsoft.AspNetCore.Components.WebAssembly package and update dependencies** — CI: success — jobs: StyleCop Formatting:success, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:success, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-ios):success, Build & Guardrails (net8.0-maccatalyst):success, Build & Guardrails (net8.0-android):success, Unit Tests:success, Diff Summary:skipped, CI Summary:success, Auto-Request Review:skipped, Notify on Failure:skipped
+- 2025-09-25 `466c833` (docs) — docs: update CHANGELOG.md post-merge [skip ci] — CI: no runs
+- 2025-09-26 `b104e82` (misc) — Revert "Complete dotnet-ef tool installation fix with comprehensive testing" — CI: no runs
+- 2025-09-26 `b5bf8c4` (docs) — docs: update CHANGELOG.md post-merge [skip ci] — CI: no runs
+- 2025-09-28 `4d8f071` (refactor) — ✅ **refactor: update project structure and CI configuration for Domain project** — CI: success — jobs: Copilot Development Environment Validation:success
+- 2025-09-28 `e8745dd` (refactor) — ✅ **refactor: rename Domain project to Core in CI and documentation** — CI: success — jobs: Copilot Development Environment Validation:success
+- 2025-09-28 `45d83f9` (fix) — ✅ **fix: update project paths in CI configuration for Ubuntu compatibility** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-09-29 `f21631a` (refactor) — ✅ **refactor: streamline hash computation and enhance JSON deserialization options** — CI: success — jobs: Automated Issue Triage:success
+- 2025-09-29 `12d4692` (refactor) — ✅ **refactor: change ComputeFileHashAsync and ComputeFallbackHash methods to static** — CI: success — jobs: Automated Issue Triage:success
+- 2025-09-29 `190d0d0` (refactor) — ✅ **refactor: update hash calculation methods to use SeedHashCalculator** — CI: success — jobs: Copilot Development Environment Validation:success
+- 2025-09-29 `eb616f4` (refactor) — ✅ **refactor: update CI workflow to run tests for multiple projects in a loop** — CI: success — jobs: Automated Issue Triage:success
+- 2025-09-30 `7bfab0c` (feat) — ✅ **feat: add step to restore MAUI workloads for test projects** — CI: success — jobs: Automated Issue Triage:success
+- 2025-09-30 `01d7ac4` (refactor) — ✅ **refactor: restructure devcontainer.json to group VSCode settings and extensions under customizations** — CI: success — jobs: Copilot Development Environment Validation:success
+- 2025-09-30 `064a87f` (fix) — fix: increase timeout for iOS build to prevent failures — CI: failure — jobs: Generate Release Notes - feature:failure
+- 2025-10-01 `9f85529` (misc) — ✅ **Implement scalable project layout and enhance CI/CD workflow (#149)** — CI: success — jobs: StyleCop Formatting:success, Post-Merge Changelog Generation:success, Roslynator Static Analysis:success, Build & Guardrails (net8.0-ios):success, Build & Guardrails (net8.0-maccatalyst):success, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-android):success, Unit Tests:success, Diff Summary:skipped, CI Summary:success, Notify on Failure:skipped, Auto-Request Review:skipped
+- 2025-10-01 `d8a7d01` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2025-10-01 `16ad0f1` (fix) — fix: correct syntax in Python command for relative path normalization — CI: cancelled — jobs: StyleCop Formatting:success, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:success, Build & Guardrails (net8.0-ios):success, Build & Guardrails (net8.0-maccatalyst):cancelled, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-android):success, Unit Tests:skipped, Diff Summary:skipped, CI Summary:success, Auto-Request Review:skipped, Notify on Failure:skipped
+- 2025-10-02 `61ff598` (misc) — ✅ **Implement Week 1: RCL Shell + Live Diagnostics with DebugStatBar, Feature Flags, and API Versioning (#157)** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-10-03 `cfd5bd4` (feat) — ✅ **feat: Add AppStatsService for aggregated application statistics with caching** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-10-05 `25392c6` (misc) — ✅ **Implement Week 2 Roadmap: Authentication, AI Summary, Navigation & Diagnostics (#162)** — CI: success — jobs: Verify Database Targets:success, Guard Developer Diagnostics Override:success, StyleCop Formatting:success, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:success, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-maccatalyst):success, Build & Guardrails (net8.0-android):success, Build & Guardrails (net8.0-ios):success, Unit Tests:success, Diff Summary:skipped, Notify on Failure:skipped, CI Summary:success, Auto-Request Review:skipped
+- 2025-10-01 `acd4fed` (misc) — Implement scalable project layout and enhance CI/CD workflow (#149) — CI: no runs
+- 2025-10-01 `e38152f` (docs) — docs: update CHANGELOG.md post-merge [skip ci] — CI: no runs
+- 2025-10-01 `9a8e43f` (misc) — ✅ **Implement scalable project layout and enhance CI/CD workflow (#149)** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-10-05 `b1c18e8` (misc) — ✅ **Merge branch 'main' into development** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-10-05 `6ab91b0` (misc) — ✅ **Add feature management and improve Maui API config** — CI: success — jobs: Seeder Integration Tests:success, Seeder Verification Workflow:success, Docker Container Verification:success, Seeder Verification Summary:success
+- 2025-10-05 `2877d64` (misc) — ✅ **Enhance SQLite data source logging, improve AppStatsService metrics initialization, and update polling mechanism in DebugStatBar component** — CI: success — jobs: Automated Issue Triage:success
+- 2025-10-05 `9a7b91b` (fix) — ✅ **fix: rename HttpMessageHandler to HttpClientHandler in CreateHttpMessageHandler method** — CI: success — jobs: Auto-format Code:success
+- 2025-10-05 `b632fd6` (misc) — Main/Development Merge (#161) — CI: no runs
+- 2025-10-05 `3c25511` (misc) — Merge branch 'development' into main — CI: in_progress — jobs: Verify Database Targets:success, Guard Developer Diagnostics Override:success, StyleCop Formatting:in_progress, Post-Merge Changelog Generation:skipped
