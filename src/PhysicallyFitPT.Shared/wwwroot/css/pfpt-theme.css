@@ -1412,3 +1412,158 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+/* Assessment Section */
+.pfp-secondary-diagnoses {
+  margin: 1.5rem 0;
+}
+
+.pfp-diagnosis-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.pfp-diagnosis-row > :first-child {
+  flex: 1;
+}
+
+.pfp-card-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.pfp-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.pfp-goal-item {
+  padding: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.pfp-goal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pfp-goal-type-selector {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.pfp-goal-type-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.pfp-goal-type-selector input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Plan Section */
+.pfp-cpt-list,
+.pfp-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.pfp-cpt-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto auto;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.pfp-common-cpts {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.pfp-cpt-quick-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.pfp-exercise-item {
+  padding: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.pfp-exercise-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.pfp-exercise-header > :first-child {
+  flex: 1;
+}
+
+.pfp-hep-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pfp-hep-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.pfp-hep-checkbox:hover {
+  background: #f3f4f6;
+}
+
+@media (max-width: 768px) {
+  .pfp-cpt-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pfp-exercise-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pfp-goal-type-selector {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pfp-cpt-quick-add {
+    flex-direction: column;
+  }
+}

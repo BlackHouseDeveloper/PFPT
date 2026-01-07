@@ -1,0 +1,332 @@
+@* Plan section component for SOAP notes *@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="pfp-soap-section">
+  <div class="pfp-section-header">
+    <h3>📋 Plan</h3>
+    <p class="pfp-section-subtitle">Treatment interventions and patient education</p>
+  </div>
+
+  <div class="pfp-section-content">
+    <!-- CPT Codes & Billing -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>CPT Codes & Billing</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-cpt-list">
+          @foreach (var cpt in cptCodes)
+          {
+            <div class="pfp-cpt-row">
+              <FormField 
+                @bind-Value="@cpt.Code"
+                Placeholder="CPT code (e.g., 97110)" />
+              <FormField 
+                @bind-Value="@cpt.Description"
+                Placeholder="Description" />
+              <FormField 
+                @bind-Value="@cpt.Units"
+                Type="number"
+                Placeholder="Units" />
+              <Button 
+                Variant="danger" 
+                Size="small"
+                Icon="🗑️"
+                OnClick="@(() => RemoveCPT(cpt))" />
+            </div>
+          }
+        </div>
+
+        <Button 
+          Variant="outline" 
+          Icon="➕"
+          Text="Add CPT Code"
+          OnClick="AddCPT" />
+
+        <div class="pfp-common-cpts">
+          <small class="pfp-help-text">Common CPT Codes:</small>
+          <div class="pfp-cpt-quick-add">
+            <Button Variant="outline" Size="small" Text="97110 - Therapeutic Exercise" OnClick="@(() => QuickAddCPT("97110", "Therapeutic Exercise"))" />
+            <Button Variant="outline" Size="small" Text="97140 - Manual Therapy" OnClick="@(() => QuickAddCPT("97140", "Manual Therapy"))" />
+            <Button Variant="outline" Size="small" Text="97530 - Therapeutic Activities" OnClick="@(() => QuickAddCPT("97530", "Therapeutic Activities"))" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treatment Interventions -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Treatment Interventions Provided</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Interventions (select all that apply):</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.TherapeuticExercise" />
+              <span>Therapeutic Exercise</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.ManualTherapy" />
+              <span>Manual Therapy</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.Modalities" />
+              <span>Modalities</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.NeuromuscularRe" />
+              <span>Neuromuscular Re-ed</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.Gait" />
+              <span>Gait Training</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@interventions.Balance" />
+              <span>Balance Training</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Treatment Details"
+          Type="textarea"
+          @bind-Value="@PlanData.TreatmentDetails"
+          Rows="4"
+          HelpText="Describe specific techniques, exercises, and patient response" />
+      </div>
+    </div>
+
+    <!-- Exercise Prescription -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <div class="pfp-card-header-actions">
+          <h4>Exercise Prescription</h4>
+          <Button 
+            Variant="secondary" 
+            Size="small"
+            Icon="📥"
+            Text="Import from Library"
+            OnClick="ImportExercises" />
+        </div>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-exercise-list">
+          @foreach (var exercise in exercises)
+          {
+            <div class="pfp-exercise-item">
+              <div class="pfp-exercise-header">
+                <FormField 
+                  Label="Exercise Name"
+                  @bind-Value="@exercise.Name"
+                  Placeholder="e.g., Shoulder External Rotation" />
+                <label class="pfp-hep-checkbox">
+                  <input type="checkbox" @bind="@exercise.IsHEP" />
+                  <span>Include in HEP</span>
+                </label>
+                <Button 
+                  Variant="danger" 
+                  Size="small"
+                  Icon="🗑️"
+                  OnClick="@(() => RemoveExercise(exercise))" />
+              </div>
+
+              <div class="pfp-form-grid">
+                <FormField 
+                  Label="Sets"
+                  Type="number"
+                  @bind-Value="@exercise.Sets"
+                  Placeholder="3" />
+                <FormField 
+                  Label="Reps"
+                  Type="number"
+                  @bind-Value="@exercise.Reps"
+                  Placeholder="10" />
+                <FormField 
+                  Label="Frequency"
+                  @bind-Value="@exercise.Frequency"
+                  Placeholder="3x/day" />
+                <FormField 
+                  Label="Duration"
+                  @bind-Value="@exercise.Duration"
+                  Placeholder="30 sec hold" />
+              </div>
+
+              <FormField 
+                Label="Exercise Notes"
+                Type="textarea"
+                @bind-Value="@exercise.Notes"
+                Rows="2"
+                Placeholder="Special instructions, modifications, progression criteria" />
+            </div>
+          }
+        </div>
+
+        <Button 
+          Variant="outline" 
+          Icon="💪"
+          Text="Add Exercise"
+          OnClick="AddExercise" />
+      </div>
+    </div>
+
+    <!-- Patient Education -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Patient Education & HEP</h4>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Education Provided"
+          Type="textarea"
+          @bind-Value="@PlanData.PatientEducation"
+          Rows="3"
+          HelpText="Topics discussed: body mechanics, activity modifications, self-management strategies" />
+
+        <FormField 
+          Label="Home Exercise Program Instructions"
+          Type="textarea"
+          @bind-Value="@PlanData.HEPInstructions"
+          Rows="3"
+          HelpText="Clear instructions for exercises marked as HEP above" />
+      </div>
+    </div>
+
+    <!-- Follow-up Plan -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Follow-up Plan</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-grid">
+          <FormField 
+            Label="Frequency"
+            Type="select"
+            @bind-Value="@PlanData.Frequency">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="3x/week">3x per week</option>
+              <option value="2x/week">2x per week</option>
+              <option value="1x/week">1x per week</option>
+              <option value="2x/week for 4 weeks">2x/week for 4 weeks</option>
+            </SelectOptions>
+          </FormField>
+
+          <FormField 
+            Label="Duration"
+            Type="select"
+            @bind-Value="@PlanData.Duration">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="4 weeks">4 weeks</option>
+              <option value="6 weeks">6 weeks</option>
+              <option value="8 weeks">8 weeks</option>
+              <option value="12 weeks">12 weeks</option>
+            </SelectOptions>
+          </FormField>
+        </div>
+
+        <FormField 
+          Label="Next Visit Plan"
+          Type="textarea"
+          @bind-Value="@PlanData.NextVisitPlan"
+          Rows="2"
+          HelpText="What will be reassessed, progressed, or modified next visit" />
+      </div>
+    </div>
+
+    @if (ChildContent != null)
+    {
+      @ChildContent
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Plan data model
+  /// </summary>
+  [Parameter]
+  public PlanDataModel PlanData { get; set; } = new();
+
+  /// <summary>
+  /// Optional child content for additional sections
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  private List<CPTModel> cptCodes = new();
+  private InterventionsModel interventions = new();
+  private List<ExerciseModel> exercises = new();
+
+  private void AddCPT()
+  {
+    cptCodes.Add(new CPTModel());
+  }
+
+  private void RemoveCPT(CPTModel cpt)
+  {
+    cptCodes.Remove(cpt);
+  }
+
+  private void QuickAddCPT(string code, string description)
+  {
+    cptCodes.Add(new CPTModel { Code = code, Description = description, Units = "1" });
+  }
+
+  private void AddExercise()
+  {
+    exercises.Add(new ExerciseModel());
+  }
+
+  private void RemoveExercise(ExerciseModel exercise)
+  {
+    exercises.Remove(exercise);
+  }
+
+  private void ImportExercises()
+  {
+    // Open exercise library modal
+    Console.WriteLine("Import exercises from library");
+  }
+
+  public class PlanDataModel
+  {
+    public string TreatmentDetails { get; set; } = string.Empty;
+    public string PatientEducation { get; set; } = string.Empty;
+    public string HEPInstructions { get; set; } = string.Empty;
+    public string Frequency { get; set; } = string.Empty;
+    public string Duration { get; set; } = string.Empty;
+    public string NextVisitPlan { get; set; } = string.Empty;
+  }
+
+  private class CPTModel
+  {
+    public string Code { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Units { get; set; } = string.Empty;
+  }
+
+  private class InterventionsModel
+  {
+    public bool TherapeuticExercise { get; set; }
+    public bool ManualTherapy { get; set; }
+    public bool Modalities { get; set; }
+    public bool NeuromuscularRe { get; set; }
+    public bool Gait { get; set; }
+    public bool Balance { get; set; }
+  }
+
+  private class ExerciseModel
+  {
+    public string Name { get; set; } = string.Empty;
+    public string Sets { get; set; } = string.Empty;
+    public string Reps { get; set; } = string.Empty;
+    public string Frequency { get; set; } = string.Empty;
+    public string Duration { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+    public bool IsHEP { get; set; }
+  }
+}

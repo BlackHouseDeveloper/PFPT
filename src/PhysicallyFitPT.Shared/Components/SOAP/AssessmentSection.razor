@@ -1,0 +1,296 @@
+@* Assessment section component for SOAP notes *@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="pfp-soap-section">
+  <div class="pfp-section-header">
+    <h3>📊 Assessment</h3>
+    <p class="pfp-section-subtitle">Clinical impression, diagnosis, and treatment goals</p>
+  </div>
+
+  <div class="pfp-section-content">
+    <!-- Diagnosis / ICD-10 Codes -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Diagnosis & ICD-10 Codes</h4>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Primary Diagnosis"
+          @bind-Value="@AssessmentData.PrimaryDiagnosis"
+          Placeholder="e.g., M75.41 - Impingement syndrome of right shoulder"
+          HelpText="Enter primary ICD-10 code and description" />
+
+        <div class="pfp-secondary-diagnoses">
+          <label class="pfp-form-label">Secondary Diagnoses:</label>
+          @foreach (var diagnosis in secondaryDiagnoses)
+          {
+            <div class="pfp-diagnosis-row">
+              <FormField 
+                @bind-Value="@diagnosis.Code"
+                Placeholder="ICD-10 code and description" />
+              <Button 
+                Variant="danger" 
+                Size="small"
+                Icon="🗑️"
+                OnClick="@(() => RemoveDiagnosis(diagnosis))" />
+            </div>
+          }
+          <Button 
+            Variant="outline" 
+            Icon="➕"
+            Text="Add Secondary Diagnosis"
+            OnClick="AddDiagnosis" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinical Impression -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Clinical Impression</h4>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Assessment Summary"
+          Type="textarea"
+          @bind-Value="@AssessmentData.ClinicalImpression"
+          Rows="4"
+          HelpText="Summarize clinical findings, functional deficits, and reasoning for diagnosis" />
+
+        <div class="pfp-form-grid">
+          <FormField 
+            Label="Rehab Potential"
+            Type="select"
+            @bind-Value="@AssessmentData.RehabPotential">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
+            </SelectOptions>
+          </FormField>
+
+          <FormField 
+            Label="Prognosis"
+            Type="select"
+            @bind-Value="@AssessmentData.Prognosis">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Guarded">Guarded</option>
+            </SelectOptions>
+          </FormField>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treatment Goals -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <div class="pfp-card-header-actions">
+          <h4>Treatment Goals</h4>
+          <Button 
+            Variant="primary" 
+            Size="small"
+            Icon="✨"
+            Text="Generate Goals"
+            OnClick="GenerateGoals" />
+        </div>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-goals-list">
+          @foreach (var goal in goals)
+          {
+            <div class="pfp-goal-item">
+              <div class="pfp-goal-header-row">
+                <div class="pfp-goal-type-selector">
+                  <label>
+                    <input type="radio" name="goalType_@goal.Id" checked="@(!goal.IsLongTerm)" @onchange="@(() => goal.IsLongTerm = false)" />
+                    <span>Short-term</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="goalType_@goal.Id" checked="@goal.IsLongTerm" @onchange="@(() => goal.IsLongTerm = true)" />
+                    <span>Long-term</span>
+                  </label>
+                </div>
+                <Button 
+                  Variant="danger" 
+                  Size="small"
+                  Icon="🗑️"
+                  OnClick="@(() => RemoveGoal(goal))" />
+              </div>
+
+              <FormField 
+                Label="Goal Description (SMART format)"
+                Type="textarea"
+                @bind-Value="@goal.Description"
+                Rows="2"
+                Placeholder="Patient will [action] [measurement] by [timeframe]"
+                HelpText="Be Specific, Measurable, Achievable, Relevant, Time-bound" />
+
+              <div class="pfp-form-grid">
+                <FormField 
+                  Label="Measurement Type"
+                  @bind-Value="@goal.MeasureType"
+                  Placeholder="e.g., ROM, strength, distance" />
+
+                <FormField 
+                  Label="Baseline Value"
+                  @bind-Value="@goal.BaselineValue"
+                  Placeholder="e.g., 80° flexion" />
+
+                <FormField 
+                  Label="Target Value"
+                  @bind-Value="@goal.TargetValue"
+                  Placeholder="e.g., 160° flexion" />
+
+                <FormField 
+                  Label="Target Date"
+                  Type="date"
+                  @bind-Value="@goal.TargetDateString" />
+              </div>
+            </div>
+          }
+        </div>
+
+        <Button 
+          Variant="outline" 
+          Icon="🎯"
+          Text="Add Goal"
+          OnClick="AddGoal" />
+      </div>
+    </div>
+
+    <!-- Functional Deficits -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Functional Deficits & Impairments</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Primary Impairments:</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.ROM" />
+              <span>Decreased ROM</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.Strength" />
+              <span>Decreased Strength</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.Pain" />
+              <span>Pain</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.Balance" />
+              <span>Balance Deficit</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.Endurance" />
+              <span>Decreased Endurance</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@impairments.Coordination" />
+              <span>Coordination Deficit</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Impairment Details"
+          Type="textarea"
+          @bind-Value="@AssessmentData.ImpairmentDetails"
+          Rows="3"
+          HelpText="Describe specific deficits and their impact on function" />
+      </div>
+    </div>
+
+    @if (ChildContent != null)
+    {
+      @ChildContent
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Assessment data model
+  /// </summary>
+  [Parameter]
+  public AssessmentDataModel AssessmentData { get; set; } = new();
+
+  /// <summary>
+  /// Optional child content for additional sections
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  private List<DiagnosisModel> secondaryDiagnoses = new();
+  private List<GoalModel> goals = new();
+  private ImpairmentsModel impairments = new();
+
+  private void AddDiagnosis()
+  {
+    secondaryDiagnoses.Add(new DiagnosisModel());
+  }
+
+  private void RemoveDiagnosis(DiagnosisModel diagnosis)
+  {
+    secondaryDiagnoses.Remove(diagnosis);
+  }
+
+  private void AddGoal()
+  {
+    goals.Add(new GoalModel { Id = Guid.NewGuid() });
+  }
+
+  private void RemoveGoal(GoalModel goal)
+  {
+    goals.Remove(goal);
+  }
+
+  private void GenerateGoals()
+  {
+    // AI-assisted goal generation would go here
+    Console.WriteLine("Generate SMART goals based on assessment");
+  }
+
+  public class AssessmentDataModel
+  {
+    public string PrimaryDiagnosis { get; set; } = string.Empty;
+    public string ClinicalImpression { get; set; } = string.Empty;
+    public string RehabPotential { get; set; } = string.Empty;
+    public string Prognosis { get; set; } = string.Empty;
+    public string ImpairmentDetails { get; set; } = string.Empty;
+  }
+
+  private class DiagnosisModel
+  {
+    public string Code { get; set; } = string.Empty;
+  }
+
+  private class GoalModel
+  {
+    public Guid Id { get; set; }
+    public bool IsLongTerm { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string MeasureType { get; set; } = string.Empty;
+    public string BaselineValue { get; set; } = string.Empty;
+    public string TargetValue { get; set; } = string.Empty;
+    public string TargetDateString { get; set; } = string.Empty;
+  }
+
+  private class ImpairmentsModel
+  {
+    public bool ROM { get; set; }
+    public bool Strength { get; set; }
+    public bool Pain { get; set; }
+    public bool Balance { get; set; }
+    public bool Endurance { get; set; }
+    public bool Coordination { get; set; }
+  }
+}
