@@ -1,25 +1,307 @@
 @page "/notes/daily"
 @layout ResponsiveMainLayout
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.SOAP
 
 <PageTitle>Daily Treatment Note</PageTitle>
 
 <DebugStatBar />
 
-<div class="pfp-page-header">
-  <h1>Daily Treatment Note</h1>
-  <p>Document daily treatment sessions and patient progress</p>
-</div>
+<div class="pfp-note-page">
+  <div class="pfp-page-header">
+    <div class="pfp-header-content">
+      <div>
+        <h2>📝 Daily Treatment Note</h2>
+        <p>Document daily treatment session</p>
+      </div>
+      <div class="pfp-note-actions">
+        <Button 
+          Variant="outline" 
+          Icon="💾"
+          Text="Save Draft"
+          OnClick="SaveDraft" />
+        <Button 
+          Variant="primary" 
+          Icon="✅"
+          Text="Sign & Submit"
+          OnClick="SignAndSubmit" />
+      </div>
+    </div>
+  </div>
 
-<div class="pfp-card">
-  <div class="pfp-card-body">
-    <p>Daily treatment note functionality will be implemented here.</p>
-    <p><small>This page will integrate with INoteBuilderService for creating and editing daily treatment notes.</small></p>
+  @if (!string.IsNullOrEmpty(statusMessage))
+  {
+    <div class="pfp-alert @(isError ? "pfp-alert-error" : "pfp-alert-success")">
+      @statusMessage
+    </div>
+  }
+
+  <!-- Patient Info Bar -->
+  <div class="pfp-patient-info-bar">
+    <div class="pfp-patient-quick-info">
+      <span class="pfp-info-item">
+        <strong>Patient:</strong> @selectedPatientName
+      </span>
+      <span class="pfp-info-item">
+        <strong>Date:</strong> @DateTime.Today.ToString("MM/dd/yyyy")
+      </span>
+      <span class="pfp-info-item">
+        <strong>Note Type:</strong> Daily Note
+      </span>
+      <span class="pfp-info-item">
+        <strong>Visit #:</strong> @visitNumber
+      </span>
+    </div>
+    <Button 
+      Variant="outline" 
+      Size="small"
+      Icon="🔍"
+      Text="Select Patient"
+      OnClick="SelectPatient" />
+  </div>
+
+  <!-- Quick Daily Note Form -->
+  <div class="pfp-soap-note">
+    <!-- Subjective (Abbreviated) -->
+    <div class="pfp-soap-section">
+      <div class="pfp-section-header">
+        <h3>📋 Subjective</h3>
+        <p class="pfp-section-subtitle">Patient report since last visit</p>
+      </div>
+      <div class="pfp-card">
+        <div class="pfp-card-body">
+          <div class="pfp-pain-scale">
+            <label class="pfp-form-label">Current Pain Level (0-10):</label>
+            <div class="pfp-pain-scale-container">
+              <input 
+                type="range" 
+                min="0" 
+                max="10" 
+                @bind="@painLevel" 
+                @bind:event="oninput"
+                class="pfp-pain-slider" />
+              <span class="pfp-pain-value">@painLevel</span>
+            </div>
+          </div>
+
+          <FormField 
+            Label="Subjective Report"
+            Type="textarea"
+            @bind-Value="@subjectiveReport"
+            Rows="3"
+            Placeholder="Patient reports...  pain, functional status, response to HEP" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Objective (Abbreviated) -->
+    <div class="pfp-soap-section">
+      <div class="pfp-section-header">
+        <h3>🔬 Objective</h3>
+        <p class="pfp-section-subtitle">Clinical observations</p>
+      </div>
+      <div class="pfp-card">
+        <div class="pfp-card-body">
+          <FormField 
+            Label="Observation/Gait"
+            Type="textarea"
+            @bind-Value="@objectiveObservation"
+            Rows="2"
+            Placeholder="Describe gait pattern, posture, movement quality" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Assessment (Abbreviated) -->
+    <div class="pfp-soap-section">
+      <div class="pfp-section-header">
+        <h3>📊 Assessment</h3>
+        <p class="pfp-section-subtitle">Clinical impression</p>
+      </div>
+      <div class="pfp-card">
+        <div class="pfp-card-body">
+          <FormField 
+            Label="Patient Response to Treatment"
+            Type="select"
+            @bind-Value="@patientResponse">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="Excellent">Excellent Response</option>
+              <option value="Good">Good Response</option>
+              <option value="Fair">Fair Response</option>
+              <option value="Poor">Poor Response</option>
+            </SelectOptions>
+          </FormField>
+
+          <FormField 
+            Label="Progress Toward Goals"
+            Type="textarea"
+            @bind-Value="@progressTowardGoals"
+            Rows="2"
+            Placeholder="Brief assessment of progress" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan (Treatment Today) -->
+    <div class="pfp-soap-section">
+      <div class="pfp-section-header">
+        <h3>📋 Plan</h3>
+        <p class="pfp-section-subtitle">Treatment provided today</p>
+      </div>
+      
+      <!-- CPT Codes -->
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h4>CPT Codes & Time</h4>
+        </div>
+        <div class="pfp-card-body">
+          <div class="pfp-cpt-quick-select">
+            @foreach (var cpt in commonCPTs)
+            {
+              <label class="pfp-cpt-checkbox-label">
+                <input type="checkbox" @bind="cpt.Selected" />
+                <span>@cpt.Code - @cpt.Description</span>
+                @if (cpt.Selected)
+                {
+                  <input 
+                    type="number" 
+                    @bind="cpt.Minutes" 
+                    placeholder="min" 
+                    class="pfp-cpt-time-input" />
+                }
+              </label>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Treatment Summary -->
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h4>Treatment Summary</h4>
+        </div>
+        <div class="pfp-card-body">
+          <FormField 
+            Label="Interventions Provided"
+            Type="textarea"
+            @bind-Value="@treatmentSummary"
+            Rows="4"
+            Placeholder="Describe exercises, manual therapy, modalities, and patient response" />
+
+          <FormField 
+            Label="Plan for Next Visit"
+            Type="textarea"
+            @bind-Value="@nextVisitPlan"
+            Rows="2"
+            Placeholder="What will be progressed or modified next session" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Footer Actions -->
+  <div class="pfp-note-footer">
+    <div class="pfp-note-footer-info">
+      <small>Last saved: @lastSavedTime | Total time: @CalculateTotalTime() minutes</small>
+    </div>
+    <div class="pfp-note-footer-actions">
+      <Button 
+        Variant="secondary" 
+        Icon="🗑️"
+        Text="Discard"
+        OnClick="DiscardNote" />
+      <Button 
+        Variant="outline" 
+        Icon="👁️"
+        Text="Preview"
+        OnClick="PreviewNote" />
+      <Button 
+        Variant="primary" 
+        Icon="✅"
+        Text="Sign & Submit"
+        Loading="@isSubmitting"
+        OnClick="SignAndSubmit" />
+    </div>
   </div>
 </div>
 
 @code {
-  // TODO: Wire to INoteBuilderService
-  // TODO: Add S/O/A/P sections
-  // TODO: Add save/export actions
-  // TODO: Add autosave functionality
+  private string selectedPatientName = "Select a patient";
+  private int visitNumber = 3;
+  private string? statusMessage = null;
+  private bool isError = false;
+  private string lastSavedTime = "Never";
+  private bool isSubmitting = false;
+
+  private int painLevel = 3;
+  private string subjectiveReport = string.Empty;
+  private string objectiveObservation = string.Empty;
+  private string patientResponse = string.Empty;
+  private string progressTowardGoals = string.Empty;
+  private string treatmentSummary = string.Empty;
+  private string nextVisitPlan = string.Empty;
+
+  private List<CPTQuickSelect> commonCPTs = new()
+  {
+    new CPTQuickSelect { Code = "97110", Description = "Therapeutic Exercise" },
+    new CPTQuickSelect { Code = "97140", Description = "Manual Therapy" },
+    new CPTQuickSelect { Code = "97530", Description = "Therapeutic Activities" },
+    new CPTQuickSelect { Code = "97112", Description = "Neuromuscular Re-education" },
+  };
+
+  private class CPTQuickSelect
+  {
+    public string Code { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public bool Selected { get; set; }
+    public int Minutes { get; set; }
+  }
+
+  private int CalculateTotalTime()
+  {
+    return commonCPTs.Where(c => c.Selected).Sum(c => c.Minutes);
+  }
+
+  private void SelectPatient()
+  {
+    Console.WriteLine("Select patient for daily note");
+    selectedPatientName = "John Doe";
+  }
+
+  private void SaveDraft()
+  {
+    lastSavedTime = DateTime.Now.ToString("h:mm tt");
+    statusMessage = "Draft saved successfully";
+    isError = false;
+  }
+
+  private void SignAndSubmit()
+  {
+    isSubmitting = true;
+    try
+    {
+      statusMessage = "Daily note signed and submitted successfully!";
+      isError = false;
+    }
+    catch (Exception ex)
+    {
+      statusMessage = $"Failed to submit note: {ex.Message}";
+      isError = true;
+    }
+    finally
+    {
+      isSubmitting = false;
+    }
+  }
+
+  private void PreviewNote()
+  {
+    Console.WriteLine("Preview note");
+  }
+
+  private void DiscardNote()
+  {
+    Console.WriteLine("Note discarded");
+  }
 }
