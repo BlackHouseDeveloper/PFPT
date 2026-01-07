@@ -1,5 +1,7 @@
 @page "/intake"
 @layout ResponsiveMainLayout
+@using PhysicallyFitPT.Shared.Components.UI
+@inject IDataService DataService
 
 <PageTitle>Patient Intake</PageTitle>
 
@@ -10,16 +12,369 @@
   <p>Register and onboard new patients into the system</p>
 </div>
 
-<div class="pfp-card">
-  <div class="pfp-card-body">
-    <p>Patient intake form will be implemented here.</p>
-    <p><small>This page will collect new patient information, demographics, and initial assessment data.</small></p>
+<div class="pfp-intake-wizard">
+  <!-- Progress Bar -->
+  <div class="pfp-wizard-progress">
+    <div class="pfp-progress-steps">
+      <div class="pfp-progress-step @(currentStep >= 1 ? "active" : "") @(currentStep > 1 ? "completed" : "")">
+        <span class="pfp-step-number">1</span>
+        <span class="pfp-step-label">Demographics</span>
+      </div>
+      <div class="pfp-progress-step @(currentStep >= 2 ? "active" : "") @(currentStep > 2 ? "completed" : "")">
+        <span class="pfp-step-number">2</span>
+        <span class="pfp-step-label">Chief Complaint</span>
+      </div>
+      <div class="pfp-progress-step @(currentStep >= 3 ? "active" : "") @(currentStep > 3 ? "completed" : "")">
+        <span class="pfp-step-number">3</span>
+        <span class="pfp-step-label">Medical History</span>
+      </div>
+      <div class="pfp-progress-step @(currentStep >= 4 ? "active" : "") @(currentStep > 4 ? "completed" : "")">
+        <span class="pfp-step-number">4</span>
+        <span class="pfp-step-label">Review</span>
+      </div>
+    </div>
+    <div class="pfp-progress-bar-container">
+      <div class="pfp-progress-bar-fill" style="width: @((currentStep - 1) * 33.33)%"></div>
+    </div>
+  </div>
+
+  <!-- Step 1: Demographics -->
+  @if (currentStep == 1)
+  {
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h3>👤 Patient Demographics</h3>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-grid">
+          <FormField 
+            Label="First Name" 
+            @bind-Value="@intakeData.FirstName"
+            Required="true"
+            ErrorMessage="@GetValidationError(nameof(intakeData.FirstName))" />
+          
+          <FormField 
+            Label="Last Name" 
+            @bind-Value="@intakeData.LastName"
+            Required="true"
+            ErrorMessage="@GetValidationError(nameof(intakeData.LastName))" />
+          
+          <FormField 
+            Label="Date of Birth" 
+            Type="date"
+            @bind-Value="@dateOfBirth"
+            Required="true"
+            ErrorMessage="@GetValidationError(nameof(dateOfBirth))" />
+          
+          <FormField 
+            Label="Sex"
+            Type="select"
+            @bind-Value="@intakeData.Sex"
+            Required="true">
+            <SelectOptions>
+              <option value="">Select sex...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </SelectOptions>
+          </FormField>
+          
+          <FormField 
+            Label="Email Address" 
+            Type="email"
+            @bind-Value="@intakeData.Email"
+            HelpText="For appointment reminders and communication" />
+          
+          <FormField 
+            Label="Mobile Phone" 
+            Type="tel"
+            @bind-Value="@intakeData.MobilePhone"
+            Required="true"
+            ErrorMessage="@GetValidationError(nameof(intakeData.MobilePhone))" />
+          
+          <FormField 
+            Label="Emergency Contact Name" 
+            @bind-Value="@emergencyContactName" />
+          
+          <FormField 
+            Label="Emergency Contact Phone" 
+            Type="tel"
+            @bind-Value="@emergencyContactPhone" />
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Step 2: Chief Complaint -->
+  @if (currentStep == 2)
+  {
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h3>🩺 Chief Complaint & Pain</h3>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Primary Body Part Affected"
+          Type="select"
+          @bind-Value="@primaryBodyPart"
+          Required="true">
+          <SelectOptions>
+            <option value="">Select body part...</option>
+            <optgroup label="Head & Neck">
+              <option value="Neck">Neck</option>
+              <option value="Jaw/TMJ">Jaw/TMJ</option>
+              <option value="Head">Head</option>
+            </optgroup>
+            <optgroup label="Upper Extremity">
+              <option value="Shoulder (Left)">Shoulder (Left)</option>
+              <option value="Shoulder (Right)">Shoulder (Right)</option>
+              <option value="Elbow (Left)">Elbow (Left)</option>
+              <option value="Elbow (Right)">Elbow (Right)</option>
+              <option value="Wrist (Left)">Wrist (Left)</option>
+              <option value="Wrist (Right)">Wrist (Right)</option>
+            </optgroup>
+            <optgroup label="Spine">
+              <option value="Cervical Spine">Cervical Spine (Neck)</option>
+              <option value="Thoracic Spine">Thoracic Spine (Mid-Back)</option>
+              <option value="Lumbar Spine">Lumbar Spine (Low Back)</option>
+              <option value="Sacrum/Coccyx">Sacrum/Coccyx</option>
+            </optgroup>
+            <optgroup label="Lower Extremity">
+              <option value="Hip (Left)">Hip (Left)</option>
+              <option value="Hip (Right)">Hip (Right)</option>
+              <option value="Knee (Left)">Knee (Left)</option>
+              <option value="Knee (Right)">Knee (Right)</option>
+              <option value="Ankle (Left)">Ankle (Left)</option>
+              <option value="Ankle (Right)">Ankle (Right)</option>
+            </optgroup>
+          </SelectOptions>
+        </FormField>
+        
+        <FormField 
+          Label="Describe Your Condition"
+          Type="textarea"
+          @bind-Value="@chiefComplaint"
+          Rows="4"
+          HelpText="What brings you here today? What are your main symptoms?" />
+        
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Associated Symptoms (select all that apply)</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.SharpPain" />
+              <span>Sharp Pain</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.DullAche" />
+              <span>Dull Ache</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.Stiffness" />
+              <span>Stiffness</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.Weakness" />
+              <span>Weakness</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.Numbness" />
+              <span>Numbness</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@symptoms.Swelling" />
+              <span>Swelling</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Step 3: Medical History -->
+  @if (currentStep == 3)
+  {
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h3>⚕️ Medical History</h3>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Current Medications"
+          Type="textarea"
+          @bind-Value="@intakeData.MedicationsCsv"
+          Rows="3"
+          HelpText="List all current medications, separated by commas" />
+        
+        <FormField 
+          Label="Medical Conditions"
+          Type="textarea"
+          @bind-Value="@intakeData.ComorbiditiesCsv"
+          Rows="3"
+          HelpText="List any chronic conditions (diabetes, hypertension, etc.)" />
+        
+        <FormField 
+          Label="Assistive Devices"
+          Type="textarea"
+          @bind-Value="@intakeData.AssistiveDevicesCsv"
+          Rows="2"
+          HelpText="List any devices you use (cane, walker, brace, etc.)" />
+        
+        <FormField 
+          Label="Living Situation"
+          Type="textarea"
+          @bind-Value="@intakeData.LivingSituation"
+          Rows="2"
+          HelpText="Describe your home environment (stairs, support, etc.)" />
+      </div>
+    </div>
+  }
+
+  <!-- Step 4: Review -->
+  @if (currentStep == 4)
+  {
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h3>📋 Review Information</h3>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-review-section">
+          <h4>Demographics</h4>
+          <p><strong>Name:</strong> @intakeData.FirstName @intakeData.LastName</p>
+          <p><strong>Date of Birth:</strong> @dateOfBirth</p>
+          <p><strong>Sex:</strong> @intakeData.Sex</p>
+          <p><strong>Email:</strong> @intakeData.Email</p>
+          <p><strong>Phone:</strong> @intakeData.MobilePhone</p>
+        </div>
+        
+        <div class="pfp-review-section">
+          <h4>Chief Complaint</h4>
+          <p><strong>Body Part:</strong> @primaryBodyPart</p>
+          <p><strong>Description:</strong> @chiefComplaint</p>
+        </div>
+        
+        <div class="pfp-review-section">
+          <h4>Medical History</h4>
+          <p><strong>Medications:</strong> @(string.IsNullOrEmpty(intakeData.MedicationsCsv) ? "None reported" : intakeData.MedicationsCsv)</p>
+          <p><strong>Conditions:</strong> @(string.IsNullOrEmpty(intakeData.ComorbiditiesCsv) ? "None reported" : intakeData.ComorbiditiesCsv)</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Navigation Buttons -->
+  <div class="pfp-wizard-actions">
+    @if (currentStep > 1)
+    {
+      <Button Variant="secondary" OnClick="PreviousStep">
+        ← Previous
+      </Button>
+    }
+    
+    @if (currentStep < 4)
+    {
+      <Button OnClick="NextStep">
+        Next →
+      </Button>
+    }
+    else
+    {
+      <Button OnClick="SubmitIntake" Loading="@isSubmitting">
+        Submit Intake
+      </Button>
+    }
   </div>
 </div>
 
 @code {
-  // TODO: Add patient intake form
-  // TODO: Wire to IDataService for patient creation
-  // TODO: Add validation
-  // TODO: Add questionnaire integration
+  private int currentStep = 1;
+  private bool isSubmitting = false;
+  
+  private PatientDto intakeData = new();
+  private string dateOfBirth = string.Empty;
+  private string emergencyContactName = string.Empty;
+  private string emergencyContactPhone = string.Empty;
+  private string primaryBodyPart = string.Empty;
+  private string chiefComplaint = string.Empty;
+  
+  private Symptoms symptoms = new();
+  private Dictionary<string, string> validationErrors = new();
+
+  private class Symptoms
+  {
+    public bool SharpPain { get; set; }
+    public bool DullAche { get; set; }
+    public bool Stiffness { get; set; }
+    public bool Weakness { get; set; }
+    public bool Numbness { get; set; }
+    public bool Swelling { get; set; }
+  }
+
+  private void NextStep()
+  {
+    if (ValidateCurrentStep())
+    {
+      currentStep++;
+    }
+  }
+
+  private void PreviousStep()
+  {
+    currentStep--;
+  }
+
+  private bool ValidateCurrentStep()
+  {
+    validationErrors.Clear();
+    
+    if (currentStep == 1)
+    {
+      if (string.IsNullOrWhiteSpace(intakeData.FirstName))
+        validationErrors[nameof(intakeData.FirstName)] = "First name is required";
+      if (string.IsNullOrWhiteSpace(intakeData.LastName))
+        validationErrors[nameof(intakeData.LastName)] = "Last name is required";
+      if (string.IsNullOrWhiteSpace(dateOfBirth))
+        validationErrors[nameof(dateOfBirth)] = "Date of birth is required";
+      if (string.IsNullOrWhiteSpace(intakeData.MobilePhone))
+        validationErrors[nameof(intakeData.MobilePhone)] = "Mobile phone is required";
+    }
+    
+    return validationErrors.Count == 0;
+  }
+
+  private string GetValidationError(string fieldName)
+  {
+    return validationErrors.ContainsKey(fieldName) ? validationErrors[fieldName] : string.Empty;
+  }
+
+  private void SubmitIntake()
+  {
+    isSubmitting = true;
+    
+    try
+    {
+      // Parse date of birth
+      if (DateTime.TryParse(dateOfBirth, out var dob))
+      {
+        intakeData.DateOfBirth = dob;
+      }
+      
+      // TODO: Call service to create patient
+      // await DataService.CreatePatientAsync(intakeData);
+      
+      // Show success message
+      // Toast notification would go here
+      
+      // Navigate to patient profile or patients list
+      // NavigationManager.NavigateTo("/patients");
+    }
+    catch (Exception ex)
+    {
+      // Handle error
+      Console.WriteLine($"Error submitting intake: {ex.Message}");
+    }
+    finally
+    {
+      isSubmitting = false;
+    }
+  }
 }
