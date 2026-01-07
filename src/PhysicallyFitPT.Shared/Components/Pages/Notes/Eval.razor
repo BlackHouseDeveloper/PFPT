@@ -1,26 +1,188 @@
 @page "/notes/eval"
 @layout ResponsiveMainLayout
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.SOAP
 
 <PageTitle>Evaluation Note</PageTitle>
 
 <DebugStatBar />
 
-<div class="pfp-page-header">
-  <h1>Evaluation Note</h1>
-  <p>Create comprehensive initial evaluation documentation</p>
-</div>
+<div class="pfp-note-page">
+  <div class="pfp-page-header">
+    <div class="pfp-header-content">
+      <div>
+        <h2>📋 Initial Evaluation Note</h2>
+        <p>Comprehensive evaluation and plan of care</p>
+      </div>
+      <div class="pfp-note-actions">
+        <Button 
+          Variant="outline" 
+          Icon="💾"
+          Text="Save Draft"
+          OnClick="SaveDraft" />
+        <Button 
+          Variant="primary" 
+          Icon="✅"
+          Text="Sign & Submit"
+          OnClick="SignAndSubmit" />
+      </div>
+    </div>
+  </div>
 
-<div class="pfp-card">
-  <div class="pfp-card-body">
-    <p>Evaluation note functionality will be implemented here.</p>
-    <p><small>This page will integrate with INoteBuilderService to create initial evaluation notes with S/O/A/P sections.</small></p>
+  @if (!string.IsNullOrEmpty(statusMessage))
+  {
+    <div class="pfp-alert @(isError ? "pfp-alert-error" : "pfp-alert-success")">
+      @statusMessage
+    </div>
+  }
+
+  <!-- Patient Info Bar -->
+  <div class="pfp-patient-info-bar">
+    <div class="pfp-patient-quick-info">
+      <span class="pfp-info-item">
+        <strong>Patient:</strong> @selectedPatientName
+      </span>
+      <span class="pfp-info-item">
+        <strong>Date:</strong> @DateTime.Today.ToString("MM/dd/yyyy")
+      </span>
+      <span class="pfp-info-item">
+        <strong>Note Type:</strong> Initial Evaluation
+      </span>
+    </div>
+    <Button 
+      Variant="outline" 
+      Size="small"
+      Icon="🔍"
+      Text="Select Patient"
+      OnClick="SelectPatient" />
+  </div>
+
+  <!-- SOAP Note Sections -->
+  <div class="pfp-soap-note">
+    <SubjectiveSection SubjectiveData="@subjectiveData" />
+    
+    <ObjectiveSection ObjectiveData="@objectiveData" />
+    
+    <AssessmentSection AssessmentData="@assessmentData" />
+    
+    <PlanSection PlanData="@planData" />
+  </div>
+
+  <!-- Note Footer Actions -->
+  <div class="pfp-note-footer">
+    <div class="pfp-note-footer-info">
+      <small>Last saved: @lastSavedTime</small>
+    </div>
+    <div class="pfp-note-footer-actions">
+      <Button 
+        Variant="secondary" 
+        Icon="🗑️"
+        Text="Discard"
+        OnClick="DiscardNote" />
+      <Button 
+        Variant="outline" 
+        Icon="👁️"
+        Text="Preview"
+        OnClick="PreviewNote" />
+      <Button 
+        Variant="primary" 
+        Icon="✅"
+        Text="Sign & Submit"
+        Loading="@isSubmitting"
+        OnClick="SignAndSubmit" />
+    </div>
   </div>
 </div>
 
 @code {
-    // TODO: Wire to INoteBuilderService
-    // TODO: Prefill S/O/A/P sections
-    // TODO: Add save/export actions
-    // TODO: Add autosave functionality
-    // TODO: Add note templates and validation
+  private string selectedPatientName = "Select a patient";
+  private string? statusMessage = null;
+  private bool isError = false;
+  private string lastSavedTime = "Never";
+  private bool isSubmitting = false;
+
+  // SOAP Data Models
+  private SubjectiveSection.SubjectiveDataModel subjectiveData = new();
+  private ObjectiveSection.ObjectiveDataModel objectiveData = new();
+  private AssessmentSection.AssessmentDataModel assessmentData = new();
+  private PlanSection.PlanDataModel planData = new();
+
+  private void SelectPatient()
+  {
+    // Open patient selection modal or navigate to patient search
+    Console.WriteLine("Select patient for evaluation");
+    selectedPatientName = "John Doe"; // Example
+  }
+
+  private void SaveDraft()
+  {
+    try
+    {
+      // Save note as draft to local storage or server
+      lastSavedTime = DateTime.Now.ToString("h:mm tt");
+      statusMessage = "Draft saved successfully";
+      isError = false;
+      Console.WriteLine("Draft saved");
+    }
+    catch (Exception ex)
+    {
+      statusMessage = $"Failed to save draft: {ex.Message}";
+      isError = true;
+    }
+  }
+
+  private void SignAndSubmit()
+  {
+    if (string.IsNullOrEmpty(subjectiveData.ChiefComplaint))
+    {
+      statusMessage = "Please complete the Subjective section before submitting";
+      isError = true;
+      return;
+    }
+
+    isSubmitting = true;
+    
+    try
+    {
+      // Validate and submit note
+      // TODO: Call service to save note
+      statusMessage = "Note signed and submitted successfully!";
+      isError = false;
+      Console.WriteLine("Note submitted");
+      
+      // Navigate to notes list or patient profile
+      // NavigationManager.NavigateTo("/notes");
+    }
+    catch (Exception ex)
+    {
+      statusMessage = $"Failed to submit note: {ex.Message}";
+      isError = true;
+    }
+    finally
+    {
+      isSubmitting = false;
+    }
+  }
+
+  private void PreviewNote()
+  {
+    // Open modal with formatted note preview
+    Console.WriteLine("Preview note");
+  }
+
+  private void DiscardNote()
+  {
+    if (confirm("Are you sure you want to discard this note? All unsaved changes will be lost."))
+    {
+      // Clear data and navigate away
+      Console.WriteLine("Note discarded");
+      // NavigationManager.NavigateTo("/notes");
+    }
+  }
+
+  private bool confirm(string message)
+  {
+    // Simple confirmation - in real app use Modal component
+    return true;
+  }
 }

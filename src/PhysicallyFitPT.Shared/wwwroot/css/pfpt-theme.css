@@ -1567,3 +1567,86 @@ code {
     flex-direction: column;
   }
 }
+
+/* Note Pages */
+.pfp-note-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pfp-note-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pfp-patient-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.pfp-patient-quick-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.pfp-info-item {
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.pfp-soap-note {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pfp-note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.pfp-note-footer-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.pfp-note-footer-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .pfp-note-actions,
+  .pfp-note-footer-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .pfp-patient-info-bar {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .pfp-patient-quick-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pfp-note-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
