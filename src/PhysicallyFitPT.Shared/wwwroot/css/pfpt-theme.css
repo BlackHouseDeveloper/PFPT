@@ -398,6 +398,497 @@ code {
 }
 
 .pfp-search-result {
+  padding: 0.875rem;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pfp-search-result:hover {
+  background-color: #f9fafb;
+}
+
+.pfp-search-result:last-child {
+  border-bottom: none;
+}
+
+/* Enhanced UI Components */
+
+/* StatCard */
+.pfp-stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pfp-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+}
+
+.pfp-stat-icon {
+  font-size: 1.5rem;
+}
+
+.pfp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pfp-stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1;
+}
+
+.pfp-stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pfp-stat-subtitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.pfp-stat-content {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* PatientCard */
+.pfp-patient-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pfp-patient-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.1);
+}
+
+.pfp-patient-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pfp-patient-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.pfp-patient-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pfp-patient-name {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pfp-patient-dob {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.pfp-patient-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pfp-patient-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pfp-patient-detail {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.pfp-detail-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.pfp-detail-value {
+  color: #1f2937;
+}
+
+.pfp-patient-custom-content {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* GoalCard */
+.pfp-goal-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pfp-goal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.1);
+}
+
+.pfp-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pfp-goal-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pfp-goal-achieved .pfp-goal-status-badge {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pfp-goal-in-progress .pfp-goal-status-badge {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pfp-goal-not-started .pfp-goal-status-badge {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.pfp-goal-discontinued .pfp-goal-status-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pfp-goal-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pfp-goal-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pfp-goal-target,
+.pfp-goal-timeline {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.pfp-goal-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.pfp-goal-value {
+  color: #1f2937;
+}
+
+.pfp-goal-category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.pfp-goal-progress {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pfp-progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pfp-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+  transition: width 0.3s ease;
+}
+
+.pfp-progress-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* FormField */
+.pfp-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pfp-form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pfp-required {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.pfp-form-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.pfp-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.pfp-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+.pfp-help-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.pfp-form-field-invalid .pfp-input {
+  border-color: #ef4444;
+}
+
+.pfp-validation-message {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+/* Modal */
+.pfp-modal-overlay {
+  animation: pfp-fade-in 0.2s ease;
+}
+
+@keyframes pfp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pfp-modal-open .pfp-modal {
+  animation: pfp-slide-up 0.3s ease;
+}
+
+@keyframes pfp-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pfp-modal-sm {
+  width: min(400px, calc(100vw - 2rem));
+}
+
+.pfp-modal-md {
+  width: min(560px, calc(100vw - 2rem));
+}
+
+.pfp-modal-lg {
+  width: min(800px, calc(100vw - 2rem));
+}
+
+.pfp-modal-full {
+  width: calc(100vw - 2rem);
+  height: calc(100vh - 2rem);
+  max-height: calc(100vh - 2rem);
+}
+
+.pfp-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pfp-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.pfp-modal-close:hover {
+  background-color: #f3f4f6;
+}
+
+/* Button variants */
+.pfp-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.pfp-btn-md {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9375rem;
+}
+
+.pfp-btn-lg {
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+}
+
+.pfp-btn-success {
+  background: linear-gradient(120deg, #10b981, #34d399);
+}
+
+.pfp-btn-success:hover {
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.2);
+}
+
+.pfp-btn-text {
+  background: transparent;
+  color: #2563eb;
+  padding: 0.5rem 0.75rem;
+}
+
+.pfp-btn-text:hover {
+  background: rgba(37, 99, 235, 0.08);
+  transform: none;
+  box-shadow: none;
+}
+
+.pfp-btn-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: pfp-spin-btn 0.75s linear infinite;
+}
+
+@keyframes pfp-spin-btn {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pfp-btn-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pfp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Page header */
+.pfp-page-header {
+  margin-bottom: 2rem;
+}
+
+.pfp-page-header h1,
+.pfp-page-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.pfp-page-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .pfp-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pfp-patient-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .pfp-modal {
+    width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+  }
+}
+
+.pfp-search-result {
   padding: 0.75rem 1rem;
   cursor: pointer;
   border-bottom: 1px solid #f1f5f9;

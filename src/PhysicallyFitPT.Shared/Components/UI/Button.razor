@@ -1,0 +1,114 @@
+@* Reusable button component with multiple variants *@
+
+<button 
+  type="@Type"
+  class="pfp-btn @GetVariantClass() @GetSizeClass() @CssClass"
+  disabled="@(Disabled || Loading)"
+  @onclick="HandleClick">
+  
+  @if (Loading)
+  {
+    <span class="pfp-btn-spinner"></span>
+  }
+  
+  @if (!string.IsNullOrEmpty(Icon) && !Loading)
+  {
+    <span class="pfp-btn-icon">@Icon</span>
+  }
+  
+  @if (ChildContent != null)
+  {
+    @ChildContent
+  }
+  else if (!string.IsNullOrEmpty(Text))
+  {
+    <span>@Text</span>
+  }
+</button>
+
+@code {
+  /// <summary>
+  /// Button type (button, submit, reset)
+  /// </summary>
+  [Parameter]
+  public string Type { get; set; } = "button";
+
+  /// <summary>
+  /// Button text
+  /// </summary>
+  [Parameter]
+  public string Text { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Button variant (primary, secondary, outline, danger, success, text)
+  /// </summary>
+  [Parameter]
+  public string Variant { get; set; } = "primary";
+
+  /// <summary>
+  /// Button size (small, medium, large)
+  /// </summary>
+  [Parameter]
+  public string Size { get; set; } = "medium";
+
+  /// <summary>
+  /// Optional icon (emoji or text)
+  /// </summary>
+  [Parameter]
+  public string Icon { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Whether button is disabled
+  /// </summary>
+  [Parameter]
+  public bool Disabled { get; set; } = false;
+
+  /// <summary>
+  /// Whether button shows loading state
+  /// </summary>
+  [Parameter]
+  public bool Loading { get; set; } = false;
+
+  /// <summary>
+  /// Additional CSS classes
+  /// </summary>
+  [Parameter]
+  public string CssClass { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Click event handler
+  /// </summary>
+  [Parameter]
+  public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+  /// <summary>
+  /// Custom child content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  private async Task HandleClick(MouseEventArgs e)
+  {
+    if (!Disabled && !Loading && OnClick.HasDelegate)
+    {
+      await OnClick.InvokeAsync(e);
+    }
+  }
+
+  private string GetVariantClass() => Variant.ToLower() switch
+  {
+    "secondary" => "pfp-btn-secondary",
+    "outline" => "pfp-btn-outline",
+    "danger" => "pfp-btn-danger",
+    "success" => "pfp-btn-success",
+    "text" => "pfp-btn-text",
+    _ => "pfp-btn-primary"
+  };
+
+  private string GetSizeClass() => Size.ToLower() switch
+  {
+    "small" => "pfp-btn-sm",
+    "large" => "pfp-btn-lg",
+    _ => "pfp-btn-md"
+  };
+}

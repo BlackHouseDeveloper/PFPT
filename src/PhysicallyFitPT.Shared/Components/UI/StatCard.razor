@@ -1,0 +1,67 @@
+@* Reusable stat card component for displaying metrics *@
+<div class="pfp-card pfp-stat-card">
+  <div class="pfp-card-header">
+    <h3>@Title</h3>
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+      <span class="pfp-stat-icon">@Icon</span>
+    }
+  </div>
+  <div class="pfp-card-body">
+    <div class="pfp-stat">
+      <span class="pfp-stat-number">@Value</span>
+      @if (!string.IsNullOrEmpty(Label))
+      {
+        <span class="pfp-stat-label">@Label</span>
+      }
+      @if (!string.IsNullOrEmpty(Subtitle))
+      {
+        <span class="pfp-stat-subtitle">@Subtitle</span>
+      }
+    </div>
+    @if (ChildContent != null)
+    {
+      <div class="pfp-stat-content">
+        @ChildContent
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Title of the stat card
+  /// </summary>
+  [Parameter]
+  public string Title { get; set; } = string.Empty;
+
+  /// <summary>
+  /// The main numeric or text value to display
+  /// </summary>
+  [Parameter]
+  public string Value { get; set; } = "0";
+
+  /// <summary>
+  /// Label shown below the value
+  /// </summary>
+  [Parameter]
+  public string Label { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Optional subtitle for additional context
+  /// </summary>
+  [Parameter]
+  public string Subtitle { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Optional icon (emoji or text) displayed in header
+  /// </summary>
+  [Parameter]
+  public string Icon { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Optional child content for custom card body content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+}

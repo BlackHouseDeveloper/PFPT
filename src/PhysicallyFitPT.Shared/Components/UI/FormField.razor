@@ -1,0 +1,173 @@
+@* Reusable form field component with validation support *@
+
+<div class="pfp-form-field @GetValidationClass()">
+  @if (!string.IsNullOrEmpty(Label))
+  {
+    <label class="pfp-form-label" for="@Id">
+      @Label
+      @if (Required)
+      {
+        <span class="pfp-required">*</span>
+      }
+    </label>
+  }
+  
+  <div class="pfp-form-input-wrapper">
+    @if (Type == "textarea")
+    {
+      <textarea 
+        id="@Id"
+        class="pfp-input pfp-textarea @InputCssClass"
+        placeholder="@Placeholder"
+        disabled="@Disabled"
+        rows="@Rows"
+        @bind="@Value"
+        @bind:event="oninput"
+        @onblur="HandleBlur">@Value</textarea>
+    }
+    else if (Type == "select")
+    {
+      <select 
+        id="@Id"
+        class="pfp-input pfp-select @InputCssClass"
+        disabled="@Disabled"
+        @bind="@Value"
+        @onblur="HandleBlur">
+        @if (!string.IsNullOrEmpty(Placeholder))
+        {
+          <option value="">@Placeholder</option>
+        }
+        @SelectOptions
+      </select>
+    }
+    else
+    {
+      <input 
+        id="@Id"
+        type="@Type"
+        class="pfp-input @InputCssClass"
+        placeholder="@Placeholder"
+        disabled="@Disabled"
+        @bind="@Value"
+        @bind:event="oninput"
+        @onblur="HandleBlur" />
+    }
+    
+    @if (!string.IsNullOrEmpty(HelpText))
+    {
+      <small class="pfp-help-text">@HelpText</small>
+    }
+  </div>
+  
+  @if (!string.IsNullOrEmpty(ErrorMessage))
+  {
+    <div class="pfp-validation-message">
+      @ErrorMessage
+    </div>
+  }
+</div>
+
+@code {
+  /// <summary>
+  /// Field ID for accessibility
+  /// </summary>
+  [Parameter]
+  public string Id { get; set; } = Guid.NewGuid().ToString();
+
+  /// <summary>
+  /// Field label
+  /// </summary>
+  [Parameter]
+  public string Label { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Input type (text, email, password, number, date, textarea, select)
+  /// </summary>
+  [Parameter]
+  public string Type { get; set; } = "text";
+
+  /// <summary>
+  /// Placeholder text
+  /// </summary>
+  [Parameter]
+  public string Placeholder { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Help text shown below input
+  /// </summary>
+  [Parameter]
+  public string HelpText { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Whether the field is required
+  /// </summary>
+  [Parameter]
+  public bool Required { get; set; } = false;
+
+  /// <summary>
+  /// Whether the field is disabled
+  /// </summary>
+  [Parameter]
+  public bool Disabled { get; set; } = false;
+
+  /// <summary>
+  /// Number of rows for textarea
+  /// </summary>
+  [Parameter]
+  public int Rows { get; set; } = 3;
+
+  /// <summary>
+  /// Additional CSS classes for input
+  /// </summary>
+  [Parameter]
+  public string InputCssClass { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Validation error message
+  /// </summary>
+  [Parameter]
+  public string ErrorMessage { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Field value
+  /// </summary>
+  [Parameter]
+  public string Value { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Value changed callback
+  /// </summary>
+  [Parameter]
+  public EventCallback<string> ValueChanged { get; set; }
+
+  /// <summary>
+  /// Blur event callback
+  /// </summary>
+  [Parameter]
+  public EventCallback OnBlur { get; set; }
+
+  /// <summary>
+  /// Select options render fragment (for select type)
+  /// </summary>
+  [Parameter]
+  public RenderFragment? SelectOptions { get; set; }
+
+  private bool touched = false;
+
+  private string GetValidationClass()
+  {
+    if (!touched || string.IsNullOrEmpty(ErrorMessage))
+      return string.Empty;
+    
+    return "pfp-form-field-invalid";
+  }
+
+  private async Task HandleBlur()
+  {
+    touched = true;
+    if (OnBlur.HasDelegate)
+    {
+      await OnBlur.InvokeAsync();
+    }
+  }
+}

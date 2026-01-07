@@ -1,0 +1,122 @@
+@using PhysicallyFitPT.Shared
+@* Reusable patient card component for displaying patient information *@
+
+<div class="pfp-card pfp-patient-card @CssClass" @onclick="HandleClick">
+  <div class="pfp-patient-card-header">
+    <div class="pfp-patient-avatar">
+      @GetInitials()
+    </div>
+    <div class="pfp-patient-info">
+      <h4 class="pfp-patient-name">@Patient.FirstName @Patient.LastName</h4>
+      @if (!string.IsNullOrEmpty(Patient.DateOfBirth?.ToString()))
+      {
+        <p class="pfp-patient-dob">DOB: @Patient.DateOfBirth?.ToString("MM/dd/yyyy")</p>
+      }
+    </div>
+    @if (ShowActions)
+    {
+      <div class="pfp-patient-actions">
+        @Actions
+      </div>
+    }
+  </div>
+  
+  @if (ShowDetails)
+  {
+    <div class="pfp-patient-card-body">
+      @if (!string.IsNullOrEmpty(Patient.MobilePhone))
+      {
+        <div class="pfp-patient-detail">
+          <span class="pfp-detail-label">📞 Phone:</span>
+          <span class="pfp-detail-value">@Patient.MobilePhone</span>
+        </div>
+      }
+      @if (!string.IsNullOrEmpty(Patient.Email))
+      {
+        <div class="pfp-patient-detail">
+          <span class="pfp-detail-label">📧 Email:</span>
+          <span class="pfp-detail-value">@Patient.Email</span>
+        </div>
+      }
+      @if (!string.IsNullOrEmpty(Patient.MRN))
+      {
+        <div class="pfp-patient-detail">
+          <span class="pfp-detail-label">🏥 MRN:</span>
+          <span class="pfp-detail-value">@Patient.MRN</span>
+        </div>
+      }
+      @if (!string.IsNullOrEmpty(Patient.Sex))
+      {
+        <div class="pfp-patient-detail">
+          <span class="pfp-detail-label">⚕️ Sex:</span>
+          <span class="pfp-detail-value">@Patient.Sex</span>
+        </div>
+      }
+      @if (ChildContent != null)
+      {
+        <div class="pfp-patient-custom-content">
+          @ChildContent
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@code {
+  /// <summary>
+  /// Patient data to display
+  /// </summary>
+  [Parameter, EditorRequired]
+  public PatientDto Patient { get; set; } = null!;
+
+  /// <summary>
+  /// Whether to show detailed patient information
+  /// </summary>
+  [Parameter]
+  public bool ShowDetails { get; set; } = false;
+
+  /// <summary>
+  /// Whether to show action buttons section
+  /// </summary>
+  [Parameter]
+  public bool ShowActions { get; set; } = false;
+
+  /// <summary>
+  /// Custom actions render fragment
+  /// </summary>
+  [Parameter]
+  public RenderFragment? Actions { get; set; }
+
+  /// <summary>
+  /// Custom child content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  /// <summary>
+  /// Additional CSS classes
+  /// </summary>
+  [Parameter]
+  public string CssClass { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Click event handler
+  /// </summary>
+  [Parameter]
+  public EventCallback<PatientDto> OnClick { get; set; }
+
+  private async Task HandleClick()
+  {
+    if (OnClick.HasDelegate)
+    {
+      await OnClick.InvokeAsync(Patient);
+    }
+  }
+
+  private string GetInitials()
+  {
+    var first = !string.IsNullOrEmpty(Patient.FirstName) ? Patient.FirstName[0] : '?';
+    var last = !string.IsNullOrEmpty(Patient.LastName) ? Patient.LastName[0] : '?';
+    return $"{first}{last}";
+  }
+}
