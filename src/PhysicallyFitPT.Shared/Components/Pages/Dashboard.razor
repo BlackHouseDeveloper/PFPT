@@ -3,6 +3,7 @@
 @page "/dashboard"
 @layout ResponsiveMainLayout
 @inject IDataService DataService
+@using PhysicallyFitPT.Shared.Components.UI
 
 <DebugStatBar />
 
@@ -19,70 +20,60 @@
   else
   {
     <div class="pfp-dashboard-grid">
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Today's Appointments</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.TodaysAppointments</span>
-            <span class="pfp-stat-label">Scheduled</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Active Patients</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.ActivePatients</span>
-            <span class="pfp-stat-label">Total</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Pending Notes</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.PendingNotes</span>
-            <span class="pfp-stat-label">To Complete</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>PN Due</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.OverdueOutcomeMeasures</span>
-            <span class="pfp-stat-label">Overdue</span>
-          </div>
-        </div>
-      </div>
+      <StatCard 
+        Title="Today's Appointments" 
+        Value="@dashboardStats.TodaysAppointments.ToString()"
+        Label="Scheduled"
+        Icon="📅" />
       
-      <div class="pfp-card pfp-card-wide">
-        <div class="pfp-card-header">
-          <h3>Quick Actions</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-quick-actions">
-            <NavLink href="/patients" class="pfp-btn pfp-btn-primary">
-              👥 View Patients
-            </NavLink>
-            <NavLink href="/appointments" class="pfp-btn pfp-btn-secondary">
-              📅 Schedule Appointment
-            </NavLink>
-            <NavLink href="/notes/eval" class="pfp-btn pfp-btn-secondary">
-              📝 New Eval Note
-            </NavLink>
-          </div>
+      <StatCard 
+        Title="Active Patients" 
+        Value="@dashboardStats.ActivePatients.ToString()"
+        Label="Total"
+        Icon="👥" />
+      
+      <StatCard 
+        Title="Pending Notes" 
+        Value="@dashboardStats.PendingNotes.ToString()"
+        Label="To Complete"
+        Icon="📝" />
+      
+      <StatCard 
+        Title="PN Due" 
+        Value="@dashboardStats.OverdueOutcomeMeasures.ToString()"
+        Label="Overdue"
+        Icon="⚠️" />
+    </div>
+      
+    <div class="pfp-card pfp-card-wide">
+      <div class="pfp-card-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-quick-actions">
+          <Button 
+            Variant="primary" 
+            Icon="👥"
+            Text="View Patients"
+            OnClick="@(() => NavigateToPatients())" />
+          
+          <Button 
+            Variant="secondary" 
+            Icon="📅"
+            Text="Schedule Appointment"
+            OnClick="@(() => NavigateToAppointments())" />
+          
+          <Button 
+            Variant="secondary" 
+            Icon="📝"
+            Text="New Eval Note"
+            OnClick="@(() => NavigateToNewNote())" />
+          
+          <Button 
+            Variant="outline" 
+            Icon="📊"
+            Text="View Reports"
+            OnClick="@(() => NavigateToReports())" />
         </div>
       </div>
     </div>
@@ -92,7 +83,9 @@
   {
     <div class="pfp-alert pfp-alert-error">
       @errorMessage
-      <button class="pfp-btn pfp-btn-text" @onclick="RefreshDashboard">🔄 Retry</button>
+      <Button Variant="text" OnClick="RefreshDashboard">
+        🔄 Retry
+      </Button>
     </div>
   }
 </div>
@@ -130,5 +123,29 @@
     private async Task RefreshDashboard()
     {
         await LoadDashboardStats();
+    }
+    
+    private void NavigateToPatients()
+    {
+        // NavigationManager.NavigateTo("/patients");
+        Console.WriteLine("Navigate to patients");
+    }
+    
+    private void NavigateToAppointments()
+    {
+        // NavigationManager.NavigateTo("/appointments");
+        Console.WriteLine("Navigate to appointments");
+    }
+    
+    private void NavigateToNewNote()
+    {
+        // NavigationManager.NavigateTo("/notes/eval");
+        Console.WriteLine("Navigate to new note");
+    }
+    
+    private void NavigateToReports()
+    {
+        // NavigationManager.NavigateTo("/reports");
+        Console.WriteLine("Navigate to reports");
     }
 }
