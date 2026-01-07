@@ -1,0 +1,288 @@
+@* Subjective section component for SOAP notes *@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="pfp-soap-section">
+  <div class="pfp-section-header">
+    <h3>📋 Subjective</h3>
+    <p class="pfp-section-subtitle">Patient's report of symptoms and functional status</p>
+  </div>
+
+  <div class="pfp-section-content">
+    <!-- Chief Complaint -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Chief Complaint & Pain Location</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Primary Body Part(s) Affected:</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Shoulder" />
+              <span>Shoulder</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Elbow" />
+              <span>Elbow</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.WristHand" />
+              <span>Wrist/Hand</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Neck" />
+              <span>Neck</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Back" />
+              <span>Back</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Hip" />
+              <span>Hip</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.Knee" />
+              <span>Knee</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@bodyParts.AnkleFoot" />
+              <span>Ankle/Foot</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Chief Complaint Details"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.ChiefComplaint"
+          Rows="4"
+          HelpText="Describe the patient's primary concern and how it affects their daily activities" />
+      </div>
+    </div>
+
+    <!-- Pain Assessment -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Pain Assessment</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-pain-scale">
+          <label class="pfp-form-label">Current Pain Level (0-10):</label>
+          <div class="pfp-pain-scale-container">
+            <input 
+              type="range" 
+              min="0" 
+              max="10" 
+              @bind="@painLevel" 
+              @bind:event="oninput"
+              class="pfp-pain-slider" />
+            <span class="pfp-pain-value">@painLevel</span>
+          </div>
+          <div class="pfp-pain-descriptors">
+            <span>No Pain</span>
+            <span>Worst Pain</span>
+          </div>
+        </div>
+
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Pain Description (select all that apply):</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Sharp" />
+              <span>Sharp</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Dull" />
+              <span>Dull/Aching</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Burning" />
+              <span>Burning</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Shooting" />
+              <span>Shooting</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Throbbing" />
+              <span>Throbbing</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@painDescriptors.Stabbing" />
+              <span>Stabbing</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Pain Pattern & Location Details"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.PainDescription"
+          Rows="3"
+          HelpText="Describe when pain occurs, what makes it better/worse, radiation pattern" />
+      </div>
+    </div>
+
+    <!-- Functional Limitations -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Functional Limitations</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Activities Affected (select all that apply):</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Walking" />
+              <span>Walking</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Stairs" />
+              <span>Stairs</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Sitting" />
+              <span>Prolonged Sitting</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Standing" />
+              <span>Prolonged Standing</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Reaching" />
+              <span>Reaching Overhead</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Lifting" />
+              <span>Lifting Objects</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Bending" />
+              <span>Bending/Stooping</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.SelfCare" />
+              <span>Self-Care Activities</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Work" />
+              <span>Work Duties</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@limitations.Sleep" />
+              <span>Sleep</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Functional Impact Details"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.FunctionalLimitations"
+          Rows="3"
+          HelpText="Describe specific tasks the patient cannot perform or has difficulty with" />
+      </div>
+    </div>
+
+    <!-- Previous Treatment -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Previous Treatment & Medical History</h4>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Previous Treatment"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.PreviousTreatment"
+          Rows="2"
+          HelpText="What treatments have been tried? (PT, injections, medications, etc.)" />
+
+        <FormField 
+          Label="Current Medications"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.CurrentMedications"
+          Rows="2"
+          HelpText="List relevant medications" />
+
+        <FormField 
+          Label="Medical History & Comorbidities"
+          Type="textarea"
+          @bind-Value="@SubjectiveData.MedicalHistory"
+          Rows="2"
+          HelpText="Relevant medical conditions, surgeries, or comorbidities" />
+      </div>
+    </div>
+
+    @if (ChildContent != null)
+    {
+      @ChildContent
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Subjective data model
+  /// </summary>
+  [Parameter]
+  public SubjectiveDataModel SubjectiveData { get; set; } = new();
+
+  /// <summary>
+  /// Optional child content for additional sections
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  private int painLevel = 0;
+  private BodyPartsModel bodyParts = new();
+  private PainDescriptorsModel painDescriptors = new();
+  private LimitationsModel limitations = new();
+
+  public class SubjectiveDataModel
+  {
+    public string ChiefComplaint { get; set; } = string.Empty;
+    public int PainLevel { get; set; }
+    public string PainDescription { get; set; } = string.Empty;
+    public string FunctionalLimitations { get; set; } = string.Empty;
+    public string PreviousTreatment { get; set; } = string.Empty;
+    public string CurrentMedications { get; set; } = string.Empty;
+    public string MedicalHistory { get; set; } = string.Empty;
+  }
+
+  private class BodyPartsModel
+  {
+    public bool Shoulder { get; set; }
+    public bool Elbow { get; set; }
+    public bool WristHand { get; set; }
+    public bool Neck { get; set; }
+    public bool Back { get; set; }
+    public bool Hip { get; set; }
+    public bool Knee { get; set; }
+    public bool AnkleFoot { get; set; }
+  }
+
+  private class PainDescriptorsModel
+  {
+    public bool Sharp { get; set; }
+    public bool Dull { get; set; }
+    public bool Burning { get; set; }
+    public bool Shooting { get; set; }
+    public bool Throbbing { get; set; }
+    public bool Stabbing { get; set; }
+  }
+
+  private class LimitationsModel
+  {
+    public bool Walking { get; set; }
+    public bool Stairs { get; set; }
+    public bool Sitting { get; set; }
+    public bool Standing { get; set; }
+    public bool Reaching { get; set; }
+    public bool Lifting { get; set; }
+    public bool Bending { get; set; }
+    public bool SelfCare { get; set; }
+    public bool Work { get; set; }
+    public bool Sleep { get; set; }
+  }
+}

@@ -1,0 +1,289 @@
+@* Objective section component for SOAP notes *@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="pfp-soap-section">
+  <div class="pfp-section-header">
+    <h3>🔬 Objective</h3>
+    <p class="pfp-section-subtitle">Clinical measurements and observations</p>
+  </div>
+
+  <div class="pfp-section-content">
+    <!-- Observation & Inspection -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Observation & Inspection</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-form-section">
+          <label class="pfp-form-label">Clinical Observations:</label>
+          <div class="pfp-checkbox-grid">
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Swelling" />
+              <span>Swelling/Edema</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Bruising" />
+              <span>Bruising/Ecchymosis</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Atrophy" />
+              <span>Muscle Atrophy</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Deformity" />
+              <span>Deformity</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Posture" />
+              <span>Postural Dysfunction</span>
+            </label>
+            <label class="pfp-checkbox-label">
+              <input type="checkbox" @bind="@observations.Gait" />
+              <span>Gait Abnormality</span>
+            </label>
+          </div>
+        </div>
+
+        <FormField 
+          Label="Observation Details"
+          Type="textarea"
+          @bind-Value="@ObjectiveData.ObservationNotes"
+          Rows="3"
+          HelpText="Describe specific findings from visual inspection and observation" />
+      </div>
+    </div>
+
+    <!-- Range of Motion (ROM) -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Range of Motion (ROM)</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-rom-grid">
+          <div class="pfp-rom-header">
+            <span>Joint/Motion</span>
+            <span>Left</span>
+            <span>Right</span>
+            <span>WNL</span>
+          </div>
+
+          @foreach (var motion in romMeasurements)
+          {
+            <div class="pfp-rom-row">
+              <span class="pfp-rom-label">@motion.Name</span>
+              <input type="number" @bind="motion.Left" class="pfp-rom-input" placeholder="°" />
+              <input type="number" @bind="motion.Right" class="pfp-rom-input" placeholder="°" />
+              <input type="checkbox" @bind="motion.WNL" class="pfp-rom-checkbox" />
+            </div>
+          }
+        </div>
+
+        <FormField 
+          Label="ROM Notes"
+          Type="textarea"
+          @bind-Value="@ObjectiveData.ROMNotes"
+          Rows="2"
+          HelpText="Additional ROM findings, pain with motion, end-feel, etc." />
+      </div>
+    </div>
+
+    <!-- Manual Muscle Testing (MMT) -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Manual Muscle Testing (MMT)</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-mmt-grid">
+          <div class="pfp-mmt-header">
+            <span>Muscle/Action</span>
+            <span>Left</span>
+            <span>Right</span>
+          </div>
+
+          @foreach (var muscle in mmtMeasurements)
+          {
+            <div class="pfp-mmt-row">
+              <span class="pfp-mmt-label">@muscle.Name</span>
+              <select @bind="muscle.Left" class="pfp-mmt-select">
+                <option value="">-</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              <select @bind="muscle.Right" class="pfp-mmt-select">
+                <option value="">-</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        <div class="pfp-mmt-legend">
+          <small>
+            <strong>MMT Scale:</strong> 0 = No contraction | 1 = Trace | 2 = Poor | 3 = Fair | 4 = Good | 5 = Normal
+          </small>
+        </div>
+
+        <FormField 
+          Label="MMT Notes"
+          Type="textarea"
+          @bind-Value="@ObjectiveData.MMTNotes"
+          Rows="2"
+          HelpText="Additional strength findings, pain with resistance, compensations" />
+      </div>
+    </div>
+
+    <!-- Special Tests -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Special Tests</h4>
+      </div>
+      <div class="pfp-card-body">
+        <div class="pfp-special-tests">
+          @foreach (var test in specialTests)
+          {
+            <div class="pfp-special-test-row">
+              <FormField 
+                @bind-Value="@test.Name"
+                Placeholder="Test name"
+                Type="text" />
+              <select @bind="test.Result" class="pfp-test-result">
+                <option value="">Select result</option>
+                <option value="Positive">Positive</option>
+                <option value="Negative">Negative</option>
+                <option value="Inconclusive">Inconclusive</option>
+              </select>
+              <Button 
+                Variant="danger" 
+                Size="small"
+                Icon="🗑️"
+                OnClick="@(() => RemoveSpecialTest(test))" />
+            </div>
+          }
+        </div>
+
+        <Button 
+          Variant="outline" 
+          Icon="➕"
+          Text="Add Special Test"
+          OnClick="AddSpecialTest" />
+
+        <FormField 
+          Label="Special Tests Notes"
+          Type="textarea"
+          @bind-Value="@ObjectiveData.SpecialTestsNotes"
+          Rows="2"
+          HelpText="Describe test procedures and findings" />
+      </div>
+    </div>
+
+    <!-- Palpation -->
+    <div class="pfp-card">
+      <div class="pfp-card-header">
+        <h4>Palpation</h4>
+      </div>
+      <div class="pfp-card-body">
+        <FormField 
+          Label="Palpation Findings"
+          Type="textarea"
+          @bind-Value="@ObjectiveData.PalpationNotes"
+          Rows="3"
+          HelpText="Tenderness, trigger points, muscle tone, temperature, etc." />
+      </div>
+    </div>
+
+    @if (ChildContent != null)
+    {
+      @ChildContent
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Objective data model
+  /// </summary>
+  [Parameter]
+  public ObjectiveDataModel ObjectiveData { get; set; } = new();
+
+  /// <summary>
+  /// Optional child content for additional sections
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  private ObservationsModel observations = new();
+  private List<ROMMeasurement> romMeasurements = new()
+  {
+    new ROMMeasurement { Name = "Shoulder Flexion" },
+    new ROMMeasurement { Name = "Shoulder Abduction" },
+    new ROMMeasurement { Name = "Shoulder IR" },
+    new ROMMeasurement { Name = "Shoulder ER" },
+  };
+  private List<MMTMeasurement> mmtMeasurements = new()
+  {
+    new MMTMeasurement { Name = "Shoulder Flexion" },
+    new MMTMeasurement { Name = "Shoulder Abduction" },
+    new MMTMeasurement { Name = "Elbow Flexion" },
+    new MMTMeasurement { Name = "Elbow Extension" },
+  };
+  private List<SpecialTest> specialTests = new();
+
+  private void AddSpecialTest()
+  {
+    specialTests.Add(new SpecialTest());
+  }
+
+  private void RemoveSpecialTest(SpecialTest test)
+  {
+    specialTests.Remove(test);
+  }
+
+  public class ObjectiveDataModel
+  {
+    public string ObservationNotes { get; set; } = string.Empty;
+    public string ROMNotes { get; set; } = string.Empty;
+    public string MMTNotes { get; set; } = string.Empty;
+    public string SpecialTestsNotes { get; set; } = string.Empty;
+    public string PalpationNotes { get; set; } = string.Empty;
+  }
+
+  private class ObservationsModel
+  {
+    public bool Swelling { get; set; }
+    public bool Bruising { get; set; }
+    public bool Atrophy { get; set; }
+    public bool Deformity { get; set; }
+    public bool Posture { get; set; }
+    public bool Gait { get; set; }
+  }
+
+  private class ROMMeasurement
+  {
+    public string Name { get; set; } = string.Empty;
+    public int? Left { get; set; }
+    public int? Right { get; set; }
+    public bool WNL { get; set; }
+  }
+
+  private class MMTMeasurement
+  {
+    public string Name { get; set; } = string.Empty;
+    public string Left { get; set; } = string.Empty;
+    public string Right { get; set; } = string.Empty;
+  }
+
+  private class SpecialTest
+  {
+    public string Name { get; set; } = string.Empty;
+    public string Result { get; set; } = string.Empty;
+  }
+}
