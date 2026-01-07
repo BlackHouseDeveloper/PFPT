@@ -1,0 +1,107 @@
+@using PhysicallyFitPT.Shared
+@* Reusable goal card component for displaying patient goals *@
+
+<div class="pfp-card pfp-goal-card @GetStatusClass()">
+  <div class="pfp-goal-header">
+    <div class="pfp-goal-status-indicator">
+      <span class="pfp-goal-status-badge">@GetStatusLabel()</span>
+    </div>
+    @if (ShowActions)
+    {
+      <div class="pfp-goal-actions">
+        @Actions
+      </div>
+    }
+  </div>
+  
+  <div class="pfp-goal-body">
+    <h4 class="pfp-goal-title">@Goal.Description</h4>
+    
+    @if (Goal.IsLongTerm)
+    {
+      <div class="pfp-goal-type">
+        <span class="pfp-goal-type-badge">Long-term Goal</span>
+      </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(Goal.MeasureType))
+    {
+      <div class="pfp-goal-measure">
+        <span class="pfp-goal-label">Measure:</span>
+        <span class="pfp-goal-value">@Goal.MeasureType</span>
+      </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(Goal.BaselineValue) && !string.IsNullOrEmpty(Goal.TargetValue))
+    {
+      <div class="pfp-goal-target">
+        <span class="pfp-goal-label">Progress:</span>
+        <span class="pfp-goal-value">@Goal.BaselineValue → @Goal.TargetValue</span>
+      </div>
+    }
+    
+    @if (Goal.TargetDate.HasValue)
+    {
+      <div class="pfp-goal-timeline">
+        <span class="pfp-goal-label">Target Date:</span>
+        <span class="pfp-goal-value">@Goal.TargetDate.Value.ToString("MM/dd/yyyy")</span>
+      </div>
+    }
+    
+    @if (ChildContent != null)
+    {
+      <div class="pfp-goal-custom-content">
+        @ChildContent
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  /// <summary>
+  /// Goal data to display
+  /// </summary>
+  [Parameter, EditorRequired]
+  public GoalDto Goal { get; set; } = null!;
+
+  /// <summary>
+  /// Whether to show action buttons
+  /// </summary>
+  [Parameter]
+  public bool ShowActions { get; set; } = false;
+
+  /// <summary>
+  /// Custom actions render fragment
+  /// </summary>
+  [Parameter]
+  public RenderFragment? Actions { get; set; }
+
+  /// <summary>
+  /// Custom child content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  /// <summary>
+  /// Click event handler
+  /// </summary>
+  [Parameter]
+  public EventCallback<GoalDto> OnClick { get; set; }
+
+  private string GetStatusClass()
+  {
+    return Goal.Status?.ToLower() switch
+    {
+      "achieved" => "pfp-goal-achieved",
+      "in progress" => "pfp-goal-in-progress",
+      "not started" => "pfp-goal-not-started",
+      "discontinued" => "pfp-goal-discontinued",
+      _ => "pfp-goal-default"
+    };
+  }
+
+  private string GetStatusLabel()
+  {
+    return Goal.Status ?? "Not Set";
+  }
+}

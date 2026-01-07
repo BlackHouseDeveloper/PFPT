@@ -2,14 +2,24 @@
 @layout ResponsiveMainLayout
 @inject IDataService DataService
 @inject IJSRuntime JSRuntime
+@using PhysicallyFitPT.Shared.Components.UI
 
 <PageTitle>Patients</PageTitle>
 
 <DebugStatBar />
 
 <div class="pfp-page-header">
-  <h2>Patients</h2>
-  <p>Manage patient records and information</p>
+  <div class="pfp-header-content">
+    <div>
+      <h2>Patients</h2>
+      <p>Manage patient records and information</p>
+    </div>
+    <Button 
+      Variant="primary" 
+      Icon="👤"
+      Text="Add Patient"
+      OnClick="NavigateToIntake" />
+  </div>
 </div>
 
 <div class="pfp-card">
@@ -18,21 +28,16 @@
   </div>
   <div class="pfp-card-body">
     <div class="pfp-search-section">
-      <div class="pfp-input-group">
-        <input @bind="searchQuery" @onkeypress="OnSearchKeyPress" 
-               placeholder="Search patients by name..." 
-               class="pfp-input" />
-        <button @onclick="SearchPatients" class="pfp-btn pfp-btn-primary" disabled="@isLoading">
-          @if (isLoading)
-          {
-            <span>Searching...</span>
-          }
-          else
-          {
-            <span>🔍 Search</span>
-          }
-        </button>
-      </div>
+      <FormField 
+        @bind-Value="@searchQuery"
+        Placeholder="Search patients by name..."
+        Type="text">
+      </FormField>
+      <Button 
+        OnClick="SearchPatients" 
+        Loading="@isLoading"
+        Text="Search"
+        Icon="🔍" />
     </div>
 
     @if (errorMessage != null)
@@ -44,44 +49,33 @@
 
     @if (patients.Any())
     {
-      <div class="pfp-patient-list">
-        <div class="pfp-results-header">
-          <span>Found @patients.Count() patients</span>
-        </div>
-        
+      <div class="pfp-results-header">
+        <span>Found @patients.Count() patients</span>
+      </div>
+      
+      <div class="pfp-patient-grid">
         @foreach (var patient in patients)
         {
-          <div class="pfp-patient-card">
-            <div class="pfp-patient-info">
-              <h4>@patient.FirstName @patient.LastName</h4>
-              <div class="pfp-patient-details">
-                @if (!string.IsNullOrEmpty(patient.MRN))
-                {
-                  <span class="pfp-detail">MRN: @patient.MRN</span>
-                }
-                @if (patient.DateOfBirth.HasValue)
-                {
-                  <span class="pfp-detail">DOB: @patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
-                }
-                @if (!string.IsNullOrEmpty(patient.MobilePhone))
-                {
-                  <span class="pfp-detail">📞 @patient.MobilePhone</span>
-                }
-                @if (!string.IsNullOrEmpty(patient.Email))
-                {
-                  <span class="pfp-detail">✉️ @patient.Email</span>
-                }
-              </div>
-            </div>
-            <div class="pfp-patient-actions">
-              <button class="pfp-btn pfp-btn-secondary" @onclick="() => ViewPatient(patient.Id)">
-                View Details
-              </button>
-              <button class="pfp-btn pfp-btn-outline" @onclick="() => ScheduleAppointment(patient.Id)">
-                Schedule
-              </button>
-            </div>
-          </div>
+          <PatientCard 
+            Patient="@patient" 
+            ShowDetails="true"
+            ShowActions="true"
+            OnClick="@((p) => ViewPatient(p.Id))">
+            <Actions>
+              <Button 
+                Variant="outline" 
+                Size="small"
+                Text="View"
+                Icon="👁️"
+                OnClick="@(() => ViewPatient(patient.Id))" />
+              <Button 
+                Variant="secondary" 
+                Size="small"
+                Text="Schedule"
+                Icon="📅"
+                OnClick="@(() => ScheduleAppointment(patient.Id))" />
+            </Actions>
+          </PatientCard>
         }
       </div>
     }
@@ -104,7 +98,7 @@
 
 @code {
     private string searchQuery = string.Empty;
-    private List<PatientDto> patients = new();
+    private IEnumerable<PatientDto> patients = Enumerable.Empty<PatientDto>();
     private bool isLoading = false;
     private bool hasSearched = false;
     private string? errorMessage = null;
@@ -117,19 +111,17 @@
         }
 
         isLoading = true;
+        hasSearched = true;
         errorMessage = null;
-        StateHasChanged();
 
         try
         {
-            var results = await DataService.SearchPatientsAsync(searchQuery.Trim(), 50);
-            patients = results.ToList();
-            hasSearched = true;
+            patients = await DataService.SearchPatientsAsync(searchQuery, take: 50);
         }
-        catch (Exception )
+        catch (Exception ex)
         {
-            errorMessage = "Failed to search patients. Please try again.";
-            patients.Clear();
+            errorMessage = $"Failed to search patients: {ex.Message}";
+            patients = Enumerable.Empty<PatientDto>();
         }
         finally
         {
@@ -146,15 +138,21 @@
         }
     }
 
-    private async Task ViewPatient(Guid patientId)
+    private void ViewPatient(Guid patientId)
     {
-        // TODO: Navigate to patient details page
-        await JSRuntime.InvokeVoidAsync("alert", $"View patient details for ID: {patientId}");
+        // NavigationManager.NavigateTo($"/patients/{patientId}");
+        Console.WriteLine($"View patient: {patientId}");
     }
 
-    private async Task ScheduleAppointment(Guid patientId)
+    private void ScheduleAppointment(Guid patientId)
     {
-        // TODO: Open appointment scheduling modal/page
-        await JSRuntime.InvokeVoidAsync("alert", $"Schedule appointment for patient ID: {patientId}");
+        // NavigationManager.NavigateTo($"/appointments/new?patientId={patientId}");
+        Console.WriteLine($"Schedule appointment for patient: {patientId}");
+    }
+    
+    private void NavigateToIntake()
+    {
+        // NavigationManager.NavigateTo("/intake");
+        Console.WriteLine("Navigate to intake");
     }
 }

@@ -1,0 +1,181 @@
+@* Reusable modal dialog component *@
+
+@if (IsOpen)
+{
+  <div class="pfp-modal-overlay @(IsOpen ? "pfp-modal-open" : "")" @onclick="HandleOverlayClick">
+    <div class="pfp-modal @SizeClass" @onclick:stopPropagation="true">
+      @if (ShowHeader)
+      {
+        <div class="pfp-modal-header">
+          <h3 class="pfp-modal-title">@Title</h3>
+          @if (ShowCloseButton)
+          {
+            <button class="pfp-modal-close" @onclick="Close" aria-label="Close">×</button>
+          }
+        </div>
+      }
+      
+      <div class="pfp-modal-body">
+        @ChildContent
+      </div>
+      
+      @if (ShowFooter)
+      {
+        <div class="pfp-modal-footer">
+          @if (FooterContent != null)
+          {
+            @FooterContent
+          }
+          else
+          {
+            @if (ShowCancelButton)
+            {
+              <button class="pfp-btn pfp-btn-secondary" @onclick="Close">
+                @CancelText
+              </button>
+            }
+            @if (ShowConfirmButton)
+            {
+              <button class="pfp-btn pfp-btn-primary" @onclick="HandleConfirm">
+                @ConfirmText
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@code {
+  /// <summary>
+  /// Whether the modal is open
+  /// </summary>
+  [Parameter]
+  public bool IsOpen { get; set; } = false;
+
+  /// <summary>
+  /// Callback when modal open state changes
+  /// </summary>
+  [Parameter]
+  public EventCallback<bool> IsOpenChanged { get; set; }
+
+  /// <summary>
+  /// Modal title
+  /// </summary>
+  [Parameter]
+  public string Title { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Whether to show the header
+  /// </summary>
+  [Parameter]
+  public bool ShowHeader { get; set; } = true;
+
+  /// <summary>
+  /// Whether to show the footer
+  /// </summary>
+  [Parameter]
+  public bool ShowFooter { get; set; } = true;
+
+  /// <summary>
+  /// Whether to show the close button
+  /// </summary>
+  [Parameter]
+  public bool ShowCloseButton { get; set; } = true;
+
+  /// <summary>
+  /// Whether to show the cancel button in footer
+  /// </summary>
+  [Parameter]
+  public bool ShowCancelButton { get; set; } = true;
+
+  /// <summary>
+  /// Whether to show the confirm button in footer
+  /// </summary>
+  [Parameter]
+  public bool ShowConfirmButton { get; set; } = true;
+
+  /// <summary>
+  /// Cancel button text
+  /// </summary>
+  [Parameter]
+  public string CancelText { get; set; } = "Cancel";
+
+  /// <summary>
+  /// Confirm button text
+  /// </summary>
+  [Parameter]
+  public string ConfirmText { get; set; } = "Confirm";
+
+  /// <summary>
+  /// Modal size (small, medium, large, full)
+  /// </summary>
+  [Parameter]
+  public string Size { get; set; } = "medium";
+
+  /// <summary>
+  /// Whether clicking overlay closes modal
+  /// </summary>
+  [Parameter]
+  public bool CloseOnOverlayClick { get; set; } = true;
+
+  /// <summary>
+  /// Confirm event handler
+  /// </summary>
+  [Parameter]
+  public EventCallback OnConfirm { get; set; }
+
+  /// <summary>
+  /// Close event handler
+  /// </summary>
+  [Parameter]
+  public EventCallback OnClose { get; set; }
+
+  /// <summary>
+  /// Modal body content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  /// <summary>
+  /// Custom footer content
+  /// </summary>
+  [Parameter]
+  public RenderFragment? FooterContent { get; set; }
+
+  private string SizeClass => Size.ToLower() switch
+  {
+    "small" => "pfp-modal-sm",
+    "large" => "pfp-modal-lg",
+    "full" => "pfp-modal-full",
+    _ => "pfp-modal-md"
+  };
+
+  private async Task Close()
+  {
+    IsOpen = false;
+    await IsOpenChanged.InvokeAsync(IsOpen);
+    if (OnClose.HasDelegate)
+    {
+      await OnClose.InvokeAsync();
+    }
+  }
+
+  private async Task HandleConfirm()
+  {
+    if (OnConfirm.HasDelegate)
+    {
+      await OnConfirm.InvokeAsync();
+    }
+    await Close();
+  }
+
+  private async Task HandleOverlayClick()
+  {
+    if (CloseOnOverlayClick)
+    {
+      await Close();
+    }
+  }
+}

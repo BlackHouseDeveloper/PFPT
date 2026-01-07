@@ -1,25 +1,333 @@
 @page "/notes/progress"
 @layout ResponsiveMainLayout
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.SOAP
 
 <PageTitle>Progress Note</PageTitle>
 
 <DebugStatBar />
 
-<div class="pfp-page-header">
-  <h1>Progress Note</h1>
-  <p>Document patient progress and re-evaluation findings</p>
-</div>
+<div class="pfp-note-page">
+  <div class="pfp-page-header">
+    <div class="pfp-header-content">
+      <div>
+        <h2>📊 Progress/Re-Evaluation Note</h2>
+        <p>Document patient progress and outcome measures</p>
+      </div>
+      <div class="pfp-note-actions">
+        <Button 
+          Variant="outline" 
+          Icon="💾"
+          Text="Save Draft"
+          OnClick="SaveDraft" />
+        <Button 
+          Variant="primary" 
+          Icon="✅"
+          Text="Sign & Submit"
+          OnClick="SignAndSubmit" />
+      </div>
+    </div>
+  </div>
 
-<div class="pfp-card">
-  <div class="pfp-card-body">
-    <p>Progress note functionality will be implemented here.</p>
-    <p><small>This page will integrate with INoteBuilderService for creating and editing progress/re-evaluation notes.</small></p>
+  @if (!string.IsNullOrEmpty(statusMessage))
+  {
+    <div class="pfp-alert @(isError ? "pfp-alert-error" : "pfp-alert-success")">
+      @statusMessage
+    </div>
+  }
+
+  <!-- Patient Info Bar -->
+  <div class="pfp-patient-info-bar">
+    <div class="pfp-patient-quick-info">
+      <span class="pfp-info-item">
+        <strong>Patient:</strong> @selectedPatientName
+      </span>
+      <span class="pfp-info-item">
+        <strong>Date:</strong> @DateTime.Today.ToString("MM/dd/yyyy")
+      </span>
+      <span class="pfp-info-item">
+        <strong>Note Type:</strong> Progress Note
+      </span>
+      <span class="pfp-info-item">
+        <strong>Visit #:</strong> @visitNumber
+      </span>
+    </div>
+    <Button 
+      Variant="outline" 
+      Size="small"
+      Icon="🔍"
+      Text="Select Patient"
+      OnClick="SelectPatient" />
+  </div>
+
+  <!-- Baseline Comparison -->
+  <div class="pfp-card">
+    <div class="pfp-card-header">
+      <h3>�� Baseline vs Current Comparison</h3>
+    </div>
+    <div class="pfp-card-body">
+      <div class="pfp-comparison-summary">
+        <div class="pfp-comparison-stat">
+          <span class="pfp-comparison-label">Initial Pain Level:</span>
+          <span class="pfp-comparison-value">@baselinePain/10</span>
+        </div>
+        <div class="pfp-comparison-arrow">→</div>
+        <div class="pfp-comparison-stat">
+          <span class="pfp-comparison-label">Current Pain Level:</span>
+          <span class="pfp-comparison-value @GetPainChangeClass()">@painLevel/10</span>
+        </div>
+        <div class="pfp-comparison-change @GetPainChangeClass()">
+          @GetPainChangeText()
+        </div>
+      </div>
+
+      <div class="pfp-comparison-table">
+        <div class="pfp-comparison-header">
+          <span>Measurement</span>
+          <span>Initial</span>
+          <span>Current</span>
+          <span>Change</span>
+        </div>
+        @foreach (var measurement in measurements)
+        {
+          <div class="pfp-comparison-row">
+            <span class="pfp-comparison-name">@measurement.Name</span>
+            <span class="pfp-comparison-initial">@measurement.Initial</span>
+            <span class="pfp-comparison-current">@measurement.Current</span>
+            <span class="pfp-comparison-delta @GetChangeClass(measurement.Change)">
+              @GetChangeIcon(measurement.Change) @measurement.Change
+            </span>
+          </div>
+        }
+      </div>
+
+      <Button 
+        Variant="outline" 
+        Icon="➕"
+        Text="Add Measurement"
+        OnClick="AddMeasurement" />
+    </div>
+  </div>
+
+  <!-- SOAP Note Sections -->
+  <div class="pfp-soap-note">
+    <SubjectiveSection SubjectiveData="@subjectiveData">
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h4>Progress Since Last Visit</h4>
+        </div>
+        <div class="pfp-card-body">
+          <FormField 
+            Label="Changes Since Last Visit"
+            Type="textarea"
+            @bind-Value="@progressChanges"
+            Rows="3"
+            HelpText="Describe improvements, setbacks, or changes in symptoms" />
+          
+          <FormField 
+            Label="HEP Adherence"
+            Type="select"
+            @bind-Value="@hepAdherence">
+            <SelectOptions>
+              <option value="">Select...</option>
+              <option value="Excellent">Excellent (100%)</option>
+              <option value="Good">Good (75-99%)</option>
+              <option value="Fair">Fair (50-74%)</option>
+              <option value="Poor">Poor (less than 50%)</option>
+            </SelectOptions>
+          </FormField>
+        </div>
+      </div>
+    </SubjectiveSection>
+    
+    <ObjectiveSection ObjectiveData="@objectiveData" />
+    
+    <AssessmentSection AssessmentData="@assessmentData">
+      <div class="pfp-card">
+        <div class="pfp-card-header">
+          <h4>Goal Progress Review</h4>
+        </div>
+        <div class="pfp-card-body">
+          @foreach (var goal in goals)
+          {
+            <div class="pfp-goal-progress-item">
+              <div class="pfp-goal-progress-header">
+                <strong>@goal.Description</strong>
+                <select @bind="goal.Status" class="pfp-goal-status-select">
+                  <option value="Not Started">Not Started</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Achieved">Achieved</option>
+                  <option value="Modified">Modified</option>
+                  <option value="Discontinued">Discontinued</option>
+                </select>
+              </div>
+              <FormField 
+                Label="Progress Notes"
+                Type="textarea"
+                @bind-Value="@goal.ProgressNotes"
+                Rows="2"
+                Placeholder="Document progress toward this goal" />
+            </div>
+          }
+        </div>
+      </div>
+    </AssessmentSection>
+    
+    <PlanSection PlanData="@planData" />
+  </div>
+
+  <!-- Note Footer Actions -->
+  <div class="pfp-note-footer">
+    <div class="pfp-note-footer-info">
+      <small>Last saved: @lastSavedTime</small>
+    </div>
+    <div class="pfp-note-footer-actions">
+      <Button 
+        Variant="secondary" 
+        Icon="🗑️"
+        Text="Discard"
+        OnClick="DiscardNote" />
+      <Button 
+        Variant="outline" 
+        Icon="👁️"
+        Text="Preview"
+        OnClick="PreviewNote" />
+      <Button 
+        Variant="primary" 
+        Icon="✅"
+        Text="Sign & Submit"
+        Loading="@isSubmitting"
+        OnClick="SignAndSubmit" />
+    </div>
   </div>
 </div>
 
 @code {
-  // TODO: Wire to INoteBuilderService
-  // TODO: Add progress evaluation sections
-  // TODO: Add outcome measure tracking
-  // TODO: Add save/export actions
+  private string selectedPatientName = "Select a patient";
+  private int visitNumber = 5;
+  private string? statusMessage = null;
+  private bool isError = false;
+  private string lastSavedTime = "Never";
+  private bool isSubmitting = false;
+
+  private int baselinePain = 8;
+  private int painLevel = 4;
+  private string progressChanges = string.Empty;
+  private string hepAdherence = string.Empty;
+
+  // SOAP Data Models
+  private SubjectiveSection.SubjectiveDataModel subjectiveData = new();
+  private ObjectiveSection.ObjectiveDataModel objectiveData = new();
+  private AssessmentSection.AssessmentDataModel assessmentData = new();
+  private PlanSection.PlanDataModel planData = new();
+
+  private List<MeasurementComparison> measurements = new()
+  {
+    new MeasurementComparison { Name = "Shoulder Flexion ROM", Initial = "90°", Current = "140°", Change = "+50°" },
+    new MeasurementComparison { Name = "Shoulder Abduction ROM", Initial = "80°", Current = "130°", Change = "+50°" },
+    new MeasurementComparison { Name = "MMT Deltoid", Initial = "3/5", Current = "4/5", Change = "+1" },
+  };
+
+  private List<GoalProgressModel> goals = new()
+  {
+    new GoalProgressModel 
+    { 
+      Description = "Patient will demonstrate 160° shoulder flexion within 4 weeks",
+      Status = "In Progress"
+    },
+    new GoalProgressModel 
+    { 
+      Description = "Patient will lift 10 lbs overhead without pain within 6 weeks",
+      Status = "In Progress"
+    },
+  };
+
+  private class MeasurementComparison
+  {
+    public string Name { get; set; } = string.Empty;
+    public string Initial { get; set; } = string.Empty;
+    public string Current { get; set; } = string.Empty;
+    public string Change { get; set; } = string.Empty;
+  }
+
+  private class GoalProgressModel
+  {
+    public string Description { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string ProgressNotes { get; set; } = string.Empty;
+  }
+
+  private string GetPainChangeClass()
+  {
+    return painLevel < baselinePain ? "pfp-improvement" : painLevel > baselinePain ? "pfp-decline" : "pfp-stable";
+  }
+
+  private string GetPainChangeText()
+  {
+    int change = baselinePain - painLevel;
+    if (change > 0) return $"↓ {change} points (Improved)";
+    if (change < 0) return $"↑ {Math.Abs(change)} points (Increased)";
+    return "→ No change";
+  }
+
+  private string GetChangeClass(string change)
+  {
+    if (change.StartsWith("+")) return "pfp-improvement";
+    if (change.StartsWith("-")) return "pfp-decline";
+    return "pfp-stable";
+  }
+
+  private string GetChangeIcon(string change)
+  {
+    if (change.StartsWith("+")) return "↑";
+    if (change.StartsWith("-")) return "↓";
+    return "→";
+  }
+
+  private void AddMeasurement()
+  {
+    measurements.Add(new MeasurementComparison());
+  }
+
+  private void SelectPatient()
+  {
+    Console.WriteLine("Select patient for progress note");
+    selectedPatientName = "John Doe";
+  }
+
+  private void SaveDraft()
+  {
+    lastSavedTime = DateTime.Now.ToString("h:mm tt");
+    statusMessage = "Draft saved successfully";
+    isError = false;
+  }
+
+  private void SignAndSubmit()
+  {
+    isSubmitting = true;
+    try
+    {
+      statusMessage = "Progress note signed and submitted successfully!";
+      isError = false;
+    }
+    catch (Exception ex)
+    {
+      statusMessage = $"Failed to submit note: {ex.Message}";
+      isError = true;
+    }
+    finally
+    {
+      isSubmitting = false;
+    }
+  }
+
+  private void PreviewNote()
+  {
+    Console.WriteLine("Preview note");
+  }
+
+  private void DiscardNote()
+  {
+    Console.WriteLine("Note discarded");
+  }
 }
