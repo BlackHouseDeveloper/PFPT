@@ -1,0 +1,183 @@
+@page "/patients/{patientId:guid}"
+@layout ResponsiveMainLayout
+@inject IDataService DataService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Patient Profile</PageTitle>
+
+<DebugStatBar />
+
+@if (isLoading)
+{
+  <div class="pfp-page-header">
+    <p>Loading patient information...</p>
+  </div>
+}
+else if (patient == null)
+{
+  <div class="pfp-page-header">
+    <h2>Patient Not Found</h2>
+    <p>The patient profile could not be loaded.</p>
+  </div>
+  <div class="pfp-card">
+    <div class="pfp-card-body">
+      <button class="pfp-btn pfp-btn-primary" @onclick="BackToPatients">
+        Back to Patients
+      </button>
+    </div>
+  </div>
+}
+else
+{
+  <div class="pfp-page-header">
+    <h2>@patient.FirstName @patient.LastName</h2>
+    <p>Patient Profile</p>
+  </div>
+
+  @if (errorMessage != null)
+  {
+    <div class="pfp-alert pfp-alert-error">
+      @errorMessage
+    </div>
+  }
+
+  <div class="pfp-card">
+    <div class="pfp-card-header">
+      <h3>Summary</h3>
+    </div>
+    <div class="pfp-card-body">
+      <div class="pfp-patient-summary">
+        <div class="pfp-summary-section">
+          <h4>Demographics</h4>
+          <div class="pfp-summary-grid">
+            @if (!string.IsNullOrEmpty(patient.MRN))
+            {
+              <div class="pfp-summary-item">
+                <label>Medical Record Number:</label>
+                <span>@patient.MRN</span>
+              </div>
+            }
+            @if (patient.DateOfBirth.HasValue)
+            {
+              <div class="pfp-summary-item">
+                <label>Date of Birth:</label>
+                <span>@patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
+              </div>
+            }
+            @if (!string.IsNullOrEmpty(patient.Sex))
+            {
+              <div class="pfp-summary-item">
+                <label>Sex:</label>
+                <span>@patient.Sex</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="pfp-summary-section">
+          <h4>Contact Information</h4>
+          <div class="pfp-summary-grid">
+            @if (!string.IsNullOrEmpty(patient.Email))
+            {
+              <div class="pfp-summary-item">
+                <label>Email:</label>
+                <span>@patient.Email</span>
+              </div>
+            }
+            @if (!string.IsNullOrEmpty(patient.MobilePhone))
+            {
+              <div class="pfp-summary-item">
+                <label>Mobile Phone:</label>
+                <span>@patient.MobilePhone</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(patient.LivingSituation))
+        {
+          <div class="pfp-summary-section">
+            <h4>Living Situation</h4>
+            <div class="pfp-summary-item">
+              <span>@patient.LivingSituation</span>
+            </div>
+          </div>
+        }
+
+        @if (!string.IsNullOrEmpty(patient.MedicationsCsv))
+        {
+          <div class="pfp-summary-section">
+            <h4>Medications</h4>
+            <div class="pfp-summary-item">
+              <span>@patient.MedicationsCsv</span>
+            </div>
+          </div>
+        }
+
+        @if (!string.IsNullOrEmpty(patient.ComorbiditiesCsv))
+        {
+          <div class="pfp-summary-section">
+            <h4>Comorbidities</h4>
+            <div class="pfp-summary-item">
+              <span>@patient.ComorbiditiesCsv</span>
+            </div>
+          </div>
+        }
+
+        @if (!string.IsNullOrEmpty(patient.AssistiveDevicesCsv))
+        {
+          <div class="pfp-summary-section">
+            <h4>Assistive Devices</h4>
+            <div class="pfp-summary-item">
+              <span>@patient.AssistiveDevicesCsv</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="pfp-button-group">
+        <button class="pfp-btn pfp-btn-outline" @onclick="BackToPatients">
+          Back to Patients
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@code {
+    [Parameter]
+    public Guid PatientId { get; set; }
+
+    private PatientDto? patient = null;
+    private bool isLoading = false;
+    private string? errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            patient = await DataService.GetPatientByIdAsync(PatientId);
+            if (patient == null)
+            {
+                errorMessage = "Patient record not found.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to load patient information. Please try again.";
+            patient = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void BackToPatients()
+    {
+        NavigationManager.NavigateTo("/patients");
+    }
+}

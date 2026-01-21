@@ -1,7 +1,8 @@
 @page "/appointments"
+@page "/appointments/{patientIdStr}"
 @layout ResponsiveMainLayout
 @inject IDataService DataService
-@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <PageTitle>Appointments</PageTitle>
 
@@ -36,9 +37,18 @@
     }
 
     <div class="pfp-appointments-section">
-      <h4>Today's Appointments</h4>
+      <h4>Upcoming Appointments</h4>
       
-      @if (isLoadingAppointments)
+      @if (noPatientContext)
+      {
+        <div class="pfp-alert pfp-alert-info">
+          <p>Select a patient to view their upcoming appointments.</p>
+          <button class="pfp-btn pfp-btn-primary" @onclick="NavigateToPatients">
+            Go to Patient List
+          </button>
+        </div>
+      }
+      else if (isLoadingAppointments)
       {
         <div class="pfp-loading">Loading appointments...</div>
       }
@@ -67,8 +77,8 @@
                 }
               </div>
               <div class="pfp-appointment-actions">
-                <button class="pfp-btn pfp-btn-outline" @onclick="() => ViewAppointment(appointment.Id)">
-                  View Details
+                <button class="pfp-btn pfp-btn-outline" @onclick="() => ViewPatientDetails(appointment.PatientId)">
+                  View Patient
                 </button>
                 <button class="pfp-btn pfp-btn-danger" @onclick="() => CancelAppointment(appointment.Id)">
                   Cancel
@@ -81,7 +91,7 @@
       else
       {
         <div class="pfp-no-results">
-          <p>No appointments scheduled for today.</p>
+          <p>No upcoming appointments for this patient.</p>
           <p><small>Click "Schedule New Appointment" to get started.</small></p>
         </div>
       }
@@ -173,12 +183,17 @@
 }
 
 @code {
+    [Parameter]
+    public string? PatientIdStr { get; set; }
+
+    private Guid patientId = Guid.Empty;
     private List<AppointmentDto> appointments = new();
     private List<PatientDto> searchResults = new();
     private PatientDto? selectedPatient = null;
     private bool isLoadingAppointments = false;
     private bool showScheduleModal = false;
     private bool isScheduling = false;
+    private bool noPatientContext = false;
     private string? errorMessage = null;
     private string? successMessage = null;
     private string patientSearchQuery = string.Empty;
@@ -189,30 +204,49 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadTodaysAppointments();
+        // Extract patientId from route parameter
+        if (!string.IsNullOrEmpty(PatientIdStr) && Guid.TryParse(PatientIdStr, out var parsedId))
+        {
+            patientId = parsedId;
+        }
+
+        if (patientId == Guid.Empty)
+        {
+            noPatientContext = true;
+            return;
+        }
+
+        await LoadPatientAppointments();
     }
 
-    private Task LoadTodaysAppointments()
+    private async Task LoadPatientAppointments()
     {
+        if (patientId == Guid.Empty)
+        {
+            noPatientContext = true;
+            return;
+        }
+
         isLoadingAppointments = true;
+        errorMessage = null;
 
         try
         {
-            // For demo purposes, we'll load a placeholder set
-            // In real implementation, we'd need an endpoint to get today's appointments
-            appointments.Clear();
+            // Load upcoming appointments for this patient starting from today
+            var fromUtc = DateTimeOffset.UtcNow.Date;
+            var result = await DataService.GetUpcomingAppointmentsByPatientAsync(patientId, fromUtc, 50);
+            appointments = result.ToList();
         }
         catch (Exception)
         {
-            errorMessage = "Failed to load today's appointments.";
+            errorMessage = "Failed to load appointments for this patient.";
+            appointments.Clear();
         }
         finally
         {
             isLoadingAppointments = false;
             StateHasChanged();
         }
-
-        return Task.CompletedTask;
     }
 
     private void ShowScheduleModal()
@@ -244,7 +278,6 @@
         {
             var results = await DataService.SearchPatientsAsync(patientSearchQuery.Trim(), 10);
             searchResults = results.ToList();
-            StateHasChanged();
         }
         catch (Exception)
         {
@@ -255,21 +288,23 @@
     private void SelectPatient(PatientDto patient)
     {
         selectedPatient = patient;
-        searchResults.Clear();
-        patientSearchQuery = $"{patient.FirstName} {patient.LastName}";
-        StateHasChanged();
     }
 
     private async Task ScheduleAppointment()
     {
-        if (selectedPatient == null) return;
+        if (selectedPatient == null)
+        {
+            errorMessage = "Please select a patient.";
+            return;
+        }
 
         isScheduling = true;
         errorMessage = null;
-        
+        successMessage = null;
+
         try
         {
-            var appointment = await DataService.ScheduleAppointmentAsync(
+            await DataService.ScheduleAppointmentAsync(
                 selectedPatient.Id,
                 new DateTimeOffset(scheduledStart),
                 null, // End time
@@ -279,7 +314,12 @@
 
             successMessage = $"Appointment scheduled successfully for {selectedPatient.FirstName} {selectedPatient.LastName}";
             HideScheduleModal();
-            await LoadTodaysAppointments();
+            
+            // Reload appointments for the current patient
+            if (patientId != Guid.Empty)
+            {
+                await LoadPatientAppointments();
+            }
         }
         catch (Exception)
         {
@@ -292,9 +332,9 @@
         }
     }
 
-    private async Task ViewAppointment(Guid appointmentId)
+    private void ViewPatientDetails(Guid patientIdToView)
     {
-        await JSRuntime.InvokeVoidAsync("alert", $"View appointment details for ID: {appointmentId}");
+        NavigationManager.NavigateTo($"/patients/{patientIdToView}");
     }
 
     private async Task CancelAppointment(Guid appointmentId)
@@ -305,7 +345,7 @@
             if (success)
             {
                 successMessage = "Appointment cancelled successfully.";
-                await LoadTodaysAppointments();
+                await LoadPatientAppointments();
             }
             else
             {
@@ -316,5 +356,10 @@
         {
             errorMessage = "Error cancelling appointment.";
         }
+    }
+
+    private void NavigateToPatients()
+    {
+        NavigationManager.NavigateTo("/patients");
     }
 }
