@@ -1,0 +1,425 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+<div class="space-y-6">
+    <!-- Help Banner -->
+    <Card Class="border-2 border-purple-200 bg-purple-50">
+        <CardContent Class="p-4">
+            <div class="flex items-start gap-3">
+                <div class="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5">IN</div>
+                <div class="flex-1">
+                    <p class="font-semibold text-purple-900 mb-2">How to Use the Permission Matrix</p>
+                    <ul class="text-sm text-purple-800 space-y-1 list-disc list-inside">
+                        <li><strong>None:</strong> No access to this feature</li>
+                        <li><strong>View:</strong> Read-only access (can see but not modify)</li>
+                        <li><strong>Edit:</strong> Can create and modify (standard user access)</li>
+                        <li><strong>Full:</strong> Complete control including delete and admin actions</li>
+                        <li>LK <strong>Locked permissions</strong> are system-required and cannot be changed</li>
+                        <li>AT <strong>Recommended permissions</strong> are suggested for optimal workflow</li>
+                    </ul>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Role Selector -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                SH Select Role to Configure
+            </CardTitle>
+            <CardDescription>
+                Choose a role to view and edit its permissions
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                @foreach (var role in RolesList)
+                {
+                    <button
+                        @onclick="@(() => SelectRole(role.Id))"
+                        class="@(
+                            selectedRole == role.Id
+                                ? "p-4 border-2 border-primary bg-primary/5 rounded-lg text-left transition-all"
+                                : "p-4 border-2 border-border hover:border-primary/50 rounded-lg text-left transition-all"
+                        )"
+                    >
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="@($"w-3 h-3 rounded-full {role.ColorClass}")"></div>
+                            <p class="font-semibold text-sm">@role.Label</p>
+                        </div>
+                        <p class="text-xs text-muted-foreground">@role.Description</p>
+                    </button>
+                }
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Clone Permissions -->
+    <Card Class="border-2 border-blue-200 bg-blue-50">
+        <CardContent Class="p-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div class="h-5 w-5 text-blue-600 flex-shrink-0">CP</div>
+                <div class="flex-1">
+                    <Label Class="font-semibold text-blue-900">Clone Permissions</Label>
+                    <p class="text-sm text-blue-700 mt-1">
+                        Copy permissions from another role to @(GetCurrentRoleLabel() ?? "selected role")
+                    </p>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <select
+                        @bind="cloneFromRole"
+                        class="px-3 py-2 border-2 border-blue-300 rounded-lg bg-white text-sm"
+                    >
+                        <option value="">Select role...</option>
+                        @foreach (var role in RolesList.Where(r => r.Id != selectedRole))
+                        {
+                            <option value="@role.Id">@role.Label</option>
+                        }
+                    </select>
+                    <Button
+                        OnClick="@HandleClonePermissions"
+                        Disabled="@(string.IsNullOrEmpty(cloneFromRole))"
+                        Class="bg-blue-600 hover:bg-blue-700"
+                    >
+                        Clone
+                    </Button>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Permission Categories -->
+    @foreach (var category in PermissionCategories)
+    {
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    @GetCategoryIcon(category.Id)
+                    @category.Label
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    @foreach (var permission in category.Permissions)
+                    {
+                        var currentLevel = permissions.ContainsKey(selectedRole) && permissions[selectedRole].ContainsKey(permission.Id)
+                            ? permissions[selectedRole][permission.Id]
+                            : "none";
+                        var isLocked = permission.SystemLocked && (permission.RequiredRoles?.Contains(selectedRole) ?? false);
+                        var isRequired = permission.RequiredRoles?.Contains(selectedRole) ?? false;
+
+                        <div class="@(isLocked ? "p-4 border-2 rounded-lg bg-orange-50 border-orange-200" : "p-4 border-2 rounded-lg border-border")">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <Label Class="font-semibold">@permission.Label</Label>
+                                        @if (isLocked)
+                                        {
+                                            <div title="System-required permission - cannot be disabled" class="h-4 w-4 text-orange-600">LK</div>
+                                        }
+                                        @if (isRequired && !isLocked)
+                                        {
+                                            <div title="Recommended for this role" class="h-4 w-4 text-yellow-600">AT</div>
+                                        }
+                                        <div title="@permission.Description" class="h-4 w-4 text-muted-foreground">IN</div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground">
+                                        @permission.Description
+                                    </p>
+                                </div>
+
+                                <!-- Permission Level Controls -->
+                                <div class="flex items-center gap-2">
+                                    @foreach (var level in permission.Levels)
+                                    {
+                                        var levelLabel = level == "none" ? "None" :
+                                                       level == "view" ? "View" :
+                                                       level == "edit" ? "Edit" : "Full";
+                                        var isSelected = currentLevel == level;
+                                        var buttonClass = isSelected
+                                            ? "px-3 py-1.5 rounded-md text-xs font-medium transition-all bg-primary text-primary-foreground"
+                                            : isLocked
+                                            ? "px-3 py-1.5 rounded-md text-xs font-medium transition-all bg-gray-200 text-gray-400 cursor-not-allowed"
+                                            : "px-3 py-1.5 rounded-md text-xs font-medium transition-all bg-muted hover:bg-muted/80";
+
+                                        <button
+                                            @onclick="@(() => UpdatePermission(selectedRole, permission.Id, level))"
+                                            disabled="@isLocked"
+                                            class="@buttonClass"
+                                            title="@(level == "none" ? "No access" : level == "view" ? "Read-only access" : level == "edit" ? "Create and modify" : "Complete control")"
+                                        >
+                                            @levelLabel
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </CardContent>
+        </Card>
+    }
+
+    <!-- Permission Summary -->
+    <Card Class="border-2 border-green-200 bg-green-50">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2 text-green-900">
+                CC Permission Summary for @(GetCurrentRoleLabel() ?? "")
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-green-900">
+                        @GetPermissionCount("full")
+                    </p>
+                    <p class="text-sm text-green-700">Full Access</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-blue-900">
+                        @GetPermissionCount("edit")
+                    </p>
+                    <p class="text-sm text-blue-700">Edit Access</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-gray-900">
+                        @GetPermissionCount("view")
+                    </p>
+                    <p class="text-sm text-gray-700">View Only</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-gray-500">
+                        @GetPermissionCount("none")
+                    </p>
+                    <p class="text-sm text-gray-600">No Access</p>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool HasUnsavedChanges { get; set; }
+
+    [Parameter]
+    public EventCallback HasUnsavedChangesChanged { get; set; }
+
+    private string selectedRole = "physical-therapist";
+    private string cloneFromRole = "";
+    private Dictionary<string, Dictionary<string, string>> permissions = new();
+
+    private class RoleInfo
+    {
+        public string Id { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string ColorClass { get; set; } = "";
+    }
+
+    private class PermissionInfo
+    {
+        public string Id { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string Description { get; set; } = "";
+        public List<string> Levels { get; set; } = new();
+        public bool SystemLocked { get; set; }
+        public List<string>? RequiredRoles { get; set; }
+    }
+
+    private class PermissionCategory
+    {
+        public string Id { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string IconCode { get; set; } = "";
+        public List<PermissionInfo> Permissions { get; set; } = new();
+    }
+
+    private List<RoleInfo> RolesList = new();
+    private List<PermissionCategory> PermissionCategories = new();
+
+    protected override void OnInitialized()
+    {
+        InitializeRoles();
+        InitializePermissions();
+        InitializeDefaultPermissions();
+    }
+
+    private void InitializeRoles()
+    {
+        RolesList = new()
+        {
+            new() { Id = "practice-owner", Label = "Owner / Executive Admin", Description = "Full system access and control", ColorClass = "bg-purple-500" },
+            new() { Id = "practice-manager", Label = "Practice Manager", Description = "Manage clinic operations and staff", ColorClass = "bg-blue-500" },
+            new() { Id = "physical-therapist", Label = "PT / DPT", Description = "Licensed physical therapist", ColorClass = "bg-green-500" },
+            new() { Id = "pta", Label = "PTA", Description = "Physical therapist assistant", ColorClass = "bg-teal-500" },
+            new() { Id = "therapy-aide", Label = "Therapy Aide / Rehab Tech", Description = "Support staff for therapy sessions", ColorClass = "bg-yellow-500" },
+            new() { Id = "front-desk", Label = "Front Desk / Patient Care Coordinator", Description = "Patient intake and scheduling", ColorClass = "bg-orange-500" },
+            new() { Id = "billing-specialist", Label = "Billing Specialist", Description = "Handle billing and insurance", ColorClass = "bg-indigo-500" },
+            new() { Id = "patient", Label = "Patient", Description = "Patient portal access only", ColorClass = "bg-gray-500" }
+        };
+    }
+
+    private void InitializePermissions()
+    {
+        PermissionCategories = new()
+        {
+            new()
+            {
+                Id = "clinical-documentation",
+                Label = "Clinical Documentation",
+                IconCode = "FT",
+                Permissions = new()
+                {
+                    new() { Id = "doc-view", Label = "View Clinical Notes", Description = "Read access to SOAP notes and evaluations", Levels = new() { "none", "view" } },
+                    new() { Id = "doc-create", Label = "Create Clinical Notes", Description = "Write new SOAP notes, evaluations, and progress notes", Levels = new() { "none", "edit" } },
+                    new() { Id = "doc-edit-own", Label = "Edit Own Notes", Description = "Modify notes created by self before signing", Levels = new() { "none", "edit" } },
+                    new() { Id = "doc-edit-others", Label = "Edit Others' Notes", Description = "Modify notes created by other clinicians (admin only)", Levels = new() { "none", "edit" } },
+                    new() { Id = "doc-sign", Label = "Sign/Submit Notes", Description = "Finalize and submit clinical documentation", Levels = new() { "none", "full" }, RequiredRoles = new() { "physical-therapist", "pta" } },
+                    new() { Id = "doc-cosign", Label = "Co-Sign PTA Notes", Description = "Review and co-sign notes from PTAs", Levels = new() { "none", "full" }, RequiredRoles = new() { "physical-therapist" } },
+                    new() { Id = "doc-delete", Label = "Delete Notes", Description = "Remove clinical documentation (audit trail maintained)", Levels = new() { "none", "full" }, SystemLocked = true, RequiredRoles = new() { "practice-owner", "practice-manager" } }
+                }
+            },
+            new()
+            {
+                Id = "scheduling",
+                Label = "Scheduling",
+                IconCode = "CA",
+                Permissions = new()
+                {
+                    new() { Id = "schedule-view-own", Label = "View Own Schedule", Description = "See personal appointments and availability", Levels = new() { "view" }, SystemLocked = true, RequiredRoles = new() { "physical-therapist", "pta", "therapy-aide" } },
+                    new() { Id = "schedule-view-all", Label = "View All Schedules", Description = "See schedules for all clinicians", Levels = new() { "none", "view" } },
+                    new() { Id = "schedule-create", Label = "Create Appointments", Description = "Book new patient appointments", Levels = new() { "none", "edit" } },
+                    new() { Id = "schedule-modify", Label = "Modify Appointments", Description = "Reschedule or cancel appointments", Levels = new() { "none", "edit" } },
+                    new() { Id = "schedule-manage-clinician", Label = "Manage Clinician Availability", Description = "Set working hours and time-off for staff", Levels = new() { "none", "full" } }
+                }
+            },
+            new()
+            {
+                Id = "billing-coding",
+                Label = "Billing & Coding",
+                IconCode = "DS",
+                Permissions = new()
+                {
+                    new() { Id = "billing-view", Label = "View Billing Information", Description = "See patient balances and billing codes", Levels = new() { "none", "view" } },
+                    new() { Id = "billing-add-codes", Label = "Add CPT Codes", Description = "Add billing codes to clinical notes", Levels = new() { "none", "edit" } },
+                    new() { Id = "billing-submit-claims", Label = "Submit Insurance Claims", Description = "Process and submit claims to payers", Levels = new() { "none", "full" } },
+                    new() { Id = "billing-manage-payers", Label = "Manage Payer Information", Description = "Add/edit insurance companies and contracts", Levels = new() { "none", "full" } },
+                    new() { Id = "billing-view-reports", Label = "View Billing Reports", Description = "Access financial reports and revenue analytics", Levels = new() { "none", "view" } }
+                }
+            },
+            new()
+            {
+                Id = "messaging",
+                Label = "Messaging",
+                IconCode = "MS",
+                Permissions = new()
+                {
+                    new() { Id = "message-internal", Label = "Internal Staff Messaging", Description = "Send messages to other staff members", Levels = new() { "none", "edit" } },
+                    new() { Id = "message-patients", Label = "Message Patients", Description = "Send HIPAA-compliant messages to patients", Levels = new() { "none", "edit" } },
+                    new() { Id = "message-broadcast", Label = "Broadcast Messages", Description = "Send announcements to all staff or patients", Levels = new() { "none", "full" } }
+                }
+            },
+            new()
+            {
+                Id = "reporting",
+                Label = "Reporting",
+                IconCode = "BC",
+                Permissions = new()
+                {
+                    new() { Id = "report-clinical", Label = "Clinical Reports", Description = "View patient outcomes and treatment analytics", Levels = new() { "none", "view" } },
+                    new() { Id = "report-productivity", Label = "Productivity Reports", Description = "View clinician productivity and utilization", Levels = new() { "none", "view" } },
+                    new() { Id = "report-financial", Label = "Financial Reports", Description = "Access revenue, collections, and P&L reports", Levels = new() { "none", "view" } },
+                    new() { Id = "report-compliance", Label = "Compliance Reports", Description = "View audit logs and compliance metrics", Levels = new() { "none", "view" } },
+                    new() { Id = "report-export", Label = "Export Reports", Description = "Download reports as PDF/CSV", Levels = new() { "none", "edit" } }
+                }
+            },
+            new()
+            {
+                Id = "admin-settings",
+                Label = "Admin Settings",
+                IconCode = "ST",
+                Permissions = new()
+                {
+                    new() { Id = "admin-users", Label = "Manage Users", Description = "Create, edit, and deactivate user accounts", Levels = new() { "none", "full" }, SystemLocked = true, RequiredRoles = new() { "practice-owner", "practice-manager" } },
+                    new() { Id = "admin-roles", Label = "Manage Roles & Permissions", Description = "Edit role permissions and access levels", Levels = new() { "none", "full" }, SystemLocked = true, RequiredRoles = new() { "practice-owner" } },
+                    new() { Id = "admin-clinic-settings", Label = "Clinic Settings", Description = "Modify clinic information and preferences", Levels = new() { "none", "full" } },
+                    new() { Id = "admin-templates", Label = "Manage Templates", Description = "Create and edit documentation templates", Levels = new() { "none", "edit" } },
+                    new() { Id = "admin-integrations", Label = "Manage Integrations", Description = "Configure third-party integrations and APIs", Levels = new() { "none", "full" }, SystemLocked = true, RequiredRoles = new() { "practice-owner" } }
+                }
+            }
+        };
+    }
+
+    private void InitializeDefaultPermissions()
+    {
+        permissions = new()
+        {
+            { "practice-owner", new() { { "doc-view", "view" }, { "doc-create", "edit" }, { "doc-edit-own", "edit" }, { "doc-edit-others", "edit" }, { "doc-sign", "full" }, { "doc-cosign", "full" }, { "doc-delete", "full" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "full" }, { "billing-view", "view" }, { "billing-add-codes", "edit" }, { "billing-submit-claims", "full" }, { "billing-manage-payers", "full" }, { "billing-view-reports", "view" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "full" }, { "report-clinical", "view" }, { "report-productivity", "view" }, { "report-financial", "view" }, { "report-compliance", "view" }, { "report-export", "edit" }, { "admin-users", "full" }, { "admin-roles", "full" }, { "admin-clinic-settings", "full" }, { "admin-templates", "edit" }, { "admin-integrations", "full" } } },
+            { "practice-manager", new() { { "doc-view", "view" }, { "doc-create", "none" }, { "doc-edit-own", "none" }, { "doc-edit-others", "edit" }, { "doc-sign", "none" }, { "doc-cosign", "none" }, { "doc-delete", "full" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "full" }, { "billing-view", "view" }, { "billing-add-codes", "none" }, { "billing-submit-claims", "full" }, { "billing-manage-payers", "full" }, { "billing-view-reports", "view" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "full" }, { "report-clinical", "view" }, { "report-productivity", "view" }, { "report-financial", "view" }, { "report-compliance", "view" }, { "report-export", "edit" }, { "admin-users", "full" }, { "admin-roles", "none" }, { "admin-clinic-settings", "full" }, { "admin-templates", "edit" }, { "admin-integrations", "none" } } },
+            { "physical-therapist", new() { { "doc-view", "view" }, { "doc-create", "edit" }, { "doc-edit-own", "edit" }, { "doc-edit-others", "none" }, { "doc-sign", "full" }, { "doc-cosign", "full" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "none" }, { "billing-view", "view" }, { "billing-add-codes", "edit" }, { "billing-submit-claims", "none" }, { "billing-manage-payers", "none" }, { "billing-view-reports", "none" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "none" }, { "report-clinical", "view" }, { "report-productivity", "view" }, { "report-financial", "none" }, { "report-compliance", "none" }, { "report-export", "none" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } },
+            { "pta", new() { { "doc-view", "view" }, { "doc-create", "edit" }, { "doc-edit-own", "edit" }, { "doc-edit-others", "none" }, { "doc-sign", "full" }, { "doc-cosign", "none" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "none" }, { "billing-view", "view" }, { "billing-add-codes", "edit" }, { "billing-submit-claims", "none" }, { "billing-manage-payers", "none" }, { "billing-view-reports", "none" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "none" }, { "report-clinical", "view" }, { "report-productivity", "view" }, { "report-financial", "none" }, { "report-compliance", "none" }, { "report-export", "none" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } },
+            { "therapy-aide", new() { { "doc-view", "view" }, { "doc-create", "none" }, { "doc-edit-own", "none" }, { "doc-edit-others", "none" }, { "doc-sign", "none" }, { "doc-cosign", "none" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "none" }, { "schedule-modify", "none" }, { "schedule-manage-clinician", "none" }, { "billing-view", "none" }, { "billing-add-codes", "none" }, { "billing-submit-claims", "none" }, { "billing-manage-payers", "none" }, { "billing-view-reports", "none" }, { "message-internal", "edit" }, { "message-patients", "none" }, { "message-broadcast", "none" }, { "report-clinical", "none" }, { "report-productivity", "none" }, { "report-financial", "none" }, { "report-compliance", "none" }, { "report-export", "none" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } },
+            { "front-desk", new() { { "doc-view", "none" }, { "doc-create", "none" }, { "doc-edit-own", "none" }, { "doc-edit-others", "none" }, { "doc-sign", "none" }, { "doc-cosign", "none" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "none" }, { "billing-view", "view" }, { "billing-add-codes", "none" }, { "billing-submit-claims", "none" }, { "billing-manage-payers", "none" }, { "billing-view-reports", "none" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "none" }, { "report-clinical", "none" }, { "report-productivity", "none" }, { "report-financial", "none" }, { "report-compliance", "none" }, { "report-export", "none" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } },
+            { "billing-specialist", new() { { "doc-view", "view" }, { "doc-create", "none" }, { "doc-edit-own", "none" }, { "doc-edit-others", "none" }, { "doc-sign", "none" }, { "doc-cosign", "none" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "view" }, { "schedule-create", "none" }, { "schedule-modify", "none" }, { "schedule-manage-clinician", "none" }, { "billing-view", "view" }, { "billing-add-codes", "edit" }, { "billing-submit-claims", "full" }, { "billing-manage-payers", "full" }, { "billing-view-reports", "view" }, { "message-internal", "edit" }, { "message-patients", "edit" }, { "message-broadcast", "none" }, { "report-clinical", "none" }, { "report-productivity", "none" }, { "report-financial", "view" }, { "report-compliance", "none" }, { "report-export", "edit" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } },
+            { "patient", new() { { "doc-view", "view" }, { "doc-create", "none" }, { "doc-edit-own", "none" }, { "doc-edit-others", "none" }, { "doc-sign", "none" }, { "doc-cosign", "none" }, { "doc-delete", "none" }, { "schedule-view-own", "view" }, { "schedule-view-all", "none" }, { "schedule-create", "edit" }, { "schedule-modify", "edit" }, { "schedule-manage-clinician", "none" }, { "billing-view", "view" }, { "billing-add-codes", "none" }, { "billing-submit-claims", "none" }, { "billing-manage-payers", "none" }, { "billing-view-reports", "none" }, { "message-internal", "none" }, { "message-patients", "edit" }, { "message-broadcast", "none" }, { "report-clinical", "none" }, { "report-productivity", "none" }, { "report-financial", "none" }, { "report-compliance", "none" }, { "report-export", "none" }, { "admin-users", "none" }, { "admin-roles", "none" }, { "admin-clinic-settings", "none" }, { "admin-templates", "none" }, { "admin-integrations", "none" } } }
+        };
+    }
+
+    private void SelectRole(string roleId)
+    {
+        selectedRole = roleId;
+        cloneFromRole = "";
+    }
+
+    private void UpdatePermission(string role, string permissionId, string level)
+    {
+        if (!permissions.ContainsKey(role))
+            permissions[role] = new();
+        
+        permissions[role][permissionId] = level;
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+    }
+
+    private void HandleClonePermissions()
+    {
+        if (string.IsNullOrEmpty(cloneFromRole) || !permissions.ContainsKey(cloneFromRole))
+            return;
+        
+        permissions[selectedRole] = new(permissions[cloneFromRole]);
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+        cloneFromRole = "";
+    }
+
+    private string? GetCurrentRoleLabel()
+    {
+        return RolesList.FirstOrDefault(r => r.Id == selectedRole)?.Label;
+    }
+
+    private string GetCategoryIcon(string categoryId)
+    {
+        return categoryId switch
+        {
+            "clinical-documentation" => "FT",
+            "scheduling" => "CA",
+            "billing-coding" => "DS",
+            "messaging" => "MS",
+            "reporting" => "BC",
+            "admin-settings" => "ST",
+            _ => "XX"
+        };
+    }
+
+    private int GetPermissionCount(string level)
+    {
+        if (!permissions.ContainsKey(selectedRole))
+            return 0;
+        
+        return permissions[selectedRole].Values.Count(v => v == level);
+    }
+}

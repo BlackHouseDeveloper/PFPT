@@ -1,0 +1,104 @@
+@* Hover card - popover triggered by hover with delay *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<CascadingValue Value="this">
+    @ChildContent
+    @if (isOpen && ContentChildContent != null)
+    {
+        <div class="hover-card-portal">
+            @ContentChildContent
+        </div>
+    }
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ContentChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public int OpenDelay { get; set; } = 700; // ms before opening
+
+    [Parameter]
+    public int CloseDelay { get; set; } = 300; // ms before closing
+
+    private bool isOpen;
+    private System.Threading.Timer? openTimer;
+    private System.Threading.Timer? closeTimer;
+
+    public double PositionX { get; private set; }
+    public double PositionY { get; private set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    public void SetPosition(double x, double y)
+    {
+        PositionX = x;
+        PositionY = y;
+        StateHasChanged();
+    }
+
+    public void ScheduleOpen()
+    {
+        closeTimer?.Dispose();
+        closeTimer = null;
+
+        if (isOpen) return;
+
+        openTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                isOpen = true;
+                _ = OnOpenChange.InvokeAsync(true);
+                StateHasChanged();
+            });
+        }, null, OpenDelay, System.Threading.Timeout.Infinite);
+    }
+
+    public void ScheduleClose()
+    {
+        openTimer?.Dispose();
+        openTimer = null;
+
+        if (!isOpen) return;
+
+        closeTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                isOpen = false;
+                _ = OnOpenChange.InvokeAsync(false);
+                StateHasChanged();
+            });
+        }, null, CloseDelay, System.Threading.Timeout.Infinite);
+    }
+
+    public void CancelScheduledActions()
+    {
+        openTimer?.Dispose();
+        openTimer = null;
+        closeTimer?.Dispose();
+        closeTimer = null;
+    }
+
+    public void Dispose()
+    {
+        openTimer?.Dispose();
+        closeTimer?.Dispose();
+    }
+}

@@ -1,0 +1,21 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<ul class="navigation-menu-list @Class" @attributes="AdditionalAttributes">
+    <CascadingValue Value="ParentMenu">
+        @ChildContent
+    </CascadingValue>
+</ul>
+
+@code {
+    [CascadingParameter]
+    public NavigationMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

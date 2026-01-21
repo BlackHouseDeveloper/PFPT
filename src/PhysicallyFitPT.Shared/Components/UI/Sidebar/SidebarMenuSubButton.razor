@@ -1,0 +1,29 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Sidebar
+
+<a class="sidebar-menu-sub-button" 
+   data-size="@Size"
+   data-active="@(IsActive ? "true" : "false")"
+   href="@Href"
+   @attributes="AdditionalAttributes">
+    @ChildContent
+</a>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string Size { get; set; } = "md";
+
+    [Parameter]
+    public bool IsActive { get; set; } = false;
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

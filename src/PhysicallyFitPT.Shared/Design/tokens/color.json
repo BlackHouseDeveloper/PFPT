@@ -1,0 +1,57 @@
+{
+  "primary": {
+    "value": "#9BE000",
+    "type": "color",
+    "source": "default"
+  },
+  "on-primary": {
+    "value": "#000000",
+    "type": "color",
+    "source": "default"
+  },
+  "secondary": {
+    "value": "#0B2545",
+    "type": "color",
+    "source": "default"
+  },
+  "on-secondary": {
+    "value": "#FFFFFF",
+    "type": "color",
+    "source": "default"
+  },
+  "surface": {
+    "value": "#FFFFFF",
+    "type": "color",
+    "source": "default"
+  },
+  "on-surface": {
+    "value": "#1f2933",
+    "type": "color",
+    "source": "default"
+  },
+  "background": {
+    "value": "#f5f7fb",
+    "type": "color",
+    "source": "default"
+  },
+  "success": {
+    "value": "#10b981",
+    "type": "color",
+    "source": "default"
+  },
+  "warning": {
+    "value": "#f59e0b",
+    "type": "color",
+    "source": "default"
+  },
+  "error": {
+    "value": "#ef4444",
+    "type": "color",
+    "source": "default"
+  },
+  "info": {
+    "value": "#3b82f6",
+    "type": "color",
+    "source": "default"
+  }
+}

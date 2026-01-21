@@ -1,0 +1,51 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (TabsContext != null)
+{
+    <CascadingValue Value="this">
+        <div class="tabs @Class" data-slot="tabs" @attributes="AdditionalAttributes">
+            @ChildContent
+        </div>
+    </CascadingValue>
+}
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public string DefaultValue { get; set; } = "";
+
+    public TabsContext? TabsContext { get; private set; }
+
+    protected override void OnInitialized()
+    {
+        TabsContext = new TabsContext(DefaultValue);
+    }
+}
+
+public class TabsContext
+{
+    public string ActiveValue { get; set; }
+    public event Action? OnValueChanged;
+
+    public TabsContext(string defaultValue)
+    {
+        ActiveValue = defaultValue;
+    }
+
+    public void SetActive(string value)
+    {
+        if (ActiveValue != value)
+        {
+            ActiveValue = value;
+            OnValueChanged?.Invoke();
+        }
+    }
+}

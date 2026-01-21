@@ -1,0 +1,36 @@
+@* Hover card content - the floating card that appears on hover *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="hover-card-content" 
+     style="left: @(positionX)px; top: @(positionY)px;"
+     @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public HoverCard? ParentCard { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private double positionX => ParentCard?.PositionX ?? 0;
+    private double positionY => ParentCard?.PositionY ?? 0;
+
+    private void HandleMouseEnter()
+    {
+        // Keep card open when hovering over it
+        ParentCard?.CancelScheduledActions();
+    }
+
+    private void HandleMouseLeave()
+    {
+        // Close when leaving the card
+        ParentCard?.ScheduleClose();
+    }
+}

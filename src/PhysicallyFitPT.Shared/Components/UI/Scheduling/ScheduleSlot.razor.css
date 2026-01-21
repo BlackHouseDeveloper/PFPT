@@ -1,0 +1,122 @@
+.schedule-slot {
+    position: relative;
+    padding: 0.75rem;
+    border: 2px solid var(--slot-border, #d1d5db);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.schedule-slot:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.schedule-slot .badge {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: white;
+}
+
+.badge-pill.success {
+    background-color: #16a34a;
+}
+
+.badge-pill.pending {
+    background-color: #dc2626;
+}
+
+.badge-pill.block {
+    letter-spacing: 0.06em;
+}
+
+.header {
+    padding-right: 5.5rem;
+}
+
+.patient {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.visit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #4b5563;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.visit-type {
+    display: inline-block;
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+}
+
+.meta {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.meta-icon {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #9ca3af;
+}
+
+.notes {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.appointment-slot {
+    border-left-width: 4px;
+}
+
+.block-slot {
+    border-style: dashed;
+}

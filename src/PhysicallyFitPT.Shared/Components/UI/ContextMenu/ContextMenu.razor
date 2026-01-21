@@ -1,0 +1,76 @@
+@* Context menu root component with right-click trigger *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.ContextMenu
+
+<div @oncontextmenu="HandleContextMenu" @oncontextmenu:preventDefault>
+    @ChildContent
+</div>
+
+@if (isOpen)
+{
+    <div class="context-menu-overlay" @onclick="Close"></div>
+    <div class="context-menu-portal" style="left: @(menuX)px; top: @(menuY)px;">
+        <CascadingValue Value="this">
+            <div class="context-menu-content">
+                @ContentChildContent
+            </div>
+        </CascadingValue>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ContentChildContent { get; set; }
+
+    private bool isOpen;
+    private double menuX;
+    private double menuY;
+    private List<ContextMenuItem>? items = new();
+    private int selectedIndex = -1;
+
+    public void RegisterItem(ContextMenuItem item)
+    {
+        items?.Add(item);
+    }
+
+    public void UnregisterItem(ContextMenuItem item)
+    {
+        items?.Remove(item);
+    }
+
+    public int GetSelectedIndex() => selectedIndex;
+
+    public void SetSelectedIndex(int index)
+    {
+        selectedIndex = index;
+        StateHasChanged();
+    }
+
+    public bool IsItemSelected(ContextMenuItem item)
+    {
+        if (items == null) return false;
+        return items.IndexOf(item) == selectedIndex;
+    }
+
+    private void HandleContextMenu(MouseEventArgs args)
+    {
+        menuX = args.ClientX;
+        menuY = args.ClientY;
+        isOpen = true;
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        selectedIndex = -1;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        items?.Clear();
+        await ValueTask.CompletedTask;
+    }
+}

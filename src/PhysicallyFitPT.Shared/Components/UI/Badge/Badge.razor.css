@@ -1,0 +1,177 @@
+/* Badge component styles */
+
+/* Base styles */
+.inline-flex {
+    display: inline-flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.rounded-md {
+    border-radius: 0.375rem;
+}
+
+.border {
+    border-width: 1px;
+}
+
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.w-fit {
+    width: fit-content;
+}
+
+.whitespace-nowrap {
+    white-space: nowrap;
+}
+
+.shrink-0 {
+    flex-shrink: 0;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+/* Icon sizing within badges */
+span[class*="badge"] > svg,
+a[class*="badge"] > svg {
+    width: 0.75rem;
+    height: 0.75rem;
+    pointer-events: none;
+}
+
+/* Border transparent */
+.border-transparent {
+    border-color: transparent;
+}
+
+/* Primary variant (PFPT green) */
+.bg-primary {
+    background-color: #9BE000;
+}
+
+.text-white {
+    color: white;
+}
+
+.bg-primary\/90:hover {
+    background-color: rgba(155, 224, 0, 0.9);
+}
+
+/* Secondary variant */
+.bg-gray-100 {
+    background-color: #f3f4f6;
+}
+
+.text-gray-900 {
+    color: #111827;
+}
+
+.hover\:bg-gray-200:hover {
+    background-color: #e5e7eb;
+}
+
+/* Destructive variant */
+.bg-red-600 {
+    background-color: #dc2626;
+}
+
+.hover\:bg-red-700:hover {
+    background-color: #b91c1c;
+}
+
+/* Outline variant */
+.border-gray-300 {
+    border-color: #d1d5db;
+}
+
+.bg-transparent {
+    background-color: transparent;
+}
+
+.hover\:bg-gray-50:hover {
+    background-color: #f9fafb;
+}
+
+/* Focus styles */
+.focus-visible\:outline-none:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+.focus-visible\:ring-2:focus-visible {
+    box-shadow: 0 0 0 2px rgba(11, 37, 69, 0.5);
+}
+
+.focus-visible\:ring-offset-1:focus-visible {
+    outline-offset: 1px;
+}
+
+/* Link hover state */
+a.inline-flex:hover {
+    text-decoration: none;
+}
+
+/* Badge size variants */
+.badge-sm {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.625rem;
+}
+
+.badge-lg {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Status color variants */
+.badge-success {
+    background-color: #10b981;
+    color: white;
+    border-color: transparent;
+}
+
+.badge-warning {
+    background-color: #f59e0b;
+    color: white;
+    border-color: transparent;
+}
+
+.badge-info {
+    background-color: #3b82f6;
+    color: white;
+    border-color: transparent;
+}

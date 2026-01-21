@@ -1,0 +1,8 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="select-separator" role="separator" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

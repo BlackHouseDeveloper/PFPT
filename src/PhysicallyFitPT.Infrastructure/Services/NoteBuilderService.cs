@@ -50,10 +50,20 @@ namespace PhysicallyFitPT.Infrastructure.Services
           PatientId = patientId,
           AppointmentId = appointmentId,
           VisitType = VisitType.Eval,
-          Subjective = new SubjectiveSection(),
-          Objective = new ObjectiveSection(),
-          Assessment = new AssessmentSection(),
-          Plan = new PlanSection(),
+          Subjective = new Core.Notes.SubjectiveSection
+          {
+            ChiefComplaint = string.Empty,
+            HistoryOfPresentIllness = string.Empty,
+            PainLocationsCsv = string.Empty,
+            PainSeverity0to10 = string.Empty,
+            AggravatingFactors = string.Empty,
+            EasingFactors = string.Empty,
+            FunctionalLimitations = string.Empty,
+            PatientGoalsNarrative = string.Empty,
+          },
+          Objective = new Core.Notes.ObjectiveSection(),
+          Assessment = new Core.Notes.AssessmentSection(),
+          Plan = new Core.Notes.PlanSection(),
         };
         db.Notes.Add(note);
         await db.SaveChangesAsync(cancellationToken);

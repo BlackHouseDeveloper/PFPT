@@ -1,0 +1,20 @@
+@* Individual breadcrumb item *@
+
+<li class="@CombinedClass"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</li>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"inline-flex items-center gap-1.5 {Class}".Trim();
+}

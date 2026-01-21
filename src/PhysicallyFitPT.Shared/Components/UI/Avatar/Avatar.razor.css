@@ -1,0 +1,101 @@
+/* Avatar component styles */
+
+/* Base avatar container */
+.relative {
+    position: relative;
+}
+
+.flex {
+    display: flex;
+}
+
+.size-10 {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.size-full {
+    width: 100%;
+    height: 100%;
+}
+
+.shrink-0 {
+    flex-shrink: 0;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+
+/* Image styles */
+.aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+.object-cover {
+    object-fit: cover;
+}
+
+/* Fallback styles */
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+/* Avatar size variants */
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+}
+
+.avatar-md {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.875rem;
+}
+
+.avatar-lg {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+}
+
+.avatar-xl {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+}
+
+.avatar-2xl {
+    width: 6rem;
+    height: 6rem;
+    font-size: 1.5rem;
+}
+
+/* Fallback background colors */
+.bg-gray-100 {
+    background-color: #f3f4f6;
+}
+
+.text-gray-600 {
+    color: #4b5563;
+}
+
+/* PFPT theme colors for avatars */
+.bg-primary-light {
+    background-color: #e8f8cc;
+    color: #5a7000;
+}
+
+.bg-secondary-light {
+    background-color: #e3eef9;
+    color: #0B2545;
+}

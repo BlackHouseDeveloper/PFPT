@@ -1,0 +1,13 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (ParentItem?.IsOpen == true)
+{
+    <div class="navigation-menu-indicator">
+        <div class="navigation-menu-indicator-dot"></div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public NavigationMenuItem? ParentItem { get; set; }
+}

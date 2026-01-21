@@ -1,0 +1,98 @@
+@* Radio Group Demo - Clinical flows *@
+@page "/demo/radio-group"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Radio Group</h1>
+    <p class="demo-description">
+        Choose one option from a set for charting decisions like visit type, pain scale, and telehealth eligibility.
+    </p>
+
+    <div class="demo-section">
+        <h2>Visit Type</h2>
+        <p>Select the encounter type for this note.</p>
+        <div class="demo-example grid gap-3 md:grid-cols-3">
+            <RadioGroup @bind-Value="visitType">
+                <RadioGroupItem Value="initial">
+                    <span class="font-semibold">Initial evaluation</span>
+                    <small>Full intake and objective testing</small>
+                </RadioGroupItem>
+                <RadioGroupItem Value="progress">
+                    <span class="font-semibold">Progress note</span>
+                    <small>Reassessment at visit 10 or sooner</small>
+                </RadioGroupItem>
+                <RadioGroupItem Value="discharge">
+                    <span class="font-semibold">Discharge</span>
+                    <small>Final outcomes and HEP handoff</small>
+                </RadioGroupItem>
+            </RadioGroup>
+            <div class="md:col-span-3 text-sm text-gray-700">
+                Selected: <strong>@FormatVisitType(visitType)</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Pain Scale</h2>
+        <p>Capture patient-reported pain at rest.</p>
+        <div class="demo-example grid gap-2 sm:grid-cols-5">
+            <RadioGroup @bind-Value="painLevel" Class="sm:grid-cols-5">
+                @foreach (var option in painOptions)
+                {
+                    <RadioGroupItem Value="@option.Value">
+                        <span class="font-semibold">@option.Label</span>
+                        <small>@option.Description</small>
+                    </RadioGroupItem>
+                }
+            </RadioGroup>
+            <div class="sm:col-span-5 text-sm text-gray-700">
+                Pain: <strong>@painLevel</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Telehealth Eligibility</h2>
+        <p>Quickly mark whether this visit can be remote.</p>
+        <div class="demo-example space-y-3">
+            <RadioGroup @bind-Value="telehealth" Class="md:grid-cols-2">
+                <RadioGroupItem Value="in-person">
+                    <span class="font-semibold">In-person required</span>
+                    <small>Hands-on care or safety concerns</small>
+                </RadioGroupItem>
+                <RadioGroupItem Value="telehealth-ok">
+                    <span class="font-semibold">Telehealth eligible</span>
+                    <small>Exercise review and education only</small>
+                </RadioGroupItem>
+            </RadioGroup>
+            <div class="text-sm text-gray-700">
+                Selection: <strong>@(telehealth == "telehealth-ok" ? "Telehealth eligible" : "In-person required")</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string visitType = "progress";
+    private string painLevel = "5";
+    private string telehealth = "in-person";
+
+    private record PainOption(string Value, string Label, string Description);
+
+    private List<PainOption> painOptions = new()
+    {
+        new("0", "0", "No pain"),
+        new("2", "2", "Mild"),
+        new("5", "5", "Moderate"),
+        new("7", "7", "Severe"),
+        new("9", "9", "Unbearable")
+    };
+
+    private string FormatVisitType(string value) => value switch
+    {
+        "initial" => "Initial evaluation",
+        "progress" => "Progress note",
+        "discharge" => "Discharge",
+        _ => "Unspecified"
+    };
+}

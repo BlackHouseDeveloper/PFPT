@@ -1,0 +1,45 @@
+@* MenubarItem - selectable item *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="menubar-item @(Disabled ? "disabled" : string.Empty) @(Inset ? "inset" : string.Empty) @CssClass" 
+     role="menuitem"
+     tabindex="@(Disabled ? -1 : 0)"
+     @onclick="HandleSelect"
+     @attributes="AdditionalAttributes">
+    <div class="menubar-item-content">
+        @ChildContent
+    </div>
+    @if (!string.IsNullOrEmpty(Shortcut))
+    {
+        <span class="menubar-shortcut">@Shortcut</span>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public MenubarMenu? ParentMenu { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Inset { get; set; }
+    [Parameter] public string? Shortcut { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public EventCallback OnSelect { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleSelect()
+    {
+        if (Disabled)
+        {
+            return;
+        }
+
+        if (OnSelect.HasDelegate)
+        {
+            await OnSelect.InvokeAsync();
+        }
+
+        if (ParentMenu?.Root != null)
+        {
+            await ParentMenu.Root.CloseAllMenus();
+        }
+    }
+}

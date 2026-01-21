@@ -1,0 +1,45 @@
+@*
+    AccordionContent - Collapsible content area
+    Ported from Make: components/ui/accordion.tsx
+*@
+
+<div 
+    class="@ContainerClass"
+    data-slot="accordion-content"
+    data-state="@(Parent?.State ?? "closed")"
+    style="@ContainerStyle"
+    @attributes="AdditionalAttributes">
+    <div class="@CombinedClass">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private AccordionItem? Parent { get; set; }
+
+    /// <summary>
+    /// Child content (accordion body)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for inner content wrapper
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ContainerClass => Parent?.IsOpen == true
+        ? "data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+        : "data-[state=closed]:animate-accordion-up overflow-hidden text-sm";
+
+    private string ContainerStyle => Parent?.IsOpen == true
+        ? "max-height: var(--radix-accordion-content-height); animation: accordion-down 200ms ease-out;"
+        : "max-height: 0; animation: accordion-up 200ms ease-out;";
+
+    private string CombinedClass => $"pt-0 pb-4 {Class}".Trim();
+}

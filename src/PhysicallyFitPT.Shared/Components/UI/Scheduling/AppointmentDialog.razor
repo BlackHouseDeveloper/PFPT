@@ -1,0 +1,254 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+@inject PhysicallyFitPT.Shared.Components.UI.Toaster.ToastService ToastService
+
+<PhysicallyFitPT.Shared.Components.UI.Dialog.Dialog Open="@Open">
+    @DialogBody
+</PhysicallyFitPT.Shared.Components.UI.Dialog.Dialog>
+
+@code {
+    private const string DefaultVisitColor = "#64748b";
+    private readonly List<VisitTypeOption> visitTypes = new()
+    {
+        new("eval", "Initial Evaluation", 60, "#16a34a"),
+        new("progress", "Progress Note", 45, "#2563eb"),
+        new("daily", "Daily Treatment", 30, "#7c3aed"),
+        new("discharge", "Discharge", 30, "#dc2626"),
+        new("dry-needling", "Dry Needling", 20, "#ea580c")
+    };
+
+    private readonly List<string> locations = new()
+    {
+        "Room 101",
+        "Room 102",
+        "Room 103",
+        "Gym Area",
+        "Telehealth"
+    };
+
+    private string patientName = string.Empty;
+    private string visitType = string.Empty;
+    private string location = string.Empty;
+    private string notes = string.Empty;
+    private bool? intakeComplete;
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter]
+    public string Day { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Time { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ClinicianName { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<AppointmentResult> OnSave { get; set; }
+
+    private VisitTypeOption? SelectedVisitType => visitTypes.FirstOrDefault(v => v.Value == visitType);
+
+    private RenderFragment DialogBody => @<div class="appointment-dialog">
+        <div class="dialog-header">
+            <div class="dialog-title-row">
+                <span class="icon">CAL</span>
+                <div>
+                    <p class="title">Schedule Appointment</p>
+                    <p class="subtitle">@Day at @Time with @ClinicianName</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-body">
+            <div class="field">
+                <Label CssClass="field-label">
+                    <span class="icon">PT</span>
+                    Patient Name *
+                </Label>
+                <Input @bind-Value="patientName" Placeholder="Enter patient name..." Class="input-lg" />
+            </div>
+
+            <div class="field">
+                <Label CssClass="field-label">
+                    <span class="icon">VT</span>
+                    Visit Type *
+                </Label>
+                <Select @bind-Value="visitType">
+                    <SelectTrigger Placeholder="Select visit type..." Class="input-lg" />
+                    <SelectContent>
+                        @foreach (var vt in visitTypes)
+                        {
+                            <SelectItem Value="@vt.Value" Label="@vt.Label">
+                                <div class="visit-option">
+                                    <span class="visit-dot" style=$"background-color:{vt.Color}"></span>
+                                    <span>@vt.Label (@vt.Duration min)</span>
+                                </div>
+                            </SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+            </div>
+
+            @if (SelectedVisitType is not null)
+            {
+                <div class="auto-info">
+                    <p class="auto-title">Auto-populated Information</p>
+                    <div class="auto-grid">
+                        <div>
+                            <span class="muted">Duration:</span>
+                            <span class="value">@SelectedVisitType.Duration minutes</span>
+                        </div>
+                        <div>
+                            <span class="muted">End Time:</span>
+                            <span class="value">@GetEndTime()</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="field">
+                <Label CssClass="field-label">
+                    <span class="icon">LOC</span>
+                    Location *
+                </Label>
+                <Select @bind-Value="location">
+                    <SelectTrigger Placeholder="Select location..." Class="input-lg" />
+                    <SelectContent>
+                        @foreach (var loc in locations)
+                        {
+                            <SelectItem Value="@loc" Label="@loc" />
+                        }
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <div class="field">
+                <Label>Additional Notes</Label>
+                <Textarea @bind-Value="notes" Placeholder="Any special instructions or notes..." Class="notes" />
+            </div>
+
+            <div class="intake-card">
+                <div class="intake-top">
+                    <div>
+                        <Label CssClass="intake-title">Intake Form Status</Label>
+                        <p class="intake-subtitle">Send intake form link to patient via email/SMS</p>
+                    </div>
+                    <Button Variant="outline" Size="sm" Class="intake-send" OnClick="SendIntakeLink">Send Intake Link</Button>
+                </div>
+
+                <div class="intake-row">
+                    <Checkbox @bind-Value="intakeComplete" />
+                    <Label CssClass="intake-label">Mark intake form as complete</Label>
+                </div>
+
+                @if (intakeComplete == true)
+                {
+                    <div class="status success">
+                        <span class="dot success"></span>
+                        <span>Intake form completed</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="status pending">
+                        <span class="dot pending"></span>
+                        <span>Intake form pending</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="dialog-footer">
+            <Button Variant="outline" OnClick="Close">Cancel</Button>
+            <Button Class="primary" OnClick="Save">Create Appointment</Button>
+        </div>
+    </div>;
+
+    private string GetEndTime()
+    {
+        if (string.IsNullOrWhiteSpace(Time) || SelectedVisitType is null)
+        {
+            return "--:--";
+        }
+
+        var parts = Time.Split(':');
+        if (parts.Length != 2 || !int.TryParse(parts[0], out var hours) || !int.TryParse(parts[1], out var minutes))
+        {
+            return "--:--";
+        }
+
+        var totalMinutes = hours * 60 + minutes + SelectedVisitType.Duration;
+        var endHours = (totalMinutes / 60) % 24;
+        var endMinutes = totalMinutes % 60;
+        return $"{endHours:00}:{endMinutes:00}";
+    }
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(patientName) || string.IsNullOrWhiteSpace(visitType) || string.IsNullOrWhiteSpace(location))
+        {
+            ToastService.Error("Please fill in all required fields", "Missing details");
+            return;
+        }
+
+        var selected = SelectedVisitType;
+        var result = new AppointmentResult
+        {
+            Id = $"apt-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            PatientName = patientName,
+            VisitType = selected?.Label ?? string.Empty,
+            VisitColor = selected?.Color ?? DefaultVisitColor,
+            DurationMinutes = selected?.Duration ?? 30,
+            StartTime = Time,
+            IntakeComplete = intakeComplete == true,
+            Location = location,
+            Notes = notes
+        };
+
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync(result);
+        }
+
+        ToastService.Success("Appointment created successfully", "Saved");
+        await Close();
+    }
+
+    private void SendIntakeLink()
+    {
+        ToastService.Success("Intake form link sent", "Patient notified");
+        intakeComplete = false;
+    }
+
+    private async Task Close()
+    {
+        await HandleOpenChange(false);
+    }
+
+    private async Task HandleOpenChange(bool open)
+    {
+        Open = open;
+        if (OpenChanged.HasDelegate)
+        {
+            await OpenChanged.InvokeAsync(open);
+        }
+    }
+
+    private sealed record VisitTypeOption(string Value, string Label, int Duration, string Color);
+
+    public sealed class AppointmentResult
+    {
+        public string Id { get; set; } = string.Empty;
+        public string PatientName { get; set; } = string.Empty;
+        public string VisitType { get; set; } = string.Empty;
+        public string VisitColor { get; set; } = DefaultVisitColor;
+        public int DurationMinutes { get; set; }
+        public string StartTime { get; set; } = string.Empty;
+        public bool IntakeComplete { get; set; }
+        public string Location { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
+}

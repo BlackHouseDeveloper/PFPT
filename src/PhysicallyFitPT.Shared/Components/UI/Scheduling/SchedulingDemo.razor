@@ -1,0 +1,223 @@
+@page "/demo/scheduling"
+@using PhysicallyFitPT.Shared.Components.UI.Scheduling
+@using System.Collections.Generic
+
+<div class="scheduling-demo-container">
+    <CardHeader>
+        <CardTitle>Scheduling UI Components Suite</CardTitle>
+        <CardDescription>
+            Comprehensive demo of appointment scheduling, week/day views, blocks, and visit type management.
+        </CardDescription>
+    </CardHeader>
+
+    <CardContent>
+        <!-- Tab Navigation -->
+        <div class="demo-tabs">
+            <button 
+                class="demo-tab-btn @(activeTab == "dayview" ? "active" : "")" 
+                @onclick="() => SetActiveTab("dayview")">
+                Day View
+            </button>
+            <button 
+                class="demo-tab-btn @(activeTab == "weekview" ? "active" : "")" 
+                @onclick="() => SetActiveTab("weekview")">
+                Week View
+            </button>
+            <button 
+                class="demo-tab-btn @(activeTab == "visittypes" ? "active" : "")" 
+                @onclick="() => SetActiveTab("visittypes")">
+                Visit Types
+            </button>
+            <button 
+                class="demo-tab-btn @(activeTab == "dialogs" ? "active" : "")" 
+                @onclick="() => SetActiveTab("dialogs")">
+                Dialogs
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="demo-tab-content">
+            <!-- Day View Demo -->
+            @if (activeTab == "dayview")
+            {
+                <div class="demo-section">
+                    <h3>Day View — Full Daily Schedule</h3>
+                    <p class="demo-description">
+                        Displays all clinicians' schedules for a selected date with 30-minute time slots (7am–7pm).
+                        Click any time slot to create a new appointment.
+                    </p>
+
+                    <div class="demo-controls">
+                        <div class="control-group">
+                            <label>Select Date:</label>
+                            <input type="date" @bind="selectedDayViewDate" />
+                        </div>
+                        <div class="control-group">
+                            <label>Filter Clinicians (comma-separated IDs):</label>
+                            <input type="text" placeholder="e.g., 1,2,3" @bind="filterClinicianIds" />
+                        </div>
+                    </div>
+
+                    <DayView 
+                        SelectedDate="selectedDayViewDate" 
+                        FilterClinicianIds="@filterClinicianIds.Split(',', System.StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()" />
+                </div>
+            }
+
+            <!-- Week View Demo -->
+            @if (activeTab == "weekview")
+            {
+                <div class="demo-section">
+                    <h3>Week View — 5-Day Weekly Schedule</h3>
+                    <p class="demo-description">
+                        Displays a 5-day (Mon–Fri) schedule with 15-minute time slots (7am–7pm).
+                        Desktop shows a grid; mobile displays day-by-day cards. Click any slot to create an appointment or block.
+                    </p>
+
+                    <div class="demo-controls">
+                        <div class="control-group">
+                            <label>Select Clinician:</label>
+                            <select @bind="selectedClinicianId">
+                                <option value="1">Dr. Smith (ID: 1)</option>
+                                <option value="2">Dr. Johnson (ID: 2)</option>
+                                <option value="3">Dr. Williams (ID: 3)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Select Week Start Date (Mon):</label>
+                            <input type="date" @bind="selectedWeekStartDate" />
+                        </div>
+                    </div>
+
+                    <WeekView 
+                        ClinicianId="@selectedClinicianId" 
+                        ClinicianName="@GetClinicianName(selectedClinicianId)" 
+                        SelectedDate="@selectedWeekStartDate" />
+                </div>
+            }
+
+            <!-- Visit Types Settings Demo -->
+            @if (activeTab == "visittypes")
+            {
+                <div class="demo-section">
+                    <h3>Visit Type Settings — CRUD Management</h3>
+                    <p class="demo-description">
+                        Manage visit types (name, duration, color, description). Add, edit, or delete visit types
+                        used throughout the scheduling system.
+                    </p>
+
+                    <VisitTypeSettings />
+                </div>
+            }
+
+            <!-- Dialogs Demo -->
+            @if (activeTab == "dialogs")
+            {
+                <div class="demo-section">
+                    <h3>Dialog Components</h3>
+                    <p class="demo-description">
+                        Standalone dialogs for creating appointments, schedule blocks, and managing visit types.
+                    </p>
+
+                    <div class="dialogs-demo-grid">
+                        <!-- Appointment Dialog -->
+                        <div class="dialog-demo-card">
+                            <h4>Appointment Dialog</h4>
+                            <p>Create or edit patient appointments with visit type, location, and intake status.</p>
+                            <button class="btn btn-primary" @onclick="() => showAppointmentDialog = true">
+                                Open Appointment Dialog
+                            </button>
+                            <AppointmentDialog 
+                                @bind-Open="showAppointmentDialog"
+                                OnSave="HandleAppointmentSave" />
+                        </div>
+
+                        <!-- Schedule Block Dialog -->
+                        <div class="dialog-demo-card">
+                            <h4>Schedule Block Dialog</h4>
+                            <p>Create admin/break/meeting/training blocks with color and duration.</p>
+                            <button class="btn btn-primary" @onclick="() => showBlockDialog = true">
+                                Open Block Dialog
+                            </button>
+                            <ScheduleBlockDialog 
+                                @bind-Open="showBlockDialog"
+                                OnSave="HandleBlockSave" />
+                        </div>
+                    </div>
+
+                    <div class="demo-output">
+                        <h4>Last Created Item:</h4>
+                        @if (!string.IsNullOrEmpty(lastCreatedItem))
+                        {
+                            <pre>@lastCreatedItem</pre>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No items created yet. Use the dialogs above to create appointments or blocks.</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Component Info -->
+        <div class="demo-info-section">
+            <h4>Component Architecture</h4>
+            <ul class="component-list">
+                <li><strong>DayView:</strong> Real-time daily schedule grid; integrates with IAppointmentService.</li>
+                <li><strong>WeekView:</strong> 5-day Mon–Fri view with 15-min slots; responsive desktop/mobile.</li>
+                <li><strong>AppointmentDialog:</strong> Create/edit appointments with visit type selection, duration, location, intake status.</li>
+                <li><strong>ScheduleBlockDialog:</strong> Create admin/break/meeting/training/blocked blocks with color and title.</li>
+                <li><strong>VisitTypeSettings:</strong> CRUD panel for managing visit types (name, duration, color, description).</li>
+                <li><strong>ScheduleSlot:</strong> Reusable component rendering appointment/block pills with metadata badges.</li>
+            </ul>
+        </div>
+
+        <!-- Integration Notes -->
+        <div class="demo-notes-section">
+            <h4>Integration Notes</h4>
+            <ul>
+                <li>All components use Blazor primitives (Dialog, Button, Card, Input, Select, etc.) from the UI library.</li>
+                <li>State management via local @@code dictionaries; production should connect to real data services.</li>
+                <li>Responsive design: mobile breakpoint at 768px; grid → day-by-day cards.</li>
+                <li>Accessibility: ARIA labels, keyboard navigation, semantic HTML.</li>
+                <li>Colors: 14-color palette for visit types; intake/block type indicators via badges and borders.</li>
+                <li>Time slots: 30-min (DayView), 15-min (WeekView); 7am–7pm by default.</li>
+            </ul>
+        </div>
+    </CardContent>
+</div>
+
+@code {
+    private string activeTab = "dayview";
+    private DateTime selectedDayViewDate = DateTime.Today;
+    private DateTime selectedWeekStartDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1); // Start of week (Monday)
+    private int selectedClinicianId = 1;
+    private string filterClinicianIds = "";
+    private bool showAppointmentDialog = false;
+    private bool showBlockDialog = false;
+    private string lastCreatedItem = "";
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    private string GetClinicianName(int id) => id switch
+    {
+        1 => "Dr. Smith",
+        2 => "Dr. Johnson",
+        3 => "Dr. Williams",
+        _ => "Unknown Clinician"
+    };
+
+    private void HandleAppointmentSave(object appointment)
+    {
+        lastCreatedItem = $"Appointment created:\n{System.Text.Json.JsonSerializer.Serialize(appointment, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}";
+    }
+
+    private void HandleBlockSave(object block)
+    {
+        lastCreatedItem = $"Block created:\n{System.Text.Json.JsonSerializer.Serialize(block, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}";
+    }
+}

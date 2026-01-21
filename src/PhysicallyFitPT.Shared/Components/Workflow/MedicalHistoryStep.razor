@@ -1,0 +1,185 @@
+@* Medical History Collection Step *@
+@namespace PhysicallyFitPT.Shared.Components.Workflow
+@using PhysicallyFitPT.Core.Intake
+
+<div class="intake-step medical-history">
+    <h3>Medical History</h3>
+
+    <div class="form-section">
+        <label>Chief Complaints (select all that apply) *</label>
+        <div class="checkbox-group">
+            @foreach (var complaint in chiefComplaintOptions)
+            {
+                <div class="checkbox-item">
+                    <input type="checkbox" 
+                           id="complaint_@complaint" 
+                           @onchange="e => ToggleComplaint(complaint, (bool?)e.Value ?? false)" 
+                           checked="@Data.ChiefComplaints.Contains(complaint)" />
+                    <label for="complaint_@complaint">@complaint</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group col-span-2">
+            <label for="onsetDate">Onset Date / When did symptoms start?</label>
+            <Input @bind-Value="Data.OnsetDate" Type="date" />
+        </div>
+
+        <div class="form-group col-span-2">
+            <label for="mechanism">Mechanism of Injury / Cause</label>
+            <Textarea @bind-Value="Data.Mechanism" 
+                     Placeholder="Describe how the injury occurred or what caused the condition"
+                     Rows="3" />
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Past Medical History (check all that apply)</label>
+        <div class="checkbox-group">
+            @foreach (var condition in medicalHistoryOptions)
+            {
+                <div class="checkbox-item">
+                    <input type="checkbox" 
+                           id="pmh_@condition" 
+                           @onchange="e => ToggleMedicalHistory(condition, (bool?)e.Value ?? false)" 
+                           checked="@Data.PastMedicalHistory.Contains(condition)" />
+                    <label for="pmh_@condition">@condition</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Current Medications</label>
+        <div class="medication-list">
+            @foreach (var med in Data.Medications)
+            {
+                <div class="medication-item">
+                    <span>@med</span>
+                    <button @onclick="() => RemoveMedication(med)" class="btn-remove" aria-label="Remove medication">✕</button>
+                </div>
+            }
+        </div>
+        <div class="add-medication">
+            <Input @bind-Value="newMedication" Type="text" Placeholder="Add medication..." />
+            <Button @onclick="AddMedication" Size="sm">Add</Button>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="checkbox-item">
+            <input type="checkbox" 
+                   id="hasSurgery" 
+                   @onchange="e => Data.HasSurgicalHistory = (bool?)e.Value ?? false" 
+                   checked="@Data.HasSurgicalHistory" />
+            <label for="hasSurgery">History of Surgery</label>
+        </div>
+        @if (Data.HasSurgicalHistory)
+        {
+            <div class="form-group">
+                <label for="surgeryHistory">Please describe surgeries</label>
+                <Textarea @bind-Value="Data.SurgicalHistory" 
+                         Placeholder="List surgeries, dates, and relevant details"
+                         Rows="3" />
+            </div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="allergies">Allergies & Adverse Reactions</label>
+        <Textarea @bind-Value="Data.Allergies" 
+                 Placeholder="List any allergies, medications, foods, or environmental triggers"
+                 Rows="3" />
+    </div>
+
+    <div class="form-actions">
+        <Button @onclick="HandlePrevious" Variant="outline">Previous</Button>
+        <Button @onclick="HandleNext" Variant="default" Size="lg">Next Step</Button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public MedicalHistoryData Data { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<MedicalHistoryData> DataChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnNext { get; set; }
+
+    [Parameter]
+    public EventCallback OnPrevious { get; set; }
+
+    private string newMedication = "";
+
+    private readonly List<string> chiefComplaintOptions = new()
+    {
+        "Pain",
+        "Limited Range of Motion",
+        "Weakness",
+        "Swelling",
+        "Stiffness",
+        "Balance/Coordination Issues",
+        "Numbness/Tingling",
+        "Muscle Tightness"
+    };
+
+    private readonly List<string> medicalHistoryOptions = new()
+    {
+        "Arthritis",
+        "Diabetes",
+        "Hypertension",
+        "Heart Disease",
+        "Asthma",
+        "Osteoporosis",
+        "Cancer",
+        "Thyroid Disease",
+        "Stroke/TIA",
+        "Neurological Disorder"
+    };
+
+    private void ToggleComplaint(string complaint, bool isChecked)
+    {
+        if (isChecked && !Data.ChiefComplaints.Contains(complaint))
+        {
+            Data.ChiefComplaints.Add(complaint);
+        }
+        else if (!isChecked)
+        {
+            Data.ChiefComplaints.Remove(complaint);
+        }
+    }
+
+    private void ToggleMedicalHistory(string condition, bool isChecked)
+    {
+        if (isChecked && !Data.PastMedicalHistory.Contains(condition))
+        {
+            Data.PastMedicalHistory.Add(condition);
+        }
+        else if (!isChecked)
+        {
+            Data.PastMedicalHistory.Remove(condition);
+        }
+    }
+
+    private void AddMedication()
+    {
+        if (!string.IsNullOrWhiteSpace(newMedication) && !Data.Medications.Contains(newMedication))
+        {
+            Data.Medications.Add(newMedication);
+            newMedication = "";
+        }
+    }
+
+    private void RemoveMedication(string medication)
+    {
+        Data.Medications.Remove(medication);
+    }
+
+    private async Task HandleNext() => await OnNext.InvokeAsync();
+    private async Task HandlePrevious() => await OnPrevious.InvokeAsync();
+
+}

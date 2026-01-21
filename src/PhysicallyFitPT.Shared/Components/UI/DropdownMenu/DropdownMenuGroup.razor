@@ -1,0 +1,14 @@
+@* Dropdown menu group - groups related items *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="dropdown-group" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

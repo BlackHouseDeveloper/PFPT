@@ -1,0 +1,21 @@
+@* MenubarRadioGroup - manages radio selection *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    internal async Task SetValue(string? value)
+    {
+        Value = value;
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(value);
+        }
+    }
+}

@@ -1,0 +1,544 @@
+@page "/components/tabs"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PageTitle>Tabs Component Demo</PageTitle>
+
+<div class="component-demo">
+    <div class="demo-header">
+        <h1>Tabs Component</h1>
+        <p>Organized tab interface for displaying related content sections with clinical examples for patient notes, assessments, and documentation.</p>
+    </div>
+
+    <!-- Basic Tabs -->
+    <section class="demo-section">
+        <h2>Basic Tabs</h2>
+        <p>Simple tab interface with triggers and content panels for organizing related information.</p>
+        <div class="demo-box">
+            <Tabs DefaultValue="overview">
+                <TabsList>
+                    <TabsTrigger Value="overview">Overview</TabsTrigger>
+                    <TabsTrigger Value="details">Details</TabsTrigger>
+                    <TabsTrigger Value="notes">Notes</TabsTrigger>
+                </TabsList>
+                <TabsContent Value="overview">
+                    <div class="tab-content">
+                        <p>This is the overview tab content. It provides a high-level summary of the information.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="details">
+                    <div class="tab-content">
+                        <p>This is the details tab content. It contains more detailed information about the subject matter.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="notes">
+                    <div class="tab-content">
+                        <p>This is the notes tab content. Additional notes and observations can be documented here.</p>
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </div>
+        <pre><code>&lt;Tabs DefaultValue="tab1"&gt;
+    &lt;TabsList&gt;
+        &lt;TabsTrigger Value="tab1"&gt;Tab 1&lt;/TabsTrigger&gt;
+        &lt;TabsTrigger Value="tab2"&gt;Tab 2&lt;/TabsTrigger&gt;
+    &lt;/TabsList&gt;
+    &lt;TabsContent Value="tab1"&gt;Content for tab 1&lt;/TabsContent&gt;
+    &lt;TabsContent Value="tab2"&gt;Content for tab 2&lt;/TabsContent&gt;
+&lt;/Tabs&gt;</code></pre>
+    </section>
+
+    <!-- SOAP Note Tabs -->
+    <section class="demo-section">
+        <h2>SOAP Note Organization</h2>
+        <p>Tabbed interface for organizing the Subjective, Objective, Assessment, and Plan sections of a patient visit note.</p>
+        <div class="demo-box">
+            <Tabs DefaultValue="subjective">
+                <TabsList>
+                    <TabsTrigger Value="subjective">Subjective (S)</TabsTrigger>
+                    <TabsTrigger Value="objective">Objective (O)</TabsTrigger>
+                    <TabsTrigger Value="assessment">Assessment (A)</TabsTrigger>
+                    <TabsTrigger Value="plan">Plan (P)</TabsTrigger>
+                </TabsList>
+                <TabsContent Value="subjective">
+                    <div class="tab-content">
+                        <h3>Patient Report</h3>
+                        <p><strong>Chief Complaint:</strong> Right shoulder pain with limited motion</p>
+                        <p><strong>History:</strong> Patient reports onset of pain 2 weeks ago after lifting heavy object. Pain worsens with reaching overhead activities. No trauma or falls reported.</p>
+                        <p><strong>Functional Limitations:</strong> Difficulty with dressing, unable to reach overhead shelves, pain with sleeping on affected side.</p>
+                        <p><strong>Prior Treatment:</strong> Over-the-counter ibuprofen with minimal relief.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="objective">
+                    <div class="tab-content">
+                        <h3>Physical Examination</h3>
+                        <p><strong>Range of Motion (Shoulder):</strong></p>
+                        <ul>
+                            <li>Flexion: 160° (limited from 180°)</li>
+                            <li>Abduction: 145° (limited from 180°)</li>
+                            <li>External Rotation: 75° (normal)</li>
+                        </ul>
+                        <p><strong>Strength:</strong> Right shoulder 4+/5 across all planes</p>
+                        <p><strong>Palpation:</strong> Tenderness over supraspinatus, anterior shoulder joint</p>
+                        <p><strong>Special Tests:</strong> Positive Neer's impingement sign, Hawkins Kennedy test positive</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="assessment">
+                    <div class="tab-content">
+                        <h3>Clinical Assessment</h3>
+                        <p><strong>Diagnosis:</strong> Subacromial impingement syndrome, right shoulder</p>
+                        <p><strong>Contributing Factors:</strong></p>
+                        <ul>
+                            <li>Postural dysfunction with forward shoulder positioning</li>
+                            <li>Weakness in rotator cuff stabilizers</li>
+                            <li>Reduced scapular mobility</li>
+                            <li>Tight pectoralis minor muscles</li>
+                        </ul>
+                        <p><strong>Prognosis:</strong> Good. Patient is motivated and presents with no significant comorbidities.</p>
+                        <p><strong>Rehabilitation Potential:</strong> Excellent. Expected to return to functional level within 4-6 weeks with compliance to therapy program.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="plan">
+                    <div class="tab-content">
+                        <h3>Treatment Plan</h3>
+                        <p><strong>Frequency:</strong> 2-3x per week for 4 weeks, then re-evaluate</p>
+                        <p><strong>Interventions:</strong></p>
+                        <ul>
+                            <li>Manual therapy: Soft tissue mobilization of pectoralis and rotator cuff</li>
+                            <li>Therapeutic exercise: Rotator cuff strengthening, scapular stabilization</li>
+                            <li>Neuromuscular reeducation: Posture training and body mechanics</li>
+                            <li>Modalities: Therapeutic ultrasound, ice/heat as indicated</li>
+                        </ul>
+                        <p><strong>Home Exercise Program:</strong> Daily stretching and strengthening exercises (15-20 minutes, 6 days/week)</p>
+                        <p><strong>Patient Education:</strong> Activity modification, proper ergonomics, lifestyle modifications</p>
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </div>
+    </section>
+
+    <!-- Patient Visit Documentation Tabs -->
+    <section class="demo-section">
+        <h2>Patient Visit Documentation</h2>
+        <p>Organized tabs for comprehensive patient visit documentation including vitals, allergies, medications, and visit notes.</p>
+        <div class="demo-box">
+            <Tabs DefaultValue="vitals">
+                <TabsList>
+                    <TabsTrigger Value="vitals">Vitals</TabsTrigger>
+                    <TabsTrigger Value="allergies">Allergies</TabsTrigger>
+                    <TabsTrigger Value="medications">Medications</TabsTrigger>
+                    <TabsTrigger Value="history">History</TabsTrigger>
+                    <TabsTrigger Value="visit">Today's Visit</TabsTrigger>
+                </TabsList>
+                <TabsContent Value="vitals">
+                    <div class="tab-content">
+                        <div class="vital-grid">
+                            <div class="vital-item">
+                                <span class="vital-label">Blood Pressure</span>
+                                <span class="vital-value">128/82 mmHg</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="vital-label">Heart Rate</span>
+                                <span class="vital-value">72 bpm</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="vital-label">Temperature</span>
+                                <span class="vital-value">98.6°F</span>
+                            </div>
+                            <div class="vital-item">
+                                <span class="vital-label">Weight</span>
+                                <span class="vital-value">185 lbs</span>
+                            </div>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="allergies">
+                    <div class="tab-content">
+                        <p><strong>Medication Allergies:</strong></p>
+                        <div class="alert alert-warning">
+                            <strong>Penicillin:</strong> Rash, hives (documented 2020)
+                        </div>
+                        <p><strong>Food Allergies:</strong> None known</p>
+                        <p><strong>Environmental Allergies:</strong> Pollen (seasonal), dust mites</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="medications">
+                    <div class="tab-content">
+                        <p><strong>Current Medications:</strong></p>
+                        <ul>
+                            <li>Lisinopril 10mg daily (blood pressure)</li>
+                            <li>Metformin 500mg twice daily (diabetes)</li>
+                            <li>Ibuprofen 400mg as needed (pain)</li>
+                        </ul>
+                        <p><strong>Supplements:</strong></p>
+                        <ul>
+                            <li>Vitamin D 2000 IU daily</li>
+                            <li>Glucosamine 1500mg daily</li>
+                        </ul>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="history">
+                    <div class="tab-content">
+                        <p><strong>Past Medical History:</strong></p>
+                        <ul>
+                            <li>Type 2 Diabetes (2015)</li>
+                            <li>Hypertension (2018)</li>
+                            <li>Left knee meniscectomy (2010)</li>
+                        </ul>
+                        <p><strong>Social History:</strong></p>
+                        <ul>
+                            <li>Occupation: Desk work (sedentary)</li>
+                            <li>Exercise: 2-3x per week walking</li>
+                            <li>Smoking: Never smoker</li>
+                        </ul>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="visit">
+                    <div class="tab-content">
+                        <p><strong>Chief Complaint:</strong> Routine physical therapy evaluation for shoulder pain</p>
+                        <p><strong>Time In/Out:</strong> 10:00 AM - 11:00 AM</p>
+                        <p><strong>Therapist:</strong> Dr. Sarah Martinez, PT, DPT</p>
+                        <p><strong>Visit Type:</strong> Evaluation (Initial)</p>
+                        <p><strong>CPT Codes Used:</strong> 97161 (PT Eval - Low Complexity)</p>
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </div>
+    </section>
+
+    <!-- Therapy Goals and Progress Tabs -->
+    <section class="demo-section">
+        <h2>Therapy Goals by Phase</h2>
+        <p>Organize therapy goals across different phases of rehabilitation.</p>
+        <div class="demo-box">
+            <Tabs DefaultValue="phase1">
+                <TabsList>
+                    <TabsTrigger Value="phase1">Phase 1: Acute</TabsTrigger>
+                    <TabsTrigger Value="phase2">Phase 2: Intermediate</TabsTrigger>
+                    <TabsTrigger Value="phase3">Phase 3: Advanced</TabsTrigger>
+                </TabsList>
+                <TabsContent Value="phase1">
+                    <div class="tab-content">
+                        <h3>Phase 1: Acute Phase (Weeks 1-2)</h3>
+                        <p><strong>Goals:</strong></p>
+                        <ul>
+                            <li>Reduce pain and inflammation</li>
+                            <li>Maintain scapular control</li>
+                            <li>Improve posture awareness</li>
+                            <li>Restore gentle ROM</li>
+                        </ul>
+                        <p><strong>Status:</strong> <span class="badge badge-success">In Progress</span></p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="phase2">
+                    <div class="tab-content">
+                        <h3>Phase 2: Intermediate Phase (Weeks 3-4)</h3>
+                        <p><strong>Goals:</strong></p>
+                        <ul>
+                            <li>Continue ROM improvement</li>
+                            <li>Strengthen rotator cuff</li>
+                            <li>Improve scapular mobility</li>
+                            <li>Return to light functional activities</li>
+                        </ul>
+                        <p><strong>Status:</strong> <span class="badge badge-info">Pending</span></p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="phase3">
+                    <div class="tab-content">
+                        <h3>Phase 3: Advanced Phase (Weeks 5-6)</h3>
+                        <p><strong>Goals:</strong></p>
+                        <ul>
+                            <li>Full pain-free ROM</li>
+                            <li>Full strength restoration</li>
+                            <li>Return to all functional activities</li>
+                            <li>Discharge from PT care</li>
+                        </ul>
+                        <p><strong>Status:</strong> <span class="badge badge-secondary">Future</span></p>
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="demo-section">
+        <h2>Tabs Features</h2>
+        <ul class="features-list">
+            <li><strong>Cascading Context</strong> — TabsContext manages active tab state across component tree</li>
+            <li><strong>Keyboard Navigation</strong> — Tab, Enter, and arrow keys for full keyboard support</li>
+            <li><strong>Default Value</strong> — Set which tab displays on initial render</li>
+            <li><strong>Accessible ARIA Roles</strong> — Proper role="tab" and aria-selected attributes</li>
+            <li><strong>Smooth Animations</strong> — CSS fade-in animations for content transitions</li>
+            <li><strong>Disabled Tabs</strong> — Support for disabled tab triggers</li>
+            <li><strong>Dark Mode</strong> — Automatic color adjustment in dark mode</li>
+            <li><strong>High Contrast</strong> — Enhanced borders and emphasis for accessibility</li>
+            <li><strong>Reduced Motion</strong> — Respects prefers-reduced-motion preference</li>
+            <li><strong>Responsive Design</strong> — Adaptive sizing and spacing for mobile devices</li>
+            <li><strong>Multiple Variants</strong> — Bordered, underline, and default tab styles</li>
+            <li><strong>Custom Styling</strong> — All components accept Class parameter for customization</li>
+        </ul>
+    </section>
+</div>
+
+<style>
+    .component-demo {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .demo-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .demo-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-header p {
+        font-size: 1.0625rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+    }
+
+    .demo-section {
+        margin-bottom: 3rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-section > p {
+        color: var(--muted-foreground, #6b7280);
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .demo-box {
+        background-color: var(--card-background, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-content {
+        padding: 1.5rem 0;
+        color: var(--foreground, #1f2937);
+        line-height: 1.6;
+    }
+
+    .tab-content h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--foreground, #1f2937);
+    }
+
+    .tab-content p {
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .tab-content ul {
+        margin: 0 0 1rem 1.5rem;
+        padding: 0;
+        list-style: disc;
+    }
+
+    .tab-content li {
+        margin-bottom: 0.5rem;
+        font-size: 0.9375rem;
+    }
+
+    .vital-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .vital-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+    }
+
+    .vital-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted-foreground, #6b7280);
+    }
+
+    .vital-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--foreground, #1f2937);
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+    }
+
+    .alert-warning {
+        background-color: #fef3c7;
+        border-left-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-info {
+        background-color: #dbeafe;
+        color: #0c4a6e;
+    }
+
+    .badge-secondary {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+
+    pre {
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        color: var(--foreground, #1f2937);
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .features-list li {
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .demo-header {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .demo-header h1 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-header p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-section h2 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-section > p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-box {
+            background-color: var(--card-background, #1f2937);
+            border-color: var(--border-color, #374151);
+        }
+
+        .tab-content {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .tab-content h3 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .vital-item {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        .vital-label {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .vital-value {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .alert-warning {
+            background-color: #78350f;
+            color: #fde047;
+        }
+
+        .badge-success {
+            background-color: #064e3b;
+            color: #d1fae5;
+        }
+
+        .badge-info {
+            background-color: #0c2d48;
+            color: #dbeafe;
+        }
+
+        .badge-secondary {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+
+        pre {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        code {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .features-list li {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+    }
+</style>

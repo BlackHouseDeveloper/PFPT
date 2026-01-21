@@ -1,0 +1,294 @@
+@* Dropdown Menu Demo - Clinical examples of dropdown menus *@
+@page "/demo/dropdown-menu"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Dropdown Menu</h1>
+    <p class="demo-description">
+        Click-triggered menus with support for items, checkboxes, radio groups, labels, and keyboard shortcuts.
+        Used throughout the app for patient actions, view options, and status updates.
+    </p>
+
+    <div class="demo-section">
+        <h2>Patient Actions Menu</h2>
+        <p>Common actions available for a patient record.</p>
+        <div class="demo-example">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <button class="demo-button">
+                        Patient Actions ▼
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                        <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
+                        <DropdownMenuItem Value="view" OnClick="@(() => selectedAction = "View Details")">
+                            <Icon>👁️</Icon>
+                            <ChildContent>View Details</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem Value="edit" OnClick="@(() => selectedAction = "Edit Patient")">
+                            <Icon>✏️</Icon>
+                            <ChildContent>Edit Patient</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem Value="notes" OnClick="@(() => selectedAction = "View Notes")">
+                            <Icon>📋</Icon>
+                            <ChildContent>View Notes</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Schedule</DropdownMenuLabel>
+                        <DropdownMenuItem Value="appointment" OnClick="@(() => selectedAction = "New Appointment")">
+                            <Icon>📅</Icon>
+                            <ChildContent>New Appointment</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem Value="checkin" OnClick="@(() => selectedAction = "Check In")">
+                            <Icon>✅</Icon>
+                            <ChildContent>Check In</ChildContent>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem Value="discharge" OnClick="@(() => selectedAction = "Discharge Patient")">
+                            <Icon>🏁</Icon>
+                            <ChildContent>Discharge Patient</ChildContent>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                
+            </DropdownMenu>
+            @if (!string.IsNullOrEmpty(selectedAction))
+            {
+                <p class="demo-result">Selected: @selectedAction</p>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>View Options with Checkboxes</h2>
+        <p>Toggle visibility of different panels in the clinical interface.</p>
+        <div class="demo-example">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <button class="demo-button">
+                        View Options ▼
+                    </button>
+                </DropdownMenuTrigger>
+                
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Show Panels</DropdownMenuLabel>
+                        <DropdownMenuCheckboxItem Value="sidebar" 
+                                                   Checked="@showSidebar" 
+                                                   OnCheckedChange="@(v => showSidebar = v)">
+                            <ChildContent>Sidebar</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Value="toolbar" 
+                                                   Checked="@showToolbar" 
+                                                   OnCheckedChange="@(v => showToolbar = v)">
+                            <ChildContent>Toolbar</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Value="statusbar" 
+                                                   Checked="@showStatusBar" 
+                                                   OnCheckedChange="@(v => showStatusBar = v)">
+                            <ChildContent>Status Bar</ChildContent>
+                            <Shortcut>
+                                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                            </Shortcut>
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Clinical Views</DropdownMenuLabel>
+                        <DropdownMenuCheckboxItem Value="soap" 
+                                                   Checked="@showSOAP" 
+                                                   OnCheckedChange="@(v => showSOAP = v)">
+                            <ChildContent>SOAP Notes</ChildContent>
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Value="vitals" 
+                                                   Checked="@showVitals" 
+                                                   OnCheckedChange="@(v => showVitals = v)">
+                            <ChildContent>Vital Signs</ChildContent>
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Value="goals" 
+                                                   Checked="@showGoals" 
+                                                   OnCheckedChange="@(v => showGoals = v)">
+                            <ChildContent>Treatment Goals</ChildContent>
+                        </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                
+            </DropdownMenu>
+            <div class="demo-result">
+                <p><strong>Active Panels:</strong></p>
+                <ul>
+                    @if (showSidebar) { <li>Sidebar</li> }
+                    @if (showToolbar) { <li>Toolbar</li> }
+                    @if (showStatusBar) { <li>Status Bar</li> }
+                    @if (showSOAP) { <li>SOAP Notes</li> }
+                    @if (showVitals) { <li>Vital Signs</li> }
+                    @if (showGoals) { <li>Treatment Goals</li> }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Status Selection with Radio Items</h2>
+        <p>Select patient status - only one can be active at a time.</p>
+        <div class="demo-example">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <button class="demo-button">
+                        Status: @patientStatus ▼
+                    </button>
+                </DropdownMenuTrigger>
+                
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Patient Status</DropdownMenuLabel>
+                        <DropdownMenuRadioItem Value="active" OnSelect="@HandleStatusChange">
+                            <ChildContent>Active Treatment</ChildContent>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem Value="evaluation" OnSelect="@HandleStatusChange">
+                            <ChildContent>Initial Evaluation</ChildContent>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem Value="maintenance" OnSelect="@HandleStatusChange">
+                            <ChildContent>Maintenance</ChildContent>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem Value="hold" OnSelect="@HandleStatusChange">
+                            <ChildContent>On Hold</ChildContent>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem Value="discharged" OnSelect="@HandleStatusChange">
+                            <ChildContent>Discharged</ChildContent>
+                        </DropdownMenuRadioItem>
+                    </DropdownMenuContent>
+                
+            </DropdownMenu>
+            <p class="demo-result">Current Status: <strong>@patientStatus</strong></p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Note Type Menu</h2>
+        <p>Create different types of clinical notes with grouped options.</p>
+        <div class="demo-example">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <button class="demo-button primary">
+                        + New Note ▼
+                    </button>
+                </DropdownMenuTrigger>
+                
+                    <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Evaluation Notes</DropdownMenuLabel>
+                            <DropdownMenuItem Value="initial" OnClick="@(() => selectedNoteType = "Initial Evaluation")">
+                                <Icon>📝</Icon>
+                                <ChildContent>Initial Evaluation</ChildContent>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem Value="progress" OnClick="@(() => selectedNoteType = "Progress Note")">
+                                <Icon>📈</Icon>
+                                <ChildContent>Progress Note</ChildContent>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem Value="discharge" OnClick="@(() => selectedNoteType = "Discharge Summary")">
+                                <Icon>🏁</Icon>
+                                <ChildContent>Discharge Summary</ChildContent>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Additional Notes</DropdownMenuLabel>
+                            <DropdownMenuItem Value="daily" OnClick="@(() => selectedNoteType = "Daily Note")">
+                                <Icon>📅</Icon>
+                                <ChildContent>Daily Note</ChildContent>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem Value="addendum" OnClick="@(() => selectedNoteType = "Addendum")">
+                                <Icon>➕</Icon>
+                                <ChildContent>Addendum</ChildContent>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem Value="communication" OnClick="@(() => selectedNoteType = "Communication Log")">
+                                <Icon>💬</Icon>
+                                <ChildContent>Communication Log</ChildContent>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                
+            </DropdownMenu>
+            @if (!string.IsNullOrEmpty(selectedNoteType))
+            {
+                <p class="demo-result">Creating: <strong>@selectedNoteType</strong></p>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled Items</h2>
+        <p>Some menu items can be disabled based on permissions or context.</p>
+        <div class="demo-example">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <button class="demo-button">
+                        Administrative ▼
+                    </button>
+                </DropdownMenuTrigger>
+                
+                    <DropdownMenuContent>
+                        <DropdownMenuItem Value="reports" OnClick="@(() => selectedAction = "View Reports")">
+                            <Icon>📊</Icon>
+                            <ChildContent>View Reports</ChildContent>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem Value="export" OnClick="@(() => selectedAction = "Export Data")">
+                            <Icon>💾</Icon>
+                            <ChildContent>Export Data</ChildContent>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem Value="billing" Disabled="true">
+                            <Icon>💰</Icon>
+                            <ChildContent>Billing (Requires Admin)</ChildContent>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem Value="users" Disabled="true">
+                            <Icon>👥</Icon>
+                            <ChildContent>Manage Users (Requires Admin)</ChildContent>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                
+            </DropdownMenu>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedAction = string.Empty;
+    private string selectedNoteType = string.Empty;
+    private string patientStatus = "Active Treatment";
+
+    // View options checkboxes
+    private bool showSidebar = true;
+    private bool showToolbar = true;
+    private bool showStatusBar = true;
+    private bool showSOAP = true;
+    private bool showVitals = false;
+    private bool showGoals = true;
+
+    private Task HandleStatusChange(string status)
+    {
+        patientStatus = status switch
+        {
+            "active" => "Active Treatment",
+            "evaluation" => "Initial Evaluation",
+            "maintenance" => "Maintenance",
+            "hold" => "On Hold",
+            "discharged" => "Discharged",
+            _ => patientStatus
+        };
+        return Task.CompletedTask;
+    }
+}

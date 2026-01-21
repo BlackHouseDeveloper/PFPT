@@ -1,0 +1,66 @@
+@* Chart container component - requires JS charting library (Chart.js, etc.) *@
+
+<div class="chart-container @Class" @attributes="AdditionalAttributes">
+    <div class="aspect-video flex justify-center items-center text-xs">
+        <canvas @ref="canvasRef" id="@ChartId"></canvas>
+    </div>
+    @if (ShowLegend && Config != null)
+    {
+        <ChartLegend Config="Config" />
+    }
+</div>
+
+@code {
+    private ElementReference canvasRef;
+
+    [Parameter]
+    public string? ChartId { get; set; }
+
+    [Parameter]
+    public ChartType Type { get; set; } = ChartType.Line;
+
+    [Parameter]
+    public Dictionary<string, ChartConfigItem>? Config { get; set; }
+
+    [Parameter]
+    public object? Data { get; set; }
+
+    [Parameter]
+    public bool ShowLegend { get; set; } = true;
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartId ??= $"chart-{Guid.NewGuid():N}";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Data != null)
+        {
+            // In a real implementation, use JS interop to initialize Chart.js or similar:
+            // await JSRuntime.InvokeVoidAsync("initChart", canvasRef, Type, Data, Config);
+        }
+        await Task.CompletedTask;
+    }
+
+    public enum ChartType
+    {
+        Line,
+        Bar,
+        Pie,
+        Doughnut,
+        Area
+    }
+
+    public class ChartConfigItem
+    {
+        public string? Label { get; set; }
+        public string? Color { get; set; }
+    }
+}

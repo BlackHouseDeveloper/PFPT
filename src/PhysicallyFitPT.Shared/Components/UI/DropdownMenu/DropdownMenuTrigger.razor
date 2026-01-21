@@ -1,0 +1,28 @@
+@* Dropdown menu trigger - button that opens the menu *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div @ref="triggerRef" @onclick="HandleClick" class="dropdown-trigger" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public DropdownMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private ElementReference triggerRef;
+
+    private async Task HandleClick(MouseEventArgs args)
+    {
+        if (ParentMenu != null)
+        {
+            ParentMenu.SetPosition(args.ClientX, args.ClientY + 4);
+            await ParentMenu.SetOpen(!ParentMenu.Open);
+        }
+    }
+}

@@ -1,0 +1,261 @@
+/* Textarea Base Styles */
+::deep .textarea {
+    display: flex;
+    min-height: 80px;
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color, #e5e7eb);
+    background-color: var(--background, #ffffff);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--foreground, #1f2937);
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::deep .textarea::placeholder {
+    color: var(--muted-foreground, #6b7280);
+}
+
+/* Focus State */
+::deep .textarea:focus-visible {
+    outline: none;
+    border-color: var(--ring-color, #3b82f6);
+    box-shadow: 0 0 0 3px var(--ring-color-alpha, rgba(59, 130, 246, 0.1));
+}
+
+/* Hover State */
+::deep .textarea:hover:not(:disabled) {
+    border-color: var(--border-color-hover, #d1d5db);
+}
+
+/* Disabled State */
+::deep .textarea:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: var(--muted-background, #f9fafb);
+}
+
+/* Read-only State */
+::deep .textarea:read-only {
+    background-color: var(--muted-background, #f9fafb);
+    border-color: var(--border-color, #e5e7eb);
+    cursor: default;
+}
+
+/* Textarea with Error State */
+::deep .textarea[data-error="true"] {
+    border-color: #ef4444;
+}
+
+::deep .textarea[data-error="true"]:focus-visible {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Textarea with Success State */
+::deep .textarea[data-success="true"] {
+    border-color: #10b981;
+}
+
+::deep .textarea[data-success="true"]:focus-visible {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Textarea with Warning State */
+::deep .textarea[data-warning="true"] {
+    border-color: #f59e0b;
+}
+
+::deep .textarea[data-warning="true"]:focus-visible {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Small Variant */
+::deep .textarea[data-size="sm"] {
+    min-height: 60px;
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+}
+
+/* Large Variant */
+::deep .textarea[data-size="lg"] {
+    min-height: 120px;
+    padding: 1rem;
+    font-size: 0.9375rem;
+}
+
+/* Resize Options */
+::deep .textarea[data-resize="horizontal"] {
+    resize: horizontal;
+}
+
+::deep .textarea[data-resize="none"] {
+    resize: none;
+}
+
+::deep .textarea[data-resize="both"] {
+    resize: both;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    ::deep .textarea {
+        background-color: var(--background, #1f2937);
+        border-color: var(--border-color, #374151);
+        color: var(--foreground, #f3f4f6);
+    }
+
+    ::deep .textarea::placeholder {
+        color: var(--muted-foreground, #9ca3af);
+    }
+
+    ::deep .textarea:hover:not(:disabled) {
+        border-color: var(--border-color-hover, #4b5563);
+    }
+
+    ::deep .textarea:focus-visible {
+        border-color: var(--ring-color, #60a5fa);
+        box-shadow: 0 0 0 3px var(--ring-color-alpha, rgba(96, 165, 250, 0.1));
+    }
+
+    ::deep .textarea:disabled {
+        background-color: var(--muted-background, #111827);
+    }
+
+    ::deep .textarea:read-only {
+        background-color: var(--muted-background, #111827);
+        border-color: var(--border-color, #374151);
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+    ::deep .textarea {
+        border-width: 2px;
+        font-weight: 500;
+    }
+
+    ::deep .textarea:focus-visible {
+        outline: 2px solid var(--ring-color, #000);
+        outline-offset: 2px;
+    }
+
+    ::deep .textarea:disabled {
+        border-color: #000;
+        opacity: 0.7;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    ::deep .textarea {
+        transition: none;
+    }
+}
+
+/* Character Counter Wrapper */
+::deep .textarea-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+::deep .textarea-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.75rem;
+    color: var(--muted-foreground, #6b7280);
+}
+
+::deep .textarea-counter[data-exceeded="true"] {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+/* Helper Text */
+::deep .textarea-helper {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground, #6b7280);
+    margin-top: 0.25rem;
+}
+
+::deep .textarea-helper[data-type="error"] {
+    color: #ef4444;
+}
+
+::deep .textarea-helper[data-type="success"] {
+    color: #10b981;
+}
+
+::deep .textarea-helper[data-type="warning"] {
+    color: #f59e0b;
+}
+
+/* Textarea with Label */
+::deep .textarea-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+::deep .textarea-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground, #1f2937);
+}
+
+::deep .textarea-label[data-required="true"]::after {
+    content: " *";
+    color: #ef4444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    ::deep .textarea {
+        min-height: 60px;
+        padding: 0.5rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Focus Within State for wrapper */
+::deep .textarea-group:focus-within .textarea-label {
+    color: var(--ring-color, #3b82f6);
+}
+
+/* Scrollbar Styling */
+::deep .textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+::deep .textarea::-webkit-scrollbar-track {
+    background: var(--muted-background, #f9fafb);
+}
+
+::deep .textarea::-webkit-scrollbar-thumb {
+    background: var(--border-color, #d1d5db);
+    border-radius: 3px;
+}
+
+::deep .textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground, #6b7280);
+}
+
+@media (prefers-color-scheme: dark) {
+    ::deep .textarea::-webkit-scrollbar-track {
+        background: var(--muted-background, #111827);
+    }
+
+    ::deep .textarea::-webkit-scrollbar-thumb {
+        background: var(--border-color, #4b5563);
+    }
+
+    ::deep .textarea::-webkit-scrollbar-thumb:hover {
+        background: var(--muted-foreground, #9ca3af);
+    }
+}

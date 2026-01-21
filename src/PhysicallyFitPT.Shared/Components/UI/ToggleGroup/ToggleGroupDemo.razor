@@ -1,0 +1,452 @@
+@page "/components/toggle-group"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PageTitle>Toggle Group Component Demo</PageTitle>
+
+<div class="component-demo">
+    <div class="demo-header">
+        <h1>Toggle Group Component</h1>
+        <p>Group of toggle buttons for selecting related options. Supports multiple variants and sizes for various UI contexts.</p>
+    </div>
+
+    <!-- Basic Toggle Group -->
+    <section class="demo-section">
+        <h2>Basic Toggle Group</h2>
+        <p>Simple toggle button group with default styling.</p>
+        <div class="demo-box">
+            <label class="form-label">Select an option:</label>
+            <ToggleGroup>
+                <ToggleGroupItem Value="option1" @bind-IsPressed="@option1Selected">Option 1</ToggleGroupItem>
+                <ToggleGroupItem Value="option2" @bind-IsPressed="@option2Selected">Option 2</ToggleGroupItem>
+                <ToggleGroupItem Value="option3" @bind-IsPressed="@option3Selected">Option 3</ToggleGroupItem>
+            </ToggleGroup>
+        </div>
+        <pre><code>&lt;ToggleGroup&gt;
+    &lt;ToggleGroupItem Value="1" @@bind-IsPressed="isSelected"&gt;Button 1&lt;/ToggleGroupItem&gt;
+    &lt;ToggleGroupItem Value="2" @@bind-IsPressed="isSelected"&gt;Button 2&lt;/ToggleGroupItem&gt;
+&lt;/ToggleGroup&gt;</code></pre>
+    </section>
+
+    <!-- Toggle Group Variants -->
+    <section class="demo-section">
+        <h2>Toggle Group Variants</h2>
+        <p>Different visual styles for various contexts.</p>
+        <div class="demo-box">
+            <div class="variant-demo">
+                <div class="variant-section">
+                    <h3>Default Variant</h3>
+                    <ToggleGroup Variant="default">
+                        <ToggleGroupItem Value="day" @bind-IsPressed="@defaultDay">Day</ToggleGroupItem>
+                        <ToggleGroupItem Value="week" @bind-IsPressed="@defaultWeek">Week</ToggleGroupItem>
+                        <ToggleGroupItem Value="month" @bind-IsPressed="@defaultMonth">Month</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <div class="variant-section">
+                    <h3>Outline Variant</h3>
+                    <ToggleGroup Variant="outline">
+                        <ToggleGroupItem Value="left" @bind-IsPressed="@outlineLeft">Left</ToggleGroupItem>
+                        <ToggleGroupItem Value="center" @bind-IsPressed="@outlineCenter">Center</ToggleGroupItem>
+                        <ToggleGroupItem Value="right" @bind-IsPressed="@outlineRight">Right</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <div class="variant-section">
+                    <h3>Soft Variant</h3>
+                    <ToggleGroup Variant="soft">
+                        <ToggleGroupItem Value="list" @bind-IsPressed="@softList">List</ToggleGroupItem>
+                        <ToggleGroupItem Value="grid" @bind-IsPressed="@softGrid">Grid</ToggleGroupItem>
+                        <ToggleGroupItem Value="compact" @bind-IsPressed="@softCompact">Compact</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <div class="variant-section">
+                    <h3>Ghost Variant</h3>
+                    <ToggleGroup Variant="ghost">
+                        <ToggleGroupItem Value="ascending" @bind-IsPressed="@ghostAscending">Ascending</ToggleGroupItem>
+                        <ToggleGroupItem Value="descending" @bind-IsPressed="@ghostDescending">Descending</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toggle Group Sizes -->
+    <section class="demo-section">
+        <h2>Toggle Group Sizes</h2>
+        <p>Multiple size options for different UI needs.</p>
+        <div class="demo-box">
+            <div class="size-demo">
+                <div class="size-section">
+                    <h3>Small</h3>
+                    <ToggleGroup Size="sm">
+                        <ToggleGroupItem Value="s1" @bind-IsPressed="@sizeSmall1">Yes</ToggleGroupItem>
+                        <ToggleGroupItem Value="s2" @bind-IsPressed="@sizeSmall2">No</ToggleGroupItem>
+                        <ToggleGroupItem Value="s3" @bind-IsPressed="@sizeSmall3">Maybe</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <div class="size-section">
+                    <h3>Default</h3>
+                    <ToggleGroup Size="default">
+                        <ToggleGroupItem Value="d1" @bind-IsPressed="@sizeDefault1">Option A</ToggleGroupItem>
+                        <ToggleGroupItem Value="d2" @bind-IsPressed="@sizeDefault2">Option B</ToggleGroupItem>
+                        <ToggleGroupItem Value="d3" @bind-IsPressed="@sizeDefault3">Option C</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <div class="size-section">
+                    <h3>Large</h3>
+                    <ToggleGroup Size="lg">
+                        <ToggleGroupItem Value="l1" @bind-IsPressed="@sizeLarge1">Primary</ToggleGroupItem>
+                        <ToggleGroupItem Value="l2" @bind-IsPressed="@sizeLarge2">Secondary</ToggleGroupItem>
+                        <ToggleGroupItem Value="l3" @bind-IsPressed="@sizeLarge3">Tertiary</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clinical Visit Type Selection -->
+    <section class="demo-section">
+        <h2>Clinical Use Case: Visit Type</h2>
+        <p>Select the type of clinical visit or appointment.</p>
+        <div class="demo-box">
+            <label class="form-label">Visit Type</label>
+            <ToggleGroup Variant="outline">
+                <ToggleGroupItem Value="eval" @bind-IsPressed="@visitTypeEval">Evaluation</ToggleGroupItem>
+                <ToggleGroupItem Value="treatment" @bind-IsPressed="@visitTypeTreatment">Treatment</ToggleGroupItem>
+                <ToggleGroupItem Value="reeval" @bind-IsPressed="@visitTypeReeval">Re-evaluation</ToggleGroupItem>
+                <ToggleGroupItem Value="discharge" @bind-IsPressed="@visitTypeDischarge">Discharge</ToggleGroupItem>
+            </ToggleGroup>
+            @if (visitTypeEval) { <p class="selection-text">Selected: Evaluation - Initial assessment and examination</p> }
+            @if (visitTypeTreatment) { <p class="selection-text">Selected: Treatment - Therapeutic intervention session</p> }
+            @if (visitTypeReeval) { <p class="selection-text">Selected: Re-evaluation - Progress assessment</p> }
+            @if (visitTypeDischarge) { <p class="selection-text">Selected: Discharge - Patient completion of care</p> }
+        </div>
+    </section>
+
+    <!-- Clinical Assessment Type Selection -->
+    <section class="demo-section">
+        <h2>Clinical Use Case: Assessment Type</h2>
+        <p>Select the type of clinical assessment to perform.</p>
+        <div class="demo-box">
+            <label class="form-label">Assessment Focus</label>
+            <ToggleGroup Variant="soft">
+                <ToggleGroupItem Value="range" @bind-IsPressed="@assessmentRange">ROM</ToggleGroupItem>
+                <ToggleGroupItem Value="strength" @bind-IsPressed="@assessmentStrength">Strength</ToggleGroupItem>
+                <ToggleGroupItem Value="pain" @bind-IsPressed="@assessmentPain">Pain</ToggleGroupItem>
+                <ToggleGroupItem Value="functional" @bind-IsPressed="@assessmentFunctional">Functional</ToggleGroupItem>
+            </ToggleGroup>
+            @if (assessmentRange) { <p class="selection-text">Range of Motion assessment - Measure joint mobility and flexibility</p> }
+            @if (assessmentStrength) { <p class="selection-text">Strength assessment - Test muscle power and endurance</p> }
+            @if (assessmentPain) { <p class="selection-text">Pain assessment - Evaluate pain levels and location</p> }
+            @if (assessmentFunctional) { <p class="selection-text">Functional assessment - Test activities of daily living</p> }
+        </div>
+    </section>
+
+    <!-- Delivery Method Selection -->
+    <section class="demo-section">
+        <h2>Clinical Use Case: Delivery Method</h2>
+        <p>Select the method of service delivery.</p>
+        <div class="demo-box">
+            <label class="form-label">Service Delivery Method</label>
+            <ToggleGroup Variant="default">
+                <ToggleGroupItem Value="inperson" @bind-IsPressed="@deliveryInPerson">In-Person</ToggleGroupItem>
+                <ToggleGroupItem Value="telehealth" @bind-IsPressed="@deliveryTelehealth">Telehealth</ToggleGroupItem>
+                <ToggleGroupItem Value="hybrid" @bind-IsPressed="@deliveryHybrid">Hybrid</ToggleGroupItem>
+            </ToggleGroup>
+            @if (deliveryInPerson) { <p class="selection-text">In-Person delivery - Direct clinical session at facility</p> }
+            @if (deliveryTelehealth) { <p class="selection-text">Telehealth delivery - Remote video-based session</p> }
+            @if (deliveryHybrid) { <p class="selection-text">Hybrid delivery - Mix of in-person and remote sessions</p> }
+        </div>
+    </section>
+
+    <!-- Disabled State -->
+    <section class="demo-section">
+        <h2>Disabled State</h2>
+        <p>Toggle group with disabled items.</p>
+        <div class="demo-box">
+            <label class="form-label">Status Options:</label>
+            <ToggleGroup>
+                <ToggleGroupItem Value="active" @bind-IsPressed="@disabledActive">Active</ToggleGroupItem>
+                <ToggleGroupItem Value="pending" @bind-IsPressed="@disabledPending" Disabled="true">Pending</ToggleGroupItem>
+                <ToggleGroupItem Value="completed" @bind-IsPressed="@disabledCompleted">Completed</ToggleGroupItem>
+            </ToggleGroup>
+            <p class="note-text">Note: "Pending" is disabled for this demo</p>
+        </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="demo-section">
+        <h2>Toggle Group Features</h2>
+        <ul class="features-list">
+            <li><strong>Cascading Context</strong> — Variant and size propagate from group to items automatically</li>
+            <li><strong>Multiple Variants</strong> — Default, Outline, Soft, and Ghost styles for different contexts</li>
+            <li><strong>Size Options</strong> — Small, Default, and Large sizes for flexible layouts</li>
+            <li><strong>Two-way Binding</strong> — @bind-IsPressed for reactive state management</li>
+            <li><strong>Disabled Items</strong> — Individual items can be disabled with visual feedback</li>
+            <li><strong>ARIA Attributes</strong> — aria-pressed attribute for accessibility</li>
+            <li><strong>Grouped Layout</strong> — Buttons visually connected with proper border radiuses</li>
+            <li><strong>Keyboard Navigation</strong> — Full keyboard support with focus indicators</li>
+            <li><strong>Dark Mode</strong> — Automatic color adjustment in dark mode</li>
+            <li><strong>High Contrast</strong> — Enhanced borders and emphasis for accessibility</li>
+            <li><strong>Reduced Motion</strong> — Respects prefers-reduced-motion preference</li>
+            <li><strong>Clinical Workflows</strong> — Supports common PT/OT workflows (visit type, assessment type, delivery method)</li>
+        </ul>
+    </section>
+</div>
+
+@code {
+    // Basic toggle group
+    private bool option1Selected = false;
+    private bool option2Selected = false;
+    private bool option3Selected = false;
+
+    // Default variant
+    private bool defaultDay = false;
+    private bool defaultWeek = false;
+    private bool defaultMonth = false;
+
+    // Outline variant
+    private bool outlineLeft = false;
+    private bool outlineCenter = false;
+    private bool outlineRight = false;
+
+    // Soft variant
+    private bool softList = false;
+    private bool softGrid = false;
+    private bool softCompact = false;
+
+    // Ghost variant
+    private bool ghostAscending = false;
+    private bool ghostDescending = false;
+
+    // Small size
+    private bool sizeSmall1 = false;
+    private bool sizeSmall2 = false;
+    private bool sizeSmall3 = false;
+
+    // Default size
+    private bool sizeDefault1 = false;
+    private bool sizeDefault2 = false;
+    private bool sizeDefault3 = false;
+
+    // Large size
+    private bool sizeLarge1 = false;
+    private bool sizeLarge2 = false;
+    private bool sizeLarge3 = false;
+
+    // Visit type
+    private bool visitTypeEval = false;
+    private bool visitTypeTreatment = false;
+    private bool visitTypeReeval = false;
+    private bool visitTypeDischarge = false;
+
+    // Assessment type
+    private bool assessmentRange = false;
+    private bool assessmentStrength = false;
+    private bool assessmentPain = false;
+    private bool assessmentFunctional = false;
+
+    // Delivery method
+    private bool deliveryInPerson = false;
+    private bool deliveryTelehealth = false;
+    private bool deliveryHybrid = false;
+
+    // Disabled state
+    private bool disabledActive = false;
+    private bool disabledPending = false;
+    private bool disabledCompleted = false;
+}
+
+<style>
+    .component-demo {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .demo-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .demo-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-header p {
+        font-size: 1.0625rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+    }
+
+    .demo-section {
+        margin-bottom: 3rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-section > p {
+        color: var(--muted-foreground, #6b7280);
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .demo-box {
+        background-color: var(--card-background, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--foreground, #1f2937);
+        margin-bottom: 0.75rem;
+    }
+
+    .variant-demo,
+    .size-demo {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .variant-section,
+    .size-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .variant-section h3,
+    .size-section h3 {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .selection-text {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background-color: var(--muted-background, #f9fafb);
+        border-left: 3px solid var(--primary-color, #3b82f6);
+        font-size: 0.875rem;
+        color: var(--foreground, #1f2937);
+    }
+
+    .note-text {
+        margin-top: 1rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground, #6b7280);
+        font-style: italic;
+    }
+
+    pre {
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        color: var(--foreground, #1f2937);
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .features-list li {
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .demo-header {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .demo-header h1 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-header p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-section h2 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-section > p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-box {
+            background-color: var(--card-background, #1f2937);
+            border-color: var(--border-color, #374151);
+        }
+
+        .form-label {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .variant-section h3,
+        .size-section h3 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .selection-text {
+            background-color: var(--muted-background, #111827);
+            border-left-color: var(--primary-color, #60a5fa);
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .note-text {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        pre {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        code {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .features-list li {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+    }
+</style>

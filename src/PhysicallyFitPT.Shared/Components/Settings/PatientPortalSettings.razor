@@ -1,0 +1,819 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+<div class="space-y-6">
+    <Card Class="border-2 border-blue-200 bg-blue-50">
+        <CardContent Class="p-4">
+            <div class="flex items-start gap-3">
+                <div class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5">US</div>
+                <div>
+                    <p class="font-semibold text-blue-900 mb-1">Patient Portal Controls</p>
+                    <p class="text-sm text-blue-800">
+                        Configure what patients can view and access through the patient portal, including notes, outcomes, goals, payments, messaging, and home exercise programs.
+                    </p>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Master Portal Toggle -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                US Portal Access
+            </CardTitle>
+            <CardDescription>
+                Control patient portal availability and features
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-4">
+            <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                <div class="flex-1">
+                    <Label Class="font-semibold">Enable Patient Portal</Label>
+                    <p class="text-sm text-muted-foreground mt-1">
+                        Allow patients to access their health information online
+                    </p>
+                </div>
+                <Switch
+                    Checked="@settings.EnablePatientPortal"
+                    OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnablePatientPortal), isChecked))"
+                />
+            </div>
+        </CardContent>
+    </Card>
+
+    @if (settings.EnablePatientPortal)
+    {
+        <!-- Notes Visibility -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FT Clinical Notes Visibility
+                </CardTitle>
+                <CardDescription>
+                    Control patient access to clinical documentation (HIPAA-sensitive)
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold flex items-center gap-2">
+                            Show Clinical Notes to Patients
+                            <Badge Variant="outline" Class="bg-orange-100 text-orange-700 border-orange-300">
+                                HS HIPAA Sensitive
+                            </Badge>
+                        </Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to view their clinical documentation
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowNotes"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowNotes), isChecked))"
+                    />
+                </div>
+
+                @if (settings.ShowNotes)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <Label Class="block mb-3">Notes Visibility Rule</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="notesVisibility"
+                                    value="none"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.NotesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.NotesVisibilityRule == "none")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">No Notes (Recommended)</p>
+                                    <p class="text-sm text-muted-foreground">Patients cannot view any clinical notes</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="notesVisibility"
+                                    value="signed-only"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.NotesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.NotesVisibilityRule == "signed-only")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Signed Notes Only</p>
+                                    <p class="text-sm text-muted-foreground">Only show finalized/signed notes</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="notesVisibility"
+                                    value="all"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.NotesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.NotesVisibilityRule == "all")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">All Notes</p>
+                                    <p class="text-sm text-muted-foreground">Show all clinical documentation including drafts</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (settings.NotesVisibilityRule != "none")
+                    {
+                        <div class="space-y-3 pl-4 border-l-4 border-primary">
+                            <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                                <div class="flex-1">
+                                    <Label Class="font-semibold">Show Progress Notes</Label>
+                                    <p class="text-sm text-muted-foreground mt-1">Display daily treatment notes</p>
+                                </div>
+                                <Switch
+                                    Checked="@settings.ShowProgressNotes"
+                                    OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowProgressNotes), isChecked))"
+                                />
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                                <div class="flex-1">
+                                    <Label Class="font-semibold">Show Evaluation Notes</Label>
+                                    <p class="text-sm text-muted-foreground mt-1">Display initial and re-evaluation notes</p>
+                                </div>
+                                <Switch
+                                    Checked="@settings.ShowEvalNotes"
+                                    OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowEvalNotes), isChecked))"
+                                />
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                                <div class="flex-1">
+                                    <Label Class="font-semibold">Show Discharge Summary Only</Label>
+                                    <p class="text-sm text-muted-foreground mt-1">Only display discharge summaries (safest option)</p>
+                                </div>
+                                <Switch
+                                    Checked="@settings.ShowDischargeSummaryOnly"
+                                    OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowDischargeSummaryOnly), isChecked))"
+                                />
+                            </div>
+                        </div>
+                    }
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Outcomes Visibility -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    TU Outcome Measures Visibility
+                </CardTitle>
+                <CardDescription>
+                    Control patient access to outcome measure scores and trends
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Show Outcome Measures</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to view their outcome measure scores (LEFS, DASH, etc.)
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowOutcomes"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowOutcomes), isChecked))"
+                    />
+                </div>
+
+                @if (settings.ShowOutcomes)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <Label Class="block mb-3">Outcomes Display Format</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                                <input
+                                    type="radio"
+                                    name="outcomesVisibility"
+                                    value="summary"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.OutcomesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.OutcomesVisibilityRule == "summary")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Summary Scores Only</p>
+                                    <p class="text-sm text-muted-foreground">Show total scores (e.g., "45/80")</p>
+                                </div>
+                                <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="outcomesVisibility"
+                                    value="detailed"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.OutcomesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.OutcomesVisibilityRule == "detailed")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Detailed Question-by-Question</p>
+                                    <p class="text-sm text-muted-foreground">Show individual question responses</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="outcomesVisibility"
+                                    value="trends"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.OutcomesVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.OutcomesVisibilityRule == "trends")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Trends & Progress Charts</p>
+                                    <p class="text-sm text-muted-foreground">Show visual progress graphs</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Show Outcome Trends</Label>
+                            <p class="text-sm text-muted-foreground mt-1">Display line charts showing improvement over time</p>
+                        </div>
+                        <Switch
+                            Checked="@settings.ShowOutcomeTrends"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowOutcomeTrends), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Goals Visibility -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    TG Treatment Goals Visibility
+                </CardTitle>
+                <CardDescription>
+                    Control patient access to treatment goals and progress
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Show Treatment Goals</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to view their current treatment goals
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowGoals"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowGoals), isChecked))"
+                    />
+                </div>
+
+                @if (settings.ShowGoals)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <Label Class="block mb-3">Goals Visibility Rule</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                                <input
+                                    type="radio"
+                                    name="goalsVisibility"
+                                    value="active"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.GoalsVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.GoalsVisibilityRule == "active")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Active Goals Only</p>
+                                    <p class="text-sm text-muted-foreground">Show only current, in-progress goals</p>
+                                </div>
+                                <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="goalsVisibility"
+                                    value="all"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.GoalsVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.GoalsVisibilityRule == "all")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">All Goals (Active + Completed)</p>
+                                    <p class="text-sm text-muted-foreground">Show treatment history and progress</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="goalsVisibility"
+                                    value="none"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.GoalsVisibilityRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.GoalsVisibilityRule == "none")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">No Goals</p>
+                                    <p class="text-sm text-muted-foreground">Hide all treatment goals from patients</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (settings.GoalsVisibilityRule != "none")
+                    {
+                        <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                            <div class="flex-1">
+                                <Label Class="font-semibold">Show Completed Goals</Label>
+                                <p class="text-sm text-muted-foreground mt-1">Display goals that have been achieved (motivational)</p>
+                            </div>
+                            <Switch
+                                Checked="@settings.ShowCompletedGoals"
+                                OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowCompletedGoals), isChecked))"
+                            />
+                        </div>
+                    }
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Online Payments -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC Online Payments
+                </CardTitle>
+                <CardDescription>
+                    Enable patients to pay balances online
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable Online Payments</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to view and pay balances online
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableOnlinePayments"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableOnlinePayments), isChecked))"
+                    />
+                </div>
+
+                @if (settings.EnableOnlinePayments)
+                {
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow Payment Plans</Label>
+                            <p class="text-sm text-muted-foreground mt-1">Let patients set up installment payment plans</p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowPaymentPlans"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowPaymentPlans), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Show Statement History</Label>
+                            <p class="text-sm text-muted-foreground mt-1">Display past billing statements and payment history</p>
+                        </div>
+                        <Switch
+                            Checked="@settings.ShowStatementHistory"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowStatementHistory), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Secure Messaging -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    MS Secure Messaging
+                </CardTitle>
+                <CardDescription>
+                    HIPAA-compliant patient-clinician communication
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold flex items-center gap-2">
+                            Enable Secure Messaging
+                            <Badge Variant="outline" Class="bg-green-100 text-green-700 border-green-300">
+                                HS HIPAA Compliant
+                            </Badge>
+                        </Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to send secure messages to clinicians
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableSecureMessaging"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableSecureMessaging), isChecked))"
+                    />
+                </div>
+
+                @if (settings.EnableSecureMessaging)
+                {
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow Patient-Initiated Messages</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Patients can start new message threads (not just replies)
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowPatientInitiatedMessages"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowPatientInitiatedMessages), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow File Attachments</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Let patients attach images or documents to messages
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowFileAttachments"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowFileAttachments), isChecked))"
+                        />
+                    </div>
+
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Expected Response Time</Label>
+                        <select
+                            @bind="settings.MessagingResponseTime"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="4-8">4-8 hours (Same day)</option>
+                            <option value="24">24 hours (Next business day)</option>
+                            <option value="24-48">24-48 hours (1-2 business days)</option>
+                            <option value="48-72">48-72 hours (2-3 business days)</option>
+                        </select>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            Displayed to patients as expected response timeframe
+                        </p>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- HEP Access Rules -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    DB Home Exercise Program (HEP) Access
+                </CardTitle>
+                <CardDescription>
+                    Configure patient access to prescribed exercises
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable HEP Access</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow patients to view their home exercise programs
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableHEPAccess"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableHEPAccess), isChecked))"
+                    />
+                </div>
+
+                @if (settings.EnableHEPAccess)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <Label Class="block mb-3">HEP Access Rule</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                                <input
+                                    type="radio"
+                                    name="hepAccess"
+                                    value="active-only"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.HepAccessRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.HepAccessRule == "active-only")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Active HEP Only</p>
+                                    <p class="text-sm text-muted-foreground">Show only current prescribed exercises</p>
+                                </div>
+                                <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="hepAccess"
+                                    value="all-historical"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.HepAccessRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.HepAccessRule == "all-historical")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">All Historical HEPs</p>
+                                    <p class="text-sm text-muted-foreground">Show all past and present exercise programs</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="hepAccess"
+                                    value="clinician-approved"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.HepAccessRule), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.HepAccessRule == "clinician-approved")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Clinician-Approved Only</p>
+                                    <p class="text-sm text-muted-foreground">Only exercises explicitly shared by clinician</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow HEP Printing</Label>
+                            <p class="text-sm text-muted-foreground mt-1">Let patients print exercise instructions</p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowHEPPrinting"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowHEPPrinting), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow HEP Video Download</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Allow downloading exercise videos for offline viewing
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowHEPVideoDownload"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowHEPVideoDownload), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Require HEP Acknowledgement</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Patient must confirm they reviewed new exercises
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.RequireHEPAcknowledgement"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireHEPAcknowledgement), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Other Portal Features -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    SH Additional Portal Features
+                </CardTitle>
+                <CardDescription>
+                    Other patient portal capabilities
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Show Appointments</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Display upcoming and past appointment history
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowAppointments"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowAppointments), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Online Scheduling</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Patients can book their own appointments
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowOnlineScheduling"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowOnlineScheduling), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Appointment Cancellations</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Patients can cancel appointments online
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowCancellations"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowCancellations), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AllowCancellations)
+                {
+                    <div class="ml-4 p-4 bg-muted rounded-lg">
+                        <Label Class="block mb-2">Minimum Cancellation Notice</Label>
+                        <select
+                            @bind="settings.CancellationHoursBefore"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="2">2 hours before</option>
+                            <option value="4">4 hours before</option>
+                            <option value="12">12 hours before</option>
+                            <option value="24">24 hours before (Recommended)</option>
+                            <option value="48">48 hours before</option>
+                        </select>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Document Upload</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Patients can upload insurance cards, prescriptions, etc.
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowDocumentUpload"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowDocumentUpload), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Insurance Verification</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Prompt patients to verify insurance before appointments
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireInsuranceVerification"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireInsuranceVerification), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Portal Summary -->
+        <Card Class="border-2 border-green-200">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC Patient Portal Summary
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p class="text-sm text-muted-foreground mb-3">Currently enabled portal features:</p>
+                <div class="flex flex-wrap gap-2">
+                    @if (settings.ShowNotes && settings.NotesVisibilityRule != "none")
+                    {
+                        <Badge Class="bg-green-600">FT Clinical Notes (@settings.NotesVisibilityRule)</Badge>
+                    }
+                    @if (settings.ShowOutcomes)
+                    {
+                        <Badge Class="bg-green-600">TU Outcome Measures</Badge>
+                    }
+                    @if (settings.ShowGoals && settings.GoalsVisibilityRule != "none")
+                    {
+                        <Badge Class="bg-green-600">TG Treatment Goals</Badge>
+                    }
+                    @if (settings.EnableOnlinePayments)
+                    {
+                        <Badge Class="bg-green-600">CC Online Payments</Badge>
+                    }
+                    @if (settings.EnableSecureMessaging)
+                    {
+                        <Badge Class="bg-green-600">MS Secure Messaging</Badge>
+                    }
+                    @if (settings.EnableHEPAccess)
+                    {
+                        <Badge Class="bg-green-600">DB HEP Access</Badge>
+                    }
+                </div>
+            </CardContent>
+        </Card>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool HasUnsavedChanges { get; set; }
+
+    [Parameter]
+    public EventCallback HasUnsavedChangesChanged { get; set; }
+
+    private Settings settings = new();
+
+    private void UpdateSetting(string key, object value)
+    {
+        var property = settings.GetType().GetProperty(key);
+        if (property != null)
+        {
+            if (property.PropertyType == typeof(int) && value is string strValue)
+            {
+                property.SetValue(settings, int.Parse(strValue));
+            }
+            else
+            {
+                property.SetValue(settings, value);
+            }
+        }
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+    }
+
+    private class Settings
+    {
+        // Master Portal Toggle
+        public bool EnablePatientPortal { get; set; } = true;
+        
+        // Visibility Controls
+        public bool ShowNotes { get; set; } = false;
+        public bool ShowOutcomes { get; set; } = true;
+        public bool ShowGoals { get; set; } = true;
+        public bool ShowAppointments { get; set; } = true;
+        public bool ShowExerciseVideos { get; set; } = true;
+        
+        // Notes Visibility Rules
+        public string NotesVisibilityRule { get; set; } = "none";
+        public bool ShowProgressNotes { get; set; } = false;
+        public bool ShowEvalNotes { get; set; } = false;
+        public bool ShowDischargeSummaryOnly { get; set; } = true;
+        
+        // Outcomes Visibility Rules
+        public string OutcomesVisibilityRule { get; set; } = "summary";
+        public bool ShowOutcomeTrends { get; set; } = true;
+        
+        // Goals Visibility Rules
+        public string GoalsVisibilityRule { get; set; } = "active";
+        public bool ShowCompletedGoals { get; set; } = false;
+        
+        // Online Payments
+        public bool EnableOnlinePayments { get; set; } = false;
+        public bool AllowPaymentPlans { get; set; } = false;
+        public bool ShowStatementHistory { get; set; } = true;
+        
+        // Secure Messaging
+        public bool EnableSecureMessaging { get; set; } = true;
+        public bool AllowPatientInitiatedMessages { get; set; } = true;
+        public bool AllowFileAttachments { get; set; } = false;
+        public string MessagingResponseTime { get; set; } = "24-48";
+        
+        // HEP Access Rules
+        public bool EnableHEPAccess { get; set; } = true;
+        public string HepAccessRule { get; set; } = "active-only";
+        public bool AllowHEPPrinting { get; set; } = true;
+        public bool AllowHEPVideoDownload { get; set; } = false;
+        public bool RequireHEPAcknowledgement { get; set; } = true;
+        
+        // Other Portal Features
+        public bool AllowOnlineScheduling { get; set; } = true;
+        public bool AllowCancellations { get; set; } = true;
+        public int CancellationHoursBefore { get; set; } = 24;
+        public bool AllowDocumentUpload { get; set; } = true;
+        public bool RequireInsuranceVerification { get; set; } = true;
+    }
+}

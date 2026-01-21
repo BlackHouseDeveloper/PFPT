@@ -1,0 +1,98 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="select-root @Class" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnValueChanged { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    internal bool IsOpen => isOpen;
+    internal string ListboxId { get; } = $"select-{Guid.NewGuid():N}";
+    internal string? SelectedLabel { get; private set; }
+
+    private bool isOpen;
+    private readonly Dictionary<string, string> options = new();
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+
+        if (!string.IsNullOrEmpty(Value) && options.TryGetValue(Value, out var label))
+        {
+            SelectedLabel = label;
+        }
+        else if (!string.IsNullOrEmpty(Value))
+        {
+            SelectedLabel = Value;
+        }
+    }
+
+    internal bool IsSelected(string candidate) => string.Equals(Value, candidate, StringComparison.Ordinal);
+
+    internal void RegisterOption(string value, string label)
+    {
+        options[value] = label;
+        if (IsSelected(value))
+        {
+            SelectedLabel = label;
+            StateHasChanged();
+        }
+    }
+
+    internal async Task ToggleOpenAsync()
+    {
+        await SetOpenAsync(!isOpen);
+    }
+
+    internal async Task SetOpenAsync(bool open)
+    {
+        if (isOpen == open)
+        {
+            return;
+        }
+
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task SelectAsync(string value, string? label)
+    {
+        Value = value;
+        SelectedLabel = label ?? value;
+        await ValueChanged.InvokeAsync(value);
+        if (OnValueChanged.HasDelegate)
+        {
+            await OnValueChanged.InvokeAsync(value);
+        }
+        await SetOpenAsync(false);
+    }
+}

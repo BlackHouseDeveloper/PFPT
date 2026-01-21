@@ -1,0 +1,148 @@
+@page "/accordion-demo"
+@* 
+    Accordion Component Demo
+    Shows usage examples of the Make-ported accordion component
+*@
+
+<div class="container mx-auto p-8 max-w-2xl">
+    <h1 class="text-3xl font-bold mb-8">Accordion Demo</h1>
+
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Single Accordion (One at a time)</h2>
+        <Accordion Type="single" Collapsible="true" @bind-Value="@singleValue">
+            <AccordionItem Value="item-1">
+                <AccordionTrigger>
+                    Is it accessible?
+                </AccordionTrigger>
+                <AccordionContent>
+                    Yes. It adheres to the WAI-ARIA design pattern with full keyboard navigation support.
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="item-2">
+                <AccordionTrigger>
+                    Is it styled?
+                </AccordionTrigger>
+                <AccordionContent>
+                    Yes. It comes with default styles that match your design system, including animations and transitions.
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="item-3">
+                <AccordionTrigger>
+                    Is it animated?
+                </AccordionTrigger>
+                <AccordionContent>
+                    Yes. It uses CSS animations for smooth expand/collapse transitions with a 200ms duration.
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    </section>
+
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Multiple Accordion (Multiple open)</h2>
+        <Accordion Type="multiple" @bind-Values="@multipleValues">
+            <AccordionItem Value="feature-1">
+                <AccordionTrigger>
+                    Patient Management
+                </AccordionTrigger>
+                <AccordionContent>
+                    Create, edit, and manage patient records with full demographic information, insurance details, and appointment history.
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="feature-2">
+                <AccordionTrigger>
+                    SOAP Note Builder
+                </AccordionTrigger>
+                <AccordionContent>
+                    Comprehensive documentation tool following the S→O→A→P workflow with carry-forward functionality and clinical templates.
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="feature-3">
+                <AccordionTrigger>
+                    Appointment Scheduling
+                </AccordionTrigger>
+                <AccordionContent>
+                    Week and day views with drag-and-drop support, visit type configuration, and automated check-in messaging.
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    </section>
+
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">With Custom Content</h2>
+        <Accordion Type="single" Collapsible="true">
+            <AccordionItem Value="custom-1">
+                <AccordionTrigger>
+                    Clinical Observations
+                </AccordionTrigger>
+                <AccordionContent>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>ROM:</strong> Range of Motion measurements</li>
+                        <li><strong>MMT:</strong> Manual Muscle Testing grades</li>
+                        <li><strong>Special Tests:</strong> Orthopedic assessment results</li>
+                        <li><strong>Gait Analysis:</strong> Walking pattern observations</li>
+                    </ul>
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="custom-2">
+                <AccordionTrigger>
+                    Billing & Coding
+                </AccordionTrigger>
+                <AccordionContent>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <span class="font-mono">97110</span>
+                            <span class="text-sm">Therapeutic Exercise</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <span class="font-mono">97140</span>
+                            <span class="text-sm">Manual Therapy</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                            <span class="font-mono">97530</span>
+                            <span class="text-sm">Therapeutic Activities</span>
+                        </div>
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    </section>
+
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Disabled State</h2>
+        <Accordion Type="single">
+            <AccordionItem Value="disabled-1">
+                <AccordionTrigger Disabled="true">
+                    This accordion item is disabled
+                </AccordionTrigger>
+                <AccordionContent>
+                    This content won't be visible because the trigger is disabled.
+                </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem Value="enabled-1">
+                <AccordionTrigger>
+                    This accordion item is enabled
+                </AccordionTrigger>
+                <AccordionContent>
+                    This content can be toggled normally.
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    </section>
+
+    <div class="p-4 bg-gray-100 rounded-lg">
+        <h3 class="font-semibold mb-2">Current State:</h3>
+        <p class="text-sm text-gray-700">Single Accordion Value: <code class="bg-white px-2 py-1 rounded">@(singleValue ?? "none")</code></p>
+        <p class="text-sm text-gray-700">Multiple Accordion Values: <code class="bg-white px-2 py-1 rounded">@string.Join(", ", multipleValues)</code></p>
+    </div>
+</div>
+
+@code {
+    private string? singleValue;
+    private HashSet<string> multipleValues = new();
+}

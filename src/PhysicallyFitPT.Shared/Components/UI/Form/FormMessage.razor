@@ -1,0 +1,22 @@
+@* Form message - validation error message *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <p class="form-message" 
+       id="@(ParentFormItem?.FormMessageId)"
+       @attributes="AdditionalAttributes">
+        @Message
+    </p>
+}
+
+@code {
+    [CascadingParameter]
+    public FormItem? ParentFormItem { get; set; }
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

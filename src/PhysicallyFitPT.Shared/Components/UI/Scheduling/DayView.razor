@@ -1,0 +1,271 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+@using PhysicallyFitPT.Shared.Components.UI.Card
+@using PhysicallyFitPT.Core
+
+<Card Class="day-view" data-role="@UserRole">
+    <CardHeader Class="day-view__header">
+        <CardTitle>All Clinicians - Day View</CardTitle>
+        <div class="day-view__controls">
+            <Button Variant="outline" Size="sm" Class="btn-icon" OnClick="GoPrevious">
+                <span aria-hidden="true">Prev</span>
+            </Button>
+            <Button Variant="outline" Size="sm" OnClick="GoToday">Today</Button>
+            <div class="day-view__date">@SelectedDate.ToString("dddd, MMMM d, yyyy")</div>
+            <Button Variant="outline" Size="sm" Class="btn-icon" OnClick="GoNext">
+                <span aria-hidden="true">Next</span>
+            </Button>
+        </div>
+    </CardHeader>
+
+    <CardContent Class="day-view__content">
+        <div class="desktop-grid">
+            <div class="grid-header">
+                <div class="grid-header__time">Time</div>
+                @foreach (var clinician in Clinicians)
+                {
+                    <div class="grid-header__clinician">
+                        <div class="name">@clinician.Name</div>
+                        <div class="specialty">@clinician.Specialty</div>
+                    </div>
+                }
+            </div>
+
+            <div class="grid-body">
+                @foreach (var slot in TimeSlots)
+                {
+                    <div class="grid-row">
+                        <div class="grid-time">
+                            @if (slot.Minute == 0)
+                            {
+                                <span>@FormatHour(slot.Hour)</span>
+                            }
+                        </div>
+                        @foreach (var clinician in Clinicians)
+                        {
+                            var clinicianAppointments = Appointments.TryGetValue(clinician.Id, out var list) ? (IEnumerable<ScheduleSlot.AppointmentSlot>)list : Array.Empty<ScheduleSlot.AppointmentSlot>();
+                            var slotAppointment = clinicianAppointments.FirstOrDefault(a => string.Equals(a.StartTime, slot.Time, StringComparison.Ordinal));
+                            <div class="grid-cell">
+                                @if (slotAppointment is not null)
+                                {
+                                    <ScheduleSlot Type="appointment" Appointment="slotAppointment" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="mobile-list">
+            @foreach (var clinician in Clinicians)
+            {
+                var clinicianAppointments = Appointments.TryGetValue(clinician.Id, out var list) ? list : new List<ScheduleSlot.AppointmentSlot>();
+                <Card Class="mobile-card">
+                    <CardHeader Class="mobile-card__header">
+                        <div>
+                            <div class="name">@clinician.Name</div>
+                            <div class="specialty">@clinician.Specialty</div>
+                        </div>
+                        <div class="count">@clinicianAppointments.Count appointment(s)</div>
+                    </CardHeader>
+                    <CardContent Class="mobile-card__content">
+                        @if (clinicianAppointments.Count == 0)
+                        {
+                            <p class="empty">No appointments scheduled</p>
+                        }
+                        else
+                        {
+                            foreach (var apt in clinicianAppointments.OrderBy(a => a.StartTime))
+                            {
+                                <ScheduleSlot Type="appointment" Appointment="apt" />
+                            }
+                        }
+                    </CardContent>
+                </Card>
+            }
+        </div>
+
+        <div class="stats">
+            <Card Class="stat">
+                <CardContent>
+                    <div class="stat__value">@TotalAppointments</div>
+                    <div class="stat__label">Total Appointments</div>
+                </CardContent>
+            </Card>
+            <Card Class="stat stat--success">
+                <CardContent>
+                    <div class="stat__value">@IntakeCompleteCount</div>
+                    <div class="stat__label">Intake Complete</div>
+                </CardContent>
+            </Card>
+            <Card Class="stat stat--pending">
+                <CardContent>
+                    <div class="stat__value">@IntakePendingCount</div>
+                    <div class="stat__label">Intake Pending</div>
+                </CardContent>
+            </Card>
+            <Card Class="stat">
+                <CardContent>
+                    <div class="stat__value">@Clinicians.Count</div>
+                    <div class="stat__label">Active Clinicians</div>
+                </CardContent>
+            </Card>
+        </div>
+
+        <div class="legend">
+            <div class="legend__item">
+                <span class="legend__dot legend__dot--success"></span>
+                <span>Intake Complete</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot legend__dot--pending"></span>
+                <span>Intake Pending</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot" style="background-color:#16a34a"></span>
+                <span>Initial Evaluation</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot" style="background-color:#2563eb"></span>
+                <span>Progress Note</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot" style="background-color:#7c3aed"></span>
+                <span>Daily Treatment</span>
+            </div>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    [Parameter]
+    public DateTime SelectedDate { get; set; } = DateTime.Today;
+
+    [Parameter]
+    public EventCallback<DateTime> OnDateChange { get; set; }
+
+    [Parameter]
+    public string UserRole { get; set; } = "clinician"; // reserved for future permissions
+
+    [Parameter]
+    public List<string>? FilterClinicianIds { get; set; }
+
+    [Parameter]
+    public EventCallback<ScheduleSlot.AppointmentSlot> OnAppointmentClick { get; set; }
+
+    [Parameter]
+    public EventCallback OnCreateClick { get; set; }
+
+    private record Clinician(string Id, string Name, string Specialty);
+
+    private readonly List<Clinician> Clinicians = new()
+    {
+        new("c1", "Dr. Sarah Smith", "PT, DPT"),
+        new("c2", "Dr. John Davis", "PT, OCS"),
+        new("c3", "Dr. Emily Chen", "PT, NCS"),
+        new("c4", "Dr. Michael Brown", "PT, SCS")
+    };
+
+    private Dictionary<string, List<ScheduleSlot.AppointmentSlot>> Appointments = new();
+    private readonly IReadOnlyList<TimeSlot> TimeSlots = GenerateTimeSlots();
+
+    private int TotalAppointments => Appointments.Values.SelectMany(x => x).Count();
+    private int IntakeCompleteCount => Appointments.Values.SelectMany(x => x).Count(a => a.IntakeComplete);
+    private int IntakePendingCount => TotalAppointments - IntakeCompleteCount;
+
+    protected override Task OnParametersSetAsync()
+    {
+        // Stub appointments until the shared layer has a service abstraction available.
+        Appointments = Clinicians.ToDictionary(c => c.Id, _ => new List<ScheduleSlot.AppointmentSlot>());
+        return Task.CompletedTask;
+    }
+
+    private static string GetVisitTypeColor(string visitType)
+    {
+        return visitType?.ToLowerInvariant() switch
+        {
+            "eval" or "initial evaluation" => "#16a34a",
+            "progress" or "progress note" => "#2563eb",
+            "daily" or "daily treatment" => "#7c3aed",
+            "discharge" => "#dc2626",
+            _ => "#2563eb"
+        };
+    }
+
+    private async Task GoPrevious()
+    {
+        await ChangeDate(SelectedDate.AddDays(-1));
+    }
+
+    private async Task GoNext()
+    {
+        await ChangeDate(SelectedDate.AddDays(1));
+    }
+
+    private async Task GoToday()
+    {
+        await ChangeDate(DateTime.Today);
+    }
+
+    private async Task ChangeDate(DateTime date)
+    {
+        SelectedDate = date;
+        await LoadAppointmentsAsync();
+        if (OnDateChange.HasDelegate)
+        {
+            await OnDateChange.InvokeAsync(date);
+        }
+    }
+
+    /// <summary>
+    /// Loads appointments for the current date (experimental stub).
+    /// </summary>
+    private Task LoadAppointmentsAsync()
+    {
+        // Experimental stub: appointments currently loaded in OnParametersSetAsync
+        // TODO: Integrate with Core data service abstraction
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleAppointmentClick(ScheduleSlot.AppointmentSlot apt)
+    {
+        if (OnAppointmentClick.HasDelegate)
+        {
+            await OnAppointmentClick.InvokeAsync(apt);
+        }
+    }
+
+    private async Task HandleCreateNew()
+    {
+        if (OnCreateClick.HasDelegate)
+        {
+            await OnCreateClick.InvokeAsync();
+        }
+    }
+
+    private static IReadOnlyList<TimeSlot> GenerateTimeSlots()
+    {
+        var slots = new List<TimeSlot>();
+        for (var hour = 7; hour <= 19; hour++)
+        {
+            for (var minute = 0; minute < 60; minute += 30)
+            {
+                slots.Add(new TimeSlot(hour, minute));
+            }
+        }
+
+        return slots;
+    }
+
+    private static string FormatHour(int hour)
+    {
+        var period = hour >= 12 ? "PM" : "AM";
+        var displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+        return $"{displayHour} {period}";
+    }
+
+    private sealed record TimeSlot(int Hour, int Minute)
+    {
+        public string Time => $"{Hour:00}:{Minute:00}";
+    }
+}

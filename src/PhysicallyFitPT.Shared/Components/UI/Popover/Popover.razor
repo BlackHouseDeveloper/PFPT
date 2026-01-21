@@ -1,0 +1,74 @@
+@* Popover root component for floating content *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="popover" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@if (isOpen)
+{
+    <div class="popover-overlay" @onclick="Close"></div>
+    <div class="popover-portal" style="@GetPositionStyle()">
+        @ContentChildContent
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ContentChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string Align { get; set; } = "center";
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool isOpen;
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+    private double positionX;
+    private double positionY;
+#pragma warning restore CS0649
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    public async Task SetOpen(bool open)
+    {
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        OnOpenChange.InvokeAsync(false);
+    }
+
+    private string GetPositionStyle()
+    {
+        return $"left: {positionX}px; top: {positionY}px;";
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}

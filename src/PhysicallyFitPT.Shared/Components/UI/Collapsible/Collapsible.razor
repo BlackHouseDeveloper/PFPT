@@ -1,0 +1,58 @@
+@* Collapsible root container with open/close state *@
+
+<CascadingValue Value="this">
+    <div class="collapsible @Class" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnToggle { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public bool IsOpen => Open;
+
+    public async Task ToggleAsync()
+    {
+        if (Disabled)
+        {
+            return;
+        }
+
+        Open = !Open;
+        await OpenChanged.InvokeAsync(Open);
+        await OnToggle.InvokeAsync(Open);
+        StateHasChanged();
+    }
+
+    public async Task SetOpenAsync(bool value)
+    {
+        if (Disabled)
+        {
+            return;
+        }
+
+        Open = value;
+        await OpenChanged.InvokeAsync(Open);
+        await OnToggle.InvokeAsync(Open);
+        StateHasChanged();
+    }
+}

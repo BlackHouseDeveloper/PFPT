@@ -1,0 +1,72 @@
+@*
+    AccordionTrigger - Clickable header that toggles accordion item
+    Ported from Make: components/ui/accordion.tsx
+*@
+
+<div class="flex">
+    <button 
+        type="button"
+        class="@CombinedClass"
+        data-slot="accordion-trigger"
+        data-state="@(Parent?.State ?? "closed")"
+        aria-expanded="@(Parent?.IsOpen.ToString().ToLower())"
+        @onclick="HandleClick"
+        disabled="@Disabled"
+        @attributes="AdditionalAttributes">
+        @ChildContent
+        <svg 
+            class="@ChevronClass" 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+</div>
+
+@code {
+    [CascadingParameter]
+    private AccordionItem? Parent { get; set; }
+
+    /// <summary>
+    /// Child content (trigger label/text)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Whether the trigger is disabled
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 {Class}".Trim();
+
+    private string ChevronClass => Parent?.IsOpen == true 
+        ? "text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 rotate-180"
+        : "text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200";
+
+    private async Task HandleClick()
+    {
+        if (!Disabled && Parent is not null)
+        {
+            await Parent.Toggle();
+        }
+    }
+}

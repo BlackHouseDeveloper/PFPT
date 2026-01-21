@@ -1,0 +1,115 @@
+@* Select Demo - Clinical examples *@
+@page "/demo/select"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Select</h1>
+    <p class="demo-description">
+        Pick one option with a compact dropdown. Useful for visit types, insurance plans, and scheduling windows.
+    </p>
+
+    <div class="demo-section">
+        <h2>Visit Type</h2>
+        <p>Choose the encounter type for this note.</p>
+        <div class="demo-example" style="max-width: 420px;">
+            <Select @bind-Value="visitType">
+                <SelectTrigger Placeholder="Select visit type" />
+                <SelectContent>
+                    <SelectLabel>Common types</SelectLabel>
+                    <SelectItem Value="initial" Label="Initial evaluation" />
+                    <SelectItem Value="follow-up" Label="Follow-up" />
+                    <SelectItem Value="progress" Label="Progress note" />
+                    <SelectItem Value="discharge" Label="Discharge" />
+                </SelectContent>
+            </Select>
+            <p class="demo-result">Selected: @FormatVisitType(visitType)</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Insurance Plan</h2>
+        <p>Surface payer quickly when creating claims.</p>
+        <div class="demo-example" style="max-width: 420px;">
+            <Select @bind-Value="payer" OnValueChanged="OnPayerChanged">
+                <SelectTrigger Placeholder="Pick insurance" />
+                <SelectContent>
+                    <SelectItem Value="blue-cross" Label="Blue Cross PPO" />
+                    <SelectItem Value="uhc" Label="UnitedHealthcare" />
+                    <SelectItem Value="aetna" Label="Aetna" />
+                    <SelectItem Value="medicare" Label="Medicare" />
+                    <SelectSeparator />
+                    <SelectLabel>Workers comp</SelectLabel>
+                    <SelectItem Value="liberty" Label="Liberty Mutual" />
+                    <SelectItem Value="the-hartford" Label="The Hartford" />
+                </SelectContent>
+            </Select>
+            <p class="demo-result">Payer: @DisplayPayer</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Scheduling Window</h2>
+        <p>Pick preferred appointment slot for follow-up scheduling.</p>
+        <div class="demo-example" style="max-width: 420px;">
+            <Select @bind-Value="slot">
+                <SelectTrigger Placeholder="Choose slot" />
+                <SelectContent>
+                    <SelectItem Value="early" Label="Early morning (7-9 AM)" />
+                    <SelectItem Value="mid" Label="Midday (11 AM-2 PM)" />
+                    <SelectItem Value="late" Label="Late afternoon (3-6 PM)" />
+                </SelectContent>
+            </Select>
+            <p class="demo-result">Slot: @FormatSlot(slot)</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string visitType = "follow-up";
+    private string payer = "blue-cross";
+    private string slot = "early";
+    private string payerNote = string.Empty;
+
+    private string FormatVisitType(string value) => value switch
+    {
+        "initial" => "Initial evaluation",
+        "follow-up" => "Follow-up",
+        "progress" => "Progress note",
+        "discharge" => "Discharge",
+        _ => "Not set"
+    };
+
+    private string FormatSlot(string value) => value switch
+    {
+        "early" => "Early morning",
+        "mid" => "Midday",
+        "late" => "Late afternoon",
+        _ => "Any"
+    };
+
+    private Task OnPayerChanged(string? value)
+    {
+        payerNote = value switch
+        {
+            "medicare" => "Medicare: verify KX modifier and visit limits",
+            "uhc" => "UHC: check prior auth window",
+            _ => string.Empty
+        };
+        return Task.CompletedTask;
+    }
+
+    private string DisplayPayer => string.IsNullOrEmpty(payerNote)
+        ? FormatPayer(payer)
+        : $"{FormatPayer(payer)} ({payerNote})";
+
+    private string FormatPayer(string value) => value switch
+    {
+        "blue-cross" => "Blue Cross PPO",
+        "uhc" => "UnitedHealthcare",
+        "aetna" => "Aetna",
+        "medicare" => "Medicare",
+        "liberty" => "Liberty Mutual",
+        "the-hartford" => "The Hartford",
+        _ => "Not set"
+    };
+}

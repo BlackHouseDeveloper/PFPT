@@ -1,0 +1,64 @@
+@* Context menu item component *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.ContextMenu
+
+<button 
+    type="button"
+    class="context-menu-item @(Variant) @(IsSelected ? "selected" : "")"
+    @onclick="HandleClick"
+    disabled="@Disabled"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public ContextMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool Inset { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "default";
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsSelected
+    {
+        get
+        {
+            if (ParentMenu == null) return false;
+            return ParentMenu.IsItemSelected(this);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        ParentMenu?.RegisterItem(this);
+    }
+
+    private async Task HandleClick(MouseEventArgs args)
+    {
+        if (!Disabled)
+        {
+            await OnClick.InvokeAsync(args);
+            ParentMenu?.Close();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        ParentMenu?.UnregisterItem(this);
+        await ValueTask.CompletedTask;
+    }
+}

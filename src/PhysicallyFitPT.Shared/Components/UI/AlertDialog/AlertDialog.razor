@@ -1,0 +1,34 @@
+@* Main AlertDialog container - manages open/close state *@
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    public async Task SetOpen(bool value)
+    {
+        if (Open != value)
+        {
+            Open = value;
+            await OpenChanged.InvokeAsync(value);
+            StateHasChanged();
+        }
+    }
+
+    public async Task CloseDialog()
+    {
+        await SetOpen(false);
+    }
+}

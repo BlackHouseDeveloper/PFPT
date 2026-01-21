@@ -1,0 +1,55 @@
+@* Separator Demo *@
+@page "/demo/separator"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Separator</h1>
+    <p class="demo-description">Divide content within cards or layout stacks for readability.</p>
+
+    <div class="demo-section">
+        <h2>Visit Summary Card</h2>
+        <div class="demo-example max-w-xl">
+            <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900">Alexis Harper</p>
+                        <p class="text-xs text-gray-500">Progress note - Today 10:00 AM</p>
+                    </div>
+                    <Badge Variant="secondary" Class="bg-primary/10 text-primary border-primary/20">Arrived</Badge>
+                </div>
+                <Separator />
+                <div class="grid grid-cols-3 gap-3 text-sm text-gray-700">
+                    <div>
+                        <p class="font-semibold text-gray-900">Pain</p>
+                        <p>3/10</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">ROM</p>
+                        <p>Knee flex 132 deg</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Next</p>
+                        <p>Step-downs, manual</p>
+                    </div>
+                </div>
+                <Separator />
+                <div class="text-sm text-gray-700">
+                    <p><strong>Plan:</strong> Continue quad loading, monitor soreness, reassess next visit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Vertical Layout</h2>
+        <div class="demo-example flex h-24 items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-700">Queue</span>
+                <Separator Orientation="vertical" Class="h-full" />
+                <span class="text-sm text-gray-700">In session</span>
+                <Separator Orientation="vertical" Class="h-full" />
+                <span class="text-sm text-gray-700">Completed</span>
+            </div>
+        </div>
+    </div>
+</div>

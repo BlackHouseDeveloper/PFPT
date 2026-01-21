@@ -1,0 +1,244 @@
+.scheduling-demo-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.demo-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.demo-tab-btn {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.demo-tab-btn:hover {
+    color: #111827;
+}
+
+.demo-tab-btn.active {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.demo-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #2563eb;
+}
+
+.demo-tab-content {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.demo-section {
+    margin-bottom: 2rem;
+}
+
+.demo-section h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.demo-description {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.demo-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.control-group input,
+.control-group select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.control-group input:focus,
+.control-group select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.dialogs-demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dialog-demo-card {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+}
+
+.dialog-demo-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.dialog-demo-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.dialog-demo-card .btn {
+    margin-bottom: 1rem;
+}
+
+.demo-output {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+}
+
+.demo-output h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.75rem;
+}
+
+.demo-output pre {
+    background: #1f2937;
+    color: #e5e7eb;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.text-muted {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.demo-info-section,
+.demo-notes-section {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    margin-top: 2rem;
+}
+
+.demo-info-section h4,
+.demo-notes-section h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.component-list,
+.demo-notes-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.component-list li,
+.demo-notes-section ul li {
+    padding: 0.75rem 0;
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.component-list li:last-child,
+.demo-notes-section ul li:last-child {
+    border-bottom: none;
+}
+
+.component-list strong,
+.demo-notes-section ul strong {
+    color: #111827;
+}
+
+@media (max-width: 768px) {
+    .scheduling-demo-container {
+        padding: 1rem;
+    }
+
+    .demo-tabs {
+        gap: 0.25rem;
+    }
+
+    .demo-tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .demo-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .dialogs-demo-grid {
+        grid-template-columns: 1fr;
+    }
+}

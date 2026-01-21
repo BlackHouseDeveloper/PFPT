@@ -1,0 +1,513 @@
+@* Hover Card Demo - Clinical examples of hover cards *@
+@page "/demo/hover-card"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Hover Card</h1>
+    <p class="demo-description">
+        Hover-triggered cards that display additional information without cluttering the interface.
+        Used for patient details, medication information, clinical term definitions, and provider info.
+    </p>
+
+    <div class="demo-section">
+        <h2>Patient Quick Info</h2>
+        <p>Hover over a patient name to see their quick info card.</p>
+        <div class="demo-example">
+            <p>
+                Today's schedule includes
+                <HoverCard OpenDelay="500" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline">Sarah Johnson</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="hover-card-patient">
+                                <div class="patient-header">
+                                    <div class="avatar">SJ</div>
+                                    <div>
+                                        <h3>Sarah Johnson</h3>
+                                        <p class="patient-id">PT-2024-00123</p>
+                                    </div>
+                                </div>
+                                <div class="patient-details">
+                                    <div class="detail-row">
+                                        <span class="label">Age:</span>
+                                        <span>42 years</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Diagnosis:</span>
+                                        <span>Rotator Cuff Tendinitis</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Last Visit:</span>
+                                        <span>Jan 15, 2026</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Status:</span>
+                                        <span class="status-active">Active Treatment</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                at 10:00 AM and
+                <HoverCard OpenDelay="500" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline">Michael Chen</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="hover-card-patient">
+                                <div class="patient-header">
+                                    <div class="avatar">MC</div>
+                                    <div>
+                                        <h3>Michael Chen</h3>
+                                        <p class="patient-id">PT-2024-00156</p>
+                                    </div>
+                                </div>
+                                <div class="patient-details">
+                                    <div class="detail-row">
+                                        <span class="label">Age:</span>
+                                        <span>35 years</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Diagnosis:</span>
+                                        <span>Lumbar Strain</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Last Visit:</span>
+                                        <span>Jan 17, 2026</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Status:</span>
+                                        <span class="status-active">Active Treatment</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                at 2:00 PM.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Clinical Term Definitions</h2>
+        <p>Hover over medical terms to see definitions and context.</p>
+        <div class="demo-example">
+            <p>
+                The patient presents with
+                <HoverCard OpenDelay="400" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline medical-term">SLAP lesion</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="definition-card">
+                                <h4>SLAP Lesion</h4>
+                                <p class="term-category">Superior Labrum Anterior-Posterior</p>
+                                <p>A tear of the labrum (cartilage rim) in the shoulder joint, specifically affecting the area where the biceps tendon attaches.</p>
+                                <div class="term-notes">
+                                    <strong>Common Causes:</strong>
+                                    <ul>
+                                        <li>Repetitive overhead activities</li>
+                                        <li>Acute trauma or fall</li>
+                                        <li>Aging and degeneration</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                resulting in limited
+                <HoverCard OpenDelay="400" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline medical-term">ROM</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="definition-card">
+                                <h4>Range of Motion (ROM)</h4>
+                                <p class="term-category">Measurement</p>
+                                <p>The measurement of the amount of movement around a specific joint or body part.</p>
+                                <div class="term-notes">
+                                    <strong>Types:</strong>
+                                    <ul>
+                                        <li><strong>AROM:</strong> Active ROM (patient moves)</li>
+                                        <li><strong>PROM:</strong> Passive ROM (therapist moves)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                in shoulder flexion and abduction.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Medication Information</h2>
+        <p>Hover over medications to see details and considerations.</p>
+        <div class="demo-example">
+            <p>
+                Patient is currently taking
+                <HoverCard OpenDelay="500" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline medication">Ibuprofen 400mg</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="medication-card">
+                                <h4>Ibuprofen</h4>
+                                <p class="med-class">NSAID (Nonsteroidal Anti-Inflammatory Drug)</p>
+                                <div class="med-details">
+                                    <div class="detail-row">
+                                        <span class="label">Dosage:</span>
+                                        <span>400mg, 3x daily</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Purpose:</span>
+                                        <span>Pain relief, inflammation reduction</span>
+                                    </div>
+                                </div>
+                                <div class="med-considerations">
+                                    <strong>PT Considerations:</strong>
+                                    <ul>
+                                        <li>May mask pain, monitor exercise intensity</li>
+                                        <li>Can affect tissue healing if overused</li>
+                                        <li>Note timing relative to therapy session</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                and
+                <HoverCard OpenDelay="500" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline medication">Cyclobenzaprine 10mg</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="medication-card">
+                                <h4>Cyclobenzaprine</h4>
+                                <p class="med-class">Muscle Relaxant</p>
+                                <div class="med-details">
+                                    <div class="detail-row">
+                                        <span class="label">Dosage:</span>
+                                        <span>10mg at bedtime</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Purpose:</span>
+                                        <span>Muscle spasm relief</span>
+                                    </div>
+                                </div>
+                                <div class="med-considerations">
+                                    <strong>PT Considerations:</strong>
+                                    <ul>
+                                        <li>May cause drowsiness or dizziness</li>
+                                        <li>Assess balance and coordination</li>
+                                        <li>Consider timing for morning sessions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                as prescribed.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Provider Information</h2>
+        <p>Hover over provider names for contact info and specialties.</p>
+        <div class="demo-example">
+            <p>
+                Referred by
+                <HoverCard OpenDelay="500" CloseDelay="300">
+                    <HoverCardTrigger>
+                        <span class="hover-trigger-inline provider">Dr. Emily Roberts, MD</span>
+                    </HoverCardTrigger>
+                    
+                        <HoverCardContent>
+                            <div class="provider-card">
+                                <div class="provider-header">
+                                    <div class="avatar-md">ER</div>
+                                    <div>
+                                        <h4>Dr. Emily Roberts</h4>
+                                        <p class="provider-title">Orthopedic Surgeon</p>
+                                    </div>
+                                </div>
+                                <div class="provider-details">
+                                    <div class="detail-row">
+                                        <span class="label">Specialty:</span>
+                                        <span>Sports Medicine, Shoulder & Elbow</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Phone:</span>
+                                        <span>(555) 123-4567</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Fax:</span>
+                                        <span>(555) 123-4568</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Patients:</span>
+                                        <span>23 active referrals</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    
+                </HoverCard>
+                from Orthopedic Associates.
+            </p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>ICD-10 Code Details</h2>
+        <p>Hover over diagnosis codes for full descriptions.</p>
+        <div class="demo-example">
+            <div class="code-list">
+                <div class="code-item">
+                    <HoverCard OpenDelay="400" CloseDelay="300">
+                        <HoverCardTrigger>
+                            <span class="hover-trigger-inline code">M25.511</span>
+                        </HoverCardTrigger>
+                        
+                            <HoverCardContent>
+                                <div class="code-card">
+                                    <h4>M25.511</h4>
+                                    <p class="code-full">Pain in right shoulder</p>
+                                    <div class="code-details">
+                                        <div class="detail-row">
+                                            <span class="label">Category:</span>
+                                            <span>Pain in joint</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="label">Laterality:</span>
+                                            <span>Right side</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="label">Body Part:</span>
+                                            <span>Shoulder region</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </HoverCardContent>
+                        
+                    </HoverCard>
+                </div>
+                <div class="code-item">
+                    <HoverCard OpenDelay="400" CloseDelay="300">
+                        <HoverCardTrigger>
+                            <span class="hover-trigger-inline code">M75.101</span>
+                        </HoverCardTrigger>
+                        
+                            <HoverCardContent>
+                                <div class="code-card">
+                                    <h4>M75.101</h4>
+                                    <p class="code-full">Unspecified rotator cuff tear or rupture of right shoulder, not specified as traumatic</p>
+                                    <div class="code-details">
+                                        <div class="detail-row">
+                                            <span class="label">Category:</span>
+                                            <span>Shoulder lesions</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="label">Laterality:</span>
+                                            <span>Right side</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="label">Type:</span>
+                                            <span>Non-traumatic</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </HoverCardContent>
+                        
+                    </HoverCard>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-trigger-inline {
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-decoration-color: #9BE000;
+        cursor: help;
+        font-weight: 500;
+        color: #0B2545;
+    }
+
+    .medical-term {
+        color: #2563eb;
+    }
+
+    .medication {
+        color: #dc2626;
+    }
+
+    .provider {
+        color: #7c3aed;
+    }
+
+    .code {
+        font-family: 'Courier New', monospace;
+        background-color: #f3f4f6;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #0B2545;
+        font-weight: 600;
+    }
+
+    .hover-card-patient .patient-header,
+    .provider-card .provider-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #9BE000, #0B2545);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .avatar-md {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #2563eb);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .hover-card-patient h3,
+    .provider-card h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #0B2545;
+    }
+
+    .patient-id,
+    .provider-title {
+        margin: 2px 0 0 0;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .patient-details,
+    .provider-details,
+    .med-details,
+    .code-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+
+    .detail-row .label {
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .status-active {
+        color: #10b981;
+        font-weight: 600;
+    }
+
+    .definition-card h4,
+    .medication-card h4,
+    .code-card h4 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0B2545;
+    }
+
+    .term-category,
+    .med-class,
+    .code-full {
+        margin: 0 0 12px 0;
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .definition-card p,
+    .medication-card p {
+        margin: 0 0 12px 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #374151;
+    }
+
+    .term-notes,
+    .med-considerations {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .term-notes strong,
+    .med-considerations strong {
+        font-size: 12px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .term-notes ul,
+    .med-considerations ul {
+        margin: 8px 0 0 0;
+        padding-left: 20px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #374151;
+    }
+
+    .code-list {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .code-item {
+        padding: 12px 16px;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+</style>
+
+@code {
+    // Demo state can go here if needed
+}

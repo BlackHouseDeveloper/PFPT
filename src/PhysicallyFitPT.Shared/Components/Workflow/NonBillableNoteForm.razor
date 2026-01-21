@@ -1,0 +1,285 @@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="space-y-6">
+    @if (NoteType == NonBillableNoteType.Discharge)
+    {
+        <Card Class="border-2 border-yellow-200 bg-yellow-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <Icon Name="filetext" Width="20" Height="20" CssClass="text-yellow-700" />
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-yellow-900">Non-Billable Note</span>
+                            <Badge Class="bg-yellow-600 text-white">Discharge</Badge>
+                        </div>
+                        <p class="text-xs text-yellow-800">
+                            This note type is for documentation purposes only and will not be submitted for billing.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardHeader>
+                <CardTitle Class="text-base">Discharge Information</CardTitle>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="space-y-2">
+                    <Label>Discharge Type *</Label>
+                    <Select Value="@dischargeData.DischargeType" OnValueChanged="value => HandleDischargeChange(nameof(DischargeData.DischargeType), value)">
+                        <SelectTrigger Class="h-11 bg-white" Placeholder="Select discharge type" />
+                        <SelectContent>
+                            <SelectItem Value="completed-care" Label="Completed Care - Goals Met" />
+                            <SelectItem Value="self-discharge" Label="Self Discharge - Patient Request" />
+                            <SelectItem Value="unreachable" Label="Unreachable - Lost to Follow-Up" />
+                            <SelectItem Value="medical-dc" Label="Medical Discharge - MD Recommendation" />
+                            <SelectItem Value="other" Label="Other - See Notes" />
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                @if (RequiresDischargeReason(dischargeData.DischargeType))
+                {
+                    <div class="space-y-2">
+                        <Label>Discharge Reason/Details</Label>
+                        <Textarea
+                            Value="@dischargeData.DischargeReason"
+                            ValueChanged="value => HandleDischargeChange(nameof(DischargeData.DischargeReason), value)"
+                            Placeholder="Provide specific details about the discharge reason..."
+                            Class="min-h-[100px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardHeader>
+                <CardTitle Class="text-base">Summary of Care Provided</CardTitle>
+            </CardHeader>
+            <CardContent Class="space-y-2">
+                <Label>Complete Treatment Summary *</Label>
+                <Textarea
+                    Value="@dischargeData.SummaryOfCare"
+                    ValueChanged="value => HandleDischargeChange(nameof(DischargeData.SummaryOfCare), value)"
+                    Placeholder="Summarize the entire course of treatment including:\n• Initial presentation and chief complaint\n• Interventions provided and modalities used\n• Patient progress and response to treatment\n• Functional outcomes achieved\n• Goals met or not met (with explanation)\n• Total visits completed and attendance"
+                    Class="min-h-[200px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardHeader>
+                <CardTitle Class="text-base">Home Exercise Program (HEP)</CardTitle>
+            </CardHeader>
+            <CardContent Class="space-y-2">
+                <Label>HEP for Continued Self-Management</Label>
+                <Textarea
+                    Value="@dischargeData.Hep"
+                    ValueChanged="value => HandleDischargeChange(nameof(DischargeData.Hep), value)"
+                    Placeholder="Document home exercise program for patient to continue independently:\n• Specific exercises with sets, reps, frequency\n• Progression guidelines\n• Precautions and contraindications\n• Long-term maintenance recommendations\n• Activity modifications"
+                    Class="min-h-[150px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardHeader>
+                <CardTitle Class="text-base">Follow-Up Recommendations</CardTitle>
+            </CardHeader>
+            <CardContent Class="space-y-2">
+                <Label>Post-Discharge Instructions &amp; Follow-Up</Label>
+                <Textarea
+                    Value="@dischargeData.FollowUpRecommendations"
+                    ValueChanged="value => HandleDischargeChange(nameof(DischargeData.FollowUpRecommendations), value)"
+                    Placeholder="Provide follow-up recommendations:\n• When to seek medical attention (red flags)\n• Return to PT indications (if symptoms worsen)\n• Follow-up with referring physician\n• Lifestyle modifications and injury prevention\n• Expected prognosis and timeline\n• Resources for ongoing support"
+                    Class="min-h-[150px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardHeader>
+                <CardTitle Class="text-base">Patient Education Provided</CardTitle>
+            </CardHeader>
+            <CardContent Class="space-y-2">
+                <Label>Education &amp; Self-Management Training</Label>
+                <Textarea
+                    Value="@dischargeData.PatientEducation"
+                    ValueChanged="value => HandleDischargeChange(nameof(DischargeData.PatientEducation), value)"
+                    Placeholder="Document patient education provided at discharge:\n• Condition/diagnosis education\n• Self-management strategies\n• Prevention techniques\n• Activity guidelines\n• Pain management techniques\n• Body mechanics training"
+                    Class="min-h-[120px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+            </CardContent>
+        </Card>
+    }
+    else if (NoteType == NonBillableNoteType.InfoOnly)
+    {
+        <Card Class="border-2 border-blue-200 bg-blue-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <Icon Name="alertcircle" Width="20" Height="20" CssClass="text-blue-700" />
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-blue-900">Non-Billable Note</span>
+                            <Badge Class="bg-blue-600 text-white">Information Only</Badge>
+                        </div>
+                        <p class="text-xs text-blue-800">
+                            Documentation for scheduling changes, no-shows, and other non-treatment events.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-gray-200">
+            <CardContent Class="p-4 space-y-4">
+                <div class="space-y-2">
+                    <Label>Reason for Info-Only Note *</Label>
+                    <Select Value="@infoOnlyData.Reason" OnValueChanged="value => HandleInfoOnlyChange(nameof(InfoOnlyData.Reason), value)">
+                        <SelectTrigger Class="h-11 bg-white" Placeholder="Select reason" />
+                        <SelectContent>
+                            <SelectItem Value="no-show" Label="Patient No-Show" />
+                            <SelectItem Value="cancelled-by-patient" Label="Cancelled by Patient" />
+                            <SelectItem Value="cancelled-by-clinic" Label="Cancelled by Clinic" />
+                            <SelectItem Value="scheduling-change" Label="Scheduling Change" />
+                            <SelectItem Value="other" Label="Other - See Notes" />
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                @if (infoOnlyData.Reason == "no-show")
+                {
+                    <div class="space-y-2">
+                        <Label>Contact Attempts</Label>
+                        <Textarea
+                            Value="@infoOnlyData.ContactAttempts"
+                            ValueChanged="value => HandleInfoOnlyChange(nameof(InfoOnlyData.ContactAttempts), value)"
+                            Placeholder="Document contact attempts made (phone calls, voicemails, emails, text messages)..."
+                            Class="min-h-[80px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+                    </div>
+                }
+
+                <div class="space-y-2">
+                    <Label>Notes *</Label>
+                    <Textarea
+                        Value="@infoOnlyData.Notes"
+                        ValueChanged="value => HandleInfoOnlyChange(nameof(InfoOnlyData.Notes), value)"
+                        Placeholder="Document details about this event, any communication with patient, and relevant context..."
+                        Class="min-h-[150px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+                </div>
+
+                <div class="space-y-2">
+                    <Label>Next Action/Follow-Up</Label>
+                    <Textarea
+                        Value="@infoOnlyData.NextAction"
+                        ValueChanged="value => HandleInfoOnlyChange(nameof(InfoOnlyData.NextAction), value)"
+                        Placeholder="Document next steps (reschedule, discharge for non-compliance, continue outreach, etc.)..."
+                        Class="min-h-[80px] bg-white border-2 border-gray-300 focus:border-[#C6FF00]" />
+                </div>
+            </CardContent>
+        </Card>
+    }
+    else
+    {
+        <div class="text-sm text-gray-600">Select a note type to begin.</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public NonBillableNoteType NoteType { get; set; } = NonBillableNoteType.Discharge;
+
+    [Parameter]
+    public EventCallback<DischargeData> OnDischargeDataChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<InfoOnlyData> OnInfoOnlyDataChanged { get; set; }
+
+    private DischargeData dischargeData = new();
+    private InfoOnlyData infoOnlyData = new();
+
+    protected override void OnParametersSet()
+    {
+        // Ensure date-safe defaults stay intact on rerender
+        dischargeData ??= new();
+        infoOnlyData ??= new();
+    }
+
+    private bool RequiresDischargeReason(string dischargeType)
+    {
+        return string.Equals(dischargeType, "self-discharge", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(dischargeType, "unreachable", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(dischargeType, "other", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task HandleDischargeChange(string field, string? value)
+    {
+        switch (field)
+        {
+            case nameof(DischargeData.DischargeType):
+                dischargeData = dischargeData with { DischargeType = value ?? string.Empty };
+                break;
+            case nameof(DischargeData.SummaryOfCare):
+                dischargeData = dischargeData with { SummaryOfCare = value ?? string.Empty };
+                break;
+            case nameof(DischargeData.Hep):
+                dischargeData = dischargeData with { Hep = value ?? string.Empty };
+                break;
+            case nameof(DischargeData.FollowUpRecommendations):
+                dischargeData = dischargeData with { FollowUpRecommendations = value ?? string.Empty };
+                break;
+            case nameof(DischargeData.DischargeReason):
+                dischargeData = dischargeData with { DischargeReason = value };
+                break;
+            case nameof(DischargeData.PatientEducation):
+                dischargeData = dischargeData with { PatientEducation = value };
+                break;
+        }
+
+        if (OnDischargeDataChanged.HasDelegate)
+        {
+            await OnDischargeDataChanged.InvokeAsync(dischargeData);
+        }
+    }
+
+    private async Task HandleInfoOnlyChange(string field, string? value)
+    {
+        switch (field)
+        {
+            case nameof(InfoOnlyData.Reason):
+                infoOnlyData = infoOnlyData with { Reason = value ?? string.Empty };
+                break;
+            case nameof(InfoOnlyData.Notes):
+                infoOnlyData = infoOnlyData with { Notes = value ?? string.Empty };
+                break;
+            case nameof(InfoOnlyData.ContactAttempts):
+                infoOnlyData = infoOnlyData with { ContactAttempts = value };
+                break;
+            case nameof(InfoOnlyData.NextAction):
+                infoOnlyData = infoOnlyData with { NextAction = value };
+                break;
+        }
+
+        if (OnInfoOnlyDataChanged.HasDelegate)
+        {
+            await OnInfoOnlyDataChanged.InvokeAsync(infoOnlyData);
+        }
+    }
+
+    public record DischargeData(
+        string DischargeType = "completed-care",
+        string SummaryOfCare = "",
+        string Hep = "",
+        string FollowUpRecommendations = "",
+        string? DischargeReason = null,
+        string? PatientEducation = null);
+
+    public record InfoOnlyData(
+        string Reason = "no-show",
+        string Notes = "",
+        string? ContactAttempts = null,
+        string? NextAction = null);
+
+    public enum NonBillableNoteType
+    {
+        Discharge,
+        InfoOnly
+    }
+}

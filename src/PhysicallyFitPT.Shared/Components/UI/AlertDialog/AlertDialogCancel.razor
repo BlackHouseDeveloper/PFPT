@@ -1,0 +1,37 @@
+@* Cancel button - closes dialog without action *@
+
+<button type="button"
+        class="@CombinedClass"
+        @onclick="HandleClick"
+        @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public AlertDialog? Parent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white hover:bg-gray-50 h-10 px-4 py-2 {Class}".Trim();
+
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync();
+        if (Parent != null)
+        {
+            await Parent.CloseDialog();
+        }
+    }
+}

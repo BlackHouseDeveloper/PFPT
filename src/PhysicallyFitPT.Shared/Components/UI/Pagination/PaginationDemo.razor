@@ -1,0 +1,119 @@
+@* Pagination Demo - Clinical list paging *@
+@page "/demo/pagination"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Pagination</h1>
+    <p class="demo-description">
+        Page through patient lists, billing queues, or appointment schedules with accessible controls.
+    </p>
+
+    <div class="demo-example">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div class="text-sm text-gray-700">
+                Showing page <strong>@currentPage</strong> of @totalPages — @PageRangeLabel
+            </div>
+            <div class="text-xs text-gray-500">
+                Use Prev/Next or pick a page number; ellipsis collapse long ranges.
+            </div>
+        </div>
+
+        <Pagination>
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious OnClick="@(_ => GoToPage(Math.Max(1, currentPage - 1)))"
+                                        PreventDefault="true"
+                                        Class="min-w-[96px]" />
+                </PaginationItem>
+
+                @foreach (var descriptor in PageDescriptors)
+                {
+                    if (descriptor.IsEllipsis)
+                    {
+                        <PaginationItem>
+                            <PaginationEllipsis />
+                        </PaginationItem>
+                    }
+                    else
+                    {
+                        <PaginationItem>
+                            <PaginationLink IsActive="descriptor.Page == currentPage"
+                                            Size="icon"
+                                            Href="@($"#page-{descriptor.Page}")"
+                                            OnClick="@(_ => GoToPage(descriptor.Page))">
+                                @descriptor.Page
+                            </PaginationLink>
+                        </PaginationItem>
+                    }
+                }
+
+                <PaginationItem>
+                    <PaginationNext OnClick="@(_ => GoToPage(Math.Min(totalPages, currentPage + 1)))"
+                                    PreventDefault="true"
+                                    Class="min-w-[80px]" />
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
+    </div>
+</div>
+
+@code {
+    private int totalPages = 18;
+    private int currentPage = 6;
+    private int pageSize = 25;
+    private int totalItems => totalPages * pageSize;
+
+    private string PageRangeLabel
+    {
+        get
+        {
+            var start = ((currentPage - 1) * pageSize) + 1;
+            var end = Math.Min(currentPage * pageSize, totalItems);
+            return $"Records {start}-{end} of {totalItems}";
+        }
+    }
+
+    private record PageDescriptor(int Page, bool IsEllipsis);
+
+    private IEnumerable<PageDescriptor> PageDescriptors
+    {
+        get
+        {
+            // Generate pagination with ellipsis: always show first/last, neighbors around current
+            var pages = new List<PageDescriptor>();
+
+            if (totalPages <= 7)
+            {
+                for (var i = 1; i <= totalPages; i++) pages.Add(new PageDescriptor(i, false));
+                return pages;
+            }
+
+            pages.Add(new PageDescriptor(1, false));
+
+            if (currentPage > 3)
+            {
+                pages.Add(new PageDescriptor(0, true));
+            }
+
+            var start = Math.Max(2, currentPage - 1);
+            var end = Math.Min(totalPages - 1, currentPage + 1);
+            for (var i = start; i <= end; i++)
+            {
+                pages.Add(new PageDescriptor(i, false));
+            }
+
+            if (currentPage < totalPages - 2)
+            {
+                pages.Add(new PageDescriptor(0, true));
+            }
+
+            pages.Add(new PageDescriptor(totalPages, false));
+            return pages;
+        }
+    }
+
+    private void GoToPage(int page)
+    {
+        currentPage = Math.Clamp(page, 1, totalPages);
+    }
+}

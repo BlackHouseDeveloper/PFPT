@@ -1,0 +1,19 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="tabs-list @Class" data-slot="tabs-list" role="tablist" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public Tabs? TabsParent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,7 +1,7 @@
 @page "/patients"
 @layout ResponsiveMainLayout
 @inject IDataService DataService
-@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <PageTitle>Patients</PageTitle>
 
@@ -17,23 +17,7 @@
     <h3>Patient Search</h3>
   </div>
   <div class="pfp-card-body">
-    <div class="pfp-search-section">
-      <div class="pfp-input-group">
-        <input @bind="searchQuery" @onkeypress="OnSearchKeyPress" 
-               placeholder="Search patients by name..." 
-               class="pfp-input" />
-        <button @onclick="SearchPatients" class="pfp-btn pfp-btn-primary" disabled="@isLoading">
-          @if (isLoading)
-          {
-            <span>Searching...</span>
-          }
-          else
-          {
-            <span>🔍 Search</span>
-          }
-        </button>
-      </div>
-    </div>
+    <PatientSearchBar @bind-SearchQuery="searchQuery" OnSearch="SearchPatients" IsLoading="@isLoading" />
 
     @if (errorMessage != null)
     {
@@ -51,37 +35,7 @@
         
         @foreach (var patient in patients)
         {
-          <div class="pfp-patient-card">
-            <div class="pfp-patient-info">
-              <h4>@patient.FirstName @patient.LastName</h4>
-              <div class="pfp-patient-details">
-                @if (!string.IsNullOrEmpty(patient.MRN))
-                {
-                  <span class="pfp-detail">MRN: @patient.MRN</span>
-                }
-                @if (patient.DateOfBirth.HasValue)
-                {
-                  <span class="pfp-detail">DOB: @patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
-                }
-                @if (!string.IsNullOrEmpty(patient.MobilePhone))
-                {
-                  <span class="pfp-detail">📞 @patient.MobilePhone</span>
-                }
-                @if (!string.IsNullOrEmpty(patient.Email))
-                {
-                  <span class="pfp-detail">✉️ @patient.Email</span>
-                }
-              </div>
-            </div>
-            <div class="pfp-patient-actions">
-              <button class="pfp-btn pfp-btn-secondary" @onclick="() => ViewPatient(patient.Id)">
-                View Details
-              </button>
-              <button class="pfp-btn pfp-btn-outline" @onclick="() => ScheduleAppointment(patient.Id)">
-                Schedule
-              </button>
-            </div>
-          </div>
+          <PatientListItem Patient="patient" OnViewDetails="ViewPatient" OnScheduleAppointment="ScheduleAppointment" />
         }
       </div>
     }
@@ -138,23 +92,13 @@
         }
     }
 
-    private async Task OnSearchKeyPress(KeyboardEventArgs e)
+    private void ViewPatient(Guid patientId)
     {
-        if (e.Key == "Enter")
-        {
-            await SearchPatients();
-        }
+        NavigationManager.NavigateTo($"/patients/{patientId}");
     }
 
-    private async Task ViewPatient(Guid patientId)
+    private void ScheduleAppointment(Guid patientId)
     {
-        // TODO: Navigate to patient details page
-        await JSRuntime.InvokeVoidAsync("alert", $"View patient details for ID: {patientId}");
-    }
-
-    private async Task ScheduleAppointment(Guid patientId)
-    {
-        // TODO: Open appointment scheduling modal/page
-        await JSRuntime.InvokeVoidAsync("alert", $"Schedule appointment for patient ID: {patientId}");
+        NavigationManager.NavigateTo($"/appointments/new?patientId={patientId}");
     }
 }

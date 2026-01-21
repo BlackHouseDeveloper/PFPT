@@ -1,0 +1,83 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="navigation-menu @Class" data-viewport="@UseViewport" @onmouseleave="CloseAll" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+
+    @if (UseViewport)
+    {
+        <NavigationMenuViewport />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public bool UseViewport { get; set; } = true;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private readonly List<NavigationMenuItem> items = new();
+
+    internal NavigationMenuItem? ActiveItem { get; private set; }
+    internal RenderFragment? ActiveContent { get; private set; }
+
+    internal void RegisterItem(NavigationMenuItem item)
+    {
+        if (!items.Contains(item))
+        {
+            items.Add(item);
+        }
+    }
+
+    internal void UnregisterItem(NavigationMenuItem item)
+    {
+        items.Remove(item);
+    }
+
+    internal async Task OpenItemAsync(NavigationMenuItem item)
+    {
+        foreach (var other in items)
+        {
+            if (!ReferenceEquals(other, item))
+            {
+                other.CloseInternal();
+            }
+        }
+
+        ActiveItem = item;
+        ActiveContent = item.ContentFragment;
+        item.OpenInternal();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal void RefreshActiveContent(NavigationMenuItem item)
+    {
+        if (ReferenceEquals(ActiveItem, item))
+        {
+            ActiveContent = item.ContentFragment;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal async Task CloseAll()
+    {
+        foreach (var item in items)
+        {
+            item.CloseInternal();
+        }
+
+        ActiveItem = null;
+        ActiveContent = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal bool IsActive(NavigationMenuItem item) => ReferenceEquals(ActiveItem, item);
+}

@@ -1,0 +1,575 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="space-y-6">
+    <!-- Info Banner -->
+    <Card Class="border-2 border-purple-200 bg-purple-50">
+        <CardContent Class="p-4">
+            <div class="flex items-start gap-3">
+                <div>
+                    <p class="font-semibold text-purple-900 mb-1">MN System Preferences &amp; Branding</p>
+                    <p class="text-sm text-purple-800">
+                        Configure UI density, navigation buttons, branding elements, and time/date formats across the application.
+                    </p>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Section Density -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                MX Section Density
+            </CardTitle>
+            <CardDescription>
+                Control spacing and information density throughout the app
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-4">
+            <div class="p-4 border-2 border-border rounded-lg">
+                <Label Class="block mb-3">Interface Density</Label>
+                <div class="space-y-2">
+                    <!-- Compact Option -->
+                    <label class="flex items-center gap-3 p-4 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                        <input
+                            type="radio"
+                            name="density"
+                            value="compact"
+                            checked="@(settings.SectionDensity == "compact")"
+                            @onchange="@((ChangeEventArgs e) => UpdateSetting("SectionDensity", e.Value?.ToString() ?? "standard"))"
+                            class="w-4 h-4 text-primary"
+                        />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="font-semibold">MI Compact</p>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                Reduced spacing, smaller text, more content per screen
+                            </p>
+                            <div class="mt-2 space-y-1">
+                                <div class="h-2 bg-muted rounded"></div>
+                                <div class="h-2 bg-muted rounded"></div>
+                                <div class="h-2 bg-muted rounded"></div>
+                                <div class="h-2 bg-muted rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Standard Option (Selected) -->
+                    <label class="flex items-center gap-3 p-4 border-2 @(settings.SectionDensity == "standard" ? "border-primary bg-primary/5" : "border-border") rounded-lg cursor-pointer">
+                        <input
+                            type="radio"
+                            name="density"
+                            value="standard"
+                            checked="@(settings.SectionDensity == "standard")"
+                            @onchange="@((ChangeEventArgs e) => UpdateSetting("SectionDensity", e.Value?.ToString() ?? "standard"))"
+                            class="w-4 h-4 text-primary"
+                        />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="font-semibold">MN Standard</p>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                Balanced spacing, optimal readability (Default PTDoc style)
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                <div class="h-3 bg-muted rounded"></div>
+                                <div class="h-3 bg-muted rounded"></div>
+                                <div class="h-3 bg-muted rounded w-4/5"></div>
+                            </div>
+                        </div>
+                        <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                            RM Recommended
+                        </Badge>
+                    </label>
+
+                    <!-- Spacious Option -->
+                    <label class="flex items-center gap-3 p-4 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                        <input
+                            type="radio"
+                            name="density"
+                            value="spacious"
+                            checked="@(settings.SectionDensity == "spacious")"
+                            @onchange="@((ChangeEventArgs e) => UpdateSetting("SectionDensity", e.Value?.ToString() ?? "standard"))"
+                            class="w-4 h-4 text-primary"
+                        />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="font-semibold">MX Spacious</p>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                Increased spacing, larger touch targets, easier on eyes
+                            </p>
+                            <div class="mt-4 space-y-3">
+                                <div class="h-4 bg-muted rounded"></div>
+                                <div class="h-4 bg-muted rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <p class="font-semibold text-blue-900 mb-1">AD Density Impact</p>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>• <strong>Compact:</strong> Best for large monitors, experienced users, data-heavy workflows</li>
+                            <li>• <strong>Standard:</strong> Optimal balance for most clinical scenarios</li>
+                            <li>• <strong>Spacious:</strong> Better for touch screens, accessibility, reduced eye strain</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Navigation Controls -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                AR Note Navigation Controls
+            </CardTitle>
+            <CardDescription>
+                Configure Next/Back buttons and progress indicators
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-4">
+            <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                <div class="flex-1">
+                    <Label Class="font-semibold">Enable Bottom Next / Back Buttons</Label>
+                    <p class="text-sm text-muted-foreground mt-1">
+                        Show navigation buttons at the bottom of note forms for easier progression
+                    </p>
+                </div>
+                <Switch
+                    Checked="@settings.EnableBottomNavButtons"
+                    OnCheckedChange="@((bool isChecked) => { settings.EnableBottomNavButtons = isChecked; NotifyUnsavedChanges(); })"
+                />
+            </div>
+
+            @if (settings.EnableBottomNavButtons)
+            {
+                <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+                    <div class="flex gap-2 mb-3">
+                        <p class="font-semibold text-green-900">CC Bottom Navigation Preview</p>
+                    </div>
+                    <div class="mt-3 p-4 bg-white border-2 border-green-300 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <Button Variant="outline" Class="flex items-center gap-2">
+                                AL Back to Subjective
+                            </Button>
+                            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span>Section 3 of 6</span>
+                            </div>
+                            <Button Class="flex items-center gap-2 bg-primary">
+                                Next: Assessment AR
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                <div class="flex-1">
+                    <Label Class="font-semibold">Show Progress Indicator</Label>
+                    <p class="text-sm text-muted-foreground mt-1">
+                        Display progress bar showing completion status through note sections
+                    </p>
+                </div>
+                <Switch
+                    Checked="@settings.ShowProgressIndicator"
+                    OnCheckedChange="@((bool isChecked) => { settings.ShowProgressIndicator = isChecked; NotifyUnsavedChanges(); })"
+                />
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Branding -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                PA Branding &amp; Visual Identity
+            </CardTitle>
+            <CardDescription>
+                Customize your clinic's logo and color scheme
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-6">
+            <!-- Logo Upload -->
+            <div>
+                <Label Class="block mb-3">Clinic Logo</Label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <InputFile id="logo-upload" OnChange="@HandleLogoUpload" accept="image/png,image/jpeg,image/svg+xml" hidden />
+                        <label
+                            for="logo-upload"
+                            class="block p-8 border-2 border-dashed border-border rounded-lg text-center hover:bg-muted/50 transition-colors cursor-pointer"
+                        >
+                            <div class="text-4xl mb-2">UP</div>
+                            <p class="text-sm text-muted-foreground">
+                                Click to upload logo
+                            </p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                PNG, JPG, SVG up to 2MB
+                            </p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                Recommended: 200x60px
+                            </p>
+                        </label>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(logoPreview))
+                    {
+                        <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                            <p class="text-sm font-semibold mb-2">PR Preview:</p>
+                            <div class="bg-white p-4 rounded border border-border flex items-center justify-center">
+                                <img src="@logoPreview" alt="Logo preview" class="max-h-16 max-w-full" />
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <Button
+                                    Size="sm"
+                                    Variant="outline"
+                                    Class="flex-1"
+                                    OnClick="@(() => { logoPreview = null; NotifyUnsavedChanges(); })"
+                                >
+                                    RM Remove
+                                </Button>
+                                <Button
+                                    Size="sm"
+                                    Class="flex-1"
+                                    OnClick="@(() => NotifyUnsavedChanges())"
+                                >
+                                    SL Save Logo
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Color Customization -->
+            <div>
+                <Label Class="block mb-3">Brand Colors</Label>
+                <div class="space-y-3">
+                    <div>
+                        <Label Class="text-sm mb-2 block">Primary Color</Label>
+                        <div class="flex gap-3">
+                            <input
+                                type="color"
+                                @bind="settings.PrimaryColor"
+                                class="w-20 h-12 border-2 border-border rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                @bind="settings.PrimaryColor"
+                                class="flex-1 px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                placeholder="#16a34a"
+                            />
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            Main theme color (buttons, links, accents)
+                        </p>
+                    </div>
+
+                    <div>
+                        <Label Class="text-sm mb-2 block">Secondary Color</Label>
+                        <div class="flex gap-3">
+                            <input
+                                type="color"
+                                @bind="settings.SecondaryColor"
+                                class="w-20 h-12 border-2 border-border rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                @bind="settings.SecondaryColor"
+                                class="flex-1 px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                placeholder="#22c55e"
+                            />
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            Supporting color for highlights and badges
+                        </p>
+                    </div>
+
+                    <div>
+                        <Label Class="text-sm mb-2 block">Accent Color</Label>
+                        <div class="flex gap-3">
+                            <input
+                                type="color"
+                                @bind="settings.AccentColor"
+                                class="w-20 h-12 border-2 border-border rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                @bind="settings.AccentColor"
+                                class="flex-1 px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                placeholder="#10b981"
+                            />
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            Accent color for success states and confirmations
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 border-2 border-border rounded-lg bg-background">
+                    <p class="text-sm font-semibold mb-2">CP Color Preview:</p>
+                    <div class="flex gap-2">
+                        <div
+                            class="h-12 flex-1 rounded border-2 border-border"
+                            style="background-color: @settings.PrimaryColor;"
+                        ></div>
+                        <div
+                            class="h-12 flex-1 rounded border-2 border-border"
+                            style="background-color: @settings.SecondaryColor;"
+                        ></div>
+                        <div
+                            class="h-12 flex-1 rounded border-2 border-border"
+                            style="background-color: @settings.AccentColor;"
+                        ></div>
+                    </div>
+                </div>
+
+                <Button
+                    Variant="outline"
+                    Size="sm"
+                    Class="mt-3"
+                    OnClick="@ResetBrandColors"
+                >
+                    RS Reset to PTDoc Default (Emerald Green)
+                </Button>
+            </div>
+
+            <!-- Font Settings -->
+            <div>
+                <Label Class="block mb-3 flex items-center gap-2">
+                    TY Typography
+                    @if (settings.FontLocked)
+                    {
+                        <Badge Variant="outline" Class="bg-orange-100 text-orange-700 border-orange-300">
+                            LK System Locked
+                        </Badge>
+                    }
+                </Label>
+
+                <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div>
+                                <p class="font-semibold">CF Current Font Family</p>
+                                <p class="text-sm text-muted-foreground mt-1" style="font-family: @settings.FontFamily;">
+                                    @settings.FontFamily - The quick brown fox jumps over the lazy dog
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (settings.FontLocked)
+                    {
+                        <div class="p-3 border-2 border-orange-200 bg-orange-50 rounded-lg">
+                            <div class="flex gap-2">
+                                <div class="flex-1">
+                                    <p class="text-sm text-orange-900">
+                                        <strong>FL Font locked for PTDoc consistency.</strong> The Inter font family is system-enforced to maintain professional healthcare aesthetics and readability across all devices.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mt-3">
+                            <select
+                                @bind="settings.FontFamily"
+                                class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            >
+                                <option value="Inter">Inter (Default)</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Lato">Lato</option>
+                                <option value="System UI">System UI</option>
+                            </select>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                <div class="flex-1">
+                    <Label Class="font-semibold">Enable Dark Mode Option</Label>
+                    <p class="text-sm text-muted-foreground mt-1">
+                        Allow users to switch between light and dark themes
+                    </p>
+                </div>
+                <Switch
+                    Checked="@settings.EnableDarkMode"
+                    OnCheckedChange="@((bool isChecked) => { settings.EnableDarkMode = isChecked; NotifyUnsavedChanges(); })"
+                />
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Time & Date Formats -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                GL Time &amp; Date Formats
+            </CardTitle>
+            <CardDescription>
+                Configure regional settings and display formats
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-4">
+            <div>
+                <Label Class="block mb-2">Time Zone</Label>
+                <select
+                    @bind="settings.Timezone"
+                    class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                >
+                    <option value="America/New_York">Eastern Time (ET)</option>
+                    <option value="America/Chicago">Central Time (CT)</option>
+                    <option value="America/Denver">Mountain Time (MT)</option>
+                    <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                    <option value="America/Phoenix">Arizona (MST - No DST)</option>
+                    <option value="America/Anchorage">Alaska Time (AKT)</option>
+                    <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                </select>
+                <p class="text-xs text-muted-foreground mt-1">
+                    All timestamps will display in this time zone
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <Label Class="block mb-2">Date Format</Label>
+                    <select
+                        @bind="settings.DateFormat"
+                        class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                    >
+                        <option value="MM/DD/YYYY">MM/DD/YYYY (US - 12/17/2025)</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY (International - 17/12/2025)</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD (ISO - 2025-12-17)</option>
+                        <option value="MMM DD, YYYY">MMM DD, YYYY (Dec 17, 2025)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <Label Class="block mb-2">Time Format</Label>
+                    <select
+                        @bind="settings.TimeFormat"
+                        class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                    >
+                        <option value="12">12-hour (2:30 PM)</option>
+                        <option value="24">24-hour (14:30)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <p class="font-semibold text-green-900 mb-2">FP Format Preview</p>
+                        <div class="space-y-1 text-sm text-green-800">
+                            <p>
+                                <strong>Date:</strong>
+                                @if (settings.DateFormat == "MM/DD/YYYY")
+                                {
+                                    <text>12/17/2025</text>
+                                }
+                                else if (settings.DateFormat == "DD/MM/YYYY")
+                                {
+                                    <text>17/12/2025</text>
+                                }
+                                else if (settings.DateFormat == "YYYY-MM-DD")
+                                {
+                                    <text>2025-12-17</text>
+                                }
+                                else if (settings.DateFormat == "MMM DD, YYYY")
+                                {
+                                    <text>Dec 17, 2025</text>
+                                }
+                            </p>
+                            <p>
+                                <strong>Time:</strong>
+                                @if (settings.TimeFormat == "12")
+                                {
+                                    <text>2:30 PM</text>
+                                }
+                                else
+                                {
+                                    <text>14:30</text>
+                                }
+                            </p>
+                            <p>
+                                <strong>Full Timestamp:</strong>
+                                @if (settings.DateFormat == "MM/DD/YYYY")
+                                {
+                                    <text>12/17/2025</text>
+                                }
+                                else if (settings.DateFormat == "DD/MM/YYYY")
+                                {
+                                    <text>17/12/2025</text>
+                                }
+                                else if (settings.DateFormat == "YYYY-MM-DD")
+                                {
+                                    <text>2025-12-17</text>
+                                }
+                                else if (settings.DateFormat == "MMM DD, YYYY")
+                                {
+                                    <text>Dec 17, 2025</text>
+                                }
+                                @(" at ")
+                                @if (settings.TimeFormat == "12")
+                                {
+                                    <text>2:30 PM</text>
+                                }
+                                else
+                                {
+                                    <text>14:30</text>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- System Information -->
+    <Card Class="border-2">
+        <CardHeader>
+            <CardTitle Class="flex items-center gap-2">
+                MN System Information
+            </CardTitle>
+            <CardDescription>
+                Application version and details
+            </CardDescription>
+        </CardHeader>
+        <CardContent Class="space-y-3">
+            <div class="flex justify-between p-3 bg-muted rounded-lg">
+                <span class="text-sm font-semibold">AP Application</span>
+                <span class="text-sm text-muted-foreground">PTDoc (Physical Therapy Documentation)</span>
+            </div>
+            <div class="flex justify-between p-3 bg-muted rounded-lg">
+                <span class="text-sm font-semibold">VR Version</span>
+                <span class="text-sm text-muted-foreground">v2.6.0</span>
+            </div>
+            <div class="flex justify-between p-3 bg-muted rounded-lg">
+                <span class="text-sm font-semibold">EN Environment</span>
+                <Badge Class="bg-green-600">PR Production</Badge>
+            </div>
+            <div class="flex justify-between p-3 bg-muted rounded-lg">
+                <span class="text-sm font-semibold">LS Last System Update</span>
+                <span class="text-sm text-muted-foreground">December 17, 2025</span>
+            </div>
+            <div class="flex justify-between p-3 bg-muted rounded-lg">
+                <span class="text-sm font-semibold">TS Theme System</span>
+                <span class="text-sm text-muted-foreground">PFPT Emerald Green (Professional)</span>
+            </div>
+        </CardContent>
+    </Card>
+</div>
+

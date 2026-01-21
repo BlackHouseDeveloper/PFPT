@@ -1,0 +1,97 @@
+@* Demo page showing Alert usage examples *@
+
+<div class="space-y-6">
+    <!-- Default Alert -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Default Alert</h3>
+        <Alert>
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+                You can add components to your app using the alert component.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Alert with Icon -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Alert with Icon</h3>
+        <Alert>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <AlertTitle>Information</AlertTitle>
+            <AlertDescription>
+                This is an informational alert with an icon. The icon appears on the left side.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Destructive Alert -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Destructive Alert</h3>
+        <Alert Variant="destructive">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+                Your session has expired. Please log in again.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Destructive Alert without Icon -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Destructive (No Icon)</h3>
+        <Alert Variant="destructive">
+            <AlertTitle>Action Required</AlertTitle>
+            <AlertDescription>
+                There was a problem processing your request. Please try again later.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Alert with Rich Content -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Alert with Rich Content</h3>
+        <Alert>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>
+                <p>Your changes have been saved successfully.</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li>Patient information updated</li>
+                    <li>SOAP note saved</li>
+                    <li>Appointment scheduled</li>
+                </ul>
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Clinical Context Example -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Context Example</h3>
+        <Alert>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <AlertTitle>Patient History Note</AlertTitle>
+            <AlertDescription>
+                This patient has a history of shoulder impingement. Consider this when planning treatment protocols.
+            </AlertDescription>
+        </Alert>
+    </div>
+</div>
+
+@code {
+    // No state needed for static alerts
+}

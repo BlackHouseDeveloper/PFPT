@@ -1,0 +1,11 @@
+@* Empty state for command list *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<div class="command-empty">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

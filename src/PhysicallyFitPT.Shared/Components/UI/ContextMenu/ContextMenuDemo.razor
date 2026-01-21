@@ -1,0 +1,231 @@
+@* Demo page showing ContextMenu usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic context menu -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Context Menu (Right-Click)</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <ContextMenu>
+                    <div class="context-demo-area">
+                        Right-click anywhere in this area
+                    </div>
+                    <ContextMenuGroup>
+                        <ContextMenuItem OnClick="() => HandleAction('Edit')">
+                            <span>Edit</span>
+                            <ContextMenuShortcut>⌘E</ContextMenuShortcut>
+                        </ContextMenuItem>
+                        <ContextMenuItem OnClick="() => HandleAction('Duplicate')">
+                            <span>Duplicate</span>
+                            <ContextMenuShortcut>⌘D</ContextMenuShortcut>
+                        </ContextMenuItem>
+                    </ContextMenuGroup>
+                    <ContextMenuSeparator />
+                    <ContextMenuGroup>
+                        <ContextMenuItem OnClick="() => HandleAction('Cut')">
+                            <span>Cut</span>
+                            <ContextMenuShortcut>⌘X</ContextMenuShortcut>
+                        </ContextMenuItem>
+                        <ContextMenuItem OnClick="() => HandleAction('Copy')">
+                            <span>Copy</span>
+                            <ContextMenuShortcut>⌘C</ContextMenuShortcut>
+                        </ContextMenuItem>
+                        <ContextMenuItem OnClick="() => HandleAction('Paste')">
+                            <span>Paste</span>
+                            <ContextMenuShortcut>⌘V</ContextMenuShortcut>
+                        </ContextMenuItem>
+                    </ContextMenuGroup>
+                    <ContextMenuSeparator />
+                    <ContextMenuGroup>
+                        <ContextMenuItem Variant="destructive" OnClick="() => HandleAction('Delete')">
+                            <span>Delete</span>
+                            <ContextMenuShortcut>Del</ContextMenuShortcut>
+                        </ContextMenuItem>
+                    </ContextMenuGroup>
+                </ContextMenu>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Checkbox items -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Context Menu with Checkboxes</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <ContextMenu>
+                    <div class="context-demo-area">
+                        Right-click for view options
+                    </div>
+                    <ContextMenuLabel>View Options</ContextMenuLabel>
+                    <ContextMenuCheckboxItem Checked="showPatientIds" OnCheckedChange="(val) => showPatientIds = val">
+                        Show Patient IDs
+                    </ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem Checked="showDates" OnCheckedChange="(val) => showDates = val">
+                        Show Visit Dates
+                    </ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem Checked="showNotes" OnCheckedChange="(val) => showNotes = val">
+                        Show Notes Preview
+                    </ContextMenuCheckboxItem>
+                </ContextMenu>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Radio items -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Context Menu with Radio Buttons</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <ContextMenu>
+                    <div class="context-demo-area">
+                        Right-click to change view mode
+                    </div>
+                    <ContextMenuLabel>Sort By</ContextMenuLabel>
+                    <ContextMenuRadioItem Value="date" OnSelect="(val) => HandleSort(val)">
+                        Date
+                    </ContextMenuRadioItem>
+                    <ContextMenuRadioItem Value="patient" OnSelect="(val) => HandleSort(val)">
+                        Patient Name
+                    </ContextMenuRadioItem>
+                    <ContextMenuRadioItem Value="type" OnSelect="(val) => HandleSort(val)">
+                        Note Type
+                    </ContextMenuRadioItem>
+                </ContextMenu>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Clinical context menu -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Note Actions</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <ContextMenu>
+                    <div class="context-demo-area">
+                        Right-click on a note
+                    </div>
+                    <ContextMenuLabel>Note Actions</ContextMenuLabel>
+                    <ContextMenuItem OnClick="() => HandleAction('Open')">
+                        Open Note
+                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="() => HandleAction('Edit')">
+                        Edit Note
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuLabel>Export</ContextMenuLabel>
+                    <ContextMenuItem OnClick="() => HandleAction('ExportPDF')">
+                        Export to PDF
+                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="() => HandleAction('Print')">
+                        Print
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuLabel>Archive</ContextMenuLabel>
+                    <ContextMenuItem OnClick="() => HandleAction('Archive')">
+                        Archive
+                    </ContextMenuItem>
+                    <ContextMenuItem Variant="destructive" OnClick="() => HandleAction('DeleteNote')">
+                        Delete Permanently
+                    </ContextMenuItem>
+                </ContextMenu>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Status message -->
+    @if (!string.IsNullOrEmpty(lastAction))
+    {
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p class="text-sm text-green-800">
+                <span class="font-semibold">Last action:</span> @lastAction
+            </p>
+        </div>
+    }
+</div>
+
+@code {
+    private string? lastAction;
+    private bool showPatientIds = true;
+    private bool showDates = true;
+    private bool showNotes = false;
+
+    private void HandleAction(string action)
+    {
+        lastAction = action;
+    }
+
+    private void HandleSort(string sortBy)
+    {
+        lastAction = $"Sorted by: {sortBy}";
+    }
+}
+
+<style>
+    .space-y-8 > * + * {
+        margin-top: 2rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+
+    .text-gray-700 {
+        color: #374151;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.75rem;
+    }
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .context-demo-area {
+        min-height: 6rem;
+        padding: 1.5rem;
+        background-color: #f9fafb;
+        border: 2px dashed #e5e7eb;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        cursor: context-menu;
+        font-size: 0.875rem;
+    }
+
+    .context-demo-area:hover {
+        background-color: #f3f4f6;
+    }
+
+    .bg-green-50 {
+        background-color: #f0fdf4;
+    }
+
+    .border-green-200 {
+        border-color: #bbf7d0;
+    }
+
+    .rounded-lg {
+        border-radius: 0.5rem;
+    }
+
+    .p-4 {
+        padding: 1rem;
+    }
+
+    .text-green-800 {
+        color: #166534;
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+}
+</style>

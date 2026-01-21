@@ -1,0 +1,72 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Sidebar
+@using PhysicallyFitPT.Shared.Components.UI.Sidebar
+@using System
+
+@if (string.Equals(Collapsible, "none", StringComparison.OrdinalIgnoreCase))
+{
+    <div class="sidebar sidebar-none" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+else if (SidebarContext?.IsMobile ?? false)
+{
+    <Sheet Open="SidebarContext.OpenMobile" Side="@Side" OnOpenChange="(bool open) => SidebarContext.SetOpenMobile?.Invoke(open)">
+        <SheetContent Class="sidebar sidebar-mobile">
+            <SheetHeader Class="sr-only">
+                <SheetTitle>Sidebar</SheetTitle>
+                <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+            </SheetHeader>
+            <div class="sidebar-content">
+                @ChildContent
+            </div>
+        </SheetContent>
+    </Sheet>
+}
+else
+{
+    <div class="sidebar sidebar-desktop"
+         data-state="@(SidebarContext?.State == SidebarState.Collapsed ? "collapsed" : "expanded")"
+         data-collapsible="@Collapsible"
+         data-variant="@Variant"
+         data-side="@Side">
+        
+        <div class="sidebar-gap"></div>
+        
+        <div class="sidebar-container">
+            <div class="sidebar-inner">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public SidebarContextValue? SidebarContext { get; set; }
+
+    [Parameter]
+    public string Side { get; set; } = "left";
+
+    [Parameter]
+    public string Variant { get; set; } = "sidebar";
+
+    [Parameter]
+    public string Collapsible { get; set; } = "offcanvas";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetClasses()
+    {
+        var classes = new System.Collections.Generic.List<string> { "sidebar" };
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+        return string.Join(" ", classes);
+    }
+}

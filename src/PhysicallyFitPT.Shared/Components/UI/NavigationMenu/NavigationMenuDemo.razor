@@ -1,0 +1,146 @@
+@* Navigation Menu Demo - Clinical navigation *@
+@page "/demo/navigation-menu"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Navigation Menu</h1>
+    <p class="demo-description">
+        Top-level navigation with rich content panels, focused for clinical workflows like patient charts,
+        scheduling, billing, and resources.
+    </p>
+
+    <div class="demo-example" style="overflow: visible;">
+        <NavigationMenu>
+            <NavigationMenuList>
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Patients</NavigationMenuTrigger>
+                    <NavigationMenuIndicator />
+                    <NavigationMenuContent>
+                        <div class="nav-demo-grid">
+                            <NavigationMenuLink Href="/patients" Active="true">
+                                <strong>Patient Dashboard</strong>
+                                <p>See caseload, clinical flags, and last encounter.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/patients/search">
+                                <strong>Patient Search</strong>
+                                <p>Find patients by MRN, date of birth, or therapist.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/patients/intake">
+                                <strong>New Intake</strong>
+                                <p>Start an evaluation with intake templates and e-consent.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/patients/recalls">
+                                <strong>Recalls & Follow-ups</strong>
+                                <p>Flag patients due for follow-up and track outreach.</p>
+                            </NavigationMenuLink>
+                        </div>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Scheduling</NavigationMenuTrigger>
+                    <NavigationMenuIndicator />
+                    <NavigationMenuContent>
+                        <div class="nav-demo-grid">
+                            <NavigationMenuLink Href="/appointments">
+                                <strong>Calendar</strong>
+                                <p>Day and week views with resource availability.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/appointments/waitlist">
+                                <strong>Waitlist</strong>
+                                <p>Fill cancellations with priority patients.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/appointments/check-in">
+                                <strong>Check-In</strong>
+                                <p>Track arrivals, copays, and outstanding forms.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/appointments/analytics">
+                                <strong>Utilization</strong>
+                                <p>Capacity, no-show trends, and throughput.</p>
+                            </NavigationMenuLink>
+                        </div>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Billing</NavigationMenuTrigger>
+                    <NavigationMenuIndicator />
+                    <NavigationMenuContent>
+                        <div class="nav-demo-grid">
+                            <NavigationMenuLink Href="/billing/authorizations">
+                                <strong>Authorizations</strong>
+                                <p>Track visits remaining, expirations, and payer rules.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/billing/coding">
+                                <strong>Coding Queue</strong>
+                                <p>Review CPT/ICD suggestions before claim submission.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/billing/claims">
+                                <strong>Claims</strong>
+                                <p>Monitor rejections, denials, and payer responses.</p>
+                            </NavigationMenuLink>
+                            <NavigationMenuLink Href="/billing/reports">
+                                <strong>Revenue Reports</strong>
+                                <p>Charges, collections, and aging by location.</p>
+                            </NavigationMenuLink>
+                        </div>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+                    <NavigationMenuIndicator />
+                    <NavigationMenuContent>
+                        <div class="nav-demo-columns">
+                            <div>
+                                <p class="nav-demo-heading">Reference</p>
+                                <NavigationMenuLink Href="/references/clinical">
+                                    <strong>Clinical Playbooks</strong>
+                                    <p>Protocols for post-op, spine, neuro, and sports.</p>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink Href="/references/exercises">
+                                    <strong>HEP Library</strong>
+                                    <p>Prescription-ready videos with form cues.</p>
+                                </NavigationMenuLink>
+                            </div>
+                            <div>
+                                <p class="nav-demo-heading">Support</p>
+                                <NavigationMenuLink Href="/support/releases">
+                                    <strong>Release Notes</strong>
+                                    <p>What’s new, fixes, and upcoming changes.</p>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink Href="/support/training">
+                                    <strong>Training</strong>
+                                    <p>Onboarding decks and quickstart tours for staff.</p>
+                                </NavigationMenuLink>
+                            </div>
+                        </div>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+            </NavigationMenuList>
+        </NavigationMenu>
+    </div>
+</div>
+
+<style>
+    .nav-demo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        width: 100%;
+    }
+
+    .nav-demo-columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        width: 100%;
+    }
+
+    .nav-demo-heading {
+        margin: 0 0 6px 0;
+        font-weight: 700;
+        color: #0b2545;
+        font-size: 13px;
+    }
+</style>

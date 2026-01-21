@@ -1,0 +1,512 @@
+@page "/components/toggle"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PageTitle>Toggle Component Demo</PageTitle>
+
+<div class="component-demo">
+    <div class="demo-header">
+        <h1>Toggle Component</h1>
+        <p>Standalone toggle button for binary state selection. Supports multiple variants and sizes for diverse UI contexts.</p>
+    </div>
+
+    <!-- Basic Toggle -->
+    <section class="demo-section">
+        <h2>Basic Toggle</h2>
+        <p>Simple toggle button that switches between pressed and unpressed states.</p>
+        <div class="demo-box">
+            <label class="form-label">Click to toggle:</label>
+            <div class="toggle-demo">
+                <Toggle @bind-IsPressed="@basicToggle" />
+                <span class="toggle-state">@(basicToggle ? "Pressed" : "Unpressed")</span>
+            </div>
+        </div>
+        <pre><code>&lt;Toggle @@bind-IsPressed="isToggled" /&gt;
+
+// In @@code block:
+private bool isToggled = false;</code></pre>
+    </section>
+
+    <!-- Toggle Variants -->
+    <section class="demo-section">
+        <h2>Toggle Variants</h2>
+        <p>Different visual styles for various contexts and use cases.</p>
+        <div class="demo-box">
+            <div class="variant-demo">
+                <div class="variant-row">
+                    <h3>Default Variant</h3>
+                    <div class="button-group">
+                        <Toggle Variant="default" @bind-IsPressed="@variantDefault1">Button</Toggle>
+                        <Toggle Variant="default" @bind-IsPressed="@variantDefault2" Class="with-icon">
+                            <span>🔒</span>
+                        </Toggle>
+                    </div>
+                </div>
+
+                <div class="variant-row">
+                    <h3>Outline Variant</h3>
+                    <div class="button-group">
+                        <Toggle Variant="outline" @bind-IsPressed="@variantOutline1">Button</Toggle>
+                        <Toggle Variant="outline" @bind-IsPressed="@variantOutline2" Class="with-icon">
+                            <span>📌</span>
+                        </Toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toggle Sizes -->
+    <section class="demo-section">
+        <h2>Toggle Sizes</h2>
+        <p>Multiple size options for different contexts and UI layouts.</p>
+        <div class="demo-box">
+            <div class="size-demo">
+                <div class="size-row">
+                    <h3>Small</h3>
+                    <div class="button-group">
+                        <Toggle Size="sm" @bind-IsPressed="@sizeSm1">S</Toggle>
+                        <Toggle Size="sm" @bind-IsPressed="@sizeSm2">Sm</Toggle>
+                    </div>
+                </div>
+
+                <div class="size-row">
+                    <h3>Default</h3>
+                    <div class="button-group">
+                        <Toggle Size="default" @bind-IsPressed="@sizeDefault1">Default</Toggle>
+                        <Toggle Size="default" @bind-IsPressed="@sizeDefault2">Medium</Toggle>
+                    </div>
+                </div>
+
+                <div class="size-row">
+                    <h3>Large</h3>
+                    <div class="button-group">
+                        <Toggle Size="lg" @bind-IsPressed="@sizeLg1">Large</Toggle>
+                        <Toggle Size="lg" @bind-IsPressed="@sizeLg2">Big</Toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clinical Use Cases -->
+    <section class="demo-section">
+        <h2>Clinical Use Cases</h2>
+        <p>Toggle buttons for common clinical workflows and decision points.</p>
+        <div class="demo-box">
+            <div class="clinical-case">
+                <h3>Patient Active Status</h3>
+                <div class="toggle-with-context">
+                    <Toggle Variant="outline" Size="lg" @bind-IsPressed="@patientActive">
+                        @(patientActive ? "🟢 Active" : "⭕ Inactive")
+                    </Toggle>
+                    <p class="case-description">@(patientActive ? "Patient is currently active in care" : "Patient is currently inactive")</p>
+                </div>
+            </div>
+
+            <div class="clinical-case">
+                <h3>PHI Consent Status</h3>
+                <div class="toggle-with-context">
+                    <Toggle Variant="outline" @bind-IsPressed="@phiConsent">
+                        @(phiConsent ? "✓ Consented" : "✗ Not Consented")
+                    </Toggle>
+                    <p class="case-description">@(phiConsent ? "Patient has consented to PHI sharing" : "Patient has not consented to PHI sharing")</p>
+                </div>
+            </div>
+
+            <div class="clinical-case">
+                <h3>Telehealth Eligible</h3>
+                <div class="toggle-with-context">
+                    <Toggle Variant="outline" @bind-IsPressed="@teleheathEligible">
+                        @(teleheathEligible ? "✓ Eligible" : "✗ Not Eligible")
+                    </Toggle>
+                    <p class="case-description">@(teleheathEligible ? "Patient is eligible for telehealth services" : "Patient is not eligible for telehealth")</p>
+                </div>
+            </div>
+
+            <div class="clinical-case">
+                <h3>Emergency Contact On File</h3>
+                <div class="toggle-with-context">
+                    <Toggle Variant="outline" @bind-IsPressed="@emergencyContactOnFile">
+                        @(emergencyContactOnFile ? "✓ On File" : "✗ Not On File")
+                    </Toggle>
+                    <p class="case-description">@(emergencyContactOnFile ? "Emergency contact information is on file" : "Emergency contact information needs to be updated")</p>
+                </div>
+            </div>
+
+            <div class="clinical-case">
+                <h3>Insurance Verified</h3>
+                <div class="toggle-with-context">
+                    <Toggle Variant="outline" @bind-IsPressed="@insuranceVerified">
+                        @(insuranceVerified ? "✓ Verified" : "✗ Not Verified")
+                    </Toggle>
+                    <p class="case-description">@(insuranceVerified ? "Insurance coverage has been verified" : "Insurance coverage needs verification")</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toggle with Icons -->
+    <section class="demo-section">
+        <h2>Toggle with Icons</h2>
+        <p>Icon-based toggles for intuitive user interactions.</p>
+        <div class="demo-box">
+            <div class="icon-demo">
+                <Toggle Variant="outline" @bind-IsPressed="@iconStar">
+                    <span class="icon">@(iconStar ? "⭐" : "☆")</span>
+                </Toggle>
+
+                <Toggle Variant="outline" @bind-IsPressed="@iconLock">
+                    <span class="icon">@(iconLock ? "🔒" : "🔓")</span>
+                </Toggle>
+
+                <Toggle Variant="outline" @bind-IsPressed="@iconBell">
+                    <span class="icon">@(iconBell ? "🔔" : "🔕")</span>
+                </Toggle>
+
+                <Toggle Variant="outline" @bind-IsPressed="@iconEye">
+                    <span class="icon">@(iconEye ? "👁️" : "🚫")</span>
+                </Toggle>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toggle States -->
+    <section class="demo-section">
+        <h2>Toggle States</h2>
+        <p>Various states and visual feedback options.</p>
+        <div class="demo-box">
+            <div class="state-demo">
+                <div class="state-row">
+                    <h3>Normal</h3>
+                    <Toggle @bind-IsPressed="@stateNormal">Normal</Toggle>
+                </div>
+
+                <div class="state-row">
+                    <h3>Pressed</h3>
+                    <Toggle @bind-IsPressed="@true">Pressed</Toggle>
+                </div>
+
+                <div class="state-row">
+                    <h3>Disabled</h3>
+                    <Toggle Disabled="true" @bind-IsPressed="@stateDisabled">Disabled</Toggle>
+                </div>
+
+                <div class="state-row">
+                    <h3>Disabled + Pressed</h3>
+                    <Toggle Disabled="true" @bind-IsPressed="@true">Disabled & Pressed</Toggle>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="demo-section">
+        <h2>Toggle Features</h2>
+        <ul class="features-list">
+            <li><strong>Binary State</strong> — Simple pressed/unpressed toggle with two-way binding</li>
+            <li><strong>Two Variants</strong> — Default (transparent) and Outline styles</li>
+            <li><strong>Three Sizes</strong> — Small, Default, and Large for flexible layouts</li>
+            <li><strong>Icon Support</strong> — Works seamlessly with emoji or icon elements</li>
+            <li><strong>ARIA Attributes</strong> — aria-pressed attribute for accessibility</li>
+            <li><strong>Keyboard Navigation</strong> — Full keyboard support with focus indicators</li>
+            <li><strong>Hover States</strong> — Visual feedback on user interaction</li>
+            <li><strong>Disabled State</strong> — Prevent interaction with visual feedback</li>
+            <li><strong>Dark Mode</strong> — Automatic color adjustment in dark mode</li>
+            <li><strong>High Contrast</strong> — Enhanced borders and emphasis for accessibility</li>
+            <li><strong>Reduced Motion</strong> — Respects prefers-reduced-motion preference</li>
+            <li><strong>Clinical Applications</strong> — Supports patient status, consent, and eligibility toggles</li>
+        </ul>
+    </section>
+</div>
+
+@code {
+    // Basic toggle
+    private bool basicToggle = false;
+
+    // Variant toggles
+    private bool variantDefault1 = false;
+    private bool variantDefault2 = false;
+    private bool variantOutline1 = false;
+    private bool variantOutline2 = false;
+
+    // Size toggles
+    private bool sizeSm1 = false;
+    private bool sizeSm2 = false;
+    private bool sizeDefault1 = false;
+    private bool sizeDefault2 = false;
+    private bool sizeLg1 = false;
+    private bool sizeLg2 = false;
+
+    // Clinical toggles
+    private bool patientActive = true;
+    private bool phiConsent = true;
+    private bool teleheathEligible = true;
+    private bool emergencyContactOnFile = true;
+    private bool insuranceVerified = false;
+
+    // Icon toggles
+    private bool iconStar = false;
+    private bool iconLock = true;
+    private bool iconBell = true;
+    private bool iconEye = true;
+
+    // State toggles
+    private bool stateNormal = false;
+    private bool stateDisabled = true;
+}
+
+<style>
+    .component-demo {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .demo-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .demo-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-header p {
+        font-size: 1.0625rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+    }
+
+    .demo-section {
+        margin-bottom: 3rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-section > p {
+        color: var(--muted-foreground, #6b7280);
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .demo-box {
+        background-color: var(--card-background, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--foreground, #1f2937);
+        margin-bottom: 0.75rem;
+    }
+
+    .toggle-demo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .toggle-state {
+        font-size: 0.9375rem;
+        color: var(--muted-foreground, #6b7280);
+        padding: 0.5rem 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border-radius: 0.375rem;
+    }
+
+    .variant-demo,
+    .size-demo {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .variant-row,
+    .size-row,
+    .state-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .variant-row h3,
+    .size-row h3,
+    .state-row h3 {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .button-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .clinical-case {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .clinical-case:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .clinical-case h3 {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .toggle-with-context {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .case-description {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--muted-background, #f9fafb);
+        border-left: 3px solid var(--primary-color, #3b82f6);
+    }
+
+    .icon-demo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .icon {
+        font-size: 1.5rem;
+        display: inline-block;
+    }
+
+    .state-demo {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    pre {
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        color: var(--foreground, #1f2937);
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .features-list li {
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .demo-header {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .demo-header h1 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-header p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-section h2 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-section > p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-box {
+            background-color: var(--card-background, #1f2937);
+            border-color: var(--border-color, #374151);
+        }
+
+        .form-label {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .toggle-state {
+            background-color: var(--muted-background, #111827);
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .variant-row h3,
+        .size-row h3,
+        .state-row h3,
+        .clinical-case h3 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .case-description {
+            background-color: var(--muted-background, #111827);
+            border-left-color: var(--primary-color, #60a5fa);
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .clinical-case {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        pre {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        code {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .features-list li {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+    }
+</style>

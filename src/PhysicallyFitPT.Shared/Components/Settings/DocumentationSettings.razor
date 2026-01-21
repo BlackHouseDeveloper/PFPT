@@ -1,0 +1,783 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+<Tabs DefaultValue="hard-stops" Class="w-full">
+    <TabsList Class="grid w-full grid-cols-2 md:grid-cols-4 mb-6">
+        <TabsTrigger Value="hard-stops" Class="flex items-center gap-2">
+            SA Hard Stops
+        </TabsTrigger>
+        <TabsTrigger Value="progress-notes" Class="flex items-center gap-2">
+            CL Progress Notes
+        </TabsTrigger>
+        <TabsTrigger Value="poc-tracking" Class="flex items-center gap-2">
+            CA POC Tracking
+        </TabsTrigger>
+        <TabsTrigger Value="note-behavior" Class="flex items-center gap-2">
+            RW Note Behavior
+        </TabsTrigger>
+    </TabsList>
+
+    <!-- Hard Stops Tab -->
+    <TabsContent Value="hard-stops" Class="space-y-6">
+        <Card Class="border-2 border-red-200 bg-red-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5">SA</div>
+                    <div>
+                        <p class="font-semibold text-red-900 mb-1">Hard Stop Enforcement</p>
+                        <p class="text-sm text-red-800">
+                            These settings prevent note submission until requirements are met. Hard stops ensure compliance and reduce billing denials.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FC ICD-10 Code Requirements
+                </CardTitle>
+                <CardDescription>
+                    Enforce minimum diagnosis code documentation
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Minimum ICD-10 Codes</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Block note submission without minimum diagnosis codes
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireMinICD10Codes"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireMinICD10Codes), isChecked))"
+                    />
+                </div>
+
+                @if (settings.RequireMinICD10Codes)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Minimum ICD-10 Codes Required</Label>
+                        <select
+                            @bind="settings.MinICD10Count"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="1">At least 1 code</option>
+                            <option value="2">At least 2 codes (Recommended)</option>
+                            <option value="3">At least 3 codes</option>
+                            <option value="4">At least 4 codes</option>
+                        </select>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            <strong>Recommended:</strong> 2 codes minimum helps support medical necessity and reduces claim denials
+                        </p>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    TU Plan of Care Requirements
+                </CardTitle>
+                <CardDescription>
+                    Ensure treatment plans are documented
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require POC Before Signing</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Block note submission until Plan of Care is completed
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequirePlanOfCareBeforeSigning"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequirePlanOfCareBeforeSigning), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Goals for Evaluations</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Initial and re-evaluations must include treatment goals
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireGoalsForEval"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireGoalsForEval), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FT Other Required Fields
+                </CardTitle>
+                <CardDescription>
+                    Additional documentation requirements
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require CPT Codes</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Enforce billing code selection before submission
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireCPTCodes"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireCPTCodes), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Discharge Reason</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Mandatory discharge reason for final notes
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireDischargeReason"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireDischargeReason), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Block Submission Without Required Fields</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Show hard stop error message instead of allowing submission
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.BlockSubmissionWithoutRequiredFields"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BlockSubmissionWithoutRequiredFields), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Progress Notes Tab -->
+    <TabsContent Value="progress-notes" Class="space-y-6">
+        <Card Class="border-2 border-blue-200 bg-blue-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5">CL</div>
+                    <div>
+                        <p class="font-semibold text-blue-900 mb-1">Progress Note Automation</p>
+                        <p class="text-sm text-blue-800">
+                            Automatically track and remind clinicians when progress notes are due based on visit count or time elapsed.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CL Progress Note Frequency
+                </CardTitle>
+                <CardDescription>
+                    Configure when progress notes are required
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable Progress Note Reminders</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically track and notify when progress notes are due
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableProgressNoteReminders"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableProgressNoteReminders), isChecked))"
+                    />
+                </div>
+
+                @if (settings.EnableProgressNoteReminders)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-3">Progress Note Frequency Rule</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                                <input
+                                    type="radio"
+                                    name="progressNoteFrequency"
+                                    value="visits"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.ProgressNoteFrequency), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.ProgressNoteFrequency == "visits")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">By Visit Count Only</p>
+                                    <p class="text-sm text-muted-foreground">Trigger based on number of visits</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                                <input
+                                    type="radio"
+                                    name="progressNoteFrequency"
+                                    value="days"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.ProgressNoteFrequency), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.ProgressNoteFrequency == "days")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">By Time Elapsed Only</p>
+                                    <p class="text-sm text-muted-foreground">Trigger based on days since last PN</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                                <input
+                                    type="radio"
+                                    name="progressNoteFrequency"
+                                    value="both"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.ProgressNoteFrequency), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.ProgressNoteFrequency == "both")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Both (Whichever Comes First)</p>
+                                    <p class="text-sm text-muted-foreground">
+                                        <strong>Recommended:</strong> Trigger on 10 visits OR 30 days
+                                    </p>
+                                </div>
+                                <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                                    Recommended
+                                </Badge>
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (settings.ProgressNoteFrequency == "visits" || settings.ProgressNoteFrequency == "both")
+                    {
+                        <div class="p-4 border-2 border-border rounded-lg">
+                            <Label Class="block mb-2">Progress Note Required Every X Visits</Label>
+                            <select
+                                @bind="settings.ProgressNoteVisitInterval"
+                                class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            >
+                                <option value="5">Every 5 visits</option>
+                                <option value="6">Every 6 visits</option>
+                                <option value="8">Every 8 visits</option>
+                                <option value="10">Every 10 visits (Standard)</option>
+                                <option value="12">Every 12 visits</option>
+                            </select>
+                        </div>
+                    }
+
+                    @if (settings.ProgressNoteFrequency == "days" || settings.ProgressNoteFrequency == "both")
+                    {
+                        <div class="p-4 border-2 border-border rounded-lg">
+                            <Label Class="block mb-2">Progress Note Required Every X Days</Label>
+                            <select
+                                @bind="settings.ProgressNoteDayInterval"
+                                class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            >
+                                <option value="14">Every 14 days</option>
+                                <option value="21">Every 21 days</option>
+                                <option value="30">Every 30 days (Standard)</option>
+                                <option value="45">Every 45 days</option>
+                                <option value="60">Every 60 days</option>
+                            </select>
+                        </div>
+                    }
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Track Last Progress Note Date</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Display last PN date on patient chart for reference
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.TrackLastProgressNoteDate"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.TrackLastProgressNoteDate), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Auto-Flag Overdue Progress Notes</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Show warning badge when progress note is overdue
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AutoFlagOverdueProgressNotes"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoFlagOverdueProgressNotes), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- POC Tracking Tab -->
+    <TabsContent Value="poc-tracking" Class="space-y-6">
+        <Card Class="border-2 border-green-200 bg-green-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5">CA</div>
+                    <div>
+                        <p class="font-semibold text-green-900 mb-1">Plan of Care Tracking</p>
+                        <p class="text-sm text-green-800">
+                            Automatically track POC dates, calculate weeks remaining, and prompt for updates during progress notes.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CA POC Date Management
+                </CardTitle>
+                <CardDescription>
+                    Configure Plan of Care tracking behavior
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require POC Start & End Dates</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Mandate start and end dates for all Plans of Care
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequirePOCDates"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequirePOCDates), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Calculate Weeks Remaining</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically calculate and display weeks remaining in POC
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoCalculatePOCWeeksRemaining"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoCalculatePOCWeeksRemaining), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Update POC During Progress Notes</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Prompt clinician to review/update POC when writing progress notes
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.UpdatePOCDuringProgressNote"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.UpdatePOCDuringProgressNote), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Warn When POC Expiring</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Show warning when Plan of Care is approaching end date
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.WarnWhenPOCExpiring"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.WarnWhenPOCExpiring), isChecked))"
+                    />
+                </div>
+
+                @if (settings.WarnWhenPOCExpiring)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Warning Window (Days Before Expiration)</Label>
+                        <select
+                            @bind="settings.PocExpirationWarningDays"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="7">7 days before</option>
+                            <option value="14">14 days before (Recommended)</option>
+                            <option value="21">21 days before</option>
+                            <option value="30">30 days before</option>
+                        </select>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            Display warning badge when POC end date is within this window
+                        </p>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2 border-green-200">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC POC Tracking Example
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div class="p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">POC Start Date:</span>
+                            <span class="font-semibold">01/15/2025</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">POC End Date:</span>
+                            <span class="font-semibold">03/15/2025</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Total Duration:</span>
+                            <span class="font-semibold">8 weeks</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Weeks Remaining:</span>
+                            <Badge Class="bg-green-600">4 weeks</Badge>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Note Behavior Tab -->
+    <TabsContent Value="note-behavior" Class="space-y-6">
+        <Card Class="border-2 border-purple-200 bg-purple-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5">RW</div>
+                    <div>
+                        <p class="font-semibold text-purple-900 mb-1">Note Type & Data Carry-Forward</p>
+                        <p class="text-sm text-purple-800">
+                            Configure how note types are selected and how data transfers when note type changes.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FT Default Note Type
+                </CardTitle>
+                <CardDescription>
+                    Automatically select note type based on appointment
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Default Note Type From Schedule</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically use note type assigned to scheduled visit
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.DefaultNoteTypeFromSchedule"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.DefaultNoteTypeFromSchedule), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Note Type Change</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Let clinicians change note type from default
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowNoteTypeChange"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowNoteTypeChange), isChecked))"
+                    />
+                </div>
+
+                @if (!settings.DefaultNoteTypeFromSchedule)
+                {
+                    <div class="p-3 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+                        <div class="flex gap-2">
+                            <span class="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5">!</span>
+                            <p class="text-sm text-yellow-800">
+                                When disabled, clinicians must manually select note type each time
+                            </p>
+                        </div>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    RW Data Carry-Forward Rules
+                </CardTitle>
+                <CardDescription>
+                    Configure what happens when note type changes
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Carry Forward Data on Type Change</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Transfer existing note data when switching note types
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.CarryForwardDataOnTypeChange"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.CarryForwardDataOnTypeChange), isChecked))"
+                    />
+                </div>
+
+                @if (settings.CarryForwardDataOnTypeChange)
+                {
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Confirm Before Carry-Forward</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Ask clinician to confirm before transferring data
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.ConfirmBeforeCarryForward"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ConfirmBeforeCarryForward), isChecked))"
+                        />
+                    </div>
+
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-3 font-semibold">Select SOAP Sections to Carry Forward</Label>
+                        <div class="space-y-3">
+                            <label class="flex items-center justify-between p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        @bind="settings.CarryForwardSubjective"
+                                        class="w-4 h-4 text-primary rounded"
+                                    />
+                                    <div>
+                                        <p class="font-semibold">Subjective (S)</p>
+                                        <p class="text-xs text-muted-foreground">Patient complaints, history, symptoms</p>
+                                    </div>
+                                </div>
+                                <Badge Variant="outline" Class="bg-green-50 text-green-700 border-green-200">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center justify-between p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        @bind="settings.CarryForwardObjective"
+                                        class="w-4 h-4 text-primary rounded"
+                                    />
+                                    <div>
+                                        <p class="font-semibold">Objective (O)</p>
+                                        <p class="text-xs text-muted-foreground">Measurements, tests, observations</p>
+                                    </div>
+                                </div>
+                                <Badge Variant="outline" Class="bg-green-50 text-green-700 border-green-200">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="checkbox"
+                                    @bind="settings.CarryForwardAssessment"
+                                    class="w-4 h-4 text-primary rounded"
+                                />
+                                <div>
+                                    <p class="font-semibold">Assessment (A)</p>
+                                    <p class="text-xs text-muted-foreground">Clinical interpretation, progress</p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="checkbox"
+                                    @bind="settings.CarryForwardPlan"
+                                    class="w-4 h-4 text-primary rounded"
+                                />
+                                <div>
+                                    <p class="font-semibold">Plan (P)</p>
+                                    <p class="text-xs text-muted-foreground">Treatment plan, future actions</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                        <div class="flex gap-2">
+                            <span class="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5">!</span>
+                            <div class="text-sm text-blue-800">
+                                <p class="font-semibold mb-1">Carry-Forward Example:</p>
+                                <p>
+                                    When switching from "Daily Note" to "Progress Note", the system will transfer 
+                                    selected SOAP sections to preserve documentation and reduce re-typing.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    LK Note Security
+                </CardTitle>
+                <CardDescription>
+                    Note locking and auto-save settings
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Lock Notes After Submission</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Prevent editing of signed/submitted notes
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.LockAfterSubmission"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.LockAfterSubmission), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require PTA Co-Signature</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            PTA notes require supervising PT review
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireCoSign"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireCoSign), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Save Drafts</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically save note progress
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoSaveDrafts"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoSaveDrafts), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AutoSaveDrafts)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Auto-Save Interval</Label>
+                        <select
+                            @bind="settings.DraftSaveInterval"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="30">Every 30 seconds</option>
+                            <option value="60">Every minute</option>
+                            <option value="120">Every 2 minutes</option>
+                            <option value="300">Every 5 minutes</option>
+                        </select>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+    </TabsContent>
+</Tabs>
+
+@code {
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool HasUnsavedChanges { get; set; }
+
+    [Parameter]
+    public EventCallback HasUnsavedChangesChanged { get; set; }
+
+    private Settings settings = new();
+
+    private void UpdateSetting(string key, object value)
+    {
+        var property = settings.GetType().GetProperty(key);
+        if (property != null)
+        {
+            if (property.PropertyType == typeof(int) && value is string strValue)
+            {
+                property.SetValue(settings, int.Parse(strValue));
+            }
+            else
+            {
+                property.SetValue(settings, value);
+            }
+        }
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+    }
+
+    private class Settings
+    {
+        // Hard Stops
+        public bool RequireMinICD10Codes { get; set; } = true;
+        public int MinICD10Count { get; set; } = 2;
+        public bool RequirePlanOfCareBeforeSigning { get; set; } = true;
+        public bool RequireCPTCodes { get; set; } = true;
+        public bool RequireGoalsForEval { get; set; } = true;
+        public bool RequireDischargeReason { get; set; } = true;
+        public bool BlockSubmissionWithoutRequiredFields { get; set; } = true;
+        
+        // Progress Note Automation
+        public bool EnableProgressNoteReminders { get; set; } = true;
+        public string ProgressNoteFrequency { get; set; } = "both";
+        public int ProgressNoteVisitInterval { get; set; } = 10;
+        public int ProgressNoteDayInterval { get; set; } = 30;
+        public bool TrackLastProgressNoteDate { get; set; } = true;
+        public bool AutoFlagOverdueProgressNotes { get; set; } = true;
+        
+        // Plan of Care Tracking
+        public bool RequirePOCDates { get; set; } = true;
+        public bool AutoCalculatePOCWeeksRemaining { get; set; } = true;
+        public bool UpdatePOCDuringProgressNote { get; set; } = true;
+        public bool WarnWhenPOCExpiring { get; set; } = true;
+        public int PocExpirationWarningDays { get; set; } = 14;
+        
+        // Note Behavior
+        public bool DefaultNoteTypeFromSchedule { get; set; } = true;
+        public bool AllowNoteTypeChange { get; set; } = true;
+        public bool CarryForwardDataOnTypeChange { get; set; } = true;
+        public bool ConfirmBeforeCarryForward { get; set; } = true;
+        public bool CarryForwardSubjective { get; set; } = true;
+        public bool CarryForwardObjective { get; set; } = true;
+        public bool CarryForwardAssessment { get; set; } = false;
+        public bool CarryForwardPlan { get; set; } = false;
+        
+        // Note Locking & Security
+        public bool LockAfterSubmission { get; set; } = true;
+        public bool RequireCoSign { get; set; } = true;
+        public bool AutoSaveDrafts { get; set; } = true;
+        public int DraftSaveInterval { get; set; } = 60;
+    }
+}

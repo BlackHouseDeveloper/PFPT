@@ -1,0 +1,50 @@
+@* Carousel previous button *@
+
+<Button Variant="@Variant" 
+        Size="@Size"
+        Class="@CombinedClass"
+        Disabled="@(!Carousel?.CanScrollPrev ?? true)"
+        OnClick="HandleClick"
+        @attributes="AdditionalAttributes">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span class="sr-only">Previous slide</span>
+</Button>
+
+@code {
+    [CascadingParameter]
+    public Carousel? Carousel { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "outline";
+
+    [Parameter]
+    public string Size { get; set; } = "icon";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass
+    {
+        get
+        {
+            var baseClass = "absolute carousel-previous";
+            var orientationClass = Carousel?.Orientation == "vertical"
+                ? "-top-12 left-1/2 -translate-x-1/2 rotate-90"
+                : "top-1/2 -left-12 -translate-y-1/2";
+            return $"{baseClass} {orientationClass} {Class}".Trim();
+        }
+    }
+
+    private async Task HandleClick(MouseEventArgs e)
+    {
+        if (Carousel != null)
+        {
+            await Carousel.ScrollPrev();
+        }
+    }
+}

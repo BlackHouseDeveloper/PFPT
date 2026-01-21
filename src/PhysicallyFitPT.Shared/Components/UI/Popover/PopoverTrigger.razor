@@ -1,0 +1,27 @@
+@* Popover trigger - element that opens/closes the popover *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div @ref="triggerRef" @onclick="HandleClick" class="popover-trigger" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public Popover? ParentPopover { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private ElementReference triggerRef;
+
+    private async Task HandleClick()
+    {
+        if (ParentPopover != null)
+        {
+            await ParentPopover.SetOpen(!ParentPopover.Open);
+        }
+    }
+}

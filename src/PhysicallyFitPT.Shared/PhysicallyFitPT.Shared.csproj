@@ -11,6 +11,80 @@
     <RazorComponent Include="_Imports.razor" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IncludeDemos)' != 'true'">
+    <!-- Exclude demo pages/components and any demo-only code-behind/helpers from default builds -->
+    <RazorComponent Remove="**/*Demo.razor" />
+    <RazorComponent Remove="**/*Demo*.razor" />
+    <RazorGenerate Remove="**/*Demo.razor" />
+    <RazorGenerate Remove="**/*Demo*.razor" />
+    <Content Remove="**/*Demo.razor" />
+    <Content Remove="**/*Demo*.razor" />
+    <None Remove="**/*Demo.razor" />
+    <None Remove="**/*Demo*.razor" />
+    <Compile Remove="**/*Demo.razor.cs" />
+    <Compile Remove="**/*Demo*.cs" />
+    <!-- Exclude showcase-named files if present -->
+    <RazorComponent Remove="**/*Showcase.razor" />
+    <RazorGenerate Remove="**/*Showcase.razor" />
+    <Content Remove="**/*Showcase.razor" />
+    <None Remove="**/*Showcase.razor" />
+    <Compile Remove="**/*Showcase*.cs" />
+    <!-- Exclude scoped CSS for demo files -->
+    <Content Remove="**/*Demo.razor.css" />
+    <None Remove="**/*Demo.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IncludeExperimentalUI)' != 'true'">
+    <!-- Exclude incomplete/experimental UI components from default builds -->
+    <!-- These components have unresolved type issues and missing implementations -->
+    <RazorComponent Remove="Components/Incomplete/**" />
+    <RazorComponent Remove="Components/UI/DropdownMenu/**" />
+    <RazorComponent Remove="Components/UI/MultiSelect/**" />
+    <RazorComponent Remove="Components/UI/Scheduling/**" />
+    <RazorComponent Remove="Components/UI/Sidebar/**" />
+    <RazorComponent Remove="Components/UI/Toaster/**" />
+    <RazorComponent Remove="Components/Workflow/**" />
+    <RazorComponent Remove="Components/UI/Chart.razor" />
+    <RazorGenerate Remove="Components/Incomplete/**" />
+    <RazorGenerate Remove="Components/UI/DropdownMenu/**" />
+    <RazorGenerate Remove="Components/UI/MultiSelect/**" />
+    <RazorGenerate Remove="Components/UI/Scheduling/**" />
+    <RazorGenerate Remove="Components/UI/Sidebar/**" />
+    <RazorGenerate Remove="Components/UI/Toaster/**" />
+    <RazorGenerate Remove="Components/Workflow/**" />
+    <RazorGenerate Remove="Components/UI/Chart.razor" />
+    <Compile Remove="Components/Incomplete/**" />
+    <Compile Remove="Components/UI/DropdownMenu/**" />
+    <Compile Remove="Components/UI/MultiSelect/**" />
+    <Compile Remove="Components/UI/Scheduling/**" />
+    <Compile Remove="Components/UI/Sidebar/**" />
+    <Compile Remove="Components/UI/Toaster/**" />
+    <Compile Remove="Components/Workflow/**" />
+    <Compile Remove="Components/UI/Chart.razor.cs" />
+    <Content Remove="Components/Incomplete/**" />
+    <Content Remove="Components/UI/DropdownMenu/**" />
+    <Content Remove="Components/UI/MultiSelect/**" />
+    <Content Remove="Components/UI/Scheduling/**" />
+    <Content Remove="Components/UI/Sidebar/**" />
+    <Content Remove="Components/UI/Toaster/**" />
+    <Content Remove="Components/Workflow/**" />
+    <None Remove="Components/Incomplete/**" />
+    <None Remove="Components/UI/DropdownMenu/**" />
+    <None Remove="Components/UI/MultiSelect/**" />
+    <None Remove="Components/UI/Scheduling/**" />
+    <None Remove="Components/UI/Sidebar/**" />
+    <None Remove="Components/UI/Toaster/**" />
+    <None Remove="Components/Workflow/**" />
+  </ItemGroup>
+
+  <Target Name="PrintIncludeDemos" BeforeTargets="Build">
+    <Message Text="[PFPT.Shared] IncludeDemos=$(IncludeDemos)" Importance="High" />
+  </Target>
+
+  <Target Name="PrintIncludeExperimentalUI" BeforeTargets="Build">
+    <Message Text="[PFPT.Shared] IncludeExperimentalUI=$(IncludeExperimentalUI)" Importance="High" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />

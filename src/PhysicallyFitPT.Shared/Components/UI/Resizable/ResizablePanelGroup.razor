@@ -1,0 +1,73 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="@GroupClass"
+     data-orientation="@Direction"
+     style="@LayoutStyle"
+     @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public double PrimarySize { get; set; } = 55; // percent
+
+    [Parameter]
+    public EventCallback<double> PrimarySizeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<double> OnResize { get; set; }
+
+    [Parameter]
+    public double MinSizePercent { get; set; } = 15; // percent per side
+
+    [Parameter]
+    public string Direction { get; set; } = "horizontal"; // horizontal | vertical
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    internal double ClampedPrimarySize => Math.Clamp(PrimarySize, MinSizePercent, 100 - MinSizePercent);
+
+    internal double MinHandle => MinSizePercent;
+    internal double MaxHandle => 100 - MinSizePercent;
+
+    internal Task HandleResizeAsync(double requested)
+    {
+        var clamped = Math.Clamp(requested, MinHandle, MaxHandle);
+        return UpdateSizeAsync(clamped);
+    }
+
+    private async Task UpdateSizeAsync(double next)
+    {
+        if (Math.Abs(next - PrimarySize) < 0.01)
+        {
+            return;
+        }
+
+        PrimarySize = next;
+        await PrimarySizeChanged.InvokeAsync(PrimarySize);
+        if (OnResize.HasDelegate)
+        {
+            await OnResize.InvokeAsync(PrimarySize);
+        }
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        PrimarySize = ClampedPrimarySize;
+    }
+
+    private string GroupClass => $"resizable-group {(Direction == "vertical" ? "resizable-group-vertical" : "resizable-group-horizontal")} {Class}".Trim();
+
+    private string LayoutStyle =>
+        $"--pfp-resize-primary:{ClampedPrimarySize.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%; --pfp-resize-min:{MinSizePercent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%;";
+}

@@ -1,0 +1,137 @@
+@* Input Demo - Examples of input field variants *@
+@page "/demo/input"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Input</h1>
+    <p class="demo-description">
+        Text input fields with various types, validation states, and clinical use cases.
+    </p>
+
+    <div class="demo-section">
+        <h2>Basic Input Types</h2>
+        <p>Common input field types for clinical data entry.</p>
+        <div class="demo-example">
+            <div class="demo-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Text Input</label>
+                    <Input @bind-Value="textValue" Placeholder="Enter text..." />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Value: @textValue</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Email Input</label>
+                    <Input @bind-Value="emailValue" Type="email" Placeholder="patient@example.com" />
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Phone Number</label>
+                    <Input @bind-Value="phoneValue" Type="tel" Placeholder="(555) 123-4567" />
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Date Input</label>
+                    <Input @bind-Value="dateValue" Type="date" />
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Time Input</label>
+                    <Input @bind-Value="timeValue" Type="time" />
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Number Input</label>
+                    <Input @bind-Value="numberValue" Type="number" Placeholder="0" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Clinical Measurements</h2>
+        <p>Input fields for capturing clinical data and measurements.</p>
+        <div class="demo-example">
+            <div class="demo-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Range of Motion (degrees)</label>
+                    <Input @bind-Value="romValue" Type="number" Placeholder="0-180" />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Measured shoulder flexion</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Pain Level (0-10)</label>
+                    <Input @bind-Value="painValue" Type="number" Placeholder="0-10" />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Visual Analog Scale rating</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Manual Muscle Test</label>
+                    <Input @bind-Value="mmtValue" Placeholder="0/5 to 5/5" />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Standard MMT grading</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Validation States</h2>
+        <p>Input fields showing error states for validation feedback.</p>
+        <div class="demo-example">
+            <div class="demo-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #dc2626;">Invalid Email</label>
+                    <Input @bind-Value="invalidEmail" Type="email" HasError="true" />
+                    <p style="font-size: 14px; color: #dc2626; margin-top: 4px;">Please enter a valid email address</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500; color: #dc2626;">Required Field</label>
+                    <Input @bind-Value="emptyField" Placeholder="This field is required" HasError="true" />
+                    <p style="font-size: 14px; color: #dc2626; margin-top: 4px;">This field cannot be empty</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Valid Input</label>
+                    <Input @bind-Value="validValue" />
+                    <p style="font-size: 12px; color: #10b981; margin-top: 4px;">✓ Looks good!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled State</h2>
+        <p>Disabled inputs for read-only or locked fields.</p>
+        <div class="demo-example">
+            <div class="demo-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Patient ID</label>
+                    <Input Value="@("PT-2024-00123")" Disabled="true" />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">System-generated, cannot be edited</p>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 4px; font-weight: 500;">Record Created</label>
+                    <Input Value="@("2024-01-15")" Type="date" Disabled="true" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string textValue = string.Empty;
+    private string emailValue = string.Empty;
+    private string phoneValue = string.Empty;
+    private string dateValue = string.Empty;
+    private string timeValue = string.Empty;
+    private string numberValue = string.Empty;
+    
+    private string romValue = string.Empty;
+    private string painValue = string.Empty;
+    private string mmtValue = string.Empty;
+    
+    private string invalidEmail = "not-an-email";
+    private string emptyField = string.Empty;
+    private string validValue = "John Doe";
+}

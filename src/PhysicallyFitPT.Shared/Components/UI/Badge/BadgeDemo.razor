@@ -1,0 +1,193 @@
+@* Demo page showing Badge usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic Variants -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Badge Variants</h3>
+        <div class="flex flex-wrap items-center gap-3">
+            <Badge>Default</Badge>
+            <Badge Variant="secondary">Secondary</Badge>
+            <Badge Variant="destructive">Destructive</Badge>
+            <Badge Variant="outline">Outline</Badge>
+        </div>
+    </div>
+
+    <!-- Badges with Icons -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Badges with Icons</h3>
+        <div class="flex flex-wrap items-center gap-3">
+            <Badge>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Verified
+            </Badge>
+            <Badge Variant="secondary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Pending
+            </Badge>
+            <Badge Variant="destructive">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelled
+            </Badge>
+            <Badge Variant="outline">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Info
+            </Badge>
+        </div>
+    </div>
+
+    <!-- As Links -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Interactive Badges (Links)</h3>
+        <div class="flex flex-wrap items-center gap-3">
+            <Badge AsLink="true" Href="#default">Clickable Default</Badge>
+            <Badge AsLink="true" Href="#secondary" Variant="secondary">Clickable Secondary</Badge>
+            <Badge AsLink="true" Href="#destructive" Variant="destructive">Clickable Destructive</Badge>
+            <Badge AsLink="true" Href="#outline" Variant="outline">Clickable Outline</Badge>
+        </div>
+    </div>
+
+    <!-- Custom Status Colors -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Status Badges (Custom Classes)</h3>
+        <div class="flex flex-wrap items-center gap-3">
+            <Badge Class="badge-success">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Active
+            </Badge>
+            <Badge Class="badge-warning">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Warning
+            </Badge>
+            <Badge Class="badge-info">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Info
+            </Badge>
+        </div>
+    </div>
+
+    <!-- Size Variants -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Size Variants</h3>
+        <div class="flex flex-wrap items-center gap-3">
+            <Badge Class="badge-sm">Small Badge</Badge>
+            <Badge>Default Size</Badge>
+            <Badge Class="badge-lg">Large Badge</Badge>
+        </div>
+    </div>
+
+    <!-- Clinical Context Examples -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Status Examples</h3>
+        <div class="space-y-4">
+            <!-- Patient Status -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 w-32">Patient Status:</span>
+                <Badge Class="badge-success">Active Treatment</Badge>
+            </div>
+            
+            <!-- Appointment Status -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 w-32">Appointment:</span>
+                <Badge Variant="secondary">Scheduled</Badge>
+            </div>
+            
+            <!-- Insurance Status -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 w-32">Insurance:</span>
+                <Badge>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Verified
+                </Badge>
+            </div>
+            
+            <!-- Note Status -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 w-32">SOAP Note:</span>
+                <Badge Class="badge-warning">Draft</Badge>
+            </div>
+            
+            <!-- Priority -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 w-32">Priority:</span>
+                <Badge Variant="destructive">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Urgent
+                </Badge>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badge in Patient Card -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Patient Card Example</h3>
+        <div class="bg-white border border-gray-200 rounded-lg p-4 max-w-md">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h4 class="text-base font-semibold text-gray-900">John Smith</h4>
+                    <p class="text-sm text-gray-500">DOB: 03/15/1982 • Male</p>
+                </div>
+                <Badge Class="badge-success">Active</Badge>
+            </div>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge Variant="outline" Class="badge-sm">L Shoulder</Badge>
+                    <Badge Variant="outline" Class="badge-sm">Post-Op</Badge>
+                    <Badge Class="badge-sm">Week 6</Badge>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <span>Next Appointment:</span>
+                    <Badge Variant="secondary" Class="badge-sm">Today, 2:00 PM</Badge>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badge Counter -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Notification Badges</h3>
+        <div class="flex items-center gap-4">
+            <button class="relative inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <Badge Variant="destructive" Class="absolute top-0 right-0 -mt-1 -mr-1 badge-sm">3</Badge>
+            </button>
+            
+            <button class="relative inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <Badge Class="absolute top-0 right-0 -mt-1 -mr-1 badge-sm">12</Badge>
+            </button>
+
+            <button class="relative inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <Badge Class="badge-warning absolute top-0 right-0 -mt-1 -mr-1 badge-sm">!</Badge>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    // No state needed for static demos
+}

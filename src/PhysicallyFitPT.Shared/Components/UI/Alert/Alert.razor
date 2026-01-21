@@ -1,0 +1,34 @@
+@* Alert banner component with variants *@
+
+<div role="alert"
+     class="@CombinedClass"
+     data-variant="@Variant"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "default"; // default, destructive
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"{BaseClass} {VariantClass} {Class}".Trim();
+
+    private string BaseClass => 
+        "relative w-full rounded-lg border px-4 py-3 text-sm grid grid-cols-[0_1fr] has-[>svg]:grid-cols-[calc(1rem)_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current";
+
+    private string VariantClass => Variant switch
+    {
+        "destructive" => "text-red-600 bg-white [&>svg]:text-current",
+        _ => "bg-white text-gray-900"
+    };
+}

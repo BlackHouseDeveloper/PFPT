@@ -1,0 +1,130 @@
+@page "/components/skeleton"
+@namespace PhysicallyFitPT.Shared.Components.Pages
+
+<div class="component-demo">
+    <h1>Skeleton Component</h1>
+    <p>Placeholder component for loading states. Animates with a pulse effect to indicate content is loading.</p>
+
+    <hr class="my-6" />
+
+    <h2>Basic Skeleton</h2>
+    <p>Default skeleton with rounded corners and pulse animation.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: flex; gap: 1rem;">
+            <Skeleton Class="h-12 w-12 rounded-full" />
+            <div style="flex: 1;">
+                <Skeleton Class="h-4 w-3/4 mb-2" />
+                <Skeleton Class="h-4 w-1/2" />
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Card Skeleton</h2>
+    <p>Skeleton layout simulating a card component during loading.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+            <Skeleton Class="h-48 w-full mb-4 rounded-lg" />
+            <Skeleton Class="h-6 w-3/4 mb-2" />
+            <Skeleton Class="h-4 w-full mb-2" />
+            <Skeleton Class="h-4 w-5/6" />
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Patient Record Skeleton</h2>
+    <p>Clinical skeleton layout for loading a patient record or note.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="padding: 1.5rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <Skeleton Class="h-8 w-1/2 mb-2" />
+                <Skeleton Class="h-4 w-1/3" />
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <Skeleton Class="h-4 w-full mb-2" />
+                    <Skeleton Class="h-6 w-3/4" />
+                </div>
+                <div>
+                    <Skeleton Class="h-4 w-full mb-2" />
+                    <Skeleton Class="h-6 w-3/4" />
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <Skeleton Class="h-5 w-1/4 mb-2" />
+                <Skeleton Class="h-4 w-full mb-1" />
+                <Skeleton Class="h-4 w-full mb-1" />
+                <Skeleton Class="h-4 w-3/4" />
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <Skeleton Class="h-10 w-24 rounded-md" />
+                <Skeleton Class="h-10 w-24 rounded-md" />
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Features</h2>
+    <ul class="component-feature-list">
+        <li><strong>Pulse Animation:</strong> Smooth fade in/out animation that repeats continuously</li>
+        <li><strong>Customizable Size:</strong> Pass any width/height class to create different skeleton shapes</li>
+        <li><strong>Flexible Styling:</strong> Supports custom CSS classes for borders, padding, and more</li>
+        <li><strong>Accent Color:</strong> Uses the theme's accent color for visual consistency</li>
+        <li><strong>Loading States:</strong> Perfect for displaying while content loads from the server</li>
+        <li><strong>Semantic HTML:</strong> Simple div element with proper data attributes</li>
+    </ul>
+</div>
+
+<style>
+    .component-demo {
+        padding: 2rem;
+    }
+
+    .component-demo h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .component-demo h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+    }
+
+    .component-demo p {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .demo-container {
+        overflow: hidden;
+    }
+
+    .component-feature-list {
+        list-style: disc;
+        margin-left: 1.5rem;
+        color: #6b7280;
+    }
+
+    .component-feature-list li {
+        margin-bottom: 0.75rem;
+    }
+
+    .my-6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        border-top: 1px solid #e5e7eb;
+    }
+</style>

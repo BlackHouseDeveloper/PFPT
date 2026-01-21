@@ -1,0 +1,63 @@
+@* MenubarMenu - container for a single top-level menu *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="menubar-menu">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [CascadingParameter] public Menubar? Root { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    internal bool IsOpen { get; private set; }
+
+    protected override void OnInitialized()
+    {
+        Root?.RegisterMenu(this);
+    }
+
+    internal async Task ToggleAsync()
+    {
+        if (IsOpen)
+        {
+            await Root!.CloseAllMenus();
+        }
+        else if (Root != null)
+        {
+            await Root.OpenMenuAsync(this);
+        }
+    }
+
+    internal async Task HoverOpenAsync()
+    {
+        if (Root?.AnyMenuOpen == true && !IsOpen)
+        {
+            await Root.OpenMenuAsync(this);
+        }
+    }
+
+    internal void CloseInternal()
+    {
+        if (IsOpen)
+        {
+            IsOpen = false;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal void OpenInternal()
+    {
+        if (!IsOpen)
+        {
+            IsOpen = true;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        Root?.UnregisterMenu(this);
+    }
+}

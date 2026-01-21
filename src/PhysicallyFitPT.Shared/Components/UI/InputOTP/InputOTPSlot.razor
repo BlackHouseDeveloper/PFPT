@@ -1,0 +1,115 @@
+@* InputOTPSlot - Individual OTP character slot *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="input-otp-slot @GetSlotClass()" 
+     tabindex="@(ParentOTP?.Disabled == true ? -1 : 0)"
+     @onclick="HandleClick"
+     @onkeydown="HandleKeyDown"
+     @onpaste="HandlePaste"
+     @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(slotValue))
+    {
+        <span>@slotValue</span>
+    }
+    @if (shouldShowCaret)
+    {
+        <div class="input-otp-caret-container">
+            <div class="input-otp-caret"></div>
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public InputOTP? ParentOTP { get; set; }
+    [Parameter, EditorRequired] public int Index { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Inject] private IJSRuntime? JsRuntime { get; set; }
+
+    private string? slotValue;
+    private bool isActive;
+    private bool shouldShowCaret;
+
+    protected override void OnInitialized()
+    {
+        if (ParentOTP == null)
+            throw new InvalidOperationException($"{nameof(InputOTPSlot)} must be used within an {nameof(InputOTP)} component.");
+
+        ParentOTP.RegisterSlot(Index, this);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (ParentOTP != null)
+        {
+            slotValue = ParentOTP.GetSlotValue(Index);
+            isActive = ParentOTP.IsSlotActive(Index);
+            shouldShowCaret = ParentOTP.ShouldShowCaret(Index);
+        }
+    }
+
+    private string GetSlotClass()
+    {
+        var classes = new List<string> { CssClass ?? string.Empty };
+        if (isActive) classes.Add("active");
+        if (ParentOTP?.HasError == true) classes.Add("error");
+        if (ParentOTP?.Disabled == true) classes.Add("disabled");
+        if (Index == 0) classes.Add("first");
+        if (Index == (ParentOTP?.MaxLength ?? 0) - 1) classes.Add("last");
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+
+    private async Task HandleClick()
+    {
+        if (ParentOTP != null)
+        {
+            await ParentOTP.HandleSlotClick(Index);
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (ParentOTP != null)
+        {
+            await ParentOTP.HandleKeyDown(Index, e);
+        }
+    }
+
+    private async Task HandlePaste(ClipboardEventArgs _)
+    {
+        if (ParentOTP == null || ParentOTP.Disabled)
+        {
+            return;
+        }
+
+        var pastedText = await TryReadClipboardText();
+        if (!string.IsNullOrEmpty(pastedText))
+        {
+            await ParentOTP.HandlePaste(pastedText);
+        }
+    }
+
+    private async Task<string?> TryReadClipboardText()
+    {
+        if (JsRuntime == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return await JsRuntime.InvokeAsync<string>("navigator.clipboard.readText");
+        }
+        catch
+        {
+            // Clipboard API may be unavailable (non-HTTPS, permissions); fallback to no-op.
+            return null;
+        }
+    }
+
+    public void Dispose()
+    {
+        ParentOTP?.UnregisterSlot(Index);
+    }
+}

@@ -1,0 +1,34 @@
+@* Carousel content wrapper *@
+
+<div class="carousel-content overflow-hidden @Class" @attributes="AdditionalAttributes">
+    <div class="carousel-track @(Carousel?.Orientation == "vertical" ? "flex-col" : "flex")"
+         style="@GetTransformStyle()">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public Carousel? Carousel { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetTransformStyle()
+    {
+        if (Carousel == null) return string.Empty;
+
+        var offset = -Carousel.CurrentIndex * 100;
+        if (Carousel.Orientation == "vertical")
+        {
+            return $"transform: translateY({offset}%);";
+        }
+        return $"transform: translateX({offset}%);";
+    }
+}

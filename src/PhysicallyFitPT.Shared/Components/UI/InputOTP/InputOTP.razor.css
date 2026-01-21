@@ -1,0 +1,110 @@
+.input-otp-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-otp-container.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-otp-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.input-otp-slot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid #d1d5db;
+    border-right-width: 1px;
+    background-color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    cursor: text;
+}
+
+.input-otp-slot:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-left-width: 2px;
+}
+
+.input-otp-slot:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-right-width: 2px;
+}
+
+.input-otp-slot:hover:not(.disabled) {
+    border-color: #9ca3af;
+}
+
+.input-otp-slot:focus {
+    z-index: 10;
+    border-color: #0B2545;
+    box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.1);
+}
+
+.input-otp-slot.active {
+    z-index: 10;
+    border-color: #0B2545;
+    box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.1);
+}
+
+.input-otp-slot.error {
+    border-color: #dc2626;
+}
+
+.input-otp-slot.error.active,
+.input-otp-slot.error:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.input-otp-slot.disabled {
+    cursor: not-allowed;
+    background-color: #f9fafb;
+    color: #9ca3af;
+}
+
+.input-otp-caret-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.input-otp-caret {
+    width: 1px;
+    height: 16px;
+    background-color: #1f2937;
+    animation: caret-blink 1s ease-in-out infinite;
+}
+
+@keyframes caret-blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+.input-otp-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+}

@@ -1,0 +1,15 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (ParentMenu?.ActiveContent != null)
+{
+    <div class="navigation-menu-viewport-container">
+        <div class="navigation-menu-viewport">
+            @ParentMenu.ActiveContent
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public NavigationMenu? ParentMenu { get; set; }
+}

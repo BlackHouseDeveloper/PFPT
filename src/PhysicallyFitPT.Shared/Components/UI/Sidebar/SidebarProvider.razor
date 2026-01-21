@@ -1,0 +1,84 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Sidebar
+@using PhysicallyFitPT.Shared.Components.UI.Sidebar
+@implements IAsyncDisposable
+
+<CascadingValue Value="SidebarContext">
+    <div class="sidebar-provider"
+         style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    private SidebarContextValue SidebarContext = new();
+    private MobileDetectionService MobileDetection = new();
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool DefaultOpen { get; set; } = true;
+
+    [Parameter]
+    public bool? Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SidebarContext.Open = Open ?? DefaultOpen;
+        SidebarContext.SetOpen = async (value) => await SetOpen(value);
+        SidebarContext.SetOpenMobile = (value) => SetOpenMobile(value);
+        SidebarContext.ToggleSidebar = () => ToggleSidebar();
+        SidebarContext.IsMobile = MobileDetection.IsMobile;
+
+        MobileDetection.OnMobileStatusChanged += OnMobileStatusChanged;
+    }
+
+    private async Task SetOpen(bool value)
+    {
+        if (!SidebarContext.Open.Equals(value))
+        {
+            SidebarContext.Open = value;
+            await OnOpenChange.InvokeAsync(value);
+            StateHasChanged();
+        }
+    }
+
+    private void SetOpenMobile(bool value)
+    {
+        SidebarContext.OpenMobile = value;
+        StateHasChanged();
+    }
+
+    private void ToggleSidebar()
+    {
+        if (SidebarContext.IsMobile)
+        {
+            SetOpenMobile(!SidebarContext.OpenMobile);
+        }
+        else
+        {
+            _ = SetOpen(!SidebarContext.Open);
+        }
+    }
+
+    private void OnMobileStatusChanged()
+    {
+        SidebarContext.IsMobile = MobileDetection.IsMobile;
+        StateHasChanged();
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (MobileDetection != null)
+        {
+            MobileDetection.OnMobileStatusChanged -= OnMobileStatusChanged;
+        }
+        await ValueTask.CompletedTask;
+    }
+}

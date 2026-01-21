@@ -1,0 +1,11 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<h2 class="sheet-title" @attributes="AdditionalAttributes">@ChildContent</h2>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

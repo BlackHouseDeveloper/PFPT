@@ -2,69 +2,81 @@
 @layout ResponsiveMainLayout
 @inject IUserService UserService
 @inject NavigationManager Navigation
+@inject Microsoft.Extensions.Logging.ILogger<Login> Logger
+@using Microsoft.Extensions.Logging
 
 <PageTitle>Login</PageTitle>
 
 <DebugStatBar />
 
-<div class="pfp-page-header">
-  <h1>Login</h1>
-  <p>Authenticate to access the Physically Fit PT system</p>
-</div>
+<div class="auth-shell">
+  <div class="auth-brand">PTDoc</div>
 
-<div class="pfp-card" style="max-width: 500px; margin: 0 auto;">
-  <div class="pfp-card-body">
+  <div class="auth-card" aria-live="polite">
+    <header class="auth-card-header">
+      <p class="auth-welcome">Welcome</p>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active">Login</button>
+        <button type="button" class="auth-tab" disabled aria-disabled="true">Sign Up</button>
+      </div>
+    </header>
+
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-      <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
-        <strong>⚠️ Login Failed:</strong> @errorMessage
+      <div class="auth-alert" role="alert">
+        <span class="auth-alert-title">Login failed</span>
+        <span>@errorMessage</span>
       </div>
     }
 
-    @if (isLoading)
-    {
-      <div style="text-align: center; padding: 20px;">
-        <p>Authenticating...</p>
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="auth-form" aria-busy="@isLoading">
+      <DataAnnotationsValidator />
+
+      <div class="auth-field">
+        <label for="pin">4-Digit PIN</label>
+        <InputText id="pin"
+                   type="password"
+                   class="auth-input"
+                   placeholder="Enter 4-digit PIN"
+                   autocomplete="off"
+                   maxlength="4"
+                   aria-describedby="pin-error"
+                   @bind-Value="loginModel.Pin" />
+        <ValidationMessage id="pin-error" For="@(() => loginModel.Pin)" class="auth-validation" />
       </div>
-    }
-    else
-    {
-      <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-        
-        <div style="margin-bottom: 16px;">
-          <label for="username" style="display: block; margin-bottom: 4px; font-weight: 500;">Username / Email</label>
-          <input id="username" @bind="loginModel.Username" 
-                 style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
-                 placeholder="clinician@demo.com" />
-        </div>
 
-        <div style="margin-bottom: 16px;">
-          <label for="password" style="display: block; margin-bottom: 4px; font-weight: 500;">Password</label>
-          <input id="password" type="password" @bind="loginModel.Password" 
-                 style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
-                 placeholder="Enter password" />
-        </div>
+      <div class="auth-actions">
+        <button type="button" class="auth-link" disabled="@isLoading">Forgot PIN?</button>
+      </div>
 
-        <div style="margin-bottom: 16px;">
-          <button type="submit" class="pfp-btn" style="width: 100%; padding: 10px;">
-            Login
-          </button>
-        </div>
+      <button type="submit" class="auth-primary" disabled="@isLoading">
+        @if (isLoading)
+        {
+          <span>Authenticating...</span>
+        }
+        else
+        {
+          <span>Login</span>
+        }
+      </button>
 
-        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; padding: 12px; border-radius: 4px; font-size: 12px;">
-          <strong>Demo Credentials (Week 2):</strong><br/>
-          Username: clinician@demo.com<br/>
-          Password: demo123
-        </div>
-      </EditForm>
-    }
+      <div class="auth-hint" aria-live="polite">
+        <p class="auth-hint-title">Demo credentials (Week 2)</p>
+        <p>PIN: 1234</p>
+      </div>
+    </EditForm>
   </div>
+
+  <footer class="auth-footnote" aria-live="polite">
+    <span>🔒 HIPAA-compliant secure access</span>
+    <span>Protected health information</span>
+  </footer>
 </div>
 
 @code {
-  private LoginModel loginModel = new();
+  private readonly LoginModel loginModel = new();
   private string? errorMessage;
-  private bool isLoading = false;
+  private bool isLoading;
 
   private async Task HandleLogin()
   {
@@ -74,22 +86,25 @@
 
     try
     {
-      await Task.Delay(500); // Simulate network delay
-      
-      var success = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
-      
+      await Task.Delay(500);
+
+      // PIN-based authentication: use PIN as both username and password for now
+      var success = await UserService.LoginAsync(loginModel.Pin, loginModel.Pin);
+
       if (success)
       {
         Navigation.NavigateTo("/");
       }
       else
       {
-        errorMessage = "Invalid username or password. Please check the demo credentials above.";
+        errorMessage = "Invalid PIN. Please try again.";
+        loginModel.Pin = string.Empty;
       }
     }
     catch (Exception ex)
     {
-      errorMessage = $"An error occurred: {ex.Message}";
+      Logger.LogError(ex, "Login failed");
+      errorMessage = "We couldn't sign you in. Please try again.";
     }
     finally
     {
@@ -98,12 +113,11 @@
     }
   }
 
-  private class LoginModel
+  private sealed class LoginModel
   {
-    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Username is required")]
-    public string Username { get; set; } = string.Empty;
-
-    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Password is required")]
-    public string Password { get; set; } = string.Empty;
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "PIN is required")]
+    [System.ComponentModel.DataAnnotations.StringLength(4, MinimumLength = 4, ErrorMessage = "PIN must be 4 digits")]
+    [System.ComponentModel.DataAnnotations.RegularExpression(@"^\d{4}$", ErrorMessage = "PIN must be 4 digits")]
+    public string Pin { get; set; } = string.Empty;
   }
 }

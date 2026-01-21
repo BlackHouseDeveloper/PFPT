@@ -1,0 +1,769 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+<Tabs DefaultValue="outcome-measures" Class="w-full">
+    <TabsList Class="grid w-full grid-cols-2 md:grid-cols-3 mb-6">
+        <TabsTrigger Value="outcome-measures" Class="flex items-center gap-2">
+            PT Outcome Measures
+        </TabsTrigger>
+        <TabsTrigger Value="smart-goals" Class="flex items-center gap-2">
+            VT SMART Goals
+        </TabsTrigger>
+        <TabsTrigger Value="ai-controls" Class="flex items-center gap-2">
+            BR AI Controls
+        </TabsTrigger>
+    </TabsList>
+
+    <!-- Outcome Measures Tab -->
+    <TabsContent Value="outcome-measures" Class="space-y-6">
+        <Card Class="border-2 border-blue-200 bg-blue-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5">TG</div>
+                    <div>
+                        <p class="font-semibold text-blue-900 mb-1">Outcome Measure Behavior</p>
+                        <p class="text-sm text-blue-800">
+                            Configure how outcome measures are selected, displayed, and managed throughout treatment.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Auto-Selection -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    ✨ Auto-Selection & Filtering
+                </CardTitle>
+                <CardDescription>
+                    Automatically suggest relevant outcome measures
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Select by Body Part</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically suggest outcome measures based on chief complaint body region
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoSelectByBodyPart"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoSelectByBodyPart), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AutoSelectByBodyPart)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <Label Class="block mb-3 flex items-center gap-2">
+                            BC Body Part to Outcome Measure Mapping
+                        </Label>
+                        <div class="space-y-2">
+                            @foreach (var item in outcomesByBodyPart)
+                            {
+                                <div class="flex items-start gap-3 p-3 bg-background border border-border rounded-lg">
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-sm mb-1">@item.BodyPart</p>
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach (var measure in item.Measures)
+                                            {
+                                                <Badge Variant="outline" Class="text-xs">
+                                                    @measure
+                                                </Badge>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-3">
+                            When a chief complaint includes a specific body region, relevant measures will be auto-suggested
+                        </p>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Show Outcome Trends</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Display line charts showing outcome measure changes over time
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowOutcomeTrends"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowOutcomeTrends), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Deletion & Management -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    DL Deletion & Management Rules
+                </CardTitle>
+                <CardDescription>
+                    Control when outcome measures can be modified or removed
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Deletion of Non-Tested Measures</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Permit removal of outcome measures that have never been completed
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowDeletionOfNonTestedMeasures"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowDeletionOfNonTestedMeasures), isChecked))"
+                    />
+                </div>
+
+                <div class="p-4 border-2 border-orange-200 bg-orange-50 rounded-lg">
+                    <div class="flex gap-2">
+                        <div class="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5">!</div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-orange-900 mb-1">Deletion Rules</p>
+                            <ul class="text-sm text-orange-800 space-y-1">
+                                <li>✓ Non-tested measures can be deleted at any time</li>
+                                <li>✗ Measures with historical data cannot be deleted</li>
+                                <li>✓ Measures can be "archived" to hide from active lists</li>
+                                <li>✗ Deleting a measure removes it from goal generation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Outcome Measure Completion</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Enforce that all selected outcome measures must be completed before note submission
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireOutcomeMeasureCompletion"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireOutcomeMeasureCompletion), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Track Outcome Measures</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Enable outcome measure tracking system across all evaluations
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.TrackOutcomeMeasures"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.TrackOutcomeMeasures), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- SMART Goals Tab -->
+    <TabsContent Value="smart-goals" Class="space-y-6">
+        <Card Class="border-2 border-green-200 bg-green-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5">SG</div>
+                    <div>
+                        <p class="font-semibold text-green-900 mb-1">SMART Goal Generation</p>
+                        <p class="text-sm text-green-800">
+                            Configure how AI generates SMART goals from outcome measures and patient data.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Generation Sources -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    LB Goal Generation Sources
+                </CardTitle>
+                <CardDescription>
+                    Choose which data sources trigger SMART goal generation
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-primary rounded-lg bg-primary/5">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Generate Goals From Outcome Scores</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Create goals based on total outcome measure scores (e.g., LEFS 45/80)
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.GenerateGoalsFromScores"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.GenerateGoalsFromScores), isChecked))"
+                    />
+                </div>
+
+                @if (settings.GenerateGoalsFromScores)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <p class="text-sm font-semibold mb-2">Score-Based Goal Example:</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="p-3 bg-background border border-border rounded">
+                                <p class="text-muted-foreground mb-1">Input: LEFS Score 45/80</p>
+                                <p class="font-semibold text-primary">
+                                    → "Patient will improve LEFS score from 45/80 to 60/80 (25% improvement) within 4 weeks as measured by self-report questionnaire."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between p-4 border-2 border-primary rounded-lg bg-primary/5">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Generate Goals From Selected Answers</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Create goals based on individual question responses with low scores
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.GenerateGoalsFromAnswers"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.GenerateGoalsFromAnswers), isChecked))"
+                    />
+                </div>
+
+                @if (settings.GenerateGoalsFromAnswers)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg bg-muted/50">
+                        <p class="text-sm font-semibold mb-2">Answer-Based Goal Example:</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="p-3 bg-background border border-border rounded">
+                                <p class="text-muted-foreground mb-1">Input: LEFS Q4 "Walking 1 mile" = 1/4 (Extreme difficulty)</p>
+                                <p class="font-semibold text-primary">
+                                    → "Patient will increase walking tolerance from unable to walk 1 mile to walking 1 mile with minimal difficulty (3/4) within 6 weeks."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Multi-Select Behavior -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    SG Goal Selection Behavior
+                </CardTitle>
+                <CardDescription>
+                    Configure how clinicians interact with AI-generated goals
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Multi-Select of AI-Generated Goals</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Let clinicians check multiple goals at once without re-generating
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowMultiSelectGoals"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowMultiSelectGoals), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AllowMultiSelectGoals)
+                {
+                    <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+                        <div class="flex gap-2">
+                            <div class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5">MS</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-green-900 mb-1">Multi-Select Workflow</p>
+                                <ul class="text-sm text-green-800 space-y-1">
+                                    <li>1. AI generates 3-5 SMART goals from outcome data</li>
+                                    <li>2. Clinician reviews all suggested goals</li>
+                                    <li>3. Clinician checks ✓ all relevant goals (no limit)</li>
+                                    <li>4. All selected goals are added to the note simultaneously</li>
+                                    <li>5. No re-generation needed when selecting multiple goals</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Require Manual Goal Review</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Force clinician to review and approve AI goals before adding to note
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.RequireManualGoalReview"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireManualGoalReview), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Goal Re-Generation</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Permit "regenerate" button to create new goal suggestions
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.GoalRegenerationAllowed"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.GoalRegenerationAllowed), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- AI Controls Tab -->
+    <TabsContent Value="ai-controls" Class="space-y-6">
+        <Card Class="border-2 border-purple-200 bg-purple-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5">BR</div>
+                    <div>
+                        <p class="font-semibold text-purple-900 mb-1">AI Controls & Prompt Templates</p>
+                        <p class="text-sm text-purple-800">
+                            Enable/disable AI per section and customize the prompts that generate clinical content.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- AI Per Section -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    ST AI Controls by Note Section
+                </CardTitle>
+                <CardDescription>
+                    Enable or disable AI assistance for specific documentation sections
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI Assessment Generation</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Generate clinical assessment from subjective, objective, and outcome data
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAIAssessment"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAIAssessment), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI Plan Generation</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Generate treatment plan with frequency, duration, and interventions
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAIPlan"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAIPlan), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI SMART Goals Generation</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Generate SMART goals from outcome measures and functional limitations
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAIGoals"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAIGoals), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI Discharge Summary</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Generate discharge summary from treatment history and outcomes
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAIDischargeSummary"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAIDischargeSummary), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI Follow-Up Instructions</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Generate patient-friendly HEP and self-management instructions
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAIFollowUpInstructions"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAIFollowUpInstructions), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">AI Subjective Summary</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Summarize patient-reported symptoms from subjective questions
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAISubjectiveSummary"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAISubjectiveSummary), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- AI Behavior -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    BR AI Behavior Settings
+                </CardTitle>
+                <CardDescription>
+                    Control how AI suggestions are applied
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Apply AI Suggestions</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically insert AI-generated text (bypasses manual review)
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoApplyAISuggestions"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoApplyAISuggestions), isChecked))"
+                    />
+                </div>
+
+                @if (!settings.AutoApplyAISuggestions)
+                {
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Require AI Content Review</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Clinician must review and approve before inserting AI text
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.RequireAIReview"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireAIReview), isChecked))"
+                        />
+                    </div>
+                }
+
+                <div class="p-4 border-2 border-border rounded-lg">
+                    <Label Class="block mb-2">AI Confidence Threshold</Label>
+                    <p class="text-sm text-muted-foreground mb-3">
+                        Minimum confidence level to show AI suggestions
+                    </p>
+                    <select
+                        @bind="settings.AIConfidenceThreshold"
+                        class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                    >
+                        <option value="50">50% - Show all suggestions</option>
+                        <option value="70">70% - Moderate confidence (Recommended)</option>
+                        <option value="85">85% - High confidence only</option>
+                        <option value="95">95% - Very high confidence</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Suggest Evidence-Based Interventions</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Recommend treatment techniques based on diagnosis
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.SuggestInterventions"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.SuggestInterventions), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Editable Prompt Templates -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    ED Editable AI Prompt Templates
+                </CardTitle>
+                <CardDescription>
+                    Customize the prompts that generate AI content for each section
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                @foreach (var promptKey in new[] { "assessment", "plan", "goals", "discharge", "followUp" })
+                {
+                    <div class="border-2 border-border rounded-lg overflow-hidden">
+                        <div class="p-4 bg-muted/50 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="h-4 w-4">FT</span>
+                                <Label Class="font-semibold">@GetPromptLabel(promptKey) Prompt Template</Label>
+                            </div>
+                            <div class="flex gap-2">
+                                @if (editingPrompt != promptKey)
+                                {
+                                    <Button
+                                        Size="sm"
+                                        Variant="outline"
+                                        @onclick="() => SetEditingPrompt(promptKey)"
+                                    >
+                                        ED Edit
+                                    </Button>
+                                }
+                                @if (editingPrompt == promptKey)
+                                {
+                                    <Button
+                                        Size="sm"
+                                        Variant="outline"
+                                        @onclick="() => SetEditingPrompt(null)"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        Size="sm"
+                                        @onclick="() => { SetEditingPrompt(null); HasUnsavedChanges = true; }"
+                                    >
+                                        Save
+                                    </Button>
+                                }
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            @if (editingPrompt == promptKey)
+                            {
+                                <textarea
+                                    @bind="prompts[promptKey]"
+                                    class="w-full h-64 px-3 py-2 border-2 border-border rounded-lg bg-background font-mono text-sm"
+                                />
+                            }
+                            else
+                            {
+                                <pre class="text-xs bg-muted p-3 rounded overflow-x-auto whitespace-pre-wrap">@prompts[promptKey]</pre>
+                            }
+                            <div class="mt-3 flex gap-2 flex-wrap">
+                                @foreach (var variable in GetPromptVariables(promptKey))
+                                {
+                                    <Badge Variant="outline" Class="text-xs">@variable</Badge>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
+                    <div class="flex gap-2">
+                        <span class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5">!</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-blue-900 mb-1">Prompt Template Tips</p>
+                            <ul class="text-sm text-blue-800 space-y-1">
+                                <li>• Use {'{variableName}'} for dynamic data insertion</li>
+                                <li>• Be specific about formatting and structure requirements</li>
+                                <li>• Include clinical context and documentation standards</li>
+                                <li>• Test prompts after editing to verify AI output quality</li>
+                                <li>• Reset to default if custom prompts produce poor results</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+</Tabs>
+
+@code {
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool HasUnsavedChanges { get; set; }
+
+    [Parameter]
+    public EventCallback HasUnsavedChangesChanged { get; set; }
+
+    private Settings settings = new();
+    private string? editingPrompt;
+
+    private Dictionary<string, string> prompts = new()
+    {
+        {
+            "assessment",
+            @"Based on the following patient data:
+- Chief Complaint: {chiefComplaint}
+- Subjective findings: {subjective}
+- Objective measurements: {objective}
+- Outcome measure scores: {outcomeScores}
+
+Generate a concise, professional clinical assessment that includes:
+1. Summary of impairments and functional limitations
+2. Clinical reasoning for diagnosis
+3. Prognosis statement
+4. Rehabilitation potential
+
+Use evidence-based clinical language appropriate for physical therapy documentation."
+        },
+        {
+            "plan",
+            @"Based on the following patient information:
+- Assessment: {assessment}
+- Diagnosis codes: {icdCodes}
+- Functional limitations: {limitations}
+- Patient goals: {patientGoals}
+
+Generate a comprehensive treatment plan that includes:
+1. Recommended frequency and duration
+2. Specific interventions and modalities
+3. Evidence-based treatment approach
+4. Expected outcomes and timeframes
+
+Format for professional clinical documentation."
+        },
+        {
+            "goals",
+            @"Based on the following outcome measure data:
+- Outcome measure: {outcomeMeasureName}
+- Current score: {currentScore}
+- Individual responses: {responses}
+- Functional limitations: {limitations}
+
+Generate 3-5 SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound) that:
+1. Target the patient's specific deficits
+2. Include measurable outcomes
+3. Set realistic timeframes (2-4 weeks, 4-8 weeks)
+4. Focus on functional improvements
+5. Align with the patient's stated goals
+
+Format each goal as: ""Patient will [action] [measurement] by [timeframe]."""
+        },
+        {
+            "discharge",
+            @"Based on the complete treatment episode:
+- Initial evaluation date: {evalDate}
+- Total visits: {visitCount}
+- Initial outcome scores: {initialScores}
+- Final outcome scores: {finalScores}
+- Interventions provided: {interventions}
+
+Generate a discharge summary that includes:
+1. Summary of skilled services provided
+2. Progress toward goals with measurements
+3. Final functional status
+4. Recommendations for continued care
+5. Discharge disposition and rationale
+
+Use professional clinical language suitable for insurance documentation."
+        },
+        {
+            "followUp",
+            @"Based on the patient's current status:
+- Diagnosis: {diagnosis}
+- Functional improvements: {improvements}
+- Remaining limitations: {limitations}
+- Home exercise program: {hep}
+
+Generate follow-up instructions that include:
+1. Home exercise program (3-5 exercises)
+2. Activity modifications
+3. Self-management strategies
+4. Red flags to watch for
+5. When to seek additional care
+
+Use patient-friendly language while maintaining clinical accuracy."
+        }
+    };
+
+    private List<OutcomeBodyPart> outcomesByBodyPart = new()
+    {
+        new() { BodyPart = "Lower Extremity", Measures = new() { "LEFS", "FAAM", "Knee Score" } },
+        new() { BodyPart = "Upper Extremity", Measures = new() { "DASH", "QuickDASH", "SPADI" } },
+        new() { BodyPart = "Spine/Neck", Measures = new() { "NDI", "ODI", "FABQ" } },
+        new() { BodyPart = "Balance/Falls", Measures = new() { "Berg Balance", "TUG", "Dynamic Gait Index" } },
+        new() { BodyPart = "General", Measures = new() { "PSFS", "GPE", "Pain Scale" } }
+    };
+
+    private void UpdateSetting(string key, object value)
+    {
+        var property = settings.GetType().GetProperty(key);
+        if (property != null)
+        {
+            property.SetValue(settings, value);
+        }
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+    }
+
+    private void SetEditingPrompt(string? key)
+    {
+        editingPrompt = key;
+    }
+
+    private string GetPromptLabel(string key) => key switch
+    {
+        "assessment" => "Assessment",
+        "plan" => "Plan",
+        "goals" => "SMART Goals",
+        "discharge" => "Discharge Summary",
+        "followUp" => "Follow-Up Instructions",
+        _ => "Unknown"
+    };
+
+    private List<string> GetPromptVariables(string promptKey) => promptKey switch
+    {
+        "assessment" => new() { "Variables: {chiefComplaint}", "{subjective}", "{objective}", "{outcomeScores}" },
+        "plan" => new() { "Variables: {assessment}", "{icdCodes}", "{limitations}", "{patientGoals}" },
+        "goals" => new() { "Variables: {outcomeMeasureName}", "{currentScore}", "{responses}", "{limitations}" },
+        "discharge" => new() { "Variables: {evalDate}", "{visitCount}", "{initialScores}", "{finalScores}", "{interventions}" },
+        "followUp" => new() { "Variables: {diagnosis}", "{improvements}", "{limitations}", "{hep}" },
+        _ => new()
+    };
+
+    private class Settings
+    {
+        public bool AutoSelectByBodyPart { get; set; } = true;
+        public bool AllowDeletionOfNonTestedMeasures { get; set; } = true;
+        public bool RequireOutcomeMeasureCompletion { get; set; } = false;
+        public bool ShowOutcomeTrends { get; set; } = true;
+        public bool GenerateGoalsFromScores { get; set; } = true;
+        public bool GenerateGoalsFromAnswers { get; set; } = true;
+        public bool AllowMultiSelectGoals { get; set; } = true;
+        public bool RequireManualGoalReview { get; set; } = true;
+        public bool GoalRegenerationAllowed { get; set; } = false;
+        public bool EnableAIAssessment { get; set; } = true;
+        public bool EnableAIPlan { get; set; } = true;
+        public bool EnableAIGoals { get; set; } = true;
+        public bool EnableAIDischargeSummary { get; set; } = true;
+        public bool EnableAIFollowUpInstructions { get; set; } = true;
+        public bool EnableAISubjectiveSummary { get; set; } = false;
+        public bool AutoApplyAISuggestions { get; set; } = false;
+        public bool RequireAIReview { get; set; } = true;
+        public int AIConfidenceThreshold { get; set; } = 70;
+        public bool TrackOutcomeMeasures { get; set; } = true;
+        public bool SuggestInterventions { get; set; } = true;
+    }
+
+    private class OutcomeBodyPart
+    {
+        public string BodyPart { get; set; } = string.Empty;
+        public List<string> Measures { get; set; } = new();
+    }
+}

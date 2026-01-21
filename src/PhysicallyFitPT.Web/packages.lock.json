@@ -65,9 +65,9 @@
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[8.0.20, )",
-        "resolved": "8.0.20",
-        "contentHash": "T8IgvEg6M4INrHw9K89JjslxP0D6fHYiogFvarNPSjfusHdV/KvwJU4YC1+lNOIIgpjslkb4WWSW9IuNxHdPLg=="
+        "requested": "[8.0.22, )",
+        "resolved": "8.0.22",
+        "contentHash": "GV/HnD1kutMd3pX6WqvL5ZhLATHWKTfWMKyWfLz50rJZ9iQzo3zr/F00tdk77/HDY0wpx028GpJ44YgKt1ML0A=="
       },
       "Roslynator.Analyzers": {
         "type": "Direct",

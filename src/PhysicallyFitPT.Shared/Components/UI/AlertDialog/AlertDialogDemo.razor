@@ -1,0 +1,109 @@
+@* Demo page showing AlertDialog usage examples *@
+
+<div class="space-y-8 p-4">
+    <div>
+        <h3 class="text-lg font-semibold mb-4">Basic Alert Dialog</h3>
+        <AlertDialog @bind-Open="basicOpen">
+            <AlertDialogTrigger Class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-white hover:bg-primary/90">
+                Show Dialog
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your account
+                        and remove your data from our servers.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction OnClick="HandleDelete">Continue</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+
+    <div>
+        <h3 class="text-lg font-semibold mb-4">Destructive Action</h3>
+        <AlertDialog @bind-Open="destructiveOpen">
+            <AlertDialogTrigger Class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-red-600 text-white hover:bg-red-700">
+                Delete Account
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will permanently delete your account and all associated data. 
+                        This action cannot be undone. Are you sure you want to proceed?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction Class="bg-red-600 hover:bg-red-700" OnClick="HandleDestructiveAction">
+                        Yes, delete my account
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+
+    <div>
+        <h3 class="text-lg font-semibold mb-4">Custom Content</h3>
+        <AlertDialog @bind-Open="customOpen">
+            <AlertDialogTrigger Class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50">
+                Save Changes
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        You have unsaved changes. What would you like to do?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div class="py-4">
+                    <ul class="space-y-2 text-sm">
+                        <li>• Patient information updated</li>
+                        <li>• SOAP note modified</li>
+                        <li>• Appointment time changed</li>
+                    </ul>
+                </div>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Discard</AlertDialogCancel>
+                    <AlertDialogAction OnClick="HandleSave">Save Changes</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+
+    @if (!string.IsNullOrEmpty(actionMessage))
+    {
+        <div class="p-4 bg-green-50 border border-green-200 rounded-md">
+            <p class="text-sm text-green-800">@actionMessage</p>
+        </div>
+    }
+</div>
+
+@code {
+    private bool basicOpen = false;
+    private bool destructiveOpen = false;
+    private bool customOpen = false;
+    private string? actionMessage;
+
+    private void HandleDelete()
+    {
+        actionMessage = "Delete action confirmed";
+        StateHasChanged();
+    }
+
+    private void HandleDestructiveAction()
+    {
+        actionMessage = "Account deletion confirmed";
+        StateHasChanged();
+    }
+
+    private void HandleSave()
+    {
+        actionMessage = "Changes saved successfully";
+        StateHasChanged();
+    }
+}

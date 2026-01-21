@@ -1,0 +1,372 @@
+@* Form Demo - Clinical examples of form components *@
+@page "/demo/form"
+@namespace PhysicallyFitPT.Shared.Components.UI
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-container">
+    <h1>Form & Input</h1>
+    <p class="demo-description">
+        Form components with validation, labels, descriptions, and error messages.
+        Integrated with Blazor's built-in validation system for clinical data entry.
+    </p>
+
+    <div class="demo-section">
+        <h2>Patient Intake Form</h2>
+        <p>Comprehensive form for collecting initial patient information.</p>
+        <div class="demo-example">
+            <EditForm Model="@patientModel" OnValidSubmit="@HandlePatientSubmit" class="demo-form">
+                <DataAnnotationsValidator />
+
+                <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.FirstName" 
+                               Placeholder="Enter first name" 
+                               HasError="@HasFieldError(nameof(patientModel.FirstName))" />
+                    </FormControl>
+                    <FormDescription>Patient's legal first name</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.FirstName)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.LastName" 
+                               Placeholder="Enter last name"
+                               HasError="@HasFieldError(nameof(patientModel.LastName))" />
+                    </FormControl>
+                    <FormDescription>Patient's legal last name</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.LastName)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.DateOfBirth" 
+                               Type="date"
+                               HasError="@HasFieldError(nameof(patientModel.DateOfBirth))" />
+                    </FormControl>
+                    <FormDescription>Required for age verification and treatment planning</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.DateOfBirth)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.Phone" 
+                               Type="tel"
+                               Placeholder="(555) 123-4567"
+                               HasError="@HasFieldError(nameof(patientModel.Phone))" />
+                    </FormControl>
+                    <FormDescription>Primary contact number for appointment reminders</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.Phone)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.Email" 
+                               Type="email"
+                               Placeholder="patient@example.com"
+                               HasError="@HasFieldError(nameof(patientModel.Email))" />
+                    </FormControl>
+                    <FormDescription>For portal access and appointment confirmations</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.Email)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Chief Complaint</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="patientModel.ChiefComplaint" 
+                               Placeholder="Primary reason for visit"
+                               HasError="@HasFieldError(nameof(patientModel.ChiefComplaint))" />
+                    </FormControl>
+                    <FormDescription>Main symptom or condition bringing patient to therapy</FormDescription>
+                    <ValidationMessage For="@(() => patientModel.ChiefComplaint)" />
+                </FormItem>
+
+                <button type="submit" class="demo-button primary">
+                    Submit Patient Information
+                </button>
+            </EditForm>
+
+            @if (patientSubmitted)
+            {
+                <div class="demo-result success">
+                    <h3>✓ Patient Record Created</h3>
+                    <p><strong>Name:</strong> @patientModel.FirstName @patientModel.LastName</p>
+                    <p><strong>DOB:</strong> @patientModel.DateOfBirth</p>
+                    <p><strong>Contact:</strong> @patientModel.Phone / @patientModel.Email</p>
+                    <p><strong>Complaint:</strong> @patientModel.ChiefComplaint</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Goal Setting Form</h2>
+        <p>Create measurable treatment goals with validation.</p>
+        <div class="demo-example">
+            <EditForm Model="@goalModel" OnValidSubmit="@HandleGoalSubmit" class="demo-form">
+                <DataAnnotationsValidator />
+
+                <FormItem>
+                    <FormLabel>Goal Description</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="goalModel.Description" 
+                               Placeholder="E.g., Patient will increase shoulder flexion to 150°"
+                               HasError="@HasFieldError(nameof(goalModel.Description))" />
+                    </FormControl>
+                    <FormDescription>Clear, measurable objective for treatment</FormDescription>
+                    <ValidationMessage For="@(() => goalModel.Description)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Baseline Value</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="goalModel.BaselineValue" 
+                               Type="number"
+                               Placeholder="Current measurement"
+                               HasError="@HasFieldError(nameof(goalModel.BaselineValue))" />
+                    </FormControl>
+                    <FormDescription>Starting measurement or functional level</FormDescription>
+                    <ValidationMessage For="@(() => goalModel.BaselineValue)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Target Value</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="goalModel.TargetValue" 
+                               Type="number"
+                               Placeholder="Goal measurement"
+                               HasError="@HasFieldError(nameof(goalModel.TargetValue))" />
+                    </FormControl>
+                    <FormDescription>Expected outcome value</FormDescription>
+                    <ValidationMessage For="@(() => goalModel.TargetValue)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Target Date</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="goalModel.TargetDate" 
+                               Type="date"
+                               HasError="@HasFieldError(nameof(goalModel.TargetDate))" />
+                    </FormControl>
+                    <FormDescription>Expected date to achieve this goal</FormDescription>
+                    <ValidationMessage For="@(() => goalModel.TargetDate)" />
+                </FormItem>
+
+                <button type="submit" class="demo-button primary">
+                    Create Treatment Goal
+                </button>
+            </EditForm>
+
+            @if (goalSubmitted)
+            {
+                <div class="demo-result success">
+                    <h3>✓ Goal Created</h3>
+                    <p><strong>Goal:</strong> @goalModel.Description</p>
+                    <p><strong>Progress:</strong> @goalModel.BaselineValue → @goalModel.TargetValue</p>
+                    <p><strong>Target Date:</strong> @goalModel.TargetDate</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Appointment Scheduling Form</h2>
+        <p>Quick appointment creation with time validation.</p>
+        <div class="demo-example">
+            <EditForm Model="@appointmentModel" OnValidSubmit="@HandleAppointmentSubmit" class="demo-form">
+                <DataAnnotationsValidator />
+
+                <FormItem>
+                    <FormLabel>Patient Name</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="appointmentModel.PatientName" 
+                               Placeholder="Select or enter patient name"
+                               HasError="@HasFieldError(nameof(appointmentModel.PatientName))" />
+                    </FormControl>
+                    <ValidationMessage For="@(() => appointmentModel.PatientName)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Appointment Date</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="appointmentModel.AppointmentDate" 
+                               Type="date"
+                               HasError="@HasFieldError(nameof(appointmentModel.AppointmentDate))" />
+                    </FormControl>
+                    <FormDescription>Must be a future date</FormDescription>
+                    <ValidationMessage For="@(() => appointmentModel.AppointmentDate)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Appointment Time</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="appointmentModel.AppointmentTime" 
+                               Type="time"
+                               HasError="@HasFieldError(nameof(appointmentModel.AppointmentTime))" />
+                    </FormControl>
+                    <FormDescription>Available slots: 9:00 AM - 5:00 PM</FormDescription>
+                    <ValidationMessage For="@(() => appointmentModel.AppointmentTime)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Duration (minutes)</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="appointmentModel.Duration" 
+                               Type="number"
+                               Placeholder="30, 45, or 60"
+                               HasError="@HasFieldError(nameof(appointmentModel.Duration))" />
+                    </FormControl>
+                    <ValidationMessage For="@(() => appointmentModel.Duration)" />
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                        <Input @bind-Value="appointmentModel.Notes" 
+                               Placeholder="Special instructions or preparation needed" />
+                    </FormControl>
+                    <FormDescription>Optional notes for this appointment</FormDescription>
+                </FormItem>
+
+                <button type="submit" class="demo-button primary">
+                    Schedule Appointment
+                </button>
+            </EditForm>
+
+            @if (appointmentSubmitted)
+            {
+                <div class="demo-result success">
+                    <h3>✓ Appointment Scheduled</h3>
+                    <p><strong>Patient:</strong> @appointmentModel.PatientName</p>
+                    <p><strong>Date/Time:</strong> @appointmentModel.AppointmentDate at @appointmentModel.AppointmentTime</p>
+                    <p><strong>Duration:</strong> @appointmentModel.Duration minutes</p>
+                    @if (!string.IsNullOrEmpty(appointmentModel.Notes))
+                    {
+                        <p><strong>Notes:</strong> @appointmentModel.Notes</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled State</h2>
+        <p>Form fields can be disabled when editing is not allowed.</p>
+        <div class="demo-example">
+            <div class="demo-form">
+                <FormItem>
+                    <FormLabel>Patient ID</FormLabel>
+                    <FormControl>
+                        <Input Value="@("PT-2024-00123")" Disabled="true" />
+                    </FormControl>
+                    <FormDescription>System-generated, cannot be modified</FormDescription>
+                </FormItem>
+
+                <FormItem>
+                    <FormLabel>Record Status</FormLabel>
+                    <FormControl>
+                        <Input Value="@("Active")" Disabled="true" />
+                    </FormControl>
+                    <FormDescription>Status changes require administrator approval</FormDescription>
+                </FormItem>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private PatientFormModel patientModel = new();
+    private GoalFormModel goalModel = new();
+    private AppointmentFormModel appointmentModel = new();
+    
+    private bool patientSubmitted = false;
+    private bool goalSubmitted = false;
+    private bool appointmentSubmitted = false;
+
+    private bool HasFieldError(string fieldName)
+    {
+        // In a real implementation, check EditContext for field validation errors
+        return false;
+    }
+
+    private void HandlePatientSubmit()
+    {
+        patientSubmitted = true;
+    }
+
+    private void HandleGoalSubmit()
+    {
+        goalSubmitted = true;
+    }
+
+    private void HandleAppointmentSubmit()
+    {
+        appointmentSubmitted = true;
+    }
+
+    public class PatientFormModel
+    {
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Date of birth is required")]
+        public string DateOfBirth { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number format")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Chief complaint is required")]
+        [StringLength(200, ErrorMessage = "Chief complaint must be less than 200 characters")]
+        public string ChiefComplaint { get; set; } = string.Empty;
+    }
+
+    public class GoalFormModel
+    {
+        [Required(ErrorMessage = "Goal description is required")]
+        [StringLength(200, MinimumLength = 10, ErrorMessage = "Description must be 10-200 characters")]
+        public string Description { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Baseline value is required")]
+        [Range(0, 999, ErrorMessage = "Baseline must be between 0 and 999")]
+        public string BaselineValue { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Target value is required")]
+        [Range(0, 999, ErrorMessage = "Target must be between 0 and 999")]
+        public string TargetValue { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Target date is required")]
+        public string TargetDate { get; set; } = string.Empty;
+    }
+
+    public class AppointmentFormModel
+    {
+        [Required(ErrorMessage = "Patient name is required")]
+        public string PatientName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Appointment date is required")]
+        public string AppointmentDate { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Appointment time is required")]
+        public string AppointmentTime { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Duration is required")]
+        [Range(15, 120, ErrorMessage = "Duration must be between 15 and 120 minutes")]
+        public string Duration { get; set; } = string.Empty;
+
+        public string? Notes { get; set; }
+    }
+}

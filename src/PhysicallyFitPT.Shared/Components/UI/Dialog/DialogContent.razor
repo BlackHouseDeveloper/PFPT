@@ -1,0 +1,29 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Dialog
+
+<div class="dialog-content @Class" @attributes="AdditionalAttributes">
+    @ChildContent
+    @if (ParentDialog is not null)
+    {
+        <button type="button" class="dialog-close-button" @onclick="ParentDialog.Close" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    private Dialog? ParentDialog { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+}

@@ -1,0 +1,37 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (ToggleGroupContext != null)
+{
+    <CascadingValue Value="this">
+        <div class="toggle-group" data-slot="toggle-group" data-variant="@Variant" data-size="@Size" @attributes="AdditionalAttributes">
+            @ChildContent
+        </div>
+    </CascadingValue>
+}
+
+@code {
+    [Parameter]
+    public string Variant { get; set; } = "default";
+
+    [Parameter]
+    public string Size { get; set; } = "default";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public ToggleGroupContext? ToggleGroupContext { get; private set; }
+
+    protected override void OnInitialized()
+    {
+        ToggleGroupContext = new ToggleGroupContext { Variant = Variant, Size = Size };
+    }
+}
+
+public class ToggleGroupContext
+{
+    public string Variant { get; set; } = "default";
+    public string Size { get; set; } = "default";
+}

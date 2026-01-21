@@ -1,0 +1,25 @@
+@* Chart legend component *@
+
+@if (Config != null)
+{
+    <div class="chart-legend flex items-center justify-center gap-4 pt-3 @Class" @attributes="AdditionalAttributes">
+        @foreach (var item in Config)
+        {
+            <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 shrink-0 rounded-sm" style="background-color: @item.Value.Color"></div>
+                <span class="text-xs text-gray-600">@item.Value.Label</span>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Dictionary<string, Chart.ChartConfigItem>? Config { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

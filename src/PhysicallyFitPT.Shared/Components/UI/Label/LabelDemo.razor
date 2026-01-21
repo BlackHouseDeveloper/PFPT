@@ -1,0 +1,235 @@
+@* Label Demo - Form labels and accessibility *@
+@page "/demo/label"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Label</h1>
+    <p class="demo-description">
+        Accessible label component for form controls. Provides proper association with inputs,
+        visual styling, and disabled states for clinical forms and data entry.
+    </p>
+
+    <div class="demo-section">
+        <h2>Basic Label</h2>
+        <p>Simple label with associated input field.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 8px; max-width: 300px;">
+                <Label For="patient-name">Patient Name</Label>
+                <input id="patient-name" type="text" placeholder="Enter patient name" class="demo-input" />
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Required Field</h2>
+        <p>Label with asterisk indicating required field.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 8px; max-width: 300px;">
+                <Label For="chief-complaint">
+                    Chief Complaint
+                    <span style="color: #dc2626;">*</span>
+                </Label>
+                <textarea id="chief-complaint" placeholder="Describe primary concern" class="demo-input" rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>With Icon</h2>
+        <p>Label with icon for visual context.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px; max-width: 300px;">
+                <div>
+                    <Label For="email">
+                        <Icon Name="mail" Width="16" Height="16" />
+                        Email Address
+                    </Label>
+                    <input id="email" type="email" placeholder="patient@example.com" class="demo-input" style="margin-top: 8px;" />
+                </div>
+                <div>
+                    <Label For="phone">
+                        <Icon Name="phone" Width="16" Height="16" />
+                        Phone Number
+                    </Label>
+                    <input id="phone" type="tel" placeholder="(555) 123-4567" class="demo-input" style="margin-top: 8px;" />
+                </div>
+                <div>
+                    <Label For="dob">
+                        <Icon Name="calendar" Width="16" Height="16" />
+                        Date of Birth
+                    </Label>
+                    <input id="dob" type="date" class="demo-input" style="margin-top: 8px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Checkbox Labels</h2>
+        <p>Labels for checkbox controls.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="consent" type="checkbox" class="demo-checkbox" />
+                    <Label For="consent">I consent to treatment</Label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="hipaa" type="checkbox" class="demo-checkbox" />
+                    <Label For="hipaa">I have read and understand the HIPAA privacy notice</Label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="billing" type="checkbox" class="demo-checkbox" />
+                    <Label For="billing">I agree to the billing and payment terms</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Radio Button Labels</h2>
+        <p>Labels for radio button groups.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <p style="font-weight: 600; margin-bottom: 4px;">Pain Level</p>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="pain-none" type="radio" name="pain" class="demo-radio" />
+                    <Label For="pain-none">No Pain (0)</Label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="pain-mild" type="radio" name="pain" class="demo-radio" />
+                    <Label For="pain-mild">Mild Pain (1-3)</Label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="pain-moderate" type="radio" name="pain" class="demo-radio" />
+                    <Label For="pain-moderate">Moderate Pain (4-6)</Label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="pain-severe" type="radio" name="pain" class="demo-radio" />
+                    <Label For="pain-severe">Severe Pain (7-10)</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled State</h2>
+        <p>Labels with disabled associated controls.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px; max-width: 300px;">
+                <div>
+                    <Label For="disabled-input" Disabled="true">Patient ID (Auto-generated)</Label>
+                    <input id="disabled-input" type="text" value="PAT-2024-0001" disabled class="demo-input" style="margin-top: 8px;" />
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="disabled-checkbox" type="checkbox" disabled class="demo-checkbox" />
+                    <Label For="disabled-checkbox" Disabled="true">This option is not available</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Clinical Forms</h2>
+        <p>Complete form examples with proper labeling.</p>
+        <div class="demo-example">
+            <div style="max-width: 500px; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px; background: #ffffff;">
+                <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">Vital Signs</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div>
+                        <Label For="bp-systolic">
+                            Blood Pressure (Systolic)
+                            <span style="color: #dc2626;">*</span>
+                        </Label>
+                        <input id="bp-systolic" type="number" placeholder="120" class="demo-input" style="margin-top: 8px;" />
+                    </div>
+                    <div>
+                        <Label For="bp-diastolic">
+                            Blood Pressure (Diastolic)
+                            <span style="color: #dc2626;">*</span>
+                        </Label>
+                        <input id="bp-diastolic" type="number" placeholder="80" class="demo-input" style="margin-top: 8px;" />
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div>
+                        <Label For="heart-rate">
+                            <Icon Name="activity" Width="16" Height="16" />
+                            Heart Rate (bpm)
+                        </Label>
+                        <input id="heart-rate" type="number" placeholder="72" class="demo-input" style="margin-top: 8px;" />
+                    </div>
+                    <div>
+                        <Label For="temperature">
+                            Temperature (°F)
+                        </Label>
+                        <input id="temperature" type="number" step="0.1" placeholder="98.6" class="demo-input" style="margin-top: 8px;" />
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <Label For="notes">Clinical Notes</Label>
+                    <textarea id="notes" placeholder="Enter observations..." class="demo-input" rows="3" style="margin-top: 8px;"></textarea>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input id="review" type="checkbox" class="demo-checkbox" />
+                    <Label For="review">I have reviewed and verified all measurements</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Accessibility Features</h2>
+        <ul style="line-height: 1.8; color: #4b5563;">
+            <li><strong>Proper association:</strong> Labels linked to controls via <code>for</code> attribute</li>
+            <li><strong>Clickable labels:</strong> Clicking label focuses/toggles associated control</li>
+            <li><strong>Visual feedback:</strong> Disabled state indicated with reduced opacity</li>
+            <li><strong>Icon support:</strong> Icons for visual context (email, phone, calendar)</li>
+            <li><strong>Required indicators:</strong> Red asterisk for required fields</li>
+            <li><strong>Keyboard navigation:</strong> Labels don't interfere with tab order</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .demo-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 2px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 150ms;
+    }
+
+    .demo-input:focus {
+        outline: none;
+        border-color: #0B2545;
+        box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.1);
+    }
+
+    .demo-input:disabled {
+        background-color: #f9fafb;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .demo-checkbox,
+    .demo-radio {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .demo-checkbox:disabled,
+    .demo-radio:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+</style>
+
+@code {
+    // Demo state if needed
+}

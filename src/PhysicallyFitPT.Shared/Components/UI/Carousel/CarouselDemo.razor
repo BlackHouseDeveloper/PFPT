@@ -1,0 +1,374 @@
+@* Demo page showing Carousel usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic Carousel -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Carousel</h3>
+        <div class="mx-auto max-w-xs">
+            <Carousel @bind-CurrentIndex="basicIndex">
+                <CarouselContent>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex items-center justify-center p-6">
+                                <span class="text-4xl font-semibold">1</span>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex items-center justify-center p-6">
+                                <span class="text-4xl font-semibold">2</span>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex items-center justify-center p-6">
+                                <span class="text-4xl font-semibold">3</span>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex items-center justify-center p-6">
+                                <span class="text-4xl font-semibold">4</span>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex items-center justify-center p-6">
+                                <span class="text-4xl font-semibold">5</span>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
+        </div>
+        <div class="text-center text-sm text-gray-600 mt-2">
+            Slide @(basicIndex + 1) of 5
+        </div>
+    </div>
+
+    <!-- Carousel with Loop -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Carousel with Loop</h3>
+        <div class="mx-auto max-w-xs">
+            <Carousel Loop="true">
+                <CarouselContent>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex flex-col items-center justify-center p-6 gap-2">
+                                <div class="text-6xl">🏃</div>
+                                <div class="text-lg font-semibold">Exercise 1</div>
+                                <div class="text-sm text-gray-600">Squats</div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex flex-col items-center justify-center p-6 gap-2">
+                                <div class="text-6xl">💪</div>
+                                <div class="text-lg font-semibold">Exercise 2</div>
+                                <div class="text-sm text-gray-600">Lunges</div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardContent Class="flex flex-col items-center justify-center p-6 gap-2">
+                                <div class="text-6xl">🤸</div>
+                                <div class="text-lg font-semibold">Exercise 3</div>
+                                <div class="text-sm text-gray-600">Planks</div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
+        </div>
+    </div>
+
+    <!-- Clinical Use Case: Exercise Program -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Home Exercise Program</h3>
+        <div class="mx-auto max-w-2xl">
+            <Carousel @bind-CurrentIndex="exerciseIndex">
+                <CarouselContent>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Quadriceps Strengthening</CardTitle>
+                                <CardDescription>3 sets × 10 reps | Daily</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-4 mt-4">
+                                    <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">🦵</div>
+                                            <div class="text-sm">Exercise demonstration</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm mb-2">Instructions:</h4>
+                                        <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                            <li>Sit with back supported, legs extended</li>
+                                            <li>Tighten thigh muscles, pushing knee down</li>
+                                            <li>Hold for 5 seconds</li>
+                                            <li>Relax and repeat</li>
+                                        </ol>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <Badge>Strengthening</Badge>
+                                        <Badge Variant="secondary">Beginner</Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Hamstring Stretch</CardTitle>
+                                <CardDescription>3 sets × 30 sec hold | 2x daily</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-4 mt-4">
+                                    <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">🧘</div>
+                                            <div class="text-sm">Exercise demonstration</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm mb-2">Instructions:</h4>
+                                        <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                            <li>Sit on floor with legs extended</li>
+                                            <li>Reach forward toward toes</li>
+                                            <li>Hold stretch for 30 seconds</li>
+                                            <li>Return to starting position</li>
+                                        </ol>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <Badge>Flexibility</Badge>
+                                        <Badge Variant="secondary">All Levels</Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Balance Exercise</CardTitle>
+                                <CardDescription>3 sets × 30 sec | Daily</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-4 mt-4">
+                                    <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">⚖️</div>
+                                            <div class="text-sm">Exercise demonstration</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm mb-2">Instructions:</h4>
+                                        <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                            <li>Stand on one leg near a wall for support</li>
+                                            <li>Hold position for 30 seconds</li>
+                                            <li>Switch legs and repeat</li>
+                                            <li>Increase difficulty by closing eyes</li>
+                                        </ol>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <Badge>Balance</Badge>
+                                        <Badge Variant="secondary">Intermediate</Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
+            <div class="flex justify-between items-center mt-4">
+                <div class="text-sm text-gray-600">
+                    Exercise @(exerciseIndex + 1) of 3
+                </div>
+                <div class="flex gap-2">
+                    <Button Size="sm" Variant="outline">Print Program</Button>
+                    <Button Size="sm">Mark Complete</Button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical Use Case: Progress Photos -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Progress Photos</h3>
+        <div class="mx-auto max-w-2xl">
+            <Carousel @bind-CurrentIndex="photoIndex">
+                <CarouselContent>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Initial Assessment</CardTitle>
+                                <CardDescription>January 3, 2026</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-3 mt-4">
+                                    <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">📷</div>
+                                            <div class="text-sm">Week 1 - Baseline</div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <div class="text-gray-500">ROM</div>
+                                            <div class="font-medium">45°</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Pain</div>
+                                            <div class="font-medium">7/10</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Swelling</div>
+                                            <div class="font-medium">Moderate</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Function</div>
+                                            <div class="font-medium">Limited</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Mid-Treatment</CardTitle>
+                                <CardDescription>January 10, 2026</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-3 mt-4">
+                                    <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">📷</div>
+                                            <div class="text-sm">Week 2 - Progress</div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <div class="text-gray-500">ROM</div>
+                                            <div class="font-medium text-green-600">58° ↑</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Pain</div>
+                                            <div class="font-medium text-green-600">4/10 ↓</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Swelling</div>
+                                            <div class="font-medium text-green-600">Minimal ↓</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Function</div>
+                                            <div class="font-medium text-green-600">Improved ↑</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                        <Card>
+                            <CardHeader Class="border-b">
+                                <CardTitle>Current Status</CardTitle>
+                                <CardDescription>January 18, 2026</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="space-y-3 mt-4">
+                                    <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <div class="text-center text-gray-500">
+                                            <div class="text-4xl mb-2">📷</div>
+                                            <div class="text-sm">Week 3 - Latest</div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <div class="text-gray-500">ROM</div>
+                                            <div class="font-medium text-green-600">68° ↑</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Pain</div>
+                                            <div class="font-medium text-green-600">2/10 ↓</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Swelling</div>
+                                            <div class="font-medium text-green-600">None ↓</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-500">Function</div>
+                                            <div class="font-medium text-green-600">Good ↑</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
+            <div class="text-center text-sm text-gray-600 mt-2">
+                Photo @(photoIndex + 1) of 3
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .aspect-video {
+        aspect-ratio: 16 / 9;
+    }
+
+    .aspect-square {
+        aspect-ratio: 1 / 1;
+    }
+
+    .max-w-xs {
+        max-width: 20rem;
+    }
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .list-decimal {
+        list-style-type: decimal;
+    }
+
+    .list-inside {
+        list-style-position: inside;
+    }
+
+    .text-green-600 {
+        color: #16a34a;
+    }
+</style>
+
+@code {
+    private int basicIndex = 0;
+    private int exerciseIndex = 0;
+    private int photoIndex = 0;
+}

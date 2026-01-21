@@ -1,0 +1,218 @@
+@page "/components/switch"
+@namespace PhysicallyFitPT.Shared.Components.Pages
+
+<div class="component-demo">
+    <h1>Switch Component</h1>
+    <p>Accessible toggle switch for boolean states with smooth animations and full keyboard support.</p>
+
+    <hr class="my-6" />
+
+    <h2>Basic Switch</h2>
+    <p>Default toggle switch behavior.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <Switch @bind-IsChecked="BasicChecked" />
+            <span style="color: #6b7280;">
+                @(BasicChecked ? "Enabled" : "Disabled")
+            </span>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Switch with Label</h2>
+    <p>Switch paired with a label for better UX.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <Switch @bind-IsChecked="NotificationsEnabled" AriaLabel="Enable notifications" />
+                <label style="font-weight: 500; cursor: pointer;">Enable Notifications</label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <Switch @bind-IsChecked="DarkModeEnabled" AriaLabel="Enable dark mode" />
+                <label style="font-weight: 500; cursor: pointer;">Dark Mode</label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <Switch @bind-IsChecked="AutoSaveEnabled" AriaLabel="Enable autosave" />
+                <label style="font-weight: 500; cursor: pointer;">Auto-Save</label>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Disabled State</h2>
+    <p>Switch in disabled state with reduced opacity.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <Switch Disabled="true" IsChecked="false" />
+                <label style="font-weight: 500; color: #9ca3af;">Disabled (Off)</label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <Switch Disabled="true" IsChecked="true" />
+                <label style="font-weight: 500; color: #9ca3af;">Disabled (On)</label>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Clinical Use Cases</h2>
+    <p>Common switches in healthcare workflows.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600;">Patient Active</span>
+                    <Switch @bind-IsChecked="PatientActive" />
+                </div>
+                <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
+                    @(PatientActive ? "Patient is currently in treatment." : "Patient is discharged or inactive.")
+                </p>
+            </div>
+
+            <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600;">PHI Consent</span>
+                    <Switch @bind-IsChecked="PhiConsent" />
+                </div>
+                <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
+                    @(PhiConsent ? "Patient has consented to PHI sharing." : "PHI sharing not consented.")
+                </p>
+            </div>
+
+            <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600;">Telehealth Eligible</span>
+                    <Switch @bind-IsChecked="TelehealthEligible" />
+                </div>
+                <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
+                    @(TelehealthEligible ? "Patient can participate in telehealth sessions." : "Patient is not eligible for telehealth.")
+                </p>
+            </div>
+
+            <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600;">Emergency Contact Required</span>
+                    <Switch @bind-IsChecked="EmergencyContactRequired" />
+                </div>
+                <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
+                    @(EmergencyContactRequired ? "Emergency contact must be on file." : "No emergency contact requirement.")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Features</h2>
+    <ul class="component-feature-list">
+        <li><strong>Accessible:</strong> Native button with role="switch" and aria-checked for screen readers</li>
+        <li><strong>Keyboard Support:</strong> Full keyboard navigation with Space/Enter to toggle</li>
+        <li><strong>Focus Visible:</strong> Clear focus indicator with configurable ring styling</li>
+        <li><strong>Smooth Animations:</strong> CSS transitions for state changes, respects prefers-reduced-motion</li>
+        <li><strong>Disabled State:</strong> Proper disabled styling with reduced opacity and cursor</li>
+        <li><strong>Dark Mode Support:</strong> Automatic color adjustments for dark color scheme</li>
+        <li><strong>High Contrast Mode:</strong> Enhanced borders for users with contrast preferences</li>
+        <li><strong>Two-Way Binding:</strong> @@bind-IsChecked for easy integration</li>
+        <li><strong>Event Callbacks:</strong> OnChange event with new boolean value</li>
+        <li><strong>Custom Labels:</strong> AriaLabel property for accessibility</li>
+    </ul>
+
+    <hr class="my-6" />
+
+    <h2>Usage Example</h2>
+    <pre class="code-block"><code>&lt;Switch @@bind-IsChecked="IsNotificationEnabled"
+        AriaLabel="Enable notifications"
+        OnChange="@@HandleToggle" /&gt;
+
+@@code {
+    private bool IsNotificationEnabled = false;
+
+    private async Task HandleToggle(bool newValue)
+    {
+        IsNotificationEnabled = newValue;
+        await NotificationService.SetEnabledAsync(newValue);
+    }
+}</code></pre>
+</div>
+
+<style>
+    .component-demo {
+        padding: 2rem;
+    }
+
+    .component-demo h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .component-demo h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+    }
+
+    .component-demo p {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .demo-container {
+        overflow: hidden;
+    }
+
+    .component-feature-list {
+        list-style: disc;
+        margin-left: 1.5rem;
+        color: #6b7280;
+    }
+
+    .component-feature-list li {
+        margin-bottom: 0.75rem;
+    }
+
+    .my-6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .code-block {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        font-family: 'Courier New', monospace;
+    }
+
+    .code-block code {
+        color: inherit;
+    }
+</style>
+
+@code {
+    private bool BasicChecked = false;
+    private bool NotificationsEnabled = true;
+    private bool DarkModeEnabled = false;
+    private bool AutoSaveEnabled = true;
+
+    private bool PatientActive = true;
+    private bool PhiConsent = true;
+    private bool TelehealthEligible = false;
+    private bool EmergencyContactRequired = true;
+}

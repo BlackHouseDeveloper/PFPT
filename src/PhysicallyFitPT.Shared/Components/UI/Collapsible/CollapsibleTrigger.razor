@@ -1,0 +1,35 @@
+@* Trigger that toggles the collapsible state *@
+
+<button type="button"
+        class="collapsible-trigger @Class"
+        aria-expanded="@(Parent?.IsOpen == true)"
+        disabled="@(Disabled || (Parent?.Disabled ?? false))"
+        @onclick="HandleClick"
+        @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public Collapsible? Parent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleClick()
+    {
+        if (Parent != null && !(Disabled || Parent.Disabled))
+        {
+            await Parent.ToggleAsync();
+        }
+    }
+}

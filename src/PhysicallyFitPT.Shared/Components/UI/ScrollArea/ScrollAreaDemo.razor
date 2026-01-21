@@ -1,0 +1,95 @@
+@* Scroll Area Demo *@
+@page "/demo/scroll-area"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Scroll Area</h1>
+    <p class="demo-description">
+        Keep lists and note previews scrollable within cards while preserving keyboard focus rings.
+    </p>
+
+    <div class="demo-section">
+        <h2>Patient Timeline</h2>
+        <p>Scroll through visit notes without expanding the entire card.</p>
+        <div class="demo-example" style="height: 260px; max-width: 640px;">
+            <ScrollArea Class="shadow-sm" Style="height: 100%;">
+                <div class="space-y-3 p-4">
+                    @foreach (var entry in timeline)
+                    {
+                        <div class="rounded-lg border border-gray-200 bg-white p-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <p class="font-semibold text-gray-900">@entry.Title</p>
+                                <span class="text-xs text-gray-500">@entry.Date</span>
+                            </div>
+                            <p class="text-sm text-gray-700">@entry.Summary</p>
+                        </div>
+                    }
+                </div>
+            </ScrollArea>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Care Team Chat</h2>
+        <p>Scrollable conversation inside a panel with pinned composer.</p>
+        <div class="demo-example" style="max-width: 640px;">
+            <div class="rounded-lg border border-gray-200 bg-white">
+                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                    <p class="text-sm font-semibold text-gray-900">ACL Rehab Channel</p>
+                    <Badge Variant="secondary" Class="bg-primary/10 text-primary border-primary/20">4 active</Badge>
+                </div>
+                <ScrollArea Style="height: 220px;">
+                    <div class="p-4 space-y-3">
+                        @foreach (var message in messages)
+                        {
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-semibold text-gray-900">@message.Author</p>
+                                    <span class="text-xs text-gray-500">@message.Time</span>
+                                </div>
+                                <p class="text-sm text-gray-700">@message.Body</p>
+                            </div>
+                        }
+                    </div>
+                </ScrollArea>
+                <div class="border-t border-gray-200 p-3">
+                    <div class="flex items-center gap-2">
+                        <Input TValue="string" Placeholder="Add update" Class="flex-1" />
+                        <Button Size="sm">Send</Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private record TimelineEntry(string Title, string Date, string Summary);
+    private record ChatMessage(string Author, string Time, string Body);
+
+    private List<TimelineEntry> timeline = new()
+    {
+        new("Progress note signed", "Jan 12", "Objective improved: quad strength 4+/5, stair tolerance better."),
+        new("Home exercise updated", "Jan 9", "Added lateral step-downs and single-leg bridges to HEP."),
+        new("Vitals check", "Jan 5", "BP 118/76, HR 72, no red flags reported."),
+        new("Manual therapy session", "Jan 2", "Patellar mobilizations and soft tissue to distal quad."),
+        new("Initial evaluation", "Dec 28", "Knee pain post-ACL repair, focus on ROM and quad activation."),
+        new("MRI upload", "Dec 26", "Imaging added to media tab for review."),
+        new("Insurance auth", "Dec 23", "Authorization approved for 12 visits."),
+        new("Post-op protocol", "Dec 20", "Following surgeon protocol phase II.")
+    };
+
+    private List<ChatMessage> messages = new()
+    {
+        new("Alexis", "10:21 AM", "Reviewed gait video - looks smoother today."),
+        new("Sam", "10:18 AM", "Patient confirmed HEP compliance 5/7 days."),
+        new("Priya", "9:55 AM", "Scheduling requested earlier slot next week."),
+        new("Alexis", "9:30 AM", "Plan to progress to step-downs if no swelling."),
+        new("Jordan", "9:05 AM", "No contraindications noted for telehealth follow-up."),
+        new("Alexis", "8:42 AM", "Vitals stable; advised ice after session."),
+        new("Sam", "8:20 AM", "Added short video clip to media tab."),
+        new("Priya", "8:05 AM", "Checked in with front desk about insurance docs."),
+        new("Jordan", "7:50 AM", "Patient arrived early, started warm-up."),
+        new("Alexis", "7:40 AM", "Reminder: review discharge goals before visit 12."),
+    };
+}

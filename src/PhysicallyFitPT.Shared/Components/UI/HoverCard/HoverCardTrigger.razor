@@ -1,0 +1,37 @@
+@* Hover card trigger - element that triggers the hover card *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div @ref="triggerRef" 
+     @onmouseenter="HandleMouseEnter" 
+     @onmouseleave="HandleMouseLeave"
+     class="hover-card-trigger" 
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public HoverCard? ParentCard { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private ElementReference triggerRef;
+
+    private void HandleMouseEnter(MouseEventArgs args)
+    {
+        if (ParentCard != null)
+        {
+            ParentCard.SetPosition(args.ClientX, args.ClientY + 8);
+            ParentCard.ScheduleOpen();
+        }
+    }
+
+    private void HandleMouseLeave()
+    {
+        ParentCard?.ScheduleClose();
+    }
+}

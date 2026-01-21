@@ -17,6 +17,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- Gate demo components/pages; opt-in with -p:IncludeDemos=true -->
+    <IncludeDemos>false</IncludeDemos>
+    <!-- Gate incomplete/experimental UI components; opt-in with -p:IncludeExperimentalUI=true -->
+    <IncludeExperimentalUI>false</IncludeExperimentalUI>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!-- Force .NET for Android to use the JDK pointed to by JAVA_HOME -->
     <JavaSdkDirectory>$(JAVA_HOME)</JavaSdkDirectory>
   </PropertyGroup>

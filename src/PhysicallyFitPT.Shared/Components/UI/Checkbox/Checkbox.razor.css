@@ -1,0 +1,77 @@
+/* Checkbox component styles */
+
+.checkbox {
+    border: 1px solid #d1d5db;
+    background-color: #f9fafb;
+    color: #111827;
+    width: 1rem;
+    height: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: box-shadow 150ms ease, border-color 150ms ease, background-color 150ms ease;
+    outline: none;
+}
+
+.checkbox[data-state=checked] {
+    background-color: #9BE000;
+    color: #0b2545;
+    border-color: #9BE000;
+}
+
+.checkbox[data-state=indeterminate] {
+    background-color: #e5e7eb;
+    color: #111827;
+    border-color: #9ca3af;
+}
+
+.checkbox:focus-visible {
+    border-color: #9BE000;
+    box-shadow: 0 0 0 3px rgba(155, 224, 0, 0.4);
+}
+
+.checkbox[aria-invalid="true"] {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.checkbox-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+}
+
+.checkbox-indicator svg,
+.checkbox-indicator .checkbox-minus {
+    transition: opacity 100ms ease;
+}
+
+/* Hide indicator when unchecked */
+.checkbox[data-state=unchecked] .checkbox-indicator svg,
+.checkbox[data-state=unchecked] .checkbox-indicator .checkbox-minus {
+    opacity: 0;
+}
+
+.checkbox-minus {
+    width: 0.65rem;
+    height: 0.14rem;
+    border-radius: 2px;
+    background-color: currentColor;
+}
+
+.w-3_5 {
+    width: 0.9rem;
+}
+
+.h-3_5 {
+    height: 0.9rem;
+}

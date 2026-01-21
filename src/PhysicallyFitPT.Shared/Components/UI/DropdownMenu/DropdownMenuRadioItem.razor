@@ -1,0 +1,68 @@
+@* Dropdown menu radio item - item with radio button *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+@implements IDisposable
+
+<div class="dropdown-item dropdown-radio-item @(Disabled ? "disabled" : "")" 
+     @onclick="HandleClick" 
+     @attributes="AdditionalAttributes">
+    <span class="dropdown-item-indicator">
+        @if (isSelected)
+        {
+            <span class="radio-icon">●</span>
+        }
+    </span>
+    <span class="dropdown-item-content">@ChildContent</span>
+    @if (Shortcut != null)
+    {
+        <span class="dropdown-item-shortcut">@Shortcut</span>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public DropdownMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? Shortcut { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool isSelected => ParentMenu?.IsItemSelected(Value ?? "") ?? false;
+
+    protected override void OnInitialized()
+    {
+        if (ParentMenu != null && Value != null)
+        {
+            ParentMenu.RegisterItem(Value);
+        }
+    }
+
+    private async Task HandleClick()
+    {
+        if (!Disabled && Value != null)
+        {
+            await OnSelect.InvokeAsync(Value);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (ParentMenu != null && Value != null)
+        {
+            ParentMenu.UnregisterItem(Value);
+        }
+    }
+}

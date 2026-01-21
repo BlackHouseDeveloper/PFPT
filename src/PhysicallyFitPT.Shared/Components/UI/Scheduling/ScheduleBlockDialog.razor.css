@@ -1,0 +1,136 @@
+.block-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.dialog-header {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-title-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.dialog-title-row .icon {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2563eb;
+    margin-top: 0.15rem;
+}
+
+.dialog-title-row .title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.dialog-title-row .subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0.25rem 0 0 0;
+}
+
+.dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem 0;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.icon-inline {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #9ca3af;
+}
+
+.input-lg {
+    font-size: 0.95rem;
+}
+
+.block-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.preview {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 2px dashed;
+    background-clip: padding-box;
+}
+
+.preview-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.5rem 0;
+}
+
+.preview-content {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.preview-block {
+    flex: 1;
+}
+
+.preview-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.preview-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 0.25rem 0 0 0;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.primary:hover {
+    background-color: #1d4ed8;
+}

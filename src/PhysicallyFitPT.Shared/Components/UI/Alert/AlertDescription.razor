@@ -1,0 +1,20 @@
+@* Alert description text *@
+
+<div class="@CombinedClass"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"col-start-2 grid justify-items-start gap-1 text-sm text-gray-600 [&_p]:leading-relaxed {Class}".Trim();
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "./app.tokens.schema.json",
+  "_comment": "AUTO-GENERATED from Figma. Do not edit manually.",
+  "_generated": "2026-01-20T13:45:35.773Z",
+  "_meta": {
+    "extractedFrom": "Make (defaults)",
+    "fileName": "PFPT Design System (defaults)",
+    "fileKey": "1Fd3pzaGzvHboxFKuCz4dY",
+    "timestamp": "2026-01-20T13:45:35.772Z"
+  },
+  "color": {
+    "primary": {
+      "value": "#9BE000",
+      "type": "color",
+      "source": "default"
+    },
+    "on-primary": {
+      "value": "#000000",
+      "type": "color",
+      "source": "default"
+    },
+    "secondary": {
+      "value": "#0B2545",
+      "type": "color",
+      "source": "default"
+    },
+    "on-secondary": {
+      "value": "#FFFFFF",
+      "type": "color",
+      "source": "default"
+    },
+    "surface": {
+      "value": "#FFFFFF",
+      "type": "color",
+      "source": "default"
+    },
+    "on-surface": {
+      "value": "#1f2933",
+      "type": "color",
+      "source": "default"
+    },
+    "background": {
+      "value": "#f5f7fb",
+      "type": "color",
+      "source": "default"
+    },
+    "success": {
+      "value": "#10b981",
+      "type": "color",
+      "source": "default"
+    },
+    "warning": {
+      "value": "#f59e0b",
+      "type": "color",
+      "source": "default"
+    },
+    "error": {
+      "value": "#ef4444",
+      "type": "color",
+      "source": "default"
+    },
+    "info": {
+      "value": "#3b82f6",
+      "type": "color",
+      "source": "default"
+    }
+  },
+  "typography": {
+    "display": {
+      "fontFamily": "Inter, system-ui",
+      "fontSize": "32px",
+      "fontWeight": "700",
+      "lineHeight": "40px",
+      "type": "typography"
+    },
+    "title": {
+      "fontFamily": "Inter, system-ui",
+      "fontSize": "24px",
+      "fontWeight": "600",
+      "lineHeight": "32px",
+      "type": "typography"
+    },
+    "body": {
+      "fontFamily": "Inter, system-ui",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "type": "typography"
+    },
+    "caption": {
+      "fontFamily": "Inter, system-ui",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": "16px",
+      "type": "typography"
+    }
+  },
+  "space": {
+    "xs": {
+      "value": "4px",
+      "type": "spacing"
+    },
+    "sm": {
+      "value": "8px",
+      "type": "spacing"
+    },
+    "md": {
+      "value": "16px",
+      "type": "spacing"
+    },
+    "lg": {
+      "value": "24px",
+      "type": "spacing"
+    },
+    "xl": {
+      "value": "32px",
+      "type": "spacing"
+    }
+  },
+  "radius": {
+    "sm": {
+      "value": "4px",
+      "type": "borderRadius"
+    },
+    "md": {
+      "value": "8px",
+      "type": "borderRadius"
+    },
+    "lg": {
+      "value": "12px",
+      "type": "borderRadius"
+    },
+    "xl": {
+      "value": "16px",
+      "type": "borderRadius"
+    },
+    "2xl": {
+      "value": "24px",
+      "type": "borderRadius"
+    }
+  },
+  "elevation": {
+    "level0": {
+      "value": "none",
+      "type": "shadow"
+    },
+    "level1": {
+      "value": "0 1px 3px rgba(0,0,0,0.12)",
+      "type": "shadow"
+    },
+    "level2": {
+      "value": "0 4px 6px rgba(0,0,0,0.12)",
+      "type": "shadow"
+    },
+    "level3": {
+      "value": "0 10px 20px rgba(0,0,0,0.12)",
+      "type": "shadow"
+    },
+    "level4": {
+      "value": "0 20px 25px rgba(0,0,0,0.15)",
+      "type": "shadow"
+    }
+  }
+}

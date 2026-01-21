@@ -1,0 +1,92 @@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<li class="navigation-menu-item @Class" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+
+    @if (!UseViewport && isOpen && ContentFragment != null)
+    {
+        <div class="navigation-menu-content inline">
+            @ContentFragment
+        </div>
+    }
+</li>
+
+@code {
+    [CascadingParameter]
+    public NavigationMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    internal RenderFragment? ContentFragment { get; private set; }
+    internal bool IsOpen => isOpen;
+
+    private bool isOpen;
+    private bool UseViewport => ParentMenu?.UseViewport ?? true;
+
+    protected override void OnInitialized()
+    {
+        ParentMenu?.RegisterItem(this);
+    }
+
+    internal async Task OpenAsync()
+    {
+        if (ParentMenu != null)
+        {
+            await ParentMenu.OpenItemAsync(this);
+        }
+        else
+        {
+            isOpen = true;
+        }
+    }
+
+    internal async Task CloseAsync()
+    {
+        if (!isOpen)
+        {
+            return;
+        }
+
+        isOpen = false;
+        if (ParentMenu != null && ParentMenu.IsActive(this))
+        {
+            await ParentMenu.CloseAll();
+        }
+        else
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal void CloseInternal()
+    {
+        isOpen = false;
+    }
+
+    internal void OpenInternal()
+    {
+        isOpen = true;
+    }
+
+    internal void SetContent(RenderFragment? fragment)
+    {
+        ContentFragment = fragment;
+        ParentMenu?.RefreshActiveContent(this);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        ParentMenu?.UnregisterItem(this);
+        await Task.CompletedTask;
+    }
+}
