@@ -1,0 +1,383 @@
+@* SOAP Note Viewer (Read-Only) - Modal/Drawer Overlay *@
+@namespace PhysicallyFitPT.Shared.Components.UI.NoteViewer
+@inject IDataService DataService
+
+@if (IsOpen)
+{
+    <div class="note-viewer-overlay" @onclick="HandleBackdropClick" @onkeydown="HandleKeyDown" tabindex="-1">
+        <div class="note-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="note-viewer-title" @onclick:stopPropagation>
+            
+            @if (isLoading)
+            {
+                <div class="note-viewer-loading">
+                    <div class="spinner"></div>
+                    <p>Loading note...</p>
+                </div>
+            }
+            else if (errorMessage != null)
+            {
+                <div class="note-viewer-error">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Unable to Load Note</h3>
+                    <p>@errorMessage</p>
+                    <button class="btn-primary" @onclick="HandleClose">Close</button>
+                </div>
+            }
+            else if (note != null)
+            {
+                @* Header Section *@
+                <div class="note-viewer-header">
+                    <div class="header-content">
+                        <h2 id="note-viewer-title" class="header-title">
+                            @note.VisitType
+                        </h2>
+                        <div class="header-subtitle">
+                            @note.CreatedAt.ToString("MMMM d, yyyy")
+                        </div>
+                    </div>
+                    <div class="header-badges">
+                        <span class="badge badge-@GetStatusClass()">@GetStatusLabel()</span>
+                    </div>
+                    <button class="btn-close" @onclick="HandleClose" @ref="closeButtonRef" aria-label="Close note viewer">
+                        <span class="close-icon">×</span>
+                    </button>
+                </div>
+
+                @* Scrollable Content *@
+                <div class="note-viewer-content">
+                    
+                    @* Subjective Section *@
+                    @if (HasSubjectiveContent())
+                    {
+                        <div class="note-section">
+                            <h3 class="section-title">Subjective</h3>
+                            <div class="section-divider"></div>
+                            <div class="section-content">
+                                @if (!string.IsNullOrWhiteSpace(note.Subjective.ChiefComplaint))
+                                {
+                                    <div class="content-block">
+                                        <strong>Chief Complaint:</strong>
+                                        <p>@note.Subjective.ChiefComplaint</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Subjective.HistoryOfPresentIllness))
+                                {
+                                    <div class="content-block">
+                                        <strong>History:</strong>
+                                        <p>@note.Subjective.HistoryOfPresentIllness</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Subjective.PainLocationsCsv))
+                                {
+                                    <div class="content-block">
+                                        <strong>Pain Locations:</strong>
+                                        <p>@note.Subjective.PainLocationsCsv</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Subjective.FunctionalLimitations))
+                                {
+                                    <div class="content-block">
+                                        <strong>Functional Limitations:</strong>
+                                        <p>@note.Subjective.FunctionalLimitations</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @* Objective Section *@
+                    @if (HasObjectiveContent())
+                    {
+                        <div class="note-section">
+                            <h3 class="section-title">Objective</h3>
+                            <div class="section-divider"></div>
+                            <div class="section-content">
+                                @if (note.Objective.Rom.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>ROM Measurements:</strong>
+                                        <p>@note.Objective.Rom.Count measurement(s) recorded</p>
+                                    </div>
+                                }
+                                @if (note.Objective.Mmt.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>MMT Measurements:</strong>
+                                        <p>@note.Objective.Mmt.Count measurement(s) recorded</p>
+                                    </div>
+                                }
+                                @if (note.Objective.SpecialTests.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>Special Tests:</strong>
+                                        <p>@note.Objective.SpecialTests.Count test(s) performed</p>
+                                    </div>
+                                }
+                                @if (note.Objective.ProvidedInterventions.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>Interventions Provided:</strong>
+                                        <p>@note.Objective.ProvidedInterventions.Count intervention(s)</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @* Assessment Section *@
+                    @if (HasAssessmentContent())
+                    {
+                        <div class="note-section">
+                            <h3 class="section-title">Assessment</h3>
+                            <div class="section-divider"></div>
+                            <div class="section-content">
+                                @if (!string.IsNullOrWhiteSpace(note.Assessment.ClinicalImpression))
+                                {
+                                    <div class="content-block">
+                                        <strong>Clinical Impression:</strong>
+                                        <p>@note.Assessment.ClinicalImpression</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Assessment.RehabPotential))
+                                {
+                                    <div class="content-block">
+                                        <strong>Rehab Potential:</strong>
+                                        <p>@note.Assessment.RehabPotential</p>
+                                    </div>
+                                }
+                                @if (note.Assessment.Icd10Codes.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>ICD-10 Codes:</strong>
+                                        <div class="code-list">
+                                            @foreach (var icd10 in note.Assessment.Icd10Codes)
+                                            {
+                                                <span class="code-pill">@icd10.Code</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @* Plan Section *@
+                    @if (HasPlanContent())
+                    {
+                        <div class="note-section">
+                            <h3 class="section-title">Plan</h3>
+                            <div class="section-divider"></div>
+                            <div class="section-content">
+                                @if (!string.IsNullOrWhiteSpace(note.Plan.Frequency))
+                                {
+                                    <div class="content-block">
+                                        <strong>Frequency:</strong>
+                                        <p>@note.Plan.Frequency</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Plan.Duration))
+                                {
+                                    <div class="content-block">
+                                        <strong>Duration:</strong>
+                                        <p>@note.Plan.Duration</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Plan.PlannedInterventionsCsv))
+                                {
+                                    <div class="content-block">
+                                        <strong>Planned Interventions:</strong>
+                                        <p>@note.Plan.PlannedInterventionsCsv</p>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(note.Plan.NextVisitFocus))
+                                {
+                                    <div class="content-block">
+                                        <strong>Next Visit Focus:</strong>
+                                        <p>@note.Plan.NextVisitFocus</p>
+                                    </div>
+                                }
+                                @if (note.Plan.Hep.Any())
+                                {
+                                    <div class="content-block">
+                                        <strong>Home Exercise Program:</strong>
+                                        <p>@note.Plan.Hep.Count exercise(s) prescribed</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @* Metadata Footer *@
+                <div class="note-viewer-metadata">
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <span class="metadata-label">Created</span>
+                            <span class="metadata-value">@note.CreatedAt.ToString("MMM d, yyyy")</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Status</span>
+                            <span class="metadata-value">@GetStatusLabel()</span>
+                        </div>
+                    </div>
+                </div>
+
+                @* Action Buttons *@
+                <div class="note-viewer-actions">
+                    <button class="btn-secondary" disabled title="PDF export coming soon">
+                        <span class="icon">📄</span>
+                        Download PDF
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public Guid NoteId { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private bool isLoading = true;
+    private string? errorMessage;
+    private NoteDtoDetail? note;
+    private ElementReference closeButtonRef;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsOpen && NoteId != Guid.Empty)
+        {
+            await LoadNoteAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsOpen && closeButtonRef.Id != null)
+        {
+            try
+            {
+                await closeButtonRef.FocusAsync();
+            }
+            catch
+            {
+                // Focus may fail if element not ready; safe to ignore
+            }
+        }
+    }
+
+    private async Task LoadNoteAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+        note = null;
+        StateHasChanged();
+
+        try
+        {
+            note = await DataService.GetNoteByIdAsync(NoteId);
+
+            if (note == null)
+            {
+                errorMessage = "Note not found or has been deleted.";
+            }
+
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            isLoading = false;
+            errorMessage = $"An error occurred while loading the note: {ex.Message}";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleBackdropClick()
+    {
+        await HandleClose();
+    }
+
+    private async void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await HandleClose();
+        }
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private string GetStatusClass()
+    {
+        if (note == null) return "draft";
+        
+        if (note.IsSigned)
+        {
+            return "signed";
+        }
+        
+        return "draft";
+    }
+
+    private string GetStatusLabel()
+    {
+        if (note == null) return "Draft";
+        
+        if (note.IsSigned)
+        {
+            return "Signed";
+        }
+        
+        return "Draft";
+    }
+
+    private bool HasSubjectiveContent()
+    {
+        if (note?.Subjective == null) return false;
+        
+        return !string.IsNullOrWhiteSpace(note.Subjective.ChiefComplaint) ||
+               !string.IsNullOrWhiteSpace(note.Subjective.HistoryOfPresentIllness) ||
+               !string.IsNullOrWhiteSpace(note.Subjective.PainLocationsCsv) ||
+               !string.IsNullOrWhiteSpace(note.Subjective.FunctionalLimitations);
+    }
+
+    private bool HasObjectiveContent()
+    {
+        if (note?.Objective == null) return false;
+        
+        return note.Objective.Rom.Any() ||
+               note.Objective.Mmt.Any() ||
+               note.Objective.SpecialTests.Any() ||
+               note.Objective.ProvidedInterventions.Any();
+    }
+
+    private bool HasAssessmentContent()
+    {
+        if (note?.Assessment == null) return false;
+        
+        return !string.IsNullOrWhiteSpace(note.Assessment.ClinicalImpression) ||
+               !string.IsNullOrWhiteSpace(note.Assessment.RehabPotential) ||
+               note.Assessment.Icd10Codes.Any();
+    }
+
+    private bool HasPlanContent()
+    {
+        if (note?.Plan == null) return false;
+        
+        return !string.IsNullOrWhiteSpace(note.Plan.Frequency) ||
+               !string.IsNullOrWhiteSpace(note.Plan.Duration) ||
+               !string.IsNullOrWhiteSpace(note.Plan.PlannedInterventionsCsv) ||
+               !string.IsNullOrWhiteSpace(note.Plan.NextVisitFocus) ||
+               note.Plan.Hep.Any();
+    }
+}

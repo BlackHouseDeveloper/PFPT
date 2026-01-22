@@ -1,0 +1,339 @@
+/* SOAP Note Viewer Scoped Styles */
+/* Matches PTDoc-Prototype-v5 Figma Make specifications */
+
+.note-viewer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.note-viewer-modal {
+    background-color: #1f2937; /* gray-800 */
+    border-radius: 0.5rem;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* Loading State */
+.note-viewer-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    gap: 1rem;
+    color: #9ca3af; /* gray-400 */
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #34d399; /* green-400 */
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.note-viewer-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1rem;
+    color: #f9fafb; /* gray-50 */
+}
+
+.error-icon {
+    font-size: 3rem;
+}
+
+.note-viewer-error h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.note-viewer-error p {
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* Header Section */
+.note-viewer-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f9fafb; /* gray-50 */
+    margin: 0 0 0.25rem 0;
+}
+
+.header-subtitle {
+    font-size: 0.875rem;
+    color: #9ca3af; /* gray-400 */
+}
+
+.header-badges {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-draft {
+    background-color: rgba(251, 191, 36, 0.1); /* yellow-400 with opacity */
+    color: #fbbf24; /* yellow-400 */
+}
+
+.badge-signed {
+    background-color: rgba(52, 211, 153, 0.1); /* green-400 with opacity */
+    color: #34d399; /* green-400 */
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #f9fafb;
+}
+
+.close-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+/* Scrollable Content */
+.note-viewer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+/* SOAP Sections */
+.note-section {
+    margin-bottom: 1.5rem;
+}
+
+.note-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #f9fafb;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.section-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.section-content {
+    color: #e5e7eb; /* gray-200 */
+    line-height: 1.6;
+}
+
+.content-block {
+    margin-bottom: 1rem;
+}
+
+.content-block:last-child {
+    margin-bottom: 0;
+}
+
+.content-block strong {
+    display: block;
+    color: #f9fafb;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.content-block p {
+    margin: 0;
+    color: #e5e7eb;
+}
+
+.code-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.code-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #e5e7eb;
+    font-family: monospace;
+}
+
+/* Metadata Footer */
+.note-viewer-metadata {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metadata-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+.metadata-value {
+    font-size: 0.875rem;
+    color: #f9fafb;
+}
+
+/* Action Buttons */
+.note-viewer-actions {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background-color: #374151; /* gray-700 */
+    color: #f9fafb;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: #4b5563; /* gray-600 */
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background-color: #34d399; /* green-400 */
+    color: #111827; /* gray-900 */
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #10b981; /* green-500 */
+}
+
+.icon {
+    font-size: 1.125rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+    .note-viewer-overlay {
+        padding: 0;
+    }
+
+    .note-viewer-modal {
+        max-height: 100vh;
+        border-radius: 0;
+        max-width: 100%;
+    }
+
+    .metadata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-title {
+        font-size: 1.125rem;
+    }
+}

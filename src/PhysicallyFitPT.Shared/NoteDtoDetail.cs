@@ -47,6 +47,26 @@ public class NoteDtoDetail
   public string? SignedBy { get; set; }
 
   /// <summary>
+  /// Gets or sets the date and time when the note was created.
+  /// </summary>
+  public DateTimeOffset CreatedAt { get; set; }
+
+  /// <summary>
+  /// Gets or sets the identifier of the person who created the note.
+  /// </summary>
+  public string? CreatedBy { get; set; }
+
+  /// <summary>
+  /// Gets or sets the date and time when the note was last updated.
+  /// </summary>
+  public DateTimeOffset? UpdatedAt { get; set; }
+
+  /// <summary>
+  /// Gets or sets the identifier of the person who last updated the note.
+  /// </summary>
+  public string? UpdatedBy { get; set; }
+
+  /// <summary>
   /// Gets or sets the subjective portion of the note.
   /// </summary>
   public SubjectiveDto Subjective { get; set; } = new SubjectiveDto();

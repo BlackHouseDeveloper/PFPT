@@ -205,7 +205,7 @@ public sealed class LocalDataService : IDataService
       this.logger.LogInformation("Getting note details for note: {NoteId}", noteId);
 
       using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
-      
+
       var note = await db.Notes
         .Where(n => n.Id == noteId && !n.IsDeleted)
         .FirstOrDefaultAsync(cancellationToken);

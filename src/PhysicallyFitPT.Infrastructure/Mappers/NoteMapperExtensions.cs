@@ -50,6 +50,10 @@ namespace PhysicallyFitPT.Infrastructure.Mappers
         IsSigned = note.IsSigned,
         SignedAt = note.SignedAt,
         SignedBy = note.SignedBy,
+        CreatedAt = note.CreatedAt,
+        CreatedBy = note.CreatedBy,
+        UpdatedAt = note.UpdatedAt,
+        UpdatedBy = note.UpdatedBy,
       };
 
       // Map Subjective
