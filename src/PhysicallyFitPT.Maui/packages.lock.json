@@ -1581,24 +1581,6 @@
         "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
       }
     },
-    "net8.0-android34.0/maccatalyst-x64": {
-      "SkiaSharp.NativeAssets.Android": {
-        "type": "Transitive",
-        "resolved": "3.119.1",
-        "contentHash": "b66ENYiCJEgbnwx9WoxTYMgoxL7LLQ8sfmlsTRr+ZLx1hyzATuHtiU2mcwf1jkrD7h4lN/jVysEoAzRFWDstPQ=="
-      },
-      "SourceGear.sqlite3": {
-        "type": "Transitive",
-        "resolved": "3.50.4.2",
-        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
-      },
-      "QuestPDF": {
-        "type": "CentralTransitive",
-        "requested": "[2025.7.1, )",
-        "resolved": "2025.7.1",
-        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
-      }
-    },
     "net8.0-ios18.0": {
       "Microsoft.AspNetCore.Components.WebView.Maui": {
         "type": "Direct",
@@ -2305,24 +2287,6 @@
         "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
       }
     },
-    "net8.0-ios18.0/maccatalyst-x64": {
-      "SkiaSharp.NativeAssets.iOS": {
-        "type": "Transitive",
-        "resolved": "3.119.1",
-        "contentHash": "tmq83ijQAc6b7tiNTYHTqm7XPWHxiRxXxHgxLcjXWyZzIcZNOdqVfyBV5BcFDyRYJTdeNTGanVMe/mwXVeebEQ=="
-      },
-      "SourceGear.sqlite3": {
-        "type": "Transitive",
-        "resolved": "3.50.4.2",
-        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
-      },
-      "QuestPDF": {
-        "type": "CentralTransitive",
-        "requested": "[2025.7.1, )",
-        "resolved": "2025.7.1",
-        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
-      }
-    },
     "net8.0-maccatalyst18.0": {
       "Microsoft.AspNetCore.Components.WebView.Maui": {
         "type": "Direct",
@@ -3012,24 +2976,6 @@
       }
     },
     "net8.0-maccatalyst18.0/maccatalyst-arm64": {
-      "SkiaSharp.NativeAssets.MacCatalyst": {
-        "type": "Transitive",
-        "resolved": "3.119.1",
-        "contentHash": "wQfvEqcVFak4MuEAyvbbSA/BPazuRz9zUJiKUMhZ0OfIf4PUtNLmlrEoHR9gaoGOJgrHn25zJAhQxTcODOxO5Q=="
-      },
-      "SourceGear.sqlite3": {
-        "type": "Transitive",
-        "resolved": "3.50.4.2",
-        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
-      },
-      "QuestPDF": {
-        "type": "CentralTransitive",
-        "requested": "[2025.7.1, )",
-        "resolved": "2025.7.1",
-        "contentHash": "WSSStmqSEidOqQqAmS7GmItgDe87IVzmmQEZZ2qH03PWyKJt9l1f6M65VQwIh6CZvNt7lc14ryVv7YOM2DCVqg=="
-      }
-    },
-    "net8.0-maccatalyst18.0/maccatalyst-x64": {
       "SkiaSharp.NativeAssets.MacCatalyst": {
         "type": "Transitive",
         "resolved": "3.119.1",

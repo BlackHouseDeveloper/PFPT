@@ -78,6 +78,21 @@ All items below are **implemented, verified, and must not be modified** unless e
 
 ---
 
+## 🧩 SERVICE LAYER / PHASE 2 PREREQUISITES
+
+* **Change Set 6A — Service Layer Foundation**
+  * `NoteDto.cs` added
+  * `IDataService` extended with:
+    * `GetPatientNotesAsync`
+    * `GetPatientGoalsAsync`
+    * `GetPatientOutcomesAsync`
+  * Web + MAUI implementations complete
+  * Notes fully supported
+  * Goals/Outcomes return empty arrays pending schema work
+  * Status: **LOCKED**
+
+---
+
 ## 🚧 NEXT PLANNED WORK (Not Started)
 
 * Change Set 6: Patient Profile Tabs (Read-Only)

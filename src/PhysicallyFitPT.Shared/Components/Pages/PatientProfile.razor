@@ -36,110 +36,196 @@ else
 
   @if (errorMessage != null)
   {
-    <div class="pfp-alert pfp-alert-error">
-      @errorMessage
+    <div class="pfp-alert pfp-alert-error" role="alert">
+      <span class="pfp-alert-icon" aria-hidden="true">⚠️</span>
+      <span>@errorMessage</span>
     </div>
   }
 
   <div class="pfp-card">
     <div class="pfp-card-header">
-      <h3>Summary</h3>
+      <h3>Patient Details</h3>
     </div>
     <div class="pfp-card-body">
-      <div class="pfp-patient-summary">
-        <div class="pfp-summary-section">
-          <h4>Demographics</h4>
-          <div class="pfp-summary-grid">
-            @if (!string.IsNullOrEmpty(patient.MRN))
-            {
-              <div class="pfp-summary-item">
-                <label>Medical Record Number:</label>
-                <span>@patient.MRN</span>
-              </div>
-            }
-            @if (patient.DateOfBirth.HasValue)
-            {
-              <div class="pfp-summary-item">
-                <label>Date of Birth:</label>
-                <span>@patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
-              </div>
-            }
-            @if (!string.IsNullOrEmpty(patient.Sex))
-            {
-              <div class="pfp-summary-item">
-                <label>Sex:</label>
-                <span>@patient.Sex</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="pfp-summary-section">
-          <h4>Contact Information</h4>
-          <div class="pfp-summary-grid">
-            @if (!string.IsNullOrEmpty(patient.Email))
-            {
-              <div class="pfp-summary-item">
-                <label>Email:</label>
-                <span>@patient.Email</span>
-              </div>
-            }
-            @if (!string.IsNullOrEmpty(patient.MobilePhone))
-            {
-              <div class="pfp-summary-item">
-                <label>Mobile Phone:</label>
-                <span>@patient.MobilePhone</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        @if (!string.IsNullOrEmpty(patient.LivingSituation))
-        {
-          <div class="pfp-summary-section">
-            <h4>Living Situation</h4>
-            <div class="pfp-summary-item">
-              <span>@patient.LivingSituation</span>
-            </div>
-          </div>
-        }
-
-        @if (!string.IsNullOrEmpty(patient.MedicationsCsv))
-        {
-          <div class="pfp-summary-section">
-            <h4>Medications</h4>
-            <div class="pfp-summary-item">
-              <span>@patient.MedicationsCsv</span>
-            </div>
-          </div>
-        }
-
-        @if (!string.IsNullOrEmpty(patient.ComorbiditiesCsv))
-        {
-          <div class="pfp-summary-section">
-            <h4>Comorbidities</h4>
-            <div class="pfp-summary-item">
-              <span>@patient.ComorbiditiesCsv</span>
-            </div>
-          </div>
-        }
-
-        @if (!string.IsNullOrEmpty(patient.AssistiveDevicesCsv))
-        {
-          <div class="pfp-summary-section">
-            <h4>Assistive Devices</h4>
-            <div class="pfp-summary-item">
-              <span>@patient.AssistiveDevicesCsv</span>
-            </div>
-          </div>
-        }
+      <div class="pfp-tab-list" role="tablist">
+        <button class="@GetTabClass(TabSummary)" role="tab" aria-selected="@(activeTab == TabSummary)" @onclick="@(() => SetActiveTab(TabSummary))">Summary</button>
+        <button class="@GetTabClass(TabNotes)" role="tab" aria-selected="@(activeTab == TabNotes)" @onclick="@(() => SetActiveTab(TabNotes))">Notes</button>
+        <button class="@GetTabClass(TabGoals)" role="tab" aria-selected="@(activeTab == TabGoals)" @onclick="@(() => SetActiveTab(TabGoals))">Goals</button>
+        <button class="@GetTabClass(TabOutcomes)" role="tab" aria-selected="@(activeTab == TabOutcomes)" @onclick="@(() => SetActiveTab(TabOutcomes))">Outcomes</button>
+        <button class="@GetTabClass(TabDocuments)" role="tab" aria-selected="@(activeTab == TabDocuments)" @onclick="@(() => SetActiveTab(TabDocuments))">Documents</button>
       </div>
 
-      <div class="pfp-button-group">
-        <button class="pfp-btn pfp-btn-outline" @onclick="BackToPatients">
-          Back to Patients
-        </button>
-      </div>
+      @if (activeTab == TabSummary)
+      {
+        <div class="pfp-patient-summary" role="tabpanel">
+          <div class="pfp-summary-section">
+            <h4>Demographics</h4>
+            <div class="pfp-summary-grid">
+              @if (!string.IsNullOrEmpty(patient.MRN))
+              {
+                <div class="pfp-summary-item">
+                  <label>Medical Record Number:</label>
+                  <span>@patient.MRN</span>
+                </div>
+              }
+              @if (patient.DateOfBirth.HasValue)
+              {
+                <div class="pfp-summary-item">
+                  <label>Date of Birth:</label>
+                  <span>@patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
+                </div>
+              }
+              @if (!string.IsNullOrEmpty(patient.Sex))
+              {
+                <div class="pfp-summary-item">
+                  <label>Sex:</label>
+                  <span>@patient.Sex</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="pfp-summary-section">
+            <h4>Contact Information</h4>
+            <div class="pfp-summary-grid">
+              @if (!string.IsNullOrEmpty(patient.Email))
+              {
+                <div class="pfp-summary-item">
+                  <label>Email:</label>
+                  <span>@patient.Email</span>
+                </div>
+              }
+              @if (!string.IsNullOrEmpty(patient.MobilePhone))
+              {
+                <div class="pfp-summary-item">
+                  <label>Mobile Phone:</label>
+                  <span>@patient.MobilePhone</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (!string.IsNullOrEmpty(patient.LivingSituation))
+          {
+            <div class="pfp-summary-section">
+              <h4>Living Situation</h4>
+              <div class="pfp-summary-item">
+                <span>@patient.LivingSituation</span>
+              </div>
+            </div>
+          }
+
+          @if (!string.IsNullOrEmpty(patient.MedicationsCsv))
+          {
+            <div class="pfp-summary-section">
+              <h4>Medications</h4>
+              <div class="pfp-summary-item">
+                <span>@patient.MedicationsCsv</span>
+              </div>
+            </div>
+          }
+
+          @if (!string.IsNullOrEmpty(patient.ComorbiditiesCsv))
+          {
+            <div class="pfp-summary-section">
+              <h4>Comorbidities</h4>
+              <div class="pfp-summary-item">
+                <span>@patient.ComorbiditiesCsv</span>
+              </div>
+            </div>
+          }
+
+          @if (!string.IsNullOrEmpty(patient.AssistiveDevicesCsv))
+          {
+            <div class="pfp-summary-section">
+              <h4>Assistive Devices</h4>
+              <div class="pfp-summary-item">
+                <span>@patient.AssistiveDevicesCsv</span>
+              </div>
+            </div>
+          }
+
+          <div class="pfp-button-group">
+            <button class="pfp-btn pfp-btn-outline" @onclick="BackToPatients">
+              Back to Patients
+            </button>
+          </div>
+        </div>
+      }
+      else if (activeTab == TabNotes)
+      {
+        <div class="pfp-notes" role="tabpanel">
+          @if (notesLoading)
+          {
+            <div class="pfp-loading-state" role="status" aria-live="polite">
+              <div class="pfp-loading-state-spinner">
+                <svg class="pfp-spinner" viewBox="0 0 50 50" aria-hidden="true" focusable="false">
+                  <circle cx="25" cy="25" r="20" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="80, 200" stroke-dashoffset="0">
+                    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+                  </circle>
+                </svg>
+              </div>
+              <span class="pfp-loading-state-text">Loading notes...</span>
+            </div>
+          }
+          else if (notesError != null)
+          {
+            <div class="pfp-alert pfp-alert-error" role="alert">
+              <span class="pfp-alert-icon" aria-hidden="true">⚠️</span>
+              <span>@notesError</span>
+            </div>
+          }
+          else if (notes.Count == 0)
+          {
+            <div class="pfp-empty-state">
+              <div class="pfp-empty-state-icon" aria-hidden="true">📋</div>
+              <h4>No Clinical Notes</h4>
+              <p>No documentation has been completed for this patient yet.</p>
+            </div>
+          }
+          else
+          {
+            <div class="pfp-list">
+              @foreach (var note in notes)
+              {
+                <div class="pfp-list-item">
+                  <div class="pfp-list-row">
+                    <strong>@note.CreatedAt.ToLocalTime().ToString("MM/dd/yyyy")</strong>
+                    <span>@note.VisitType</span>
+                  </div>
+                  <div class="pfp-list-row">
+                    <span>@SignedLabel(note)</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+      else if (activeTab == TabGoals)
+      {
+        <div class="pfp-empty-state" role="tabpanel">
+          <div class="pfp-empty-state-icon" aria-hidden="true">🎯</div>
+          <h4>No Goals Set</h4>
+          <p>Goals will be displayed here once they are established during documentation.</p>
+        </div>
+      }
+      else if (activeTab == TabOutcomes)
+      {
+        <div class="pfp-empty-state" role="tabpanel">
+          <div class="pfp-empty-state-icon" aria-hidden="true">📊</div>
+          <h4>No Outcome Measures</h4>
+          <p>Outcome measure results will appear here once assessments are completed.</p>
+        </div>
+      }
+      else if (activeTab == TabDocuments)
+      {
+        <div class="pfp-empty-state" role="tabpanel">
+          <div class="pfp-empty-state-icon" aria-hidden="true">📄</div>
+          <h4>No Documents Available</h4>
+          <p>Patient documents will be available in a future update.</p>
+        </div>
+      }
     </div>
   </div>
 }
@@ -151,6 +237,17 @@ else
     private PatientDto? patient = null;
     private bool isLoading = false;
     private string? errorMessage = null;
+    private const string TabSummary = "summary";
+    private const string TabNotes = "notes";
+    private const string TabGoals = "goals";
+    private const string TabOutcomes = "outcomes";
+    private const string TabDocuments = "documents";
+
+    private string activeTab = TabSummary;
+    private IReadOnlyList<NoteDto> notes = Array.Empty<NoteDto>();
+    private bool notesLoaded = false;
+    private bool notesLoading = false;
+    private string? notesError = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,6 +272,59 @@ else
             isLoading = false;
         }
     }
+
+      private async Task SetActiveTab(string tab)
+      {
+        if (activeTab == tab)
+        {
+          return;
+        }
+
+        activeTab = tab;
+
+        if (tab == TabNotes && !notesLoaded)
+        {
+          await LoadNotesAsync();
+        }
+      }
+
+      private async Task LoadNotesAsync()
+      {
+        notesLoading = true;
+        notesError = null;
+
+        try
+        {
+          notes = await DataService.GetPatientNotesAsync(PatientId);
+          notesLoaded = true;
+        }
+        catch (Exception)
+        {
+          notesError = "Failed to load notes. Please try again.";
+          notesLoaded = false;
+        }
+        finally
+        {
+          notesLoading = false;
+        }
+      }
+
+      private string GetTabClass(string tabKey)
+      {
+        return activeTab == tabKey ? "pfp-tab active" : "pfp-tab";
+      }
+
+      private static string SignedLabel(NoteDto note)
+      {
+        if (note.IsSigned)
+        {
+          var signer = string.IsNullOrWhiteSpace(note.SignedBy) ? "Signed" : $"Signed by {note.SignedBy}";
+          return note.SignedAt.HasValue
+            ? $"{signer} on {note.SignedAt.Value.ToLocalTime().ToString("MM/dd/yyyy")}" : signer;
+        }
+
+        return "Unsigned";
+      }
 
     private void BackToPatients()
     {

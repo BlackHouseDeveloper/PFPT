@@ -355,4 +355,36 @@ public class WebApiDataService : IDataService
       return Array.Empty<OutcomeMeasureScoreDto>();
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<NoteDtoDetail?> GetNoteByIdAsync(Guid noteId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting note details for note: {NoteId}", noteId);
+
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("notes", noteId.ToString()), cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var note = await response.Content.ReadFromJsonAsync<NoteDtoDetail>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved note details for note: {NoteId}", noteId);
+        return note;
+      }
+
+      if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+      {
+        this.logger.LogWarning("Note not found: {NoteId}", noteId);
+        return null;
+      }
+
+      this.logger.LogWarning("Failed to get note {NoteId} with status: {StatusCode}", noteId, response.StatusCode);
+      return null;
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting note: {NoteId}", noteId);
+      return null;
+    }
+  }
 }

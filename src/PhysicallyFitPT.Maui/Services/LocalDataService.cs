@@ -196,4 +196,33 @@ public sealed class LocalDataService : IDataService
     this.logger.LogWarning("Outcome measures retrieval not yet implemented - OutcomeMeasureScores table missing from schema");
     return Task.FromResult<IReadOnlyList<OutcomeMeasureScoreDto>>(Array.Empty<OutcomeMeasureScoreDto>());
   }
+
+  /// <inheritdoc />
+  public async Task<NoteDtoDetail?> GetNoteByIdAsync(Guid noteId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting note details for note: {NoteId}", noteId);
+
+      using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
+      
+      var note = await db.Notes
+        .Where(n => n.Id == noteId && !n.IsDeleted)
+        .FirstOrDefaultAsync(cancellationToken);
+
+      if (note == null)
+      {
+        this.logger.LogWarning("Note not found or deleted: {NoteId}", noteId);
+        return null;
+      }
+
+      this.logger.LogInformation("Retrieved note details for note: {NoteId}", noteId);
+      return note.ToDetailDto();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting note: {NoteId}", noteId);
+      return null;
+    }
+  }
 }

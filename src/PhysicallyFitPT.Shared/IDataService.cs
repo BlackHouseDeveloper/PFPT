@@ -102,4 +102,12 @@ public interface IDataService
   /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>A read-only list of outcome measure score DTOs for the patient.</returns>
   Task<IReadOnlyList<OutcomeMeasureScoreDto>> GetPatientOutcomesAsync(Guid patientId, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets a clinical note by its unique identifier with full SOAP section details.
+  /// </summary>
+  /// <param name="noteId">The unique identifier of the note.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>The detailed note DTO if found, null otherwise.</returns>
+  Task<NoteDtoDetail?> GetNoteByIdAsync(Guid noteId, CancellationToken cancellationToken = default);
 }
