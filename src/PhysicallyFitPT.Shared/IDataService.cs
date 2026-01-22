@@ -78,4 +78,28 @@ public interface IDataService
   /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
   /// <returns>Application statistics DTO.</returns>
   Task<AppStatsDto> GetStatsAsync(CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets clinical notes for a specific patient.
+  /// </summary>
+  /// <param name="patientId">The unique identifier of the patient.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>A read-only list of note DTOs for the patient.</returns>
+  Task<IReadOnlyList<NoteDto>> GetPatientNotesAsync(Guid patientId, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets treatment goals for a specific patient.
+  /// </summary>
+  /// <param name="patientId">The unique identifier of the patient.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>A read-only list of goal DTOs for the patient.</returns>
+  Task<IReadOnlyList<GoalDto>> GetPatientGoalsAsync(Guid patientId, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Gets outcome measure scores for a specific patient.
+  /// </summary>
+  /// <param name="patientId">The unique identifier of the patient.</param>
+  /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+  /// <returns>A read-only list of outcome measure score DTOs for the patient.</returns>
+  Task<IReadOnlyList<OutcomeMeasureScoreDto>> GetPatientOutcomesAsync(Guid patientId, CancellationToken cancellationToken = default);
 }
