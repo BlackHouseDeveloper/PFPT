@@ -17,8 +17,8 @@ public class DemoUserService : IUserService
 {
   // WARNING: These credentials are for DEMO/DEVELOPMENT use only. Replace or remove
   // before any production deployment to prevent exposing hard-coded users.
-  private const string DemoUsername = "clinician@demo.com";
-  private const string DemoPassword = "demo123";
+  // PIN-only demo credentials for parity across Web/Mobile
+  private const string DemoPin = "1234";
   private const string DemoDisplayName = "Dr. Demo Clinician";
 
   private readonly ILogger<DemoUserService> logger;
@@ -48,11 +48,12 @@ public class DemoUserService : IUserService
   /// <inheritdoc/>
   public Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
   {
-    if (username == DemoUsername && password == DemoPassword)
+    // Login form supplies the PIN in both username and password slots
+    if (username == DemoPin && password == DemoPin)
     {
       var claims = new[]
       {
-        new Claim(ClaimTypes.Email, DemoUsername),
+        new Claim(ClaimTypes.Email, $"{DemoPin}@demo.pin"),
         new Claim(ClaimTypes.Name, DemoDisplayName),
         new Claim(ClaimTypes.Role, "Clinician"),
       };
