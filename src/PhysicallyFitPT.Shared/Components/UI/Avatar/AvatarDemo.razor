@@ -1,0 +1,202 @@
+@* Demo page showing Avatar usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic Avatar with Image -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Avatar (Default Size)</h3>
+        <div class="flex items-center gap-4">
+            <Avatar>
+                <AvatarImage Src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" 
+                             Alt="User avatar" />
+                <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+            <div>
+                <p class="text-sm font-medium">John Doe, PT</p>
+                <p class="text-xs text-gray-500">Physical Therapist</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar with Fallback (Broken Image) -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Avatar with Fallback (Broken URL)</h3>
+        <div class="flex items-center gap-4">
+            <Avatar>
+                <AvatarImage Src="https://broken-url.example.com/invalid.jpg" 
+                             Alt="User avatar" />
+                <AvatarFallback>AB</AvatarFallback>
+            </Avatar>
+            <div>
+                <p class="text-sm font-medium">Alice Brown, DPT</p>
+                <p class="text-xs text-gray-500">Senior Therapist</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Sizes -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Avatar Sizes</h3>
+        <div class="flex items-end gap-4">
+            <div class="text-center">
+                <Avatar Class="avatar-sm">
+                    <AvatarImage Src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" />
+                    <AvatarFallback>SM</AvatarFallback>
+                </Avatar>
+                <p class="text-xs text-gray-500 mt-1">Small</p>
+            </div>
+            <div class="text-center">
+                <Avatar Class="avatar-md">
+                    <AvatarImage Src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" />
+                    <AvatarFallback>MD</AvatarFallback>
+                </Avatar>
+                <p class="text-xs text-gray-500 mt-1">Medium</p>
+            </div>
+            <div class="text-center">
+                <Avatar Class="avatar-lg">
+                    <AvatarImage Src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" />
+                    <AvatarFallback>LG</AvatarFallback>
+                </Avatar>
+                <p class="text-xs text-gray-500 mt-1">Large</p>
+            </div>
+            <div class="text-center">
+                <Avatar Class="avatar-xl">
+                    <AvatarImage Src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" />
+                    <AvatarFallback>XL</AvatarFallback>
+                </Avatar>
+                <p class="text-xs text-gray-500 mt-1">X-Large</p>
+            </div>
+            <div class="text-center">
+                <Avatar Class="avatar-2xl">
+                    <AvatarImage Src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" />
+                    <AvatarFallback>2X</AvatarFallback>
+                </Avatar>
+                <p class="text-xs text-gray-500 mt-1">2X-Large</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initials Only (No Image) -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Initials Only</h3>
+        <div class="flex items-center gap-3">
+            <Avatar>
+                <AvatarFallback>DR</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback>KM</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback>PT</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback>JS</AvatarFallback>
+            </Avatar>
+        </div>
+    </div>
+
+    <!-- Colored Fallbacks -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Colored Fallbacks (PFPT Theme)</h3>
+        <div class="flex items-center gap-3">
+            <Avatar>
+                <AvatarFallback Class="bg-primary-light">PT</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback Class="bg-secondary-light">DT</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback Class="bg-green-100 text-green-700">RN</AvatarFallback>
+            </Avatar>
+            <Avatar>
+                <AvatarFallback Class="bg-blue-100 text-blue-700">MD</AvatarFallback>
+            </Avatar>
+        </div>
+    </div>
+
+    <!-- Avatar with Icon Fallback -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Icon Fallback</h3>
+        <div class="flex items-center gap-3">
+            <Avatar>
+                <AvatarFallback>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </AvatarFallback>
+            </Avatar>
+            <Avatar Class="avatar-lg">
+                <AvatarFallback>
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </AvatarFallback>
+            </Avatar>
+        </div>
+    </div>
+
+    <!-- Clinical Team Example -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Team</h3>
+        <div class="space-y-3">
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Avatar>
+                    <AvatarImage Src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop" />
+                    <AvatarFallback>DR</AvatarFallback>
+                </Avatar>
+                <div class="flex-1">
+                    <p class="text-sm font-medium">Dr. Robert Chen, MD</p>
+                    <p class="text-xs text-gray-500">Orthopedic Surgeon</p>
+                </div>
+                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Available</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Avatar>
+                    <AvatarImage Src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop" />
+                    <AvatarFallback>SM</AvatarFallback>
+                </Avatar>
+                <div class="flex-1">
+                    <p class="text-sm font-medium">Sarah Martinez, PT, DPT</p>
+                    <p class="text-xs text-gray-500">Lead Physical Therapist</p>
+                </div>
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">In Session</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Avatar>
+                    <AvatarFallback Class="bg-primary-light">KW</AvatarFallback>
+                </Avatar>
+                <div class="flex-1">
+                    <p class="text-sm font-medium">Kevin Walsh, PTA</p>
+                    <p class="text-xs text-gray-500">Physical Therapist Assistant</p>
+                </div>
+                <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded">Off Duty</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Group (Stacked) -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Avatar Group (Patient Care Team)</h3>
+        <div class="flex items-center">
+            <Avatar Class="-ml-0 ring-2 ring-white">
+                <AvatarImage Src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" />
+                <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+            <Avatar Class="-ml-2 ring-2 ring-white">
+                <AvatarImage Src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" />
+                <AvatarFallback>AB</AvatarFallback>
+            </Avatar>
+            <Avatar Class="-ml-2 ring-2 ring-white">
+                <AvatarImage Src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" />
+                <AvatarFallback>CD</AvatarFallback>
+            </Avatar>
+            <Avatar Class="-ml-2 ring-2 ring-white">
+                <AvatarFallback>+5</AvatarFallback>
+            </Avatar>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">8 team members assigned to this patient</p>
+    </div>
+</div>
+
+@code {
+    // No state needed for static demos
+}

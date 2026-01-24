@@ -1,0 +1,405 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+@using PhysicallyFitPT.Shared.Components.UI.Card
+
+<div class="week-view-container">
+    <Card Class="week-header">
+        <CardHeader Class="week-header__content">
+            <div class="week-header__top">
+                <CardTitle class="week-header__title">@ClinicianName's Weekly Schedule</CardTitle>
+                <div class="week-header__nav">
+                    <Button Variant="outline" Size="sm" Class="btn-icon" OnClick="GoToPreviousWeek">
+                        <span aria-hidden="true">Prev</span>
+                    </Button>
+                    <div class="week-header__range">
+                        @WeekDays[0].FullDate.ToString("MMMM d") - @WeekDays[4].FullDate.ToString("MMMM d, yyyy")
+                    </div>
+                    <Button Variant="outline" Size="sm" Class="btn-icon" OnClick="GoToNextWeek">
+                        <span aria-hidden="true">Next</span>
+                    </Button>
+                </div>
+            </div>
+        </CardHeader>
+
+        <CardContent Class="week-grid-wrapper">
+            <div class="desktop-grid">
+                <div class="grid-header">
+                    <div class="grid-header__time">Time</div>
+                    @foreach (var day in WeekDays)
+                    {
+                        <div class="grid-header__day">
+                            <div class="day-name">@day.Name</div>
+                            <div class="day-number">@day.Date</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="grid-body">
+                    @foreach (var slot in TimeSlots)
+                    {
+                        <div class="grid-row @(slot.Minute == 0 ? "hour-boundary" : "")">
+                            <div class="grid-time">
+                                @if (slot.Minute == 0)
+                                {
+                                    <span>@FormatHour(slot.Hour)</span>
+                                }
+                            </div>
+                            @foreach (var day in WeekDays)
+                            {
+                                var dayKey = day.Name;
+                                var dayAppointments = Appointments.TryGetValue(dayKey, out var list) ? list : new List<AppointmentItem>();
+                                var dayBlocks = Blocks.TryGetValue(dayKey, out var blockList) ? blockList : new List<BlockItem>();
+                                var slotAppointment = dayAppointments.FirstOrDefault(a => a.StartTime == slot.Time);
+                                var slotBlock = dayBlocks.FirstOrDefault(b => b.StartTime == slot.Time);
+
+                                <div class="grid-cell" @onclick="@((MouseEventArgs e) => HandleSlotClick(dayKey, slot.Time, slotAppointment == null && slotBlock == null))">
+                                    @if (slotAppointment is not null)
+                                    {
+                                        <ScheduleSlot Type="appointment" Appointment="ToScheduleSlotAppointment(slotAppointment)" />
+                                    }
+                                    else if (slotBlock is not null)
+                                    {
+                                        <ScheduleSlot Type="block" Block="ToScheduleSlotBlock(slotBlock)" />
+                                    }
+                                    else
+                                    {
+                                        <div class="cell-add-hint">PLUS</div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mobile-view">
+                @foreach (var day in WeekDays)
+                {
+                    var dayAppointments = Appointments.TryGetValue(day.Name, out var list) ? list : new List<AppointmentItem>();
+                    var dayBlocks = Blocks.TryGetValue(day.Name, out var blockList) ? blockList : new List<BlockItem>();
+                    var hasItems = dayAppointments.Count > 0 || dayBlocks.Count > 0;
+
+                    <div class="mobile-day">
+                        <div class="mobile-day__header">
+                            @day.Name, @day.FullDate.ToString("MMM d")
+                        </div>
+                        <div class="mobile-day__content">
+                            @foreach (var apt in dayAppointments)
+                            {
+                                <ScheduleSlot Type="appointment" Appointment="ToScheduleSlotAppointment(apt)" />
+                            }
+                            @foreach (var block in dayBlocks)
+                            {
+                                <ScheduleSlot Type="block" Block="ToScheduleSlotBlock(block)" />
+                            }
+                            @if (!hasItems)
+                            {
+                                <p class="mobile-day__empty">No scheduled items</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </CardContent>
+    </Card>
+
+    <Card Class="legend">
+        <CardContent Class="legend__content">
+            <div class="legend__item">
+                <span class="legend__dot success"></span>
+                <span>Intake Complete</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot pending"></span>
+                <span>Intake Incomplete</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot admin"></span>
+                <span>Admin Block</span>
+            </div>
+            <div class="legend__item">
+                <span class="legend__dot meeting"></span>
+                <span>Meeting</span>
+            </div>
+        </CardContent>
+    </Card>
+
+    @if (ShowAppointmentDialog && SelectedSlot is not null)
+    {
+        <AppointmentDialog 
+            @bind-Open="ShowAppointmentDialog"
+            Day="@SelectedSlot.Day"
+            Time="@SelectedSlot.Time"
+            ClinicianName="@ClinicianName"
+            OnSave="@HandleAppointmentSave" />
+    }
+
+    @if (ShowBlockDialog && SelectedSlot is not null)
+    {
+        <ScheduleBlockDialog
+            @bind-Open="ShowBlockDialog"
+            Day="@SelectedSlot.Day"
+            Time="@SelectedSlot.Time"
+            OnSave="@HandleBlockSave" />
+    }
+</div>
+
+@code {
+    private class WeekDay
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Date { get; set; }
+        public DateTime FullDate { get; set; }
+    }
+
+    private class TimeSlot
+    {
+        public string Time { get; set; } = string.Empty;
+        public int Hour { get; set; }
+        public int Minute { get; set; }
+    }
+
+    private class AppointmentItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public string PatientName { get; set; } = string.Empty;
+        public string VisitType { get; set; } = string.Empty;
+        public string VisitColor { get; set; } = string.Empty;
+        public int Duration { get; set; }
+        public string StartTime { get; set; } = string.Empty;
+        public bool IntakeComplete { get; set; }
+        public string? Location { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    private class BlockItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string StartTime { get; set; } = string.Empty;
+        public int Duration { get; set; }
+        public string Color { get; set; } = string.Empty;
+    }
+
+    private class SelectedSlotInfo
+    {
+        public string Day { get; set; } = string.Empty;
+        public string Time { get; set; } = string.Empty;
+    }
+
+    [Parameter]
+    public string ClinicianId { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ClinicianName { get; set; } = string.Empty;
+
+    [Parameter]
+    public DateTime SelectedDate { get; set; } = DateTime.Today;
+
+    [Parameter]
+    public EventCallback<DateTime> OnDateChange { get; set; }
+
+    [Parameter]
+    public string UserRole { get; set; } = "clinician";
+
+    private Dictionary<string, List<AppointmentItem>> Appointments = new()
+    {
+        ["Mon"] = new()
+        {
+            new() { Id = "1", PatientName = "John Doe", VisitType = "Initial Evaluation", VisitColor = "#16a34a", Duration = 60, StartTime = "09:00", IntakeComplete = true, Location = "Room 101" },
+            new() { Id = "2", PatientName = "Jane Smith", VisitType = "Daily Treatment", VisitColor = "#7c3aed", Duration = 30, StartTime = "11:00", IntakeComplete = false, Location = "Room 102" }
+        },
+        ["Tue"] = new(),
+        ["Wed"] = new()
+        {
+            new() { Id = "3", PatientName = "Bob Johnson", VisitType = "Progress Note", VisitColor = "#2563eb", Duration = 45, StartTime = "10:00", IntakeComplete = true, Location = "Room 101" }
+        },
+        ["Thu"] = new(),
+        ["Fri"] = new()
+    };
+
+    private Dictionary<string, List<BlockItem>> Blocks = new()
+    {
+        ["Mon"] = new(),
+        ["Tue"] = new()
+        {
+            new() { Id = "b1", Type = "meeting", Title = "Staff Meeting", StartTime = "12:00", Duration = 60, Color = "#64748b" }
+        },
+        ["Wed"] = new(),
+        ["Thu"] = new()
+        {
+            new() { Id = "b2", Type = "admin", Title = "Admin Time", StartTime = "14:00", Duration = 30, Color = "#ca8a04" }
+        },
+        ["Fri"] = new()
+    };
+
+    private List<WeekDay> WeekDays = new();
+    private List<TimeSlot> TimeSlots = new();
+    private bool ShowAppointmentDialog;
+    private bool ShowBlockDialog;
+    private SelectedSlotInfo? SelectedSlot;
+
+    protected override void OnInitialized()
+    {
+        TimeSlots = GenerateTimeSlots();
+        WeekDays = GetWeekDays();
+    }
+
+    private List<TimeSlot> GenerateTimeSlots()
+    {
+        var slots = new List<TimeSlot>();
+        for (var hour = 7; hour <= 19; hour++)
+        {
+            for (var minute = 0; minute < 60; minute += 15)
+            {
+                slots.Add(new TimeSlot 
+                { 
+                    Time = $"{hour:00}:{minute:00}", 
+                    Hour = hour, 
+                    Minute = minute 
+                });
+            }
+        }
+        return slots;
+    }
+
+    private List<WeekDay> GetWeekDays()
+    {
+        var names = new[] { "Mon", "Tue", "Wed", "Thu", "Fri" };
+        var startOfWeek = new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
+        var dayOfWeek = (int)startOfWeek.DayOfWeek;
+        var diff = startOfWeek.Day - dayOfWeek + (dayOfWeek == 0 ? -6 : 1);
+        startOfWeek = new DateTime(startOfWeek.Year, startOfWeek.Month, diff);
+
+        var result = new List<WeekDay>();
+        for (int i = 0; i < 5; i++)
+        {
+            var date = startOfWeek.AddDays(i);
+            result.Add(new WeekDay
+            {
+                Name = names[i],
+                Date = date.Day,
+                FullDate = date
+            });
+        }
+
+        return result;
+    }
+
+    private async Task GoToPreviousWeek()
+    {
+        SelectedDate = SelectedDate.AddDays(-7);
+        WeekDays = GetWeekDays();
+        if (OnDateChange.HasDelegate)
+        {
+            await OnDateChange.InvokeAsync(SelectedDate);
+        }
+    }
+
+    private async Task GoToNextWeek()
+    {
+        SelectedDate = SelectedDate.AddDays(7);
+        WeekDays = GetWeekDays();
+        if (OnDateChange.HasDelegate)
+        {
+            await OnDateChange.InvokeAsync(SelectedDate);
+        }
+    }
+
+    private void HandleSlotClick(string day, string time, bool isEmpty)
+    {
+        if (!isEmpty) return;
+
+        SelectedSlot = new SelectedSlotInfo { Day = day, Time = time };
+        ShowAppointmentDialog = true;
+    }
+
+    private async Task HandleAppointmentSave(AppointmentDialog.AppointmentResult result)
+    {
+        if (SelectedSlot is null) return;
+
+        var item = new AppointmentItem
+        {
+            Id = result.Id,
+            PatientName = result.PatientName,
+            VisitType = result.VisitType,
+            VisitColor = result.VisitColor,
+            Duration = result.DurationMinutes,
+            StartTime = result.StartTime,
+            IntakeComplete = result.IntakeComplete,
+            Location = result.Location,
+            Notes = result.Notes
+        };
+
+        if (!Appointments.ContainsKey(SelectedSlot.Day))
+        {
+            Appointments[SelectedSlot.Day] = new();
+        }
+
+        Appointments[SelectedSlot.Day].Add(item);
+        ShowAppointmentDialog = false;
+        SelectedSlot = null;
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleBlockSave(ScheduleBlockDialog.ScheduleBlockResult result)
+    {
+        if (SelectedSlot is null) return;
+
+        var item = new BlockItem
+        {
+            Id = result.Id,
+            Type = result.Type,
+            Title = result.Title,
+            StartTime = result.StartTime,
+            Duration = result.DurationMinutes,
+            Color = result.Color
+        };
+
+        if (!Blocks.ContainsKey(SelectedSlot.Day))
+        {
+            Blocks[SelectedSlot.Day] = new();
+        }
+
+        Blocks[SelectedSlot.Day].Add(item);
+        ShowBlockDialog = false;
+        SelectedSlot = null;
+        await Task.CompletedTask;
+    }
+
+    private ScheduleSlot.AppointmentSlot ToScheduleSlotAppointment(AppointmentItem apt)
+    {
+        return new ScheduleSlot.AppointmentSlot
+        {
+            Id = apt.Id,
+            PatientName = apt.PatientName,
+            VisitType = apt.VisitType,
+            VisitColor = apt.VisitColor,
+            DurationMinutes = apt.Duration,
+            StartTime = apt.StartTime,
+            IntakeComplete = apt.IntakeComplete,
+            Location = apt.Location,
+            Notes = apt.Notes
+        };
+    }
+
+    private ScheduleSlot.ScheduleBlockSlot ToScheduleSlotBlock(BlockItem block)
+    {
+        return new ScheduleSlot.ScheduleBlockSlot
+        {
+            Id = block.Id,
+            Type = block.Type,
+            Title = block.Title,
+            StartTime = block.StartTime,
+            DurationMinutes = block.Duration,
+            Color = block.Color
+        };
+    }
+
+    private static string FormatHour(int hour)
+    {
+        var period = hour >= 12 ? "PM" : "AM";
+        var displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+        return $"{displayHour} {period}";
+    }
+}

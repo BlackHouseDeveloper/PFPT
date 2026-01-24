@@ -1,0 +1,50 @@
+@* Context menu radio item *@
+@namespace PhysicallyFitPT.Shared.Components.UI.ContextMenu
+
+<button 
+    type="button"
+    class="context-menu-radio-item @(IsSelected ? "selected" : "")"
+    @onclick="HandleSelect"
+    disabled="@Disabled">
+    <span class="radio-indicator">
+        @if (IsSelected)
+        {
+            <span class="radio-dot"></span>
+        }
+    </span>
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsSelected { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // IsSelected should be managed by the RadioGroup
+        // This is simplified for now
+    }
+
+    private async Task HandleSelect()
+    {
+        if (!Disabled)
+        {
+            IsSelected = true;
+            await OnSelect.InvokeAsync(Value ?? string.Empty);
+        }
+    }
+}

@@ -1,0 +1,440 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+@using Microsoft.AspNetCore.Components
+<Tabs DefaultValue="visit-types" Class="w-full">
+    <TabsList Class="grid w-full grid-cols-4 mb-6">
+        <TabsTrigger Value="visit-types" Class="flex items-center gap-2">
+            CA Visit Types
+        </TabsTrigger>
+        <TabsTrigger Value="schedule-blocks" Class="flex items-center gap-2">
+            CF Schedule Blocks
+        </TabsTrigger>
+        <TabsTrigger Value="calendar-behavior" Class="flex items-center gap-2">
+            CC Calendar Behavior
+        </TabsTrigger>
+        <TabsTrigger Value="clinic-hours" Class="flex items-center gap-2">
+            CK Clinic Hours
+        </TabsTrigger>
+    </TabsList>
+
+    <!-- Visit Types Tab -->
+    <TabsContent Value="visit-types" Class="space-y-6">
+        <Card Class="border-2">
+            <CardHeader>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <CardTitle Class="flex items-center gap-2">
+                            CA Visit Types
+                        </CardTitle>
+                        <CardDescription>
+                            Configure appointment types and durations
+                        </CardDescription>
+                    </div>
+                    <Button Size="sm" OnClick="@(() => AddVisitType())">
+                        + Add Visit Type
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    @foreach (var visitType in visitTypes)
+                    {
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="w-4 h-4 rounded" style="background-color: @visitType.Color;"></div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">@visitType.Name</p>
+                                    <div class="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                                        <span class="flex items-center gap-1">
+                                            CK @visitType.Duration min
+                                        </span>
+                                        @if (visitType.RequiresIntake)
+                                        {
+                                            <Badge Variant="outline" Class="text-xs">
+                                                RI Requires Intake
+                                            </Badge>
+                                        }
+                                        @if (visitType.AllowsPTA)
+                                        {
+                                            <Badge Variant="outline" Class="text-xs">
+                                                PA PTA Allowed
+                                            </Badge>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <Button
+                                    Variant="ghost"
+                                    Size="sm"
+                                    OnClick="@(() => EditVisitType(visitType))"
+                                >
+                                    ED
+                                </Button>
+                                <Button
+                                    Variant="ghost"
+                                    Size="sm"
+                                    OnClick="@(() => DeleteVisitType(visitType.Id))"
+                                    Class="text-red-600 hover:text-red-700"
+                                >
+                                    TR
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Schedule Blocks Tab -->
+    <TabsContent Value="schedule-blocks" Class="space-y-6">
+        <Card Class="border-2">
+            <CardHeader>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <CardTitle Class="flex items-center gap-2">
+                            CF Schedule Blocks
+                        </CardTitle>
+                        <CardDescription>
+                            Configure schedule blocks for admin, lunch, meetings, etc.
+                        </CardDescription>
+                    </div>
+                    <Button Size="sm" OnClick="@(() => AddScheduleBlock())">
+                        + Add Schedule Block
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    @foreach (var scheduleBlock in scheduleBlocks)
+                    {
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="w-4 h-4 rounded" style="background-color: @scheduleBlock.Color;"></div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">@scheduleBlock.Name</p>
+                                    <div class="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                                        <span class="flex items-center gap-1">
+                                            CK @scheduleBlock.Duration min
+                                        </span>
+                                        @if (scheduleBlock.Recurring)
+                                        {
+                                            <Badge Variant="outline" Class="text-xs">
+                                                RC Recurring
+                                            </Badge>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <Button
+                                    Variant="ghost"
+                                    Size="sm"
+                                    OnClick="@(() => EditScheduleBlock(scheduleBlock))"
+                                >
+                                    ED
+                                </Button>
+                                <Button
+                                    Variant="ghost"
+                                    Size="sm"
+                                    OnClick="@(() => DeleteScheduleBlock(scheduleBlock.Id))"
+                                    Class="text-red-600 hover:text-red-700"
+                                >
+                                    TR
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Calendar Behavior Tab -->
+    <TabsContent Value="calendar-behavior" Class="space-y-6">
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC Calendar Behavior
+                </CardTitle>
+                <CardDescription>
+                    Set default durations and buffer times
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <!-- Default Duration -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Label Class="block mb-2">Default Appointment Duration</Label>
+                        <select
+                            @bind="settings.DefaultDuration"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">60 minutes</option>
+                            <option value="90">90 minutes</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Buffer Time Between Appointments</Label>
+                        <select
+                            @bind="settings.BufferTimeBetween"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="0">No buffer</option>
+                            <option value="5">5 minutes</option>
+                            <option value="10">10 minutes</option>
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Double Booking -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Double Booking</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Permit overlapping appointments for the same clinician
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowDoubleBooking"
+                        OnCheckedChange="@((bool isChecked) => { settings.AllowDoubleBooking = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Auto Confirm -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Confirm Appointments</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically confirm new appointments without manual review
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoConfirmAppointments"
+                        OnCheckedChange="@((bool isChecked) => { settings.AutoConfirmAppointments = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Click to Create -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable Click to Create</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow users to create appointments by clicking on the calendar
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableClickToCreate"
+                        OnCheckedChange="@((bool isChecked) => { settings.EnableClickToCreate = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Show Intake Status -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Show Intake Status</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Display intake status on appointments
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.ShowIntakeStatus"
+                        OnCheckedChange="@((bool isChecked) => { settings.ShowIntakeStatus = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Allow Cancel from Week View -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Cancel from Week View</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow users to cancel appointments from the week view
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowCancelFromWeekView"
+                        OnCheckedChange="@((bool isChecked) => { settings.AllowCancelFromWeekView = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Allow Reschedule from Week View -->
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Reschedule from Week View</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Allow users to reschedule appointments from the week view
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowRescheduleFromWeekView"
+                        OnCheckedChange="@((bool isChecked) => { settings.AllowRescheduleFromWeekView = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                <!-- Default Clinician View -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Label Class="block mb-2">Default Clinician View</Label>
+                        <select
+                            @bind="settings.DefaultClinicianView"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="day">Day View</option>
+                            <option value="week">Week View</option>
+                            <option value="month">Month View</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Default Admin View</Label>
+                        <select
+                            @bind="settings.DefaultAdminView"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="day">Day View</option>
+                            <option value="week">Week View</option>
+                            <option value="month">Month View</option>
+                            <option value="all-day">All-Day View</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Intake Status Colors -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <Label Class="block mb-2">Intake Sent Color</Label>
+                        <input
+                            type="color"
+                            @bind="settings.IntakeSentColor"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background h-10"
+                        />
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Intake Incomplete Color</Label>
+                        <input
+                            type="color"
+                            @bind="settings.IntakeIncompleteColor"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background h-10"
+                        />
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Intake Complete Color</Label>
+                        <input
+                            type="color"
+                            @bind="settings.IntakeCompleteColor"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background h-10"
+                        />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Clinic Hours Tab -->
+    <TabsContent Value="clinic-hours" Class="space-y-6">
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CK Clinic Hours
+                </CardTitle>
+                <CardDescription>
+                    Set operating hours and break times
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Label Class="block mb-2">Clinic Start Time</Label>
+                        <input
+                            type="time"
+                            value="@settings.ClinicStartTime"
+                            @onchange="@(e => settings.ClinicStartTime = e.Value?.ToString() ?? "")"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Clinic End Time</Label>
+                        <input
+                            type="time"
+                            value="@settings.ClinicEndTime"
+                            @onchange="@(e => settings.ClinicEndTime = e.Value?.ToString() ?? "")"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Lunch Break Start</Label>
+                        <input
+                            type="time"
+                            value="@settings.LunchBreakStart"
+                            @onchange="@(e => settings.LunchBreakStart = e.Value?.ToString() ?? "")"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+
+                    <div>
+                        <Label Class="block mb-2">Lunch Break End</Label>
+                        <input
+                            type="time"
+                            value="@settings.LunchBreakEnd"
+                            @onchange="@(e => settings.LunchBreakEnd = e.Value?.ToString() ?? "")"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Appointment Reminders -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC Appointment Reminders
+                </CardTitle>
+                <CardDescription>
+                    Configure automatic patient reminders
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Send Appointment Reminders</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Automatically send reminders to patients
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.SendReminders"
+                        OnCheckedChange="@((bool isChecked) => { settings.SendReminders = isChecked; NotifyUnsavedChanges(); })"
+                    />
+                </div>
+
+                @if (settings.SendReminders)
+                {
+                    <div>
+                        <Label Class="block mb-2">Send Reminder</Label>
+                        <select
+                            @bind="settings.ReminderHoursBefore"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="1">1 hour before</option>
+                            <option value="2">2 hours before</option>
+                            <option value="4">4 hours before</option>
+                            <option value="24">24 hours before</option>
+                            <option value="48">48 hours before</option>
+                        </select>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+    </TabsContent>
+</Tabs>
+

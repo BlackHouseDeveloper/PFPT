@@ -1,0 +1,22 @@
+{
+  "level0": {
+    "value": "none",
+    "type": "shadow"
+  },
+  "level1": {
+    "value": "0 1px 3px rgba(0,0,0,0.12)",
+    "type": "shadow"
+  },
+  "level2": {
+    "value": "0 4px 6px rgba(0,0,0,0.12)",
+    "type": "shadow"
+  },
+  "level3": {
+    "value": "0 10px 20px rgba(0,0,0,0.12)",
+    "type": "shadow"
+  },
+  "level4": {
+    "value": "0 20px 25px rgba(0,0,0,0.15)",
+    "type": "shadow"
+  }
+}

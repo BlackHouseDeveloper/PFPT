@@ -1,0 +1,45 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="grid gap-2 @Class"
+     role="radiogroup"
+     aria-orientation="@Orientation"
+     @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnValueChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string Orientation { get; set; } = "vertical";
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    internal bool IsChecked(string candidate) => string.Equals(Value, candidate, StringComparison.Ordinal);
+
+    internal async Task SelectAsync(string? nextValue)
+    {
+        Value = nextValue;
+        await ValueChanged.InvokeAsync(nextValue);
+        if (OnValueChanged.HasDelegate)
+        {
+            await OnValueChanged.InvokeAsync(nextValue);
+        }
+    }
+}

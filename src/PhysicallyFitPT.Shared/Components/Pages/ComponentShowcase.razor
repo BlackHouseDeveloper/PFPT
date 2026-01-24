@@ -1,0 +1,877 @@
+@page "/component-showcase"
+@* 
+    Component Showcase - Test page for all UI components ported from Make
+    Use this to test and verify component behavior as they're implemented
+*@
+@using PhysicallyFitPT.Shared.Components.UI.Command
+@using PhysicallyFitPT.Shared.Components.UI.ContextMenu
+@using PhysicallyFitPT.Shared.Components.UI.DatePicker
+@using PhysicallyFitPT.Shared.Components.UI.Dialog
+@using PhysicallyFitPT.Shared.Components.UI.Drawer
+
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b sticky top-0 z-10">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="text-2xl font-bold text-gray-900">PFPT Component Showcase</h1>
+            <p class="text-sm text-gray-600 mt-1">Test and verify UI components ported from Make prototype</p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid lg:grid-cols-12 gap-8">
+            <!-- Sidebar Navigation -->
+            <aside class="lg:col-span-3">
+                <nav class="bg-white rounded-lg shadow-sm p-4 sticky top-24">
+                    <h2 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Components</h2>
+                    <ul class="space-y-1">
+                        @foreach (var component in sections)
+                        {
+                            <li>
+                                <button 
+                                    @onclick="() => ScrollToSection(component.Id)"
+                                    class="@GetNavButtonClass(component.Id)">
+                                    <span class="@(component.Completed ? "text-green-600" : "text-gray-400")">
+                                        @(component.Completed ? "✓" : "○")
+                                    </span>
+                                    @component.Name
+                                </button>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="mt-6 pt-6 border-t">
+                        <div class="text-xs text-gray-500">
+                            <p class="font-semibold mb-2">Progress</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full transition-all" style="width: @(completionPercentage)%"></div>
+                                </div>
+                                <span class="font-mono">@completedCount/@totalCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-9 space-y-8">
+                
+                <!-- Accordion Section -->
+                <section id="accordion" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Accordion</h2>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Collapsible sections with smooth animations and keyboard navigation</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- Single Mode -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Single Mode (One at a time)</h3>
+                            <Accordion Type="single" Collapsible="true">
+                                <AccordionItem Value="single-1">
+                                    <AccordionTrigger>Is it accessible?</AccordionTrigger>
+                                    <AccordionContent>
+                                        Yes. It adheres to the WAI-ARIA design pattern with full keyboard navigation support.
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem Value="single-2">
+                                    <AccordionTrigger>Is it styled?</AccordionTrigger>
+                                    <AccordionContent>
+                                        Yes. It comes with default styles that match your design system.
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem Value="single-3">
+                                    <AccordionTrigger>Can it be animated?</AccordionTrigger>
+                                    <AccordionContent>
+                                        Yes. It uses CSS animations for smooth transitions.
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+
+                        <!-- Multiple Mode -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Multiple Mode (Multiple open)</h3>
+                            <Accordion Type="multiple">
+                                <AccordionItem Value="multi-1">
+                                    <AccordionTrigger>Feature One</AccordionTrigger>
+                                    <AccordionContent>Multiple accordions can be open at the same time.</AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem Value="multi-2">
+                                    <AccordionTrigger>Feature Two</AccordionTrigger>
+                                    <AccordionContent>Each section maintains its own state independently.</AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+
+                        <!-- Disabled State -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Disabled State</h3>
+                            <Accordion Type="single">
+                                <AccordionItem Value="disabled-1">
+                                    <AccordionTrigger Disabled="true">Disabled Trigger</AccordionTrigger>
+                                    <AccordionContent>This content is not accessible.</AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Alert Section -->
+                <section id="alert" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Alert</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Banner component for displaying important messages</p>
+                    </div>
+                    <div class="space-y-6">
+                        <AlertDemo />
+                    </div>
+                </section>
+
+                <!-- Alert Dialog Section -->
+                <section id="alert-dialog" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Alert Dialog</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Modal dialog for important alerts and confirmations</p>
+                    </div>
+                    <div class="space-y-6">
+                        <AlertDialogDemo />
+                    </div>
+                </section>
+
+                <!-- Aspect Ratio Section -->
+                <section id="aspect-ratio" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Aspect Ratio</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Container that maintains a specific aspect ratio</p>
+                    </div>
+                    <div class="space-y-6">
+                        <AspectRatioDemo />
+                    </div>
+                </section>
+
+                <!-- Avatar Section -->
+                <section id="avatar" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Avatar</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">User profile picture with automatic fallback support</p>
+                    </div>
+                    <div class="space-y-6">
+                        <AvatarDemo />
+                    </div>
+                </section>
+
+                <!-- Badge Section -->
+                <section id="badge" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Badge</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Small label component with multiple style variants</p>
+                    </div>
+                    <div class="space-y-6">
+                        <BadgeDemo />
+                    </div>
+                </section>
+
+                <!-- Breadcrumb Section -->
+                <section id="breadcrumb" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Breadcrumb</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Navigation component showing current location in site hierarchy</p>
+                    </div>
+                    <div class="space-y-6">
+                        <BreadcrumbDemo />
+                    </div>
+                </section>
+
+                <!-- Button Section -->
+                <section id="button" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Button</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Interactive button component with multiple variants and sizes</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ButtonDemo />
+                    </div>
+                </section>
+
+                <!-- Calendar Section -->
+                <section id="calendar" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Calendar</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Date picker component for single dates or date ranges</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CalendarDemo />
+                    </div>
+                </section>
+
+                <!-- Card Section -->
+                <section id="card" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Card</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Card container for structured content with header, content, and footer sections</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CardDemo />
+                    </div>
+                </section>
+
+                <!-- Carousel Section -->
+                <section id="carousel" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Carousel</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Slideshow component for cycling through content with navigation</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CarouselDemo />
+                    </div>
+                </section>
+
+                <!-- Chart Section -->
+                <section id="chart" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Chart</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Chart visualization component (requires JS charting library integration)</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ChartDemo />
+                    </div>
+                </section>
+
+                <!-- Checkbox Section -->
+                <section id="checkbox" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Checkbox</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Accessible checkbox with checked and indeterminate states</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CheckboxDemo />
+                    </div>
+                </section>
+                
+                <!-- Resizable Section -->
+                <section id="resizable" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Resizable Panels</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Drag handles to balance queues, editors, and task panes</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ResizableDemo />
+                    </div>
+                </section>
+
+                <!-- Radio Group Section -->
+                <section id="radio-group" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Radio Group</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Single-choice selection for visit types, pain scales, and eligibility decisions</p>
+                    </div>
+                    <div class="space-y-6">
+                        <RadioGroupDemo />
+                    </div>
+                </section>
+
+                <!-- Collapsible Section -->
+                <section id="collapsible" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Collapsible</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Expandable container with trigger and content for progressive disclosure</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CollapsibleDemo />
+                    </div>
+                </section>
+
+                <!-- Command Section -->
+                <section id="command" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Command</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Command palette / search interface for quick navigation and actions</p>
+                    </div>
+                    <div class="space-y-6">
+                        <CommandDemo />
+                    </div>
+                </section>
+
+                <!-- Separator Section -->
+                <section id="separator" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Separator</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Simple dividers to group content horizontally or vertically</p>
+                    </div>
+                    <div class="space-y-6">
+                        <SeparatorDemo />
+                    </div>
+                </section>
+
+                <!-- Scroll Area Section -->
+                <section id="scroll-area" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Scroll Area</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Constrain scrollable content in cards and panels with styled scrollbars</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ScrollAreaDemo />
+                    </div>
+                </section>
+
+                <!-- Context Menu Section -->
+                <section id="context-menu" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Context Menu</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Right-click context menu with items, checkboxes, radio buttons, and separators</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ContextMenuDemo />
+                    </div>
+                </section>
+
+                <!-- Popover Section -->
+                <section id="popover" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Popover</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Floating panel component for popovers and dropdowns</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
+                        <p>Popover used as underlying component for DatePicker, Select, and Dropdown</p>
+                    </div>
+                </section>
+
+                <!-- DatePicker Section -->
+                <section id="date-picker" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Date Picker</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Date input with calendar picker and constraints (min/max dates)</p>
+                    </div>
+                    <div class="space-y-6">
+                        <DatePickerDemo />
+                    </div>
+                </section>
+
+                <!-- Dialog Section -->
+                <section id="dialog" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Dialog</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Modal dialog with header, content, and footer for focused interactions</p>
+                    </div>
+                    <div class="space-y-6">
+                        <DialogDemo />
+                    </div>
+                </section>
+
+                <!-- Drawer Section -->
+                <section id="drawer" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Drawer</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Slide-in panel from any edge (top, bottom, left, right) with animations</p>
+                    </div>
+                    <div class="space-y-6">
+                        <DrawerDemo />
+                    </div>
+                </section>
+
+                <!-- Dropdown Menu Section -->
+                <section id="dropdown-menu" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Dropdown Menu</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Click-triggered menus with items, checkboxes, radio groups, and keyboard shortcuts</p>
+                    </div>
+                    <div class="space-y-6">
+                        <DropdownMenuDemo />
+                    </div>
+                </section>
+
+                <!-- Menubar Section -->
+                <section id="menubar" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Menubar</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Application menubar with nested menus, shortcuts, and clinical actions</p>
+                    </div>
+                    <div class="space-y-6">
+                        <MenubarDemo />
+                    </div>
+                </section>
+
+                <!-- Navigation Menu Section -->
+                <section id="navigation-menu" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Navigation Menu</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Top-level navigation with viewport content for clinical shortcuts</p>
+                    </div>
+                    <div class="space-y-6">
+                        <NavigationMenuDemo />
+                    </div>
+                </section>
+
+                <!-- Form Section -->
+                <section id="form" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Form</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Form components with validation, labels, descriptions, and error messages</p>
+                    </div>
+                    <div class="space-y-6">
+                        <FormDemo />
+                    </div>
+                </section>
+
+                <!-- Input Section -->
+                <section id="input" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Input</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Text input fields with various types and validation states</p>
+                    </div>
+                    <div class="space-y-6">
+                        <InputDemo />
+                    </div>
+                </section>
+
+                <!-- Multi Select Section -->
+                <section id="multi-select" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Multi Select</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Select multiple values with searchable command list and removable badges</p>
+                    </div>
+                    <div class="space-y-6">
+                        <MultiSelectDemo />
+                    </div>
+                </section>
+
+                <!-- Pagination Section -->
+                <section id="pagination" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Pagination</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Navigate multi-page results with accessible controls and ellipsis</p>
+                    </div>
+                    <div class="space-y-6">
+                        <PaginationDemo />
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section id="progress" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Progress</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Animated progress bars for plans, documentation, and background jobs</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ProgressDemo />
+                    </div>
+                </section>
+
+                <!-- Hover Card Section -->
+                <section id="hover-card" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Hover Card</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Hover-triggered cards with patient info, definitions, and details</p>
+                    </div>
+                    <div class="space-y-6">
+                        <HoverCardDemo />
+                    </div>
+                </section>
+
+                <!-- Icons Section -->
+                <section id="icons" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Icons</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Comprehensive icon library for clinical applications</p>
+                    </div>
+                    <div class="space-y-6">
+                        <IconsDemo />
+                    </div>
+                </section>
+
+                <!-- Input OTP Section -->
+                <section id="input-otp" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Input OTP</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">One-Time Password input for verification codes and PINs</p>
+                    </div>
+                    <div class="space-y-6">
+                        <InputOTPDemo />
+                    </div>
+                </section>
+
+                <!-- Label Section -->
+                <section id="label" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Label</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Accessible labels for form controls</p>
+                    </div>
+                    <div class="space-y-6">
+                        <LabelDemo />
+                    </div>
+                </section>
+
+                <!-- Input Section (Placeholder) -->
+                <section id="input" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Input</h2>
+                            <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded">Pending</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Text input with validation and states</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
+                        Component not yet implemented
+                    </div>
+                </section>
+
+                <!-- Textarea Section -->
+                <section id="textarea" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Textarea</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Multi-line text input for clinical documentation, SOAP notes, and detailed comments</p>
+                    </div>
+                    <div class="space-y-6">
+                        <TextareaDemo />
+                    </div>
+                </section>
+
+                <!-- Dialog Section (Placeholder) -->
+                <section id="dialog" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Dialog</h2>
+                            <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded">Pending</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Modal dialog for focused interactions</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
+                        Component not yet implemented
+                    </div>
+                </section>
+
+                <!-- Tabs Section -->
+                <section id="tabs" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Tabs</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Tabbed interface for organizing related content with keyboard navigation and accessibility</p>
+                    </div>
+                    <div class="space-y-6">
+                        <TabsDemo />
+                    </div>
+                </section>
+
+                <!-- Select Section (Placeholder) -->
+                <section id="select" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Select</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Compact dropdown with keyboard-friendly trigger and styled listbox</p>
+                    </div>
+                    <div class="space-y-6">
+                        <SelectDemo />
+                    </div>
+                </section>
+
+                <!-- Sidebar Section -->
+                <section id="sidebar" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Sidebar</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Responsive sidebar navigation with collapsible states and mobile support</p>
+                    </div>
+                    <div class="space-y-6">
+                        <SidebarDemo />
+                    </div>
+                </section>
+
+                <!-- Skeleton Section -->
+                <section id="skeleton" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Skeleton</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Placeholder component for loading states with pulse animation</p>
+                    </div>
+                    <div class="space-y-6">
+                        <SkeletonDemo />
+                    </div>
+                </section>
+
+                <!-- Toaster Section -->
+                <section id="toaster" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Toaster</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Toast notification system with auto-dismiss and custom styling</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ToasterDemo />
+                    </div>
+                </section>
+
+                <!-- Switch Section -->
+                <section id="switch" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Switch</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Accessible toggle switch for boolean states with smooth animations</p>
+                    </div>
+                    <div class="space-y-6">
+                        <SwitchDemo />
+                    </div>
+                </section>
+
+                <!-- Toggle Section -->
+                <section id="toggle" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Toggle</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Standalone toggle button for binary state selection with variants and sizes</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ToggleDemo />
+                    </div>
+                </section>
+
+                <!-- Toggle Group Section -->
+                <section id="toggle-group" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Toggle Group</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Group of toggle buttons for selecting related options with multiple variants and sizes</p>
+                    </div>
+                    <div class="space-y-6">
+                        <ToggleGroupDemo />
+                    </div>
+                </section>
+
+                <!-- Table Section -->
+                    <!-- useIsMobile / IsMobileService Section -->
+                    <section id="use-mobile" class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h2 class="text-xl font-bold text-gray-900">useIsMobile Hook</h2>
+                                <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Reactive viewport size detection with real-time mobile state tracking</p>
+                        </div>
+                        <div class="space-y-6">
+                            <UseMobileDemo />
+                        </div>
+                    </section>
+
+                    <!-- Table Section -->
+                <section id="table" class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xl font-bold text-gray-900">Table</h2>
+                            <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">Completed</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Semantic HTML data table with header, body, footer, and cells for clinical data display</p>
+                    </div>
+                    <div class="space-y-6">
+                        <TableDemo />
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string activeSection = "accordion";
+
+    private record ComponentSection(string Id, string Name, bool Completed);
+
+    private List<ComponentSection> sections = new()
+    {
+        new("accordion", "Accordion", true),
+        new("alert", "Alert", true),
+        new("alert-dialog", "Alert Dialog", true),
+        new("aspect-ratio", "Aspect Ratio", true),
+        new("avatar", "Avatar", true),
+        new("badge", "Badge", true),
+        new("breadcrumb", "Breadcrumb", true),
+        new("button", "Button", true),
+        new("calendar", "Calendar", true),
+        new("card", "Card", true),
+        new("carousel", "Carousel", true),
+        new("chart", "Chart", true),
+        new("checkbox", "Checkbox", true),
+        new("resizable", "Resizable Panels", true),
+        new("radio-group", "Radio Group", true),
+        new("collapsible", "Collapsible", true),
+        new("command", "Command", true),
+        new("separator", "Separator", true),
+        new("scroll-area", "Scroll Area", true),
+        new("select", "Select", true),
+        new("sidebar", "Sidebar", true),
+        new("skeleton", "Skeleton", true),
+        new("switch", "Switch", true),
+        new("toggle", "Toggle", true),
+        new("toaster", "Toaster", true),
+        new("context-menu", "Context Menu", true),
+        new("popover", "Popover", true),
+        new("date-picker", "Date Picker", true),
+        new("dialog", "Dialog", true),
+        new("drawer", "Drawer", true),
+        new("dropdown-menu", "Dropdown Menu", true),
+        new("menubar", "Menubar", true),
+        new("navigation-menu", "Navigation Menu", true),
+        new("form", "Form", true),
+        new("input", "Input", true),
+        new("multi-select", "Multi Select", true),
+        new("pagination", "Pagination", true),
+        new("progress", "Progress", true),
+        new("hover-card", "Hover Card", true),
+        new("icons", "Icons", true),
+        new("input-otp", "Input OTP", true),
+        new("label", "Label", true),
+        new("textarea", "Textarea", true),
+        new("tabs", "Tabs", true),
+        new("toggle-group", "Toggle Group", true),
+        new("use-mobile", "useIsMobile Hook", true),
+        new("table", "Table", true)
+    };
+
+    private int completedCount => sections.Count(s => s.Completed);
+    private int totalCount => sections.Count;
+    private double completionPercentage => totalCount > 0 ? (double)completedCount / totalCount * 100 : 0;
+
+    private string GetNavButtonClass(string sectionId)
+    {
+        var baseClass = "w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 transition-colors";
+        var activeClass = activeSection == sectionId 
+            ? "bg-primary text-primary-foreground font-medium" 
+            : "text-gray-700 hover:bg-gray-100";
+        return $"{baseClass} {activeClass}";
+    }
+
+    private void ScrollToSection(string sectionId)
+    {
+        activeSection = sectionId;
+        // In a real implementation, you'd use JS interop to scroll to the section
+        // JSRuntime.InvokeVoidAsync("scrollToElement", sectionId);
+    }
+}

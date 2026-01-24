@@ -1,0 +1,22 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (Select?.IsOpen == true)
+{
+    <div class="select-content"
+         role="listbox"
+         id="@Select!.ListboxId">
+        <div class="select-viewport">
+            <CascadingValue Value="Select">
+                @ChildContent
+            </CascadingValue>
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private Select? Select { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

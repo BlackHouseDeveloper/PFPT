@@ -1,0 +1,20 @@
+@* Header section for title and description *@
+
+<div class="@CombinedClass"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"flex flex-col gap-2 text-center sm:text-left {Class}".Trim();
+}

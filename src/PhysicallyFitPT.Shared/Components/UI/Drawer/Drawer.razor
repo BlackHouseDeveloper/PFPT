@@ -1,0 +1,78 @@
+@* Drawer root component - slide-in panel from any edge *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.Drawer
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@if (isOpen)
+{
+    <div class="drawer-portal">
+        <div class="drawer-overlay" @onclick="HandleOverlayClick"></div>
+        <div class="drawer-content @GetDirectionClass()" @attributes="ContentAttributes">
+            @if (Direction == "bottom")
+            {
+                <div class="drawer-handle"></div>
+            }
+            @ContentChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ContentChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string Direction { get; set; } = "bottom";
+
+    [Parameter]
+    public Dictionary<string, object>? ContentAttributes { get; set; }
+
+    private bool isOpen;
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    public async Task SetOpen(bool open)
+    {
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        StateHasChanged();
+    }
+
+    public async Task Close()
+    {
+        await SetOpen(false);
+    }
+
+    private async Task HandleOverlayClick()
+    {
+        await Close();
+    }
+
+    private string GetDirectionClass()
+    {
+        return $"drawer-{Direction}";
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}

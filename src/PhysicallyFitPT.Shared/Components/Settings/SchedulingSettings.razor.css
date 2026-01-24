@@ -1,0 +1,423 @@
+/* SchedulingSettings.razor.css - Comprehensive styling for scheduling configuration */
+
+/* Responsive Tab List */
+:deep(.scheduling-settings-tabs) {
+  width: 100%;
+}
+
+:deep(.scheduling-settings-tabs [role="tablist"]) {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: none;
+}
+
+/* Visit Types Tab */
+.scheduling-visit-types {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scheduling-visit-type-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  transition: background-color 0.2s ease;
+}
+
+.scheduling-visit-type-item:hover {
+  background-color: rgb(245 245 245 / 50%);
+}
+
+.scheduling-visit-type-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.scheduling-visit-type-color {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.scheduling-visit-type-details {
+  flex: 1;
+}
+
+.scheduling-visit-type-details p {
+  font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.scheduling-visit-type-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: rgb(107 114 128);
+}
+
+.scheduling-visit-type-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Schedule Blocks Tab */
+.scheduling-schedule-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scheduling-schedule-block-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  transition: background-color 0.2s ease;
+}
+
+.scheduling-schedule-block-item:hover {
+  background-color: rgb(245 245 245 / 50%);
+}
+
+.scheduling-schedule-block-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.scheduling-schedule-block-color {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.scheduling-schedule-block-details {
+  flex: 1;
+}
+
+.scheduling-schedule-block-details p {
+  font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.scheduling-schedule-block-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: rgb(107 114 128);
+}
+
+.scheduling-schedule-block-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Calendar Behavior Tab */
+.scheduling-calendar-behavior {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scheduling-behavior-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scheduling-setting-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .scheduling-setting-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scheduling-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scheduling-setting-group label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--foreground, #000000);
+}
+
+/* Select and Input Styling */
+.scheduling-settings-select,
+.scheduling-settings-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--foreground, #000000);
+  transition: border-color 0.2s ease;
+}
+
+.scheduling-settings-select:focus,
+.scheduling-settings-input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+@media (max-width: 768px) {
+  .scheduling-settings-select,
+  .scheduling-settings-input {
+    font-size: 1rem;
+  }
+}
+
+/* Toggle Settings Row */
+.scheduling-toggle-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  transition: background-color 0.2s ease;
+}
+
+.scheduling-toggle-setting:hover {
+  background-color: rgb(245 245 245 / 50%);
+}
+
+.scheduling-toggle-setting-label {
+  flex: 1;
+}
+
+.scheduling-toggle-setting-label .label-title {
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.scheduling-toggle-setting-label .label-description {
+  font-size: 0.75rem;
+  color: rgb(107 114 128);
+  margin-top: 0.25rem;
+}
+
+.scheduling-toggle-setting-control {
+  flex-shrink: 0;
+}
+
+/* Color Picker Section */
+.scheduling-color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .scheduling-color-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scheduling-color-picker-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scheduling-color-picker-item label {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.scheduling-color-input {
+  width: 100%;
+  height: 2.5rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.scheduling-color-input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* Clinic Hours Tab */
+.scheduling-clinic-hours {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scheduling-time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .scheduling-time-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scheduling-time-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scheduling-time-input-group label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.scheduling-time-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--foreground, #000000);
+}
+
+.scheduling-time-input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+@media (max-width: 768px) {
+  .scheduling-time-input {
+    font-size: 1rem;
+  }
+}
+
+/* Appointment Reminders Section */
+.scheduling-reminders-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scheduling-reminder-conditional {
+  animation: slideInReminder 0.3s ease;
+}
+
+@keyframes slideInReminder {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+  :deep(.scheduling-settings-tabs [role="tablist"]) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.25rem;
+  }
+
+  .scheduling-visit-type-item,
+  .scheduling-schedule-block-item,
+  .scheduling-toggle-setting {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .scheduling-visit-type-item-header,
+  .scheduling-schedule-block-item-header {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .scheduling-visit-type-actions,
+  .scheduling-schedule-block-actions,
+  .scheduling-toggle-setting-control {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* CSS Variables for Theme Support */
+:root {
+  --border-color: #e5e7eb;
+  --background: #ffffff;
+  --foreground: #000000;
+  --primary: #3b82f6;
+  --muted-foreground: #6b7280;
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border-color: #374151;
+    --background: #1f2937;
+    --foreground: #ffffff;
+    --primary: #60a5fa;
+    --muted-foreground: #9ca3af;
+  }
+
+  .scheduling-visit-type-item:hover,
+  .scheduling-schedule-block-item:hover,
+  .scheduling-toggle-setting:hover {
+    background-color: rgb(31 41 55 / 50%);
+  }
+}
+
+/* Badge Styling */
+:deep(.scheduling-settings-tabs) :deep(.badge) {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 0.25rem;
+}
+
+/* Button Styling Integration */
+:deep(.scheduling-settings-tabs) :deep(button) {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+:deep(.scheduling-settings-tabs) :deep(button:hover) {
+  transform: translateY(-1px);
+}
+
+/* Card Border Styling */
+:deep(.scheduling-settings-tabs) :deep(.card) {
+  border: 2px solid var(--border-color, #e5e7eb);
+}

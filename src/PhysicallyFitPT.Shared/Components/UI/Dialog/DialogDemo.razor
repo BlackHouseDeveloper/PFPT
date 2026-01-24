@@ -1,0 +1,305 @@
+@* Demo page showing Dialog usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic dialog -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Dialog</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <Dialog @bind-Open="basicDialogOpen">
+                    <DialogTrigger>
+                        <Button>Open Dialog</Button>
+                    </DialogTrigger>
+                    <DialogHeader>
+                        <DialogTitle>Welcome to PFPT</DialogTitle>
+                        <DialogDescription>This is a basic dialog with header, content, and footer sections.</DialogDescription>
+                    </DialogHeader>
+                    <div class="dialog-body">
+                        <p class="text-sm text-gray-600">Dialog content goes here. You can add forms, text, or any other content.</p>
+                    </div>
+                    <DialogFooter>
+                        <Button Variant="outline" OnClick="() => basicDialogOpen = false">Cancel</Button>
+                        <Button OnClick="() => basicDialogOpen = false">Confirm</Button>
+                    </DialogFooter>
+                </Dialog>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Form dialog -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Dialog with Form</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <Dialog @bind-Open="formDialogOpen">
+                    <DialogTrigger>
+                        <Button>Add Patient</Button>
+                    </DialogTrigger>
+                    <DialogHeader>
+                        <DialogTitle>Add New Patient</DialogTitle>
+                        <DialogDescription>Enter patient information to create a new record.</DialogDescription>
+                    </DialogHeader>
+                    <div class="dialog-body space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-2">Patient Name</label>
+                            <input type="text" @bind="patientName" class="form-input" placeholder="John Doe" />
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-2">Date of Birth</label>
+                            <input type="date" @bind="patientDob" class="form-input" />
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-2">Phone Number</label>
+                            <input type="tel" @bind="patientPhone" class="form-input" placeholder="(555) 123-4567" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button Variant="outline" OnClick="() => formDialogOpen = false">Cancel</Button>
+                        <Button OnClick="HandleAddPatient">Add Patient</Button>
+                    </DialogFooter>
+                </Dialog>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Confirmation dialog -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Confirmation Dialog</h3>
+        <Card Class="max-w-2xl">
+            <CardContent>
+                <Dialog @bind-Open="confirmDialogOpen">
+                    <DialogTrigger>
+                        <Button Variant="destructive">Delete Note</Button>
+                    </DialogTrigger>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Deletion</DialogTitle>
+                        <DialogDescription>Are you sure you want to delete this note? This action cannot be undone.</DialogDescription>
+                    </DialogHeader>
+                    <div class="dialog-body">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <p class="text-sm text-red-800">
+                                <span class="font-semibold">Warning:</span> Deleting this note will permanently remove all associated data.
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button Variant="outline" OnClick="() => confirmDialogOpen = false">Cancel</Button>
+                        <Button Variant="destructive" OnClick="HandleConfirmDelete">Delete</Button>
+                    </DialogFooter>
+                </Dialog>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Clinical use case: SOAP note confirmation -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Complete SOAP Note</h3>
+        <Card Class="max-w-2xl">
+            <CardHeader>
+                <CardTitle>SOAP Note Builder</CardTitle>
+                <CardDescription>Review and finalize your documentation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Dialog @bind-Open="soapDialogOpen">
+                    <DialogTrigger>
+                        <Button>Complete Note</Button>
+                    </DialogTrigger>
+                    <DialogHeader>
+                        <DialogTitle>Finalize SOAP Note</DialogTitle>
+                        <DialogDescription>Review the note details before marking as complete.</DialogDescription>
+                    </DialogHeader>
+                    <div class="dialog-body space-y-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-2">Note Summary</h4>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <p><span class="font-medium">Patient:</span> Jane Smith</p>
+                                <p><span class="font-medium">Visit Date:</span> @DateTime.Today.ToString("MMMM d, yyyy")</p>
+                                <p><span class="font-medium">Visit Type:</span> Follow-up</p>
+                                <p><span class="font-medium">Duration:</span> 45 minutes</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" @bind="signOffChecked" class="form-checkbox" />
+                                <span class="text-sm text-gray-700">I certify that this documentation is accurate and complete</span>
+                            </label>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button Variant="outline" OnClick="() => soapDialogOpen = false">Cancel</Button>
+                        <Button Disabled="@(!signOffChecked)" OnClick="HandleCompleteNote">Sign & Complete</Button>
+                    </DialogFooter>
+                </Dialog>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Status message -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p class="text-sm text-green-800">
+                <span class="font-semibold">Success:</span> @statusMessage
+            </p>
+        </div>
+    }
+</div>
+
+@code {
+    private bool basicDialogOpen;
+    private bool formDialogOpen;
+    private bool confirmDialogOpen;
+    private bool soapDialogOpen;
+    private bool signOffChecked;
+
+    private string patientName = "";
+    private string patientDob = "";
+    private string patientPhone = "";
+    private string? statusMessage;
+
+    private void HandleAddPatient()
+    {
+        statusMessage = $"Patient '{patientName}' added successfully";
+        patientName = "";
+        patientDob = "";
+        patientPhone = "";
+        formDialogOpen = false;
+    }
+
+    private void HandleConfirmDelete()
+    {
+        statusMessage = "Note deleted successfully";
+        confirmDialogOpen = false;
+    }
+
+    private void HandleCompleteNote()
+    {
+        statusMessage = "SOAP note completed and signed";
+        signOffChecked = false;
+        soapDialogOpen = false;
+    }
+}
+
+<style>
+    .space-y-8 > * + * {
+        margin-top: 2rem;
+    }
+
+    .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+
+    .space-y-2 > * + * {
+        margin-top: 0.5rem;
+    }
+
+    .space-y-1 > * + * {
+        margin-top: 0.25rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+
+    .font-medium {
+        font-weight: 500;
+    }
+
+    .text-gray-700 {
+        color: #374151;
+    }
+
+    .text-gray-600 {
+        color: #4b5563;
+    }
+
+    .text-gray-900 {
+        color: #111827;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.75rem;
+    }
+
+    .mb-2 {
+        margin-bottom: 0.5rem;
+    }
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .dialog-body {
+        padding: 0.5rem 0;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: border-color 0.15s ease-in-out;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #9BE000;
+        box-shadow: 0 0 0 3px rgba(155, 224, 0, 0.1);
+    }
+
+    .form-checkbox {
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+
+    .bg-gray-50 {
+        background-color: #f9fafb;
+    }
+
+    .bg-red-50 {
+        background-color: #fef2f2;
+    }
+
+    .border-red-200 {
+        border-color: #fecaca;
+    }
+
+    .text-red-800 {
+        color: #991b1b;
+    }
+
+    .bg-green-50 {
+        background-color: #f0fdf4;
+    }
+
+    .border-green-200 {
+        border-color: #bbf7d0;
+    }
+
+    .text-green-800 {
+        color: #166534;
+    }
+
+    .rounded-lg {
+        border-radius: 0.5rem;
+    }
+
+    .p-4 {
+        padding: 1rem;
+    }
+
+    .block {
+        display: block;
+    }
+}
+</style>

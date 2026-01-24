@@ -1,0 +1,181 @@
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.UI.Alert
+@using PhysicallyFitPT.Shared.Components.UI.Icons
+
+@if (!RequiresPoc)
+{
+    @* POC not required for this note type *@
+}
+else if (!IsBlocking)
+{
+    <Card Class="border-2 border-green-200 bg-green-50">
+        <CardContent Class="p-4">
+            <div class="flex items-center gap-2 text-green-700">
+                <div class="w-2 h-2 rounded-full bg-green-600"></div>
+                <span class="text-sm font-medium">POC Information Complete</span>
+            </div>
+        </CardContent>
+    </Card>
+}
+else
+{
+    <Card Class="border-2 border-red-500 bg-red-50">
+        <CardContent Class="p-6">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                        <Icon Name="lock" Width="24" Height="24" CssClass="text-white" />
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-red-900 mb-2">Plan of Care Information Required</h3>
+
+                    <Alert Class="border-2 border-red-300 bg-red-100 mb-4">
+                        <AlertIcon>
+                            <Icon Name="alertcircle" Width="16" Height="16" CssClass="text-red-700" />
+                        </AlertIcon>
+                        <AlertDescription Class="text-red-900">
+                            <p class="font-semibold">Cannot proceed without complete POC</p>
+                            <p class="text-sm mt-1">
+                                This note type requires comprehensive Plan of Care documentation before it can be saved or submitted.
+                            </p>
+                        </AlertDescription>
+                    </Alert>
+
+                    <div class="space-y-2">
+                        <p class="text-sm font-semibold text-red-900">Missing Required Information:</p>
+                        <ul class="space-y-2">
+                            @foreach (var error in ValidationErrors)
+                            {
+                                <li class="flex items-start gap-2 text-sm text-red-800">
+                                    <Icon Name="xcircle" Width="16" Height="16" CssClass="flex-shrink-0 mt-0.5" />
+                                    <span>@error</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-white border-2 border-red-300 rounded-lg">
+                        <p class="text-xs text-red-900">
+                            <strong>Required for @ReadableNoteType:</strong>
+                        </p>
+                        <ul class="text-xs text-red-800 mt-2 space-y-1 ml-4">
+                            <li>• Treatment frequency (e.g., 3x/week)</li>
+                            <li>• Treatment duration (e.g., 6 weeks)</li>
+                            <li>• POC start/end dates</li>
+                            <li>• SMART goals (at least 1)</li>
+                            <li>• CPT codes for billing</li>
+                        </ul>
+                    </div>
+
+                    @if (OnProceed.HasDelegate)
+                    {
+                        <Button OnClick="HandleProceed" Disabled="IsBlocking" Class="w-full mt-4 bg-red-600 hover:bg-red-700">
+                            @if (IsBlocking)
+                            {
+                                <span class="inline-flex items-center gap-2">
+                                    <Icon Name="lock" Width="16" Height="16" />
+                                    Complete POC to Continue
+                                </span>
+                            }
+                            else
+                            {
+                                <span>Continue</span>
+                            }
+                        </Button>
+                    }
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public string NoteType { get; set; } = string.Empty;
+
+    [Parameter]
+    public PocData PocDataValue { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnProceed { get; set; }
+
+    [Parameter]
+    public bool ShowAsModal { get; set; }
+
+    private static readonly HashSet<string> RequiredTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "initial-eval",
+        "progress-note",
+        "re-eval"
+    };
+
+    private IReadOnlyList<string> ValidationErrors { get; set; } = Array.Empty<string>();
+    private bool IsBlocking { get; set; }
+
+    private bool RequiresPoc => RequiredTypes.Contains(NoteType);
+
+    private string ReadableNoteType => NoteType switch
+    {
+        "initial-eval" => "Initial Evaluation",
+        "progress-note" => "Progress Note",
+        "re-eval" => "Re-evaluation",
+        _ => "Note"
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (!RequiresPoc)
+        {
+            ValidationErrors = Array.Empty<string>();
+            IsBlocking = false;
+            return;
+        }
+
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(PocDataValue.Frequency))
+        {
+            errors.Add("Treatment frequency is required");
+        }
+
+        if (string.IsNullOrWhiteSpace(PocDataValue.Duration))
+        {
+            errors.Add("Treatment duration is required");
+        }
+
+        if (PocDataValue.StartDate is null)
+        {
+            errors.Add("POC start date is required");
+        }
+
+        if (PocDataValue.Goals is null || PocDataValue.Goals.Count == 0)
+        {
+            errors.Add("At least one SMART goal is required");
+        }
+
+        if (PocDataValue.CptCodes is null || PocDataValue.CptCodes.Count == 0)
+        {
+            errors.Add("CPT codes must be documented");
+        }
+
+        ValidationErrors = errors;
+        IsBlocking = errors.Count > 0;
+    }
+
+    private Task HandleProceed()
+    {
+        return OnProceed.HasDelegate ? OnProceed.InvokeAsync() : Task.CompletedTask;
+    }
+
+    public sealed record PocData
+    {
+        public string? Frequency { get; init; }
+        public string? Duration { get; init; }
+        public DateOnly? StartDate { get; init; }
+        public DateOnly? EndDate { get; init; }
+        public List<object> Goals { get; init; } = new();
+        public List<object> CptCodes { get; init; } = new();
+    }
+}

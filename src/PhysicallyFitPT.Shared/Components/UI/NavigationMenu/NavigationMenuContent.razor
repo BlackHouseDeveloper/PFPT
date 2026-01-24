@@ -1,0 +1,32 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (!UseViewport && ParentItem?.IsOpen == true)
+{
+    <div class="navigation-menu-content @Class" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public NavigationMenuItem? ParentItem { get; set; }
+
+    [CascadingParameter]
+    public NavigationMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool UseViewport => ParentMenu?.UseViewport ?? true;
+
+    protected override void OnParametersSet()
+    {
+        ParentItem?.SetContent(ChildContent);
+    }
+}

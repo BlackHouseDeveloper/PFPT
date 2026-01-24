@@ -1,0 +1,139 @@
+@* Insurance Verification Step *@
+@namespace PhysicallyFitPT.Shared.Components.Workflow
+@using PhysicallyFitPT.Core.Intake
+
+<div class="intake-step insurance-verification">
+    <h3>Insurance Verification</h3>
+
+    <div class="form-section">
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" 
+                       id="hasInsurance_yes" 
+                       name="hasInsurance" 
+                       value="true"
+                       @onchange="() => SetHasInsurance(true)"
+                       checked="@(Data.HasInsurance == true)" />
+                <label for="hasInsurance_yes">Yes, I have insurance</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" 
+                       id="hasInsurance_no" 
+                       name="hasInsurance" 
+                       value="false"
+                       @onchange="() => SetHasInsurance(false)"
+                       checked="@(Data.HasInsurance == false)" />
+                <label for="hasInsurance_no">No insurance / Self-pay</label>
+            </div>
+        </div>
+    </div>
+
+    @if (Data.HasInsurance == true)
+    {
+        <div class="insurance-details">
+            <div class="form-grid">
+                <div class="form-group col-span-2">
+                    <label for="provider">Insurance Provider *</label>
+                    <Input @bind-Value="Data.InsuranceProvider" Type="text" Placeholder="Blue Cross Blue Shield" />
+                </div>
+
+                <div class="form-group col-span-2">
+                    <label for="policyNumber">Policy Number *</label>
+                    <Input @bind-Value="Data.PolicyNumber" Type="text" Placeholder="1234567890" />
+                </div>
+
+                <div class="form-group">
+                    <label for="groupNumber">Group Number</label>
+                    <Input @bind-Value="Data.GroupNumber" Type="text" />
+                </div>
+
+                <div class="form-group">
+                    <label for="memberId">Member ID</label>
+                    <Input @bind-Value="Data.MemberId" Type="text" />
+                </div>
+
+                <div class="form-group">
+                    <label for="copay">Copay Amount ($)</label>
+                    <Input @bind-Value="Data.CopayAmount" Type="number" />
+                </div>
+
+                <div class="form-group">
+                    <label for="deductible">Deductible ($)</label>
+                    <Input @bind-Value="Data.Deductible" Type="number" />
+                </div>
+            </div>
+
+            <div class="verification-status">
+                <div class="status-badge" role="status">
+                    <span class="status-icon">⏳</span>
+                    <span>Ready to verify. Click verify button when you're ready to proceed.</span>
+                </div>
+                <Button @onclick="VerifyInsurance" Variant="default" Size="lg">
+                    Verify Insurance
+                </Button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="self-pay-notice">
+            <Alert role="alert">
+                <p>You selected self-pay. You will be responsible for all treatment costs.</p>
+                <p>Financial assistance may be available. Please speak with our billing department.</p>
+            </Alert>
+        </div>
+    }
+
+    <div class="form-actions">
+        <Button @onclick="HandlePrevious" Variant="outline">Previous</Button>
+        <Button @onclick="HandleNext" Variant="default" Size="lg">Next Step</Button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public InsuranceInfo Data { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<InsuranceInfo> DataChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnNext { get; set; }
+
+    [Parameter]
+    public EventCallback OnPrevious { get; set; }
+
+#pragma warning disable CS0414 // Field is assigned but its value is never used
+    private bool isVerifying;
+#pragma warning restore CS0414
+
+    private async Task VerifyInsurance()
+    {
+        try
+        {
+            isVerifying = true;
+            // Simulate insurance verification API call
+            await Task.Delay(1500);
+            // In a real app, call insurance verification service
+            isVerifying = false;
+        }
+        catch (Exception)
+        {
+            // Handle error
+            isVerifying = false;
+        }
+    }
+
+    private async Task SetHasInsurance(bool value)
+    {
+        Data.HasInsurance = value;
+        if (DataChanged.HasDelegate)
+        {
+            await DataChanged.InvokeAsync(Data);
+        }
+    }
+
+    private async Task HandleNext() => await OnNext.InvokeAsync();
+    private async Task HandlePrevious() => await OnPrevious.InvokeAsync();
+
+}

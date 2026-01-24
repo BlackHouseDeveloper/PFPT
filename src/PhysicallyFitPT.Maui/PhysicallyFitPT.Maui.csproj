@@ -93,6 +93,18 @@
     </ItemGroup>
   </Target>
 
+  <!-- If JSON design tokens are not needed at runtime, prevent bundling -->
+  <Target Name="_SetPublishFolderTypeNoneOnJsonFiles"
+          BeforeTargets="_ComputePublishLocation"
+          Condition="'$(TargetFramework)'=='net8.0-ios' or '$(TargetFramework)'=='net8.0-maccatalyst'">
+    <ItemGroup>
+      <ResolvedFileToPublish 
+        Update="@(ResolvedFileToPublish)" 
+        Condition="'%(ResolvedFileToPublish.Extension)' == '.json' and '%(ResolvedFileToPublish.PublishFolderType)' == ''" 
+        PublishFolderType="None" />
+    </ItemGroup>
+  </Target>
+
 
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg"

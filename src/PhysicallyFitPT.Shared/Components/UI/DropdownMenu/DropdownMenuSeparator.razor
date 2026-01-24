@@ -1,0 +1,9 @@
+@* Dropdown menu separator - visual divider *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="dropdown-separator" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

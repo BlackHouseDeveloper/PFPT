@@ -1,0 +1,153 @@
+@using PhysicallyFitPT.Shared.Components.UI
+
+<Card Class="border-2 border-primary/20">
+    <CardHeader Class="bg-primary/5">
+        <div class="flex items-center justify-between">
+            <CardTitle Class="flex items-center gap-2">
+                <Icon Name="bell" Width="20" Height="20" CssClass="text-primary" />
+                Automated Visit Notifications
+            </CardTitle>
+            @if (triggers.Count > 0)
+            {
+                <Badge Class="bg-primary text-white">@triggers.Count pending</Badge>
+            }
+        </div>
+    </CardHeader>
+
+    <CardContent Class="p-4">
+        @if (triggers.Count == 0)
+        {
+            <div class="text-center py-8">
+                <Icon Name="checkcircle" Width="48" Height="48" CssClass="text-green-500 mx-auto mb-3" />
+                <p class="text-sm text-muted-foreground">No pending automation triggers</p>
+                <p class="text-xs text-muted-foreground mt-1">All patients are up to date with their visit schedules</p>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-3">
+                @foreach (var trigger in triggers)
+                {
+                    <div class=$"p-4 border-2 rounded-lg {GetPriorityColor(trigger.Priority)}">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h4 class="font-semibold text-gray-900">@trigger.PatientName</h4>
+                                    @GetPriorityBadge(trigger.Priority)
+                                </div>
+
+                                <div class="flex items-start gap-2 mb-2">
+                                    <Icon Name="alertcircle" Width="16" Height="16" CssClass="text-gray-600 mt-0.5" />
+                                    <div>
+                                        <p class="text-sm text-gray-700 font-medium">@trigger.RecommendedVisitType Recommended</p>
+                                        <p class="text-xs text-gray-600 mt-0.5">@trigger.Reason</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-3">
+                                    @if (trigger.VisitsSinceLastPn.HasValue)
+                                    {
+                                        <div class="flex items-center gap-1">
+                                            <Icon Name="filetext" Width="12" Height="12" />
+                                            <span>@trigger.VisitsSinceLastPn.Value visits</span>
+                                        </div>
+                                    }
+                                    @if (trigger.DaysSinceLastPn.HasValue)
+                                    {
+                                        <div class="flex items-center gap-1">
+                                            <Icon Name="calendar" Width="12" Height="12" />
+                                            <span>@trigger.DaysSinceLastPn.Value days</span>
+                                        </div>
+                                    }
+                                    @if (trigger.DueDate.HasValue)
+                                    {
+                                        <div class="flex items-center gap-1">
+                                            <Icon Name="calendar" Width="12" Height="12" />
+                                            <span>Due: @trigger.DueDate.Value.ToString("d")</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <Button OnClick="() => HandleSchedule(trigger)" Size="sm" Class="bg-primary hover:bg-primary/90 whitespace-nowrap">Schedule Visit</Button>
+                                <Button OnClick="() => HandleDismiss(trigger.Id)" Size="sm" Variant="outline" Class="whitespace-nowrap">Dismiss</Button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="mt-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+            <p class="text-xs text-blue-900">
+                <strong>Automation Rules:</strong> Progress Notes are automatically suggested after 10 visits OR 30 days, whichever comes first. Re-evaluations trigger 5 days before POC end date.
+            </p>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    [Parameter]
+    public EventCallback<AutomationTrigger> OnScheduleVisit { get; set; }
+
+    private List<AutomationTrigger> triggers = new()
+    {
+        new("t1", "PT-001", "John Doe", "Progress Note", "10 visits completed since last Progress Note", "high")
+        {
+            VisitsSinceLastPn = 10
+        },
+        new("t2", "PT-002", "Jane Smith", "Progress Note", "30 days since last Progress Note", "high")
+        {
+            DaysSinceLastPn = 30
+        },
+        new("t3", "PT-003", "Bob Wilson", "Re-evaluation", "POC due date approaching (5 days)", "medium")
+        {
+            DueDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5))
+        }
+    };
+
+    private string GetPriorityColor(string priority) => priority.ToLowerInvariant() switch
+    {
+        "high" => "border-red-500 bg-red-50",
+        "medium" => "border-yellow-500 bg-yellow-50",
+        "low" => "border-blue-500 bg-blue-50",
+        _ => "border-gray-300 bg-gray-50"
+    };
+
+    private RenderFragment GetPriorityBadge(string priority) => priority.ToLowerInvariant() switch
+    {
+        "high" => @<Badge Class="bg-red-600 text-white">High Priority</Badge>,
+        "medium" => @<Badge Class="bg-yellow-600 text-white">Medium Priority</Badge>,
+        "low" => @<Badge Class="bg-blue-600 text-white">Low Priority</Badge>,
+        _ => @<span></span>
+    };
+
+    private async Task HandleSchedule(AutomationTrigger trigger)
+    {
+        if (OnScheduleVisit.HasDelegate)
+        {
+            await OnScheduleVisit.InvokeAsync(trigger);
+        }
+
+        triggers = triggers.Where(t => t.Id != trigger.Id).ToList();
+    }
+
+    private void HandleDismiss(string triggerId)
+    {
+        triggers = triggers.Where(t => t.Id != triggerId).ToList();
+    }
+
+    public sealed record AutomationTrigger(
+        string Id,
+        string PatientId,
+        string PatientName,
+        string RecommendedVisitType,
+        string Reason,
+        string Priority)
+    {
+        public int? VisitsSinceLastPn { get; init; }
+        public int? DaysSinceLastPn { get; init; }
+        public DateOnly? DueDate { get; init; }
+    }
+}

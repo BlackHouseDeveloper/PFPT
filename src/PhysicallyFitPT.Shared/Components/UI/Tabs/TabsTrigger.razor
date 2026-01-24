@@ -1,0 +1,60 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+@implements IAsyncDisposable
+
+<button 
+    class="tabs-trigger @(IsActive ? "active" : "") @Class" 
+    data-slot="tabs-trigger"
+    role="tab"
+    aria-selected="@IsActive"
+    @onclick="OnTriggerClick"
+    disabled="@Disabled"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter(Name = "TabsContext")]
+    public TabsContext? TabsContext { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsActive => TabsContext?.ActiveValue == Value;
+
+    protected override void OnInitialized()
+    {
+        if (TabsContext != null)
+        {
+            TabsContext.OnValueChanged += StateHasChanged;
+        }
+    }
+
+    private void OnTriggerClick()
+    {
+        if (!Disabled && TabsContext != null)
+        {
+            TabsContext.SetActive(Value);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (TabsContext != null)
+        {
+            TabsContext.OnValueChanged -= StateHasChanged;
+        }
+        await ValueTask.CompletedTask;
+    }
+}

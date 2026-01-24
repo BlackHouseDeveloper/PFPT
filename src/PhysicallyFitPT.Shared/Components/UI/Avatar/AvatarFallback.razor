@@ -1,0 +1,29 @@
+@* Avatar fallback - displays when image fails to load or is loading *@
+
+@if (ShouldShowFallback)
+{
+    <div class="@CombinedClass"
+         @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public Avatar? Parent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool ShouldShowFallback => 
+        Parent == null || !Parent.ImageLoaded;
+
+    private string CombinedClass => 
+        $"flex size-full items-center justify-center rounded-full bg-gray-100 text-gray-600 text-sm font-medium {Class}".Trim();
+}

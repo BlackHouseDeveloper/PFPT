@@ -1,0 +1,292 @@
+@* Demo page showing Card usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic Card -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Card</h3>
+        <Card Class="max-w-md">
+            <CardHeader>
+                <CardTitle>Card Title</CardTitle>
+                <CardDescription>Card description goes here. This provides context about the card content.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p class="text-sm text-gray-600">This is the main content area of the card. You can put any content here.</p>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Card with Action -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Card with Action Button</h3>
+        <Card Class="max-w-md">
+            <CardHeader>
+                <CardTitle>Settings</CardTitle>
+                <CardDescription>Manage your account settings and preferences</CardDescription>
+                <CardAction>
+                    <Button Size="sm" Variant="outline">Edit</Button>
+                </CardAction>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Email notifications</span>
+                        <span class="font-medium">Enabled</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Two-factor auth</span>
+                        <span class="font-medium">Disabled</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Card with Footer -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Card with Footer</h3>
+        <Card Class="max-w-md">
+            <CardHeader>
+                <CardTitle>Confirm Action</CardTitle>
+                <CardDescription>Are you sure you want to proceed with this action?</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p class="text-sm text-gray-600">This action cannot be undone. Please review carefully before confirming.</p>
+            </CardContent>
+            <CardFooter Class="justify-between">
+                <Button Variant="outline">Cancel</Button>
+                <Button>Confirm</Button>
+            </CardFooter>
+        </Card>
+    </div>
+
+    <!-- Card with Sections -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Card with Bordered Sections</h3>
+        <Card Class="max-w-md">
+            <CardHeader Class="border-b">
+                <CardTitle>Project Overview</CardTitle>
+                <CardDescription>Summary of project details and metrics</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-xs text-gray-500">Status</div>
+                        <div class="text-sm font-medium">In Progress</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Completion</div>
+                        <div class="text-sm font-medium">67%</div>
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter Class="border-t justify-between">
+                <span class="text-xs text-gray-500">Updated 2 hours ago</span>
+                <Button Size="sm">View Details</Button>
+            </CardFooter>
+        </Card>
+    </div>
+
+    <!-- Clinical Use Case: Patient Summary Card -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Patient Summary</h3>
+        <Card Class="max-w-2xl">
+            <CardHeader>
+                <CardTitle>Sarah Johnson</CardTitle>
+                <CardDescription>DOB: 03/15/1985 | MRN: PT-2024-0156 | Primary: Lumbar Radiculopathy</CardDescription>
+                <CardAction>
+                    <div class="flex gap-2">
+                        <Button Size="sm" Variant="outline">Edit</Button>
+                        <Button Size="sm">New Note</Button>
+                    </div>
+                </CardAction>
+            </CardHeader>
+            <CardContent>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <div class="text-xs text-gray-500">Total Visits</div>
+                        <div class="text-2xl font-semibold text-gray-900 mt-1">12</div>
+                        <div class="text-xs text-gray-500 mt-1">of 20 authorized</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Next Appointment</div>
+                        <div class="text-sm font-medium text-gray-900 mt-1">Jan 22, 2026</div>
+                        <div class="text-xs text-gray-500 mt-1">10:30 AM</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Pain Level</div>
+                        <div class="text-2xl font-semibold text-gray-900 mt-1">3/10</div>
+                        <div class="text-xs text-green-600 mt-1">↓ Improved</div>
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter Class="border-t justify-between">
+                <span class="text-xs text-gray-500">Last visit: Jan 18, 2026</span>
+                <div class="flex gap-2">
+                    <Button Size="sm" Variant="outline">Schedule</Button>
+                    <Button Size="sm" Variant="outline">View History</Button>
+                </div>
+            </CardFooter>
+        </Card>
+    </div>
+
+    <!-- Clinical Use Case: Treatment Goal Card -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Treatment Goal</h3>
+        <Card Class="max-w-2xl">
+            <CardHeader Class="border-b">
+                <CardTitle>Short-Term Goal: Improve ROM</CardTitle>
+                <CardDescription>Target completion: Feb 15, 2026</CardDescription>
+                <CardAction>
+                    <Badge Variant="secondary">In Progress</Badge>
+                </CardAction>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-sm font-medium text-gray-700">Goal Statement</div>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Patient will demonstrate increased lumbar flexion ROM from 45° to 70° within 4 weeks 
+                            to improve functional mobility for ADLs.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-700 mb-2">Progress Metrics</div>
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                    <span>Lumbar Flexion ROM</span>
+                                    <span>58° / 70° target</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 83%"></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <div>
+                                    <div class="text-gray-500">Baseline</div>
+                                    <div class="font-medium">45°</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Current</div>
+                                    <div class="font-medium">58°</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Target</div>
+                                    <div class="font-medium">70°</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter Class="border-t justify-between">
+                <span class="text-xs text-gray-500">Last measured: Jan 18, 2026</span>
+                <Button Size="sm">Update Progress</Button>
+            </CardFooter>
+        </Card>
+    </div>
+
+    <!-- Clinical Use Case: Appointment Card -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Upcoming Appointment</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Michael Chen</CardTitle>
+                    <CardDescription>Shoulder Impingement - Follow-up</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-gray-600">Monday, Jan 22 at 9:00 AM</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-gray-600">45 minutes</span>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter Class="gap-2">
+                    <Button Size="sm" Variant="outline">Reschedule</Button>
+                    <Button Size="sm">Check In</Button>
+                </CardFooter>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Emily Rodriguez</CardTitle>
+                    <CardDescription>ACL Post-Op - Week 6</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-gray-600">Monday, Jan 22 at 10:30 AM</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-gray-600">60 minutes</span>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter Class="gap-2">
+                    <Button Size="sm" Variant="outline">Reschedule</Button>
+                    <Button Size="sm">Check In</Button>
+                </CardFooter>
+            </Card>
+        </div>
+    </div>
+</div>
+
+<style>
+    .grid {
+        display: grid;
+    }
+
+    .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @@media (min-width: 768px) {
+        .md\:grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    .max-w-md {
+        max-width: 28rem;
+    }
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .max-w-4xl {
+        max-width: 56rem;
+    }
+
+    .bg-primary {
+        background-color: #9BE000;
+    }
+
+    .text-green-600 {
+        color: #16a34a;
+    }
+</style>
+
+@code {
+    // Demo component - no code needed
+}

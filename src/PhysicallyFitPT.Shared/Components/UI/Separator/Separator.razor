@@ -1,0 +1,25 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<hr class="@ClassNames"
+    role="@Role"
+    aria-orientation="@Orientation"
+    aria-hidden="@Decorative"
+    @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter]
+    public string Orientation { get; set; } = "horizontal"; // horizontal | vertical
+
+    [Parameter]
+    public bool Decorative { get; set; } = true;
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string Role => Decorative ? "presentation" : "separator";
+
+    private string ClassNames => $"separator {(Orientation == "vertical" ? "separator-vertical" : "separator-horizontal")} {Class}".Trim();
+}

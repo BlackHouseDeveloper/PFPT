@@ -1,0 +1,210 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+@using PhysicallyFitPT.Shared.Components.UI.Card
+@inject PhysicallyFitPT.Shared.Components.UI.Toaster.ToastService ToastService
+
+<Card Class="visit-type-settings">
+    <CardHeader Class="settings-header">
+        <div class="header-top">
+            <CardTitle Class="header-title">
+                <span class="icon">SETTINGS</span>
+                Visit Type Settings
+            </CardTitle>
+            <Button Variant="ghost" Size="sm" Class="btn-close" OnClick="OnClose">X</Button>
+        </div>
+        <p class="header-description">Customize visit types, durations, and color coding</p>
+    </CardHeader>
+
+    <CardContent Class="settings-content">
+        <div class="visit-types-list">
+            @foreach (var vt in VisitTypes)
+            {
+                var isEditing = EditingId == vt.Id;
+                <div class="visit-type-card @(isEditing ? "editing" : "")">
+                    <div class="card-grid">
+                        <div class="grid-col name-col">
+                            <Label CssClass="grid-label">Visit Type Name</Label>
+                            <Input @bind-Value="vt.Name" 
+                                   @onfocus="@((FocusEventArgs e) => EditingId = vt.Id)" 
+                                   Class="input-sm" />
+                        </div>
+
+                        <div class="grid-col duration-col">
+                            <Label CssClass="grid-label">Duration</Label>
+                            <Select Value="@vt.Duration.ToString()" 
+                                    ValueChanged="@((string val) => { if (int.TryParse(val, out var dur)) { vt.Duration = dur; OnDurationChanged(vt); } })">
+                                <SelectTrigger Class="input-sm" />
+                                <SelectContent>
+                                    @foreach (var dur in DurationOptions)
+                                    {
+                                        <SelectItem Value="@dur.ToString()" Label="@($"{dur} min")" />
+                                    }
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div class="grid-col color-col">
+                            <Label CssClass="grid-label">Color</Label>
+                            <Select @bind-Value="vt.Color">
+                                <SelectTrigger Class="input-sm">
+                                    <div class="color-trigger">
+                                        <span class="color-dot" style=$"background-color:{vt.Color}"></span>
+                                        <span class="color-label">@GetColorLabel(vt.Color)</span>
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    @foreach (var color in ColorOptions)
+                                    {
+                                        <SelectItem Value="@color.Value" Label="@color.Label">
+                                            <div class="color-option">
+                                                <span class="color-dot" style=$"background-color:{color.Value}"></span>
+                                                <span>@color.Label</span>
+                                            </div>
+                                        </SelectItem>
+                                    }
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div class="grid-col description-col">
+                            <Label CssClass="grid-label">Description</Label>
+                            <Input @bind-Value="vt.Description" 
+                                   Placeholder="Brief description..." 
+                                   @onfocus="@((FocusEventArgs e) => EditingId = vt.Id)"
+                                   Class="input-sm" />
+                        </div>
+
+                        <div class="grid-col action-col">
+                            <div class="action-spacer"></div>
+                            <Button Variant="ghost" Size="sm" Class="btn-delete" OnClick="@(() => HandleDelete(vt.Id))">
+                                DEL
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <span class="preview-label">Preview:</span>
+                        <div class="preview-badge" style=$"background-color:{vt.Color}">
+                            @vt.Name • @vt.Duration min
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="actions-footer">
+            <Button Variant="outline" OnClick="HandleAddNew" Class="btn-add">
+                <span class="icon">PLUS</span>
+                Add Visit Type
+            </Button>
+
+            <Button Class="btn-save" OnClick="HandleSave">
+                <span class="icon">SAVE</span>
+                Save Changes
+            </Button>
+        </div>
+
+        <div class="info-box">
+            <p class="info-text">
+                <strong>Note:</strong> Changes to visit types will apply to all future appointments. 
+                Existing appointments will retain their original settings.
+            </p>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    private record ColorOption(string Value, string Label);
+
+    private class VisitType
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public int Duration { get; set; }
+        public string Color { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+
+    private readonly List<ColorOption> ColorOptions = new()
+    {
+        new("#16a34a", "Green"),
+        new("#22c55e", "Light Green"),
+        new("#2563eb", "Blue"),
+        new("#3b82f6", "Light Blue"),
+        new("#7c3aed", "Purple"),
+        new("#a855f7", "Light Purple"),
+        new("#dc2626", "Red"),
+        new("#ef4444", "Light Red"),
+        new("#ea580c", "Orange"),
+        new("#f97316", "Light Orange"),
+        new("#ca8a04", "Yellow"),
+        new("#0891b2", "Cyan"),
+        new("#06b6d4", "Light Cyan"),
+        new("#64748b", "Gray")
+    };
+
+    private readonly List<int> DurationOptions = new() { 10, 15, 20, 30, 45, 60, 75, 90, 120 };
+
+    private List<VisitType> VisitTypes = new();
+    private string? EditingId;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Initialize with default visit types
+        VisitTypes = new()
+        {
+            new() { Id = "eval", Name = "Initial Evaluation", Duration = 60, Color = "#16a34a", Description = "Comprehensive initial assessment" },
+            new() { Id = "progress", Name = "Progress Note", Duration = 45, Color = "#2563eb", Description = "Progress evaluation session" },
+            new() { Id = "daily", Name = "Daily Treatment", Duration = 30, Color = "#7c3aed", Description = "Standard treatment session" },
+            new() { Id = "discharge", Name = "Discharge", Duration = 30, Color = "#dc2626", Description = "Final discharge session" },
+            new() { Id = "dry-needling", Name = "Dry Needling", Duration = 20, Color = "#ea580c", Description = "Dry needling procedure" }
+        };
+    }
+
+    private void HandleAddNew()
+    {
+        var newType = new VisitType
+        {
+            Id = $"custom-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            Name = "New Visit Type",
+            Duration = 30,
+            Color = "#64748b",
+            Description = string.Empty
+        };
+        VisitTypes.Add(newType);
+        EditingId = newType.Id;
+    }
+
+    private void HandleDelete(string id)
+    {
+        VisitTypes.RemoveAll(vt => vt.Id == id);
+        ToastService.Success("Visit type deleted", "Removed");
+    }
+
+    private void HandleSave()
+    {
+        // Validate before save
+        if (VisitTypes.Any(vt => string.IsNullOrWhiteSpace(vt.Name)))
+        {
+            ToastService.Error("All visit types must have a name", "Validation failed");
+            return;
+        }
+
+        // In production, save to backend/localStorage
+        ToastService.Success("Visit types saved successfully", "Saved");
+        EditingId = null;
+    }
+
+    private void OnDurationChanged(VisitType vt)
+    {
+        // Duration change handled by two-way binding
+    }
+
+    private string GetColorLabel(string color)
+    {
+        var option = ColorOptions.FirstOrDefault(c => c.Value == color);
+        return option?.Label ?? "Custom";
+    }
+}

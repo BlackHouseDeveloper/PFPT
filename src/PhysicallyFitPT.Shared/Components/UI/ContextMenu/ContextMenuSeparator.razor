@@ -1,0 +1,9 @@
+@* Context menu separator *@
+@namespace PhysicallyFitPT.Shared.Components.UI.ContextMenu
+
+<div class="context-menu-separator" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,0 +1,20 @@
+@* Dialog title with semantic heading *@
+
+<h2 class="@CombinedClass"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</h2>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"text-lg font-semibold {Class}".Trim();
+}

@@ -1,0 +1,69 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@if (isOpen)
+{
+    <div class="sheet-portal">
+        <div class="sheet-overlay" @onclick="CloseAsync"></div>
+        <div class="sheet-content @SideClass"
+             role="dialog"
+             aria-modal="true"
+             @attributes="ContentAttributes">
+            @ChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string Side { get; set; } = "right"; // right, left, top, bottom
+
+    [Parameter]
+    public Dictionary<string, object>? ContentAttributes { get; set; }
+
+    private bool isOpen;
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    internal Task ToggleAsync() => SetOpenAsync(!isOpen);
+
+    internal async Task SetOpenAsync(bool open)
+    {
+        if (isOpen == open)
+        {
+            return;
+        }
+
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal Task CloseAsync() => SetOpenAsync(false);
+
+    private string SideClass => Side switch
+    {
+        "left" => "sheet-left",
+        "top" => "sheet-top",
+        "bottom" => "sheet-bottom",
+        _ => "sheet-right"
+    };
+}

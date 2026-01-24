@@ -1,0 +1,18 @@
+@* Grouping container for related command items *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<div class="command-group">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <div class="command-group-label">@Label</div>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

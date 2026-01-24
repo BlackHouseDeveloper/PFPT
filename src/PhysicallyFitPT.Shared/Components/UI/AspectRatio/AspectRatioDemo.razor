@@ -1,0 +1,120 @@
+@* Demo page showing AspectRatio usage examples *@
+
+<div class="space-y-8">
+    <!-- 16:9 Video Ratio -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">16:9 (Video) - Default</h3>
+        <div class="max-w-md">
+            <AspectRatio Ratio="@(16.0/9.0)">
+                <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop"
+                     alt="Physical therapy session"
+                     class="w-full h-full object-cover rounded-lg" />
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ratio: 16:9 (1.7778)</p>
+    </div>
+
+    <!-- 4:3 Classic Ratio -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">4:3 (Classic)</h3>
+        <div class="max-w-md">
+            <AspectRatio Ratio="@(4.0/3.0)">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop"
+                     alt="Clinic interior"
+                     class="w-full h-full object-cover rounded-lg" />
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ratio: 4:3 (1.3333)</p>
+    </div>
+
+    <!-- 1:1 Square Ratio -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">1:1 (Square)</h3>
+        <div class="max-w-sm">
+            <AspectRatio Ratio="1">
+                <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&auto=format&fit=crop"
+                     alt="Medical equipment"
+                     class="w-full h-full object-cover rounded-lg" />
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ratio: 1:1 (1.0000)</p>
+    </div>
+
+    <!-- 21:9 Ultrawide Ratio -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">21:9 (Ultrawide)</h3>
+        <div class="max-w-2xl">
+            <AspectRatio Ratio="@(21.0/9.0)">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&auto=format&fit=crop"
+                     alt="Gym panorama"
+                     class="w-full h-full object-cover rounded-lg" />
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ratio: 21:9 (2.3333)</p>
+    </div>
+
+    <!-- 3:2 Photography Ratio -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">3:2 (Photography)</h3>
+        <div class="max-w-md">
+            <AspectRatio Ratio="@(3.0/2.0)">
+                <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop"
+                     alt="Rehabilitation equipment"
+                     class="w-full h-full object-cover rounded-lg" />
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Ratio: 3:2 (1.5000)</p>
+    </div>
+
+    <!-- With Custom Content (Not just images) -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Custom Content (16:9)</h3>
+        <div class="max-w-md">
+            <AspectRatio Ratio="@(16.0/9.0)">
+                <div class="w-full h-full bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center p-6">
+                    <div class="text-center text-white">
+                        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h4 class="text-xl font-bold mb-2">Exercise Video</h4>
+                        <p class="text-sm opacity-90">Click to play demonstration</p>
+                    </div>
+                </div>
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">AspectRatio works with any content, not just images</p>
+    </div>
+
+    <!-- Clinical Use Case: X-Ray Display -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Document Preview (8.5:11)</h3>
+        <div class="max-w-xs">
+            <AspectRatio Ratio="@(8.5/11.0)">
+                <div class="w-full h-full bg-white border-2 border-gray-300 rounded-lg p-4 shadow-sm">
+                    <div class="flex flex-col h-full">
+                        <div class="border-b pb-2 mb-2">
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                        <div class="space-y-2 flex-1">
+                            <div class="h-2 bg-gray-200 rounded"></div>
+                            <div class="h-2 bg-gray-200 rounded w-5/6"></div>
+                            <div class="h-2 bg-gray-200 rounded w-4/6"></div>
+                            <div class="h-2 bg-gray-200 rounded"></div>
+                            <div class="h-2 bg-gray-200 rounded w-3/6"></div>
+                        </div>
+                        <div class="text-center text-xs text-gray-400 mt-auto">
+                            Patient Report Preview
+                        </div>
+                    </div>
+                </div>
+            </AspectRatio>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Maintains document aspect ratio for consistent previews</p>
+    </div>
+</div>
+
+@code {
+    // No state needed for static demos
+}

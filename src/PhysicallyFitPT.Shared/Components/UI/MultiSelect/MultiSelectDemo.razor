@@ -1,0 +1,99 @@
+@* Multi Select Demo - Clinical examples *@
+@page "/demo/multi-select"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Multi Select</h1>
+    <p class="demo-description">
+        Choose multiple clinical values with search, badges, and keyboard-friendly interactions. Useful for goals,
+        precautions, and assigning team members during charting.
+    </p>
+
+    <div class="demo-section">
+        <h2>Rehab Goals</h2>
+        <p>Select treatment goals discussed with the patient.</p>
+        <div class="demo-example">
+            <div style="width: 100%; max-width: 520px;">
+                <MultiSelect Options="@goalOptions"
+                             @bind-Value="selectedGoals"
+                             Placeholder="Choose rehab goals"
+                             MaxDisplay="4" />
+                <p class="demo-result">Goals: @FormatList(selectedGoals)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Precautions & Contraindications</h2>
+        <p>Quickly flag precautions to keep them front-and-center in the note.</p>
+        <div class="demo-example">
+            <div style="width: 100%; max-width: 520px;">
+                <MultiSelect Options="@precautionOptions"
+                             @bind-Value="selectedPrecautions"
+                             Placeholder="Add precautions" />
+                <p class="demo-result">Precautions: @FormatList(selectedPrecautions)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Care Team Collaboration</h2>
+        <p>Assign collaborators for the current episode of care.</p>
+        <div class="demo-example">
+            <div style="width: 100%; max-width: 520px;">
+                <MultiSelect Options="@teamOptions"
+                             @bind-Value="selectedTeam"
+                             Placeholder="Add team members"
+                             MaxDisplay="5" />
+                <p class="demo-result">Assigned: @FormatList(selectedTeam)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<string> goalOptions = new()
+    {
+        "Increase shoulder flexion to 160°",
+        "Normalize gait without assistive device",
+        "Return to running 5K pain-free",
+        "Improve grip strength for ADLs",
+        "Reduce low back pain to <2/10",
+        "Achieve single-leg balance 30s",
+        "Full cervical rotation for driving",
+        "Independent HEP compliance"
+    };
+
+    private List<string> precautionOptions = new()
+    {
+        "Weight bearing as tolerated",
+        "No lumbar flexion past 45°",
+        "Cardiac precautions (monitor HR)",
+        "Avoid overhead loading",
+        "Fall risk – use gait belt",
+        "Monitor BP each session",
+        "No prone positioning",
+        "Post-op rotator cuff protocol"
+    };
+
+    private List<string> teamOptions = new()
+    {
+        "Primary PT",
+        "PTA",
+        "OT",
+        "Speech Therapist",
+        "Athletic Trainer",
+        "Nurse Navigator",
+        "Orthopedist",
+        "Primary Care",
+        "Case Manager"
+    };
+
+    private List<string> selectedGoals = new();
+    private List<string> selectedPrecautions = new();
+    private List<string> selectedTeam = new();
+
+    private string FormatList(IEnumerable<string> items) => items.Any()
+        ? string.Join(", ", items)
+        : "None selected";
+}

@@ -1,0 +1,24 @@
+@* Chevron down icon *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<svg xmlns="http://www.w3.org/2000/svg" 
+     width="@Width" 
+     height="@Height" 
+     viewBox="0 0 24 24" 
+     fill="none" 
+     stroke="currentColor" 
+     stroke-width="@StrokeWidth" 
+     stroke-linecap="round" 
+     stroke-linejoin="round" 
+     class="@CssClass"
+     @attributes="AdditionalAttributes">
+    <path d="m6 9 6 6 6-6" />
+</svg>
+
+@code {
+    [Parameter] public string Width { get; set; } = "24";
+    [Parameter] public string Height { get; set; } = "24";
+    [Parameter] public string StrokeWidth { get; set; } = "2";
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

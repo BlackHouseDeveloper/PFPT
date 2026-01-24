@@ -1,0 +1,21 @@
+@* Form item - container for label, control, description, and message *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<CascadingValue Value="this">
+    <div class="form-item" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public string Id { get; } = Guid.NewGuid().ToString("N");
+    public string FormItemId => $"{Id}-form-item";
+    public string FormDescriptionId => $"{Id}-form-item-description";
+    public string FormMessageId => $"{Id}-form-item-message";
+}

@@ -1,0 +1,14 @@
+@* Dialog description *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Dialog
+
+<p class="dialog-description" @attributes="AdditionalAttributes">
+    @ChildContent
+</p>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

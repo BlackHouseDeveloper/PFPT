@@ -1,0 +1,78 @@
+@* Dialog root component with open state management *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.Dialog
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@if (isOpen)
+{
+    <div class="dialog-portal">
+        <div class="dialog-overlay" @onclick="HandleOverlayClick"></div>
+        <div class="dialog-content-wrapper">
+            @ChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public bool CloseOnOverlayClick { get; set; } = true;
+
+    private bool isOpen;
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    public async Task SetOpen(bool open)
+    {
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        StateHasChanged();
+    }
+
+    public async Task Close()
+    {
+        await SetOpen(false);
+        await OnClose.InvokeAsync();
+    }
+
+    public async Task Confirm()
+    {
+        await OnConfirm.InvokeAsync();
+    }
+
+    private async Task HandleOverlayClick()
+    {
+        if (CloseOnOverlayClick)
+        {
+            await Close();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}

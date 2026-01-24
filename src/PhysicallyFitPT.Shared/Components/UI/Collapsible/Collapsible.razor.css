@@ -1,0 +1,97 @@
+/* Collapsible component styles */
+
+.collapsible {
+    width: 100%;
+}
+
+.collapsible-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.collapsible-trigger:hover:not(:disabled) {
+    background-color: #f9fafb;
+}
+
+.collapsible-trigger:focus-visible {
+    outline: 2px solid rgba(155, 224, 0, 0.5);
+    outline-offset: 2px;
+}
+
+.collapsible-trigger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.collapsible-content {
+    margin-top: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+}
+
+/* Utility classes used in demos */
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.text-gray-600 {
+    color: #4b5563;
+}
+
+.text-gray-700 {
+    color: #374151;
+}
+
+.text-gray-900 {
+    color: #111827;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.bg-gray-50 {
+    background-color: #f9fafb;
+}
+
+.rounded-md {
+    border-radius: 0.375rem;
+}
+
+.p-3 {
+    padding: 0.75rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.items-center {
+    align-items: center;
+}

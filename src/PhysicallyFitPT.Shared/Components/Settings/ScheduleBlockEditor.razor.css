@@ -1,0 +1,409 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+/* Modal overlay */
+.schedule-block-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+}
+
+/* Modal card */
+.schedule-block-modal-card {
+    width: 100%;
+    max-width: 42rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 0.5rem;
+    background-color: white;
+}
+
+/* Form container */
+.schedule-block-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Input fields */
+.schedule-block-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--background-color);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.schedule-block-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* iOS font-size fix */
+@media (max-width: 768px) {
+    .schedule-block-input {
+        font-size: 16px;
+    }
+}
+
+/* Select */
+.schedule-block-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--background-color);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.schedule-block-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Block type buttons */
+.schedule-block-type-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+    .schedule-block-type-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+.schedule-block-type-button {
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.schedule-block-type-button:hover {
+    border-color: rgba(var(--primary-color-rgb), 0.5);
+}
+
+.schedule-block-type-button.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.schedule-block-type-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    font-weight: 600;
+}
+
+.schedule-block-type-button.selected .schedule-block-type-icon {
+    color: var(--primary-color);
+}
+
+.schedule-block-type-button:not(.selected) .schedule-block-type-icon {
+    color: var(--muted-foreground);
+}
+
+/* Color picker section */
+.schedule-block-color-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.schedule-block-color-button {
+    width: 100%;
+    height: 3rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.schedule-block-color-button:hover {
+    transform: scale(1.05);
+}
+
+.schedule-block-color-button.selected {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* Custom color controls */
+.schedule-block-custom-color {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.schedule-block-color-picker {
+    width: 5rem;
+    height: 2.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.schedule-block-color-picker:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.schedule-block-color-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--background-color);
+    font-size: 0.875rem;
+    font-family: monospace;
+}
+
+.schedule-block-color-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Recurring toggle section */
+.schedule-block-recurring-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: transparent;
+}
+
+.schedule-block-recurring-label {
+    font-weight: 600;
+    margin: 0;
+}
+
+.schedule-block-recurring-description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+}
+
+/* Recurrence pattern section */
+.schedule-block-recurrence-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.schedule-block-recurrence-note {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.5rem;
+}
+
+/* Preview section */
+.schedule-block-preview {
+    padding: 1rem;
+    background-color: var(--muted-background);
+    border-radius: 0.5rem;
+    border: 2px solid var(--border-color);
+}
+
+.schedule-block-preview-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.schedule-block-preview-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.schedule-block-preview-color {
+    width: 4rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    flex-shrink: 0;
+}
+
+.schedule-block-preview-content {
+    flex: 1;
+}
+
+.schedule-block-preview-name {
+    font-weight: 600;
+    margin: 0;
+}
+
+.schedule-block-preview-details {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin: 0;
+}
+
+/* Form buttons */
+.schedule-block-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.schedule-block-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.schedule-block-button.primary {
+    background-color: var(--primary-color);
+    color: var(--primary-foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.schedule-block-button.primary:hover {
+    opacity: 0.9;
+}
+
+.schedule-block-button.outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--foreground-color);
+}
+
+.schedule-block-button.outline:hover {
+    background-color: var(--muted-background);
+}
+
+/* Close button */
+.schedule-block-close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--foreground-color);
+    transition: color 0.2s;
+}
+
+.schedule-block-close-button:hover {
+    color: var(--primary-color);
+}
+
+/* Header section */
+.schedule-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.schedule-block-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+/* Form field label */
+.schedule-block-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .schedule-block-modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .schedule-block-modal-card {
+        max-height: calc(100vh - 1rem);
+    }
+
+    .schedule-block-color-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .schedule-block-type-buttons {
+        gap: 0.5rem;
+    }
+
+    .schedule-block-type-button {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .schedule-block-form {
+        gap: 1rem;
+    }
+
+    .schedule-block-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .schedule-block-button {
+        width: 100%;
+    }
+}
+
+/* Animation */
+@keyframes slideInBlock {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.schedule-block-modal-card {
+    animation: slideInBlock 0.2s ease-out;
+}
+
+/* Color definitions */
+:root {
+    --yellow-200: rgb(254, 240, 138);
+    --purple-300: rgb(196, 181, 253);
+    --blue-300: rgb(147, 197, 253);
+    --green-400: rgb(74, 222, 128);
+    --pink-400: rgb(244, 114, 182);
+    --orange-400: rgb(251, 146, 60);
+    --slate-400: rgb(148, 163, 184);
+    --fuchsia-400: rgb(232, 121, 249);
+}

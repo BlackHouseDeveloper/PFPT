@@ -1,0 +1,48 @@
+@*
+    AccordionItem - Individual collapsible section
+    Ported from Make: components/ui/accordion.tsx
+*@
+
+<div class="@CombinedClass" data-slot="accordion-item" data-state="@State" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    private Accordion? Parent { get; set; }
+
+    /// <summary>
+    /// Unique value for this accordion item
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Child content (AccordionTrigger and AccordionContent)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => $"border-b last:border-b-0 {Class}".Trim();
+
+    internal bool IsOpen => Parent?.IsItemOpen(Value) ?? false;
+
+    internal string State => IsOpen ? "open" : "closed";
+
+    internal async Task Toggle()
+    {
+        if (Parent is not null)
+        {
+            await Parent.ToggleItem(Value);
+        }
+    }
+}

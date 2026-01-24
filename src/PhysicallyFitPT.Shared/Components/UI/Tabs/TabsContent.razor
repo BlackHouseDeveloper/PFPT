@@ -1,0 +1,43 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+@implements IAsyncDisposable
+
+@if (TabsContext?.ActiveValue == Value)
+{
+    <div class="tabs-content @Class" data-slot="tabs-content" role="tabpanel" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter(Name = "TabsContext")]
+    public TabsContext? TabsContext { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (TabsContext != null)
+        {
+            TabsContext.OnValueChanged += StateHasChanged;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (TabsContext != null)
+        {
+            TabsContext.OnValueChanged -= StateHasChanged;
+        }
+        await ValueTask.CompletedTask;
+    }
+}

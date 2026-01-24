@@ -1,0 +1,45 @@
+@namespace PhysicallyFitPT.Shared.Components.Pages
+@using PhysicallyFitPT.Shared
+
+<div class="pfp-patient-card">
+  <div class="pfp-patient-info">
+    <h4>@Patient.FirstName @Patient.LastName</h4>
+    <div class="pfp-patient-details">
+      @if (!string.IsNullOrEmpty(Patient.MRN))
+      {
+        <span class="pfp-detail">MRN: @Patient.MRN</span>
+      }
+      @if (Patient.DateOfBirth.HasValue)
+      {
+        <span class="pfp-detail">DOB: @Patient.DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
+      }
+      @if (!string.IsNullOrEmpty(Patient.MobilePhone))
+      {
+        <span class="pfp-detail">📞 @Patient.MobilePhone</span>
+      }
+      @if (!string.IsNullOrEmpty(Patient.Email))
+      {
+        <span class="pfp-detail">✉️ @Patient.Email</span>
+      }
+    </div>
+  </div>
+  <div class="pfp-patient-actions">
+    <button class="pfp-btn pfp-btn-secondary" @onclick="() => OnViewDetails.InvokeAsync(Patient.Id)">
+      View Details
+    </button>
+    <button class="pfp-btn pfp-btn-outline" @onclick="() => OnScheduleAppointment.InvokeAsync(Patient.Id)">
+      Schedule
+    </button>
+  </div>
+</div>
+
+@code {
+    [Parameter]
+    public PatientDto Patient { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<Guid> OnViewDetails { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnScheduleAppointment { get; set; }
+}

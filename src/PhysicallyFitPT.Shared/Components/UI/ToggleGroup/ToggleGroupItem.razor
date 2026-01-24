@@ -1,0 +1,55 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<button 
+    class="toggle-group-item @GetItemClass()" 
+    data-slot="toggle-group-item"
+    data-variant="@(Context?.Variant ?? "default")"
+    data-size="@(Context?.Size ?? "default")"
+    @onclick="OnToggle"
+    disabled="@Disabled"
+    aria-pressed="@IsPressed"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public ToggleGroup? Parent { get; set; }
+
+    [CascadingParameter(Name = "ToggleGroupContext")]
+    public ToggleGroupContext? Context { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public bool IsPressed { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsPressedChanged { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetItemClass()
+    {
+        var variant = Context?.Variant ?? "default";
+        var size = Context?.Size ?? "default";
+        return $"variant-{variant} size-{size}";
+    }
+
+    private async Task OnToggle()
+    {
+        if (!Disabled)
+        {
+            IsPressed = !IsPressed;
+            await IsPressedChanged.InvokeAsync(IsPressed);
+        }
+    }
+}

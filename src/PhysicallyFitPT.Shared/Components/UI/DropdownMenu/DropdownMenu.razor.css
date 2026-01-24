@@ -1,0 +1,153 @@
+/* Dropdown Menu Styles */
+.dropdown-trigger {
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.dropdown-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fade-in 200ms ease-out;
+}
+
+.dropdown-portal {
+    position: fixed;
+    z-index: 50;
+}
+
+.dropdown-content {
+    position: fixed;
+    z-index: 50;
+    min-width: 220px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    padding: 4px;
+    color: #0B2545;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    animation: zoom-in 200ms ease-out;
+}
+
+.dropdown-item {
+    position: relative;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: background-color 150ms ease-in-out;
+    user-select: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6;
+}
+
+.dropdown-item:focus {
+    background-color: #f3f4f6;
+}
+
+.dropdown-item.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.dropdown-item.selected {
+    background-color: #e0f2d8;
+}
+
+.dropdown-item-icon {
+    margin-right: 8px;
+    height: 16px;
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropdown-item-content {
+    flex: 1;
+}
+
+.dropdown-item-shortcut {
+    margin-left: auto;
+    padding-left: 16px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+}
+
+.dropdown-checkbox-item,
+.dropdown-radio-item {
+    padding-left: 32px;
+}
+
+.dropdown-item-indicator {
+    position: absolute;
+    left: 8px;
+    display: flex;
+    height: 16px;
+    width: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.check-icon {
+    color: #9BE000;
+    font-weight: bold;
+}
+
+.radio-icon {
+    color: #9BE000;
+    font-size: 12px;
+}
+
+.dropdown-label {
+    padding: 8px 12px 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.dropdown-separator {
+    margin: 4px 0;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+.dropdown-shortcut {
+    margin-left: auto;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+}
+
+.dropdown-group {
+    padding: 2px 0;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes zoom-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -1,0 +1,41 @@
+@* Avatar image - displays when loaded successfully *@
+
+@if (!string.IsNullOrEmpty(Src))
+{
+    <img src="@Src"
+         alt="@Alt"
+         class="@CombinedClass"
+         @onload="HandleLoad"
+         @onerror="HandleError"
+         @attributes="AdditionalAttributes" />
+}
+
+@code {
+    [CascadingParameter]
+    public Avatar? Parent { get; set; }
+
+    [Parameter]
+    public string? Src { get; set; }
+
+    [Parameter]
+    public string Alt { get; set; } = "Avatar";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"aspect-square size-full object-cover {Class}".Trim();
+
+    private void HandleLoad()
+    {
+        Parent?.OnImageLoaded();
+    }
+
+    private void HandleError()
+    {
+        Parent?.OnImageError();
+    }
+}

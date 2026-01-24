@@ -1,0 +1,116 @@
+@* Patient Demographics Collection Step *@
+@namespace PhysicallyFitPT.Shared.Components.Workflow
+@using PhysicallyFitPT.Core.Intake
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.UI.Icons
+
+<div class="intake-step patient-demographics">
+    <h3>Patient Demographics</h3>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <Input @bind-Value="Data.FirstName" Type="text" Placeholder="John" />
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <Input @bind-Value="Data.LastName" Type="text" Placeholder="Doe" />
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth *</label>
+            <Input @bind-Value="DobString" Type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <Select @bind-Value="Data.Gender">
+                <SelectOption Value="male">Male</SelectOption>
+                <SelectOption Value="female">Female</SelectOption>
+                <SelectOption Value="other">Other</SelectOption>
+                <SelectOption Value="prefer-not-to-say">Prefer not to say</SelectOption>
+            </Select>
+        </div>
+
+        <div class="form-group col-span-2">
+            <label for="phone">Phone Number *</label>
+            <Input @bind-Value="Data.Phone" Type="tel" Placeholder="(555) 123-4567" />
+        </div>
+
+        <div class="form-group col-span-2">
+            <label for="email">Email Address</label>
+            <Input @bind-Value="Data.Email" Type="email" Placeholder="john@example.com" />
+        </div>
+
+        <div class="form-group col-span-2">
+            <label for="address">Street Address</label>
+            <Input @bind-Value="Data.Address" Type="text" Placeholder="123 Main St" />
+        </div>
+
+        <div class="form-group">
+            <label for="city">City</label>
+            <Input @bind-Value="Data.City" Type="text" Placeholder="New York" />
+        </div>
+
+        <div class="form-group">
+            <label for="state">State</label>
+            <Input @bind-Value="Data.State" Type="text" Placeholder="NY" />
+        </div>
+
+        <div class="form-group">
+            <label for="zipcode">Zip Code</label>
+            <Input @bind-Value="Data.ZipCode" Type="text" Placeholder="10001" />
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4>Emergency Contact</h4>
+        <div class="form-grid">
+            <div class="form-group col-span-2">
+                <label for="emergencyName">Name</label>
+                <Input @bind-Value="Data.EmergencyContactName" Type="text" Placeholder="Jane Doe" />
+            </div>
+
+            <div class="form-group col-span-2">
+                <label for="emergencyPhone">Phone Number</label>
+                <Input @bind-Value="Data.EmergencyContactPhone" Type="tel" Placeholder="(555) 987-6543" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <Button @onclick="HandleNext" Variant="default" Size="lg">
+            Next Step
+        </Button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PatientDemographics Data { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<PatientDemographics> DataChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnNext { get; set; }
+
+    private string DobString
+    {
+        get => Data.DateOfBirth?.ToString("yyyy-MM-dd") ?? "";
+        set
+        {
+            if (DateOnly.TryParse(value, out var dob))
+            {
+                Data.DateOfBirth = dob;
+            }
+        }
+    }
+
+    private async Task HandleNext()
+    {
+        await OnNext.InvokeAsync();
+    }
+
+}

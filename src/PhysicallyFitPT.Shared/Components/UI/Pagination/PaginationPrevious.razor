@@ -1,0 +1,18 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PaginationLink Size="default"
+                aria-label="Go to previous page"
+                Class="@($"gap-1 px-3 {Class}")"
+                OnClick="OnClick"
+                Href="@Href"
+                PreventDefault="@PreventDefault">
+    <Icon Name="chevronleft" Width="16" Height="16" />
+    <span class="hidden sm:block">Previous</span>
+</PaginationLink>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Href { get; set; } = "#";
+    [Parameter] public bool PreventDefault { get; set; } = true;
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

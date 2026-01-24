@@ -1,0 +1,14 @@
+@* Scrollable list container for command items *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<div class="command-list" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

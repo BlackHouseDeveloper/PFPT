@@ -1,0 +1,33 @@
+@* MenubarSub - container for submenu *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="menubar-sub">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [CascadingParameter] public MenubarMenu? ParentMenu { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    internal bool IsOpen { get; private set; }
+
+    internal void Open()
+    {
+        if (!IsOpen)
+        {
+            IsOpen = true;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal void Close()
+    {
+        if (IsOpen)
+        {
+            IsOpen = false;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+}

@@ -1,0 +1,67 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (Group is null)
+{
+    <div class="resizable-handle @Class" @attributes="AdditionalAttributes"></div>
+}
+else
+{
+    <div class="resizable-handle @Class"
+         role="separator"
+         aria-orientation="@Group.Direction"
+         aria-valuemin="@Group.MinHandle"
+         aria-valuemax="@Group.MaxHandle"
+         aria-valuenow="@Group.ClampedPrimarySize"
+         @attributes="AdditionalAttributes">
+        <label class="sr-only" for="@RangeId">Resize panels</label>
+        <input id="@RangeId"
+               type="range"
+               min="@Group.MinHandle"
+               max="@Group.MaxHandle"
+               value="@Group.ClampedPrimarySize"
+               step="1"
+               class="resizable-slider"
+               @oninput="HandleInput"
+               aria-label="Resize panels"
+               aria-valuemin="@Group.MinHandle"
+               aria-valuemax="@Group.MaxHandle"
+               aria-valuenow="@Group.ClampedPrimarySize" />
+        @if (WithHandle)
+        {
+            <div class="resizable-grip" aria-hidden="true">
+                <div class="resizable-grip-dot"></div>
+                <div class="resizable-grip-dot"></div>
+                <div class="resizable-grip-dot"></div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private ResizablePanelGroup? Group { get; set; }
+
+    [Parameter]
+    public bool WithHandle { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string RangeId { get; } = $"resizable-{Guid.NewGuid():N}";
+
+    private async Task HandleInput(ChangeEventArgs args)
+    {
+        if (Group is null)
+        {
+            return;
+        }
+
+        if (double.TryParse(args?.Value?.ToString(), out var next))
+        {
+            await Group.HandleResizeAsync(next);
+        }
+    }
+}

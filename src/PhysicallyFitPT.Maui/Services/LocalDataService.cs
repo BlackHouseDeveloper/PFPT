@@ -145,4 +145,84 @@ public sealed class LocalDataService : IDataService
       return new AppStatsDto { ApiHealthy = false };
     }
   }
+
+  /// <inheritdoc />
+  public async Task<IReadOnlyList<NoteDto>> GetPatientNotesAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      await using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
+      var notes = await db.Notes
+        .AsNoTracking()
+        .Where(n => n.PatientId == patientId && !n.IsDeleted)
+        .OrderByDescending(n => n.CreatedAt)
+        .Select(n => new NoteDto
+        {
+          Id = n.Id,
+          PatientId = n.PatientId,
+          AppointmentId = n.AppointmentId,
+          VisitType = n.VisitType.ToString(),
+          IsSigned = n.IsSigned,
+          SignedAt = n.SignedAt,
+          SignedBy = n.SignedBy,
+          CreatedAt = n.CreatedAt,
+          CreatedBy = n.CreatedBy,
+          UpdatedAt = n.UpdatedAt,
+          UpdatedBy = n.UpdatedBy,
+        })
+        .ToListAsync(cancellationToken);
+
+      return notes;
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error retrieving notes for patient: {PatientId}", patientId);
+      return Array.Empty<NoteDto>();
+    }
+  }
+
+  /// <inheritdoc />
+  public Task<IReadOnlyList<GoalDto>> GetPatientGoalsAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    // TODO: Goals table not yet present in schema. Return empty until schema migration is complete.
+    this.logger.LogWarning("Goals retrieval not yet implemented - Goals table missing from schema");
+    return Task.FromResult<IReadOnlyList<GoalDto>>(Array.Empty<GoalDto>());
+  }
+
+  /// <inheritdoc />
+  public Task<IReadOnlyList<OutcomeMeasureScoreDto>> GetPatientOutcomesAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    // TODO: OutcomeMeasureScores table not yet present in schema. Return empty until schema migration is complete.
+    this.logger.LogWarning("Outcome measures retrieval not yet implemented - OutcomeMeasureScores table missing from schema");
+    return Task.FromResult<IReadOnlyList<OutcomeMeasureScoreDto>>(Array.Empty<OutcomeMeasureScoreDto>());
+  }
+
+  /// <inheritdoc />
+  public async Task<NoteDtoDetail?> GetNoteByIdAsync(Guid noteId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting note details for note: {NoteId}", noteId);
+
+      using var db = await this.dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+      var note = await db.Notes
+        .Where(n => n.Id == noteId && !n.IsDeleted)
+        .FirstOrDefaultAsync(cancellationToken);
+
+      if (note == null)
+      {
+        this.logger.LogWarning("Note not found or deleted: {NoteId}", noteId);
+        return null;
+      }
+
+      this.logger.LogInformation("Retrieved note details for note: {NoteId}", noteId);
+      return note.ToDetailDto();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting note: {NoteId}", noteId);
+      return null;
+    }
+  }
 }

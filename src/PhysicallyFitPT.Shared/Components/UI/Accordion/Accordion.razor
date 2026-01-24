@@ -1,0 +1,93 @@
+@*
+    Accordion - Collapsible section container
+    Ported from Make: components/ui/accordion.tsx
+    Radix UI equivalent in Blazor with full keyboard navigation support
+*@
+
+<CascadingValue Value="this">
+    <div class="@CombinedClass" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    /// <summary>
+    /// Child content (AccordionItem components)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Accordion type: "single" (one at a time) or "multiple" (multiple open)
+    /// </summary>
+    [Parameter]
+    public string Type { get; set; } = "single";
+
+    /// <summary>
+    /// Whether accordion items can be collapsed (only for Type="single")
+    /// </summary>
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
+
+    /// <summary>
+    /// Currently open item value (for Type="single")
+    /// </summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>
+    /// Callback when value changes
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Currently open item values (for Type="multiple")
+    /// </summary>
+    [Parameter]
+    public HashSet<string> Values { get; set; } = new();
+
+    /// <summary>
+    /// Callback when values change
+    /// </summary>
+    [Parameter]
+    public EventCallback<HashSet<string>> ValuesChanged { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => $"pfpt-accordion {Class}".Trim();
+
+    internal async Task ToggleItem(string value)
+    {
+        if (Type == "single")
+        {
+            var newValue = Value == value && Collapsible ? null : value;
+            Value = newValue;
+            await ValueChanged.InvokeAsync(newValue);
+        }
+        else
+        {
+            if (Values.Contains(value))
+            {
+                Values.Remove(value);
+            }
+            else
+            {
+                Values.Add(value);
+            }
+            await ValuesChanged.InvokeAsync(Values);
+        }
+    }
+
+    internal bool IsItemOpen(string value)
+    {
+        return Type == "single" ? Value == value : Values.Contains(value);
+    }
+}

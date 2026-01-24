@@ -1,0 +1,109 @@
+@* Date picker component with calendar popover *@
+@namespace PhysicallyFitPT.Shared.Components.UI.DatePicker
+
+<Popover @bind-Open="isOpen">
+    <PopoverTrigger>
+        <Button Variant="outline" Class="@GetButtonClass()">
+            <svg class="date-picker-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>
+                @if (selectedDate.HasValue)
+                {
+                    @selectedDate.Value.ToString("MMM d, yyyy")
+                }
+                else
+                {
+                    <span class="date-picker-placeholder">@Placeholder</span>
+                }
+            </span>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Align="start">
+        <Calendar 
+            Mode="single" 
+            SelectedDate="selectedDate"
+            OnDateSelect="HandleDateSelect"
+            DisabledDateCheck="Disabled"
+            MinDate="MinDate"
+            MaxDate="MaxDate" />
+    </PopoverContent>
+</Popover>
+
+@code {
+    [Parameter]
+    public DateTime? Date { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> OnSelect { get; set; }
+
+    [Parameter]
+    public Func<DateTime, bool>? Disabled { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Pick a date";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public DateTime? MinDate { get; set; }
+
+    [Parameter]
+    public DateTime? MaxDate { get; set; }
+
+    [Parameter]
+    public bool HasError { get; set; }
+
+    private bool isOpen;
+    private DateTime? selectedDate;
+
+    protected override void OnInitialized()
+    {
+        selectedDate = Date;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Date != selectedDate)
+        {
+            selectedDate = Date;
+        }
+    }
+
+    private async Task HandleDateSelect(DateTime? date)
+    {
+        selectedDate = date;
+        await OnSelect.InvokeAsync(date);
+        isOpen = false;
+    }
+
+    private string GetButtonClass()
+    {
+        var classes = "w-full justify-start text-left font-normal h-auto py-2 px-3";
+        
+        if (!selectedDate.HasValue)
+        {
+            classes += " text-muted-foreground";
+        }
+
+        if (HasError)
+        {
+            classes += " border-destructive";
+        }
+        else
+        {
+            classes += " border-input focus:border-ring";
+        }
+
+        if (!string.IsNullOrEmpty(Class))
+        {
+            classes += $" {Class}";
+        }
+
+        return classes;
+    }
+}

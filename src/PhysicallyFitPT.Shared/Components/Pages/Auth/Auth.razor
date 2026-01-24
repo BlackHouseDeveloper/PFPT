@@ -1,0 +1,374 @@
+@page "/login"
+@page "/signup"
+@layout AuthLayout
+@inject IUserService UserService
+@inject NavigationManager Navigation
+@inject Microsoft.Extensions.Logging.ILogger<Auth> Logger
+@using Microsoft.Extensions.Logging
+
+<PageTitle>@(authMode == AuthMode.Login ? "Login" : "Sign Up")</PageTitle>
+
+<DebugStatBar />
+
+<div class="auth-shell">
+  <div class="auth-brand">PTDoc</div>
+
+  <div class="auth-card" aria-live="polite">
+    <header class="auth-card-header">
+      <p class="auth-welcome">Welcome</p>
+      <div class="auth-tabs" role="tablist">
+        <button type="button"
+                role="tab"
+                class="auth-tab @(authMode == AuthMode.Login ? "active" : "")"
+                aria-selected="@(authMode == AuthMode.Login ? "true" : "false")"
+                @onclick="() => SwitchMode(AuthMode.Login)">
+          Login
+        </button>
+        <button type="button"
+                role="tab"
+                class="auth-tab @(authMode == AuthMode.SignUp ? "active" : "")"
+                aria-selected="@(authMode == AuthMode.SignUp ? "true" : "false")"
+                @onclick="() => SwitchMode(AuthMode.SignUp)">
+          Sign Up
+        </button>
+      </div>
+    </header>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+      <div class="auth-alert" role="alert">
+        <span class="auth-alert-title">@(authMode == AuthMode.Login ? "Login failed" : "Sign up failed")</span>
+        <span>@errorMessage</span>
+      </div>
+    }
+
+    @if (authMode == AuthMode.Login)
+    {
+      <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="auth-form" aria-busy="@isLoading">
+        <DataAnnotationsValidator />
+
+        <div class="auth-field">
+          <label for="username">Username</label>
+          <InputText id="username"
+                     class="auth-input"
+                     placeholder="Enter your username"
+                     autocomplete="off"
+                     @bind-Value="loginModel.Username" />
+        </div>
+
+        <div class="auth-field">
+          <label for="pin">4-Digit PIN</label>
+          <InputText id="pin"
+                     type="password"
+                     class="auth-input"
+                     placeholder="Enter 4-digit PIN"
+                     autocomplete="off"
+                     maxlength="4"
+                     aria-describedby="pin-error"
+                     @bind-Value="loginModel.Pin" />
+          <ValidationMessage id="pin-error" For="@(() => loginModel.Pin)" class="auth-validation" />
+        </div>
+
+        <div class="auth-actions">
+          <button type="button" class="auth-link" disabled="@isLoading">Forgot PIN?</button>
+        </div>
+
+        <button type="submit" class="auth-primary" disabled="@isLoading">
+          @if (isLoading)
+          {
+            <span>Authenticating...</span>
+          }
+          else
+          {
+            <span>Login</span>
+          }
+        </button>
+      </EditForm>
+    }
+    else
+    {
+      <EditForm Model="signUpModel" OnValidSubmit="HandleSignUp" class="auth-form" aria-busy="@isLoading">
+        <DataAnnotationsValidator />
+
+        <div class="auth-field">
+          <label for="fullName">
+            Full Legal Name
+            <span class="auth-required" aria-label="required">*</span>
+            <span class="auth-info-icon" title="Enter your full legal name (first and last name) exactly as it appears on your professional license">ⓘ</span>
+          </label>
+          <InputText id="fullName"
+                     class="auth-input"
+                     placeholder="e.g., Sarah Johnson"
+                     autocomplete="name"
+                     @bind-Value="signUpModel.FullName" />
+          <ValidationMessage For="@(() => signUpModel.FullName)" class="auth-validation" />
+        </div>
+
+        <div class="auth-field">
+          <label for="dateOfBirth">
+            Date of Birth
+            <span class="auth-required" aria-label="required">*</span>
+            <span class="auth-info-icon" title="You must be at least 18 years old to create an account">ⓘ</span>
+          </label>
+          <InputDate id="dateOfBirth"
+                     class="auth-input"
+                     placeholder="Select your date of birth"
+                     @bind-Value="signUpModel.DateOfBirth" />
+          <ValidationMessage For="@(() => signUpModel.DateOfBirth)" class="auth-validation" />
+        </div>
+
+        <div class="auth-field">
+          <label for="email">
+            Professional Email Address
+            <span class="auth-required" aria-label="required">*</span>
+          </label>
+          <InputText id="email"
+                     type="email"
+                     class="auth-input"
+                     placeholder="email@example.com"
+                     autocomplete="email"
+                     @bind-Value="signUpModel.Email" />
+          <ValidationMessage For="@(() => signUpModel.Email)" class="auth-validation" />
+        </div>
+
+        <div class="auth-field">
+          <label for="licenseType">
+            License Type
+            <span class="auth-required" aria-label="required">*</span>
+            <span class="auth-info-icon" title="Select PT (Physical Therapist) or PTA (Physical Therapist Assistant)">ⓘ</span>
+          </label>
+          <InputSelect id="licenseType"
+                       class="auth-input auth-select"
+                       @bind-Value="signUpModel.LicenseType">
+            <option value="">Select license type</option>
+            <option value="PT">PT (Physical Therapist)</option>
+            <option value="PTA">PTA (Physical Therapist Assistant)</option>
+          </InputSelect>
+          <ValidationMessage For="@(() => signUpModel.LicenseType)" class="auth-validation" />
+        </div>
+
+        <div class="auth-field">
+          <label for="licenseNumber">
+            License Number
+            <span class="auth-required" aria-label="required">*</span>
+            <span class="auth-info-icon" title="Enter your PT/PTA license number exactly as shown on your license">ⓘ</span>
+          </label>
+          <InputText id="licenseNumber"
+                     class="auth-input"
+                     placeholder="e.g., PT123456 or PTA-2024-001234"
+                     @bind-Value="signUpModel.LicenseNumber" />
+          <ValidationMessage For="@(() => signUpModel.LicenseNumber)" class="auth-validation" />
+        </div>
+
+        <div class="auth-field">
+          <label for="licenseState">
+            License State
+            <span class="auth-required" aria-label="required">*</span>
+            <span class="auth-info-icon" title="Select the U.S. state where your PT/PTA license was issued">ⓘ</span>
+          </label>
+          <InputSelect id="licenseState"
+                       class="auth-input auth-select"
+                       @bind-Value="signUpModel.LicenseState">
+            <option value="">Select state</option>
+            @foreach (var state in UsStates)
+            {
+              <option value="@state.Code">@state.Name</option>
+            }
+          </InputSelect>
+          <ValidationMessage For="@(() => signUpModel.LicenseState)" class="auth-validation" />
+        </div>
+
+        <div class="auth-info-alert">
+          <span class="auth-info-icon">ℹ️</span>
+          <div class="auth-info-content">
+            <strong>License Verification:</strong>
+            <p>Your credentials will be automatically generated after sign-up. In a production environment, license information would be verified against state licensing boards.</p>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-primary" disabled="@isLoading">
+          @if (isLoading)
+          {
+            <span>Creating Account...</span>
+          }
+          else
+          {
+            <span>Create Professional Account</span>
+          }
+        </button>
+
+        <p class="auth-disclaimer">
+          By creating an account, you agree to maintain HIPAA compliance and professional standards.
+        </p>
+      </EditForm>
+    }
+  </div>
+
+  <footer class="auth-footnote" aria-live="polite">
+    <span>🔒 HIPAA-compliant secure access</span>
+    <span>Protected health information</span>
+  </footer>
+</div>
+
+@code {
+  private enum AuthMode
+  {
+    Login,
+    SignUp
+  }
+
+  private AuthMode authMode = AuthMode.Login;
+  private readonly LoginModel loginModel = new();
+  private readonly SignUpModel signUpModel = new();
+  private string? errorMessage;
+  private bool isLoading;
+
+  protected override void OnInitialized()
+  {
+    // Determine mode from URL
+    var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+    authMode = uri.AbsolutePath.Contains("/signup", StringComparison.OrdinalIgnoreCase)
+      ? AuthMode.SignUp
+      : AuthMode.Login;
+  }
+
+  private void SwitchMode(AuthMode mode)
+  {
+    if (authMode == mode) return;
+
+    authMode = mode;
+    errorMessage = null;
+
+    // Update URL without navigation
+    var targetUrl = mode == AuthMode.Login ? "/login" : "/signup";
+    Navigation.NavigateTo(targetUrl, forceLoad: false);
+  }
+
+  private async Task HandleLogin()
+  {
+    isLoading = true;
+    errorMessage = null;
+    StateHasChanged();
+
+    try
+    {
+      await Task.Delay(500);
+
+      // PIN-based authentication: use PIN as both username and password for now
+      var success = await UserService.LoginAsync(loginModel.Pin, loginModel.Pin);
+
+      if (success)
+      {
+        Navigation.NavigateTo("/");
+      }
+      else
+      {
+        errorMessage = "Invalid PIN. Please try again.";
+        loginModel.Pin = string.Empty;
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, "Login failed");
+      errorMessage = "We couldn't sign you in. Please try again.";
+    }
+    finally
+    {
+      isLoading = false;
+      StateHasChanged();
+    }
+  }
+
+  private async Task HandleSignUp()
+  {
+    isLoading = true;
+    errorMessage = null;
+    StateHasChanged();
+
+    try
+    {
+      await Task.Delay(500);
+
+      // Call the new RegisterAsync method
+      var success = await UserService.RegisterAsync(
+        signUpModel.FullName,
+        signUpModel.Email,
+        signUpModel.DateOfBirth!.Value,
+        signUpModel.LicenseType,
+        signUpModel.LicenseNumber,
+        signUpModel.LicenseState);
+
+      if (success)
+      {
+        Logger.LogInformation("Sign up successful for {Email}", signUpModel.Email);
+        // After successful registration, redirect to login
+        Navigation.NavigateTo("/login");
+      }
+      else
+      {
+        errorMessage = "Unable to create account. Please check your information and try again.";
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, "Sign up failed");
+      errorMessage = "We couldn't create your account. Please try again.";
+    }
+    finally
+    {
+      isLoading = false;
+      StateHasChanged();
+    }
+  }
+
+  private sealed class LoginModel
+  {
+    public string Username { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "PIN is required")]
+    [System.ComponentModel.DataAnnotations.StringLength(4, MinimumLength = 4, ErrorMessage = "PIN must be 4 digits")]
+    [System.ComponentModel.DataAnnotations.RegularExpression(@"^\d{4}$", ErrorMessage = "PIN must be 4 digits")]
+    public string Pin { get; set; } = string.Empty;
+  }
+
+  private sealed class SignUpModel
+  {
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Full name is required")]
+    [System.ComponentModel.DataAnnotations.StringLength(100, MinimumLength = 2, ErrorMessage = "Full name must be between 2 and 100 characters")]
+    public string FullName { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Date of birth is required")]
+    public DateTime? DateOfBirth { get; set; }
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required")]
+    [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Invalid email address")]
+    public string Email { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "License type is required")]
+    public string LicenseType { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "License number is required")]
+    [System.ComponentModel.DataAnnotations.StringLength(50, MinimumLength = 3, ErrorMessage = "License number must be between 3 and 50 characters")]
+    public string LicenseNumber { get; set; } = string.Empty;
+
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "License state is required")]
+    public string LicenseState { get; set; } = string.Empty;
+  }
+
+  private static readonly List<(string Code, string Name)> UsStates = new()
+  {
+    ("AL", "Alabama"), ("AK", "Alaska"), ("AZ", "Arizona"), ("AR", "Arkansas"),
+    ("CA", "California"), ("CO", "Colorado"), ("CT", "Connecticut"), ("DE", "Delaware"),
+    ("FL", "Florida"), ("GA", "Georgia"), ("HI", "Hawaii"), ("ID", "Idaho"),
+    ("IL", "Illinois"), ("IN", "Indiana"), ("IA", "Iowa"), ("KS", "Kansas"),
+    ("KY", "Kentucky"), ("LA", "Louisiana"), ("ME", "Maine"), ("MD", "Maryland"),
+    ("MA", "Massachusetts"), ("MI", "Michigan"), ("MN", "Minnesota"), ("MS", "Mississippi"),
+    ("MO", "Missouri"), ("MT", "Montana"), ("NE", "Nebraska"), ("NV", "Nevada"),
+    ("NH", "New Hampshire"), ("NJ", "New Jersey"), ("NM", "New Mexico"), ("NY", "New York"),
+    ("NC", "North Carolina"), ("ND", "North Dakota"), ("OH", "Ohio"), ("OK", "Oklahoma"),
+    ("OR", "Oregon"), ("PA", "Pennsylvania"), ("RI", "Rhode Island"), ("SC", "South Carolina"),
+    ("SD", "South Dakota"), ("TN", "Tennessee"), ("TX", "Texas"), ("UT", "Utah"),
+    ("VT", "Vermont"), ("VA", "Virginia"), ("WA", "Washington"), ("WV", "West Virginia"),
+    ("WI", "Wisconsin"), ("WY", "Wyoming")
+  };
+}

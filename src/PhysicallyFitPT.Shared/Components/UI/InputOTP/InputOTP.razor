@@ -1,0 +1,148 @@
+@* InputOTP - Root component for OTP/PIN input *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="input-otp-container @ContainerClass" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? ContainerClass { get; set; }
+    [Parameter] public int MaxLength { get; set; } = 6;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool HasError { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private readonly Dictionary<int, InputOTPSlot> slots = new();
+    private int activeSlotIndex = 0;
+
+    public void RegisterSlot(int index, InputOTPSlot slot)
+    {
+        slots[index] = slot;
+    }
+
+    public void UnregisterSlot(int index)
+    {
+        slots.Remove(index);
+    }
+
+    public string? GetSlotValue(int index)
+    {
+        if (string.IsNullOrEmpty(Value) || index >= Value.Length)
+        {
+            return null;
+        }
+
+        return Value[index].ToString();
+    }
+
+    public bool IsSlotActive(int index)
+    {
+        return index == activeSlotIndex && !Disabled;
+    }
+
+    public bool ShouldShowCaret(int index)
+    {
+        if (Disabled) return false;
+        if (string.IsNullOrEmpty(Value))
+            return index == 0;
+        return index == Value.Length && index < MaxLength;
+    }
+
+    public async Task HandleSlotClick(int index)
+    {
+        if (Disabled) return;
+        activeSlotIndex = index;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task HandleKeyDown(int index, KeyboardEventArgs e)
+    {
+        if (Disabled) return;
+
+        var currentValue = Value ?? string.Empty;
+
+        switch (e.Key)
+        {
+            case "Backspace":
+                if (currentValue.Length > 0)
+                {
+                    currentValue = currentValue[..^1];
+                    await UpdateValue(currentValue);
+                }
+                break;
+
+            case "Delete":
+                if (index < currentValue.Length)
+                {
+                    currentValue = currentValue.Remove(index, 1);
+                    await UpdateValue(currentValue);
+                }
+                break;
+
+            case "ArrowLeft":
+                if (activeSlotIndex > 0)
+                {
+                    activeSlotIndex--;
+                    await InvokeAsync(StateHasChanged);
+                }
+                break;
+
+            case "ArrowRight":
+                if (activeSlotIndex < MaxLength - 1)
+                {
+                    activeSlotIndex++;
+                    await InvokeAsync(StateHasChanged);
+                }
+                break;
+
+            default:
+                // Handle single character input
+                if (e.Key.Length == 1 && char.IsLetterOrDigit(e.Key[0]))
+                {
+                    if (currentValue.Length < MaxLength)
+                    {
+                        currentValue += e.Key.ToUpperInvariant();
+                        await UpdateValue(currentValue);
+                        
+                        if (currentValue.Length < MaxLength)
+                        {
+                            activeSlotIndex = currentValue.Length;
+                            await InvokeAsync(StateHasChanged);
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    public async Task HandlePaste(string pastedText)
+    {
+        if (Disabled) return;
+
+        var cleaned = new string(pastedText
+            .Where(char.IsLetterOrDigit)
+            .Take(MaxLength)
+            .Select(char.ToUpper)
+            .ToArray());
+
+        await UpdateValue(cleaned);
+        activeSlotIndex = Math.Min(cleaned.Length, MaxLength - 1);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateValue(string newValue)
+    {
+        Value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+    }
+
+    protected override void OnInitialized()
+    {
+        Value ??= string.Empty;
+    }
+}

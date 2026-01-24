@@ -277,4 +277,114 @@ public class WebApiDataService : IDataService
       return new AppStatsDto { ApiHealthy = false };
     }
   }
+
+  /// <inheritdoc/>
+  public async Task<IReadOnlyList<NoteDto>> GetPatientNotesAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting notes for patient: {PatientId}", patientId);
+
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("patients", patientId.ToString(), "notes"), cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var notes = await response.Content.ReadFromJsonAsync<IReadOnlyList<NoteDto>>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved {Count} notes for patient: {PatientId}", notes?.Count ?? 0, patientId);
+        return notes ?? Array.Empty<NoteDto>();
+      }
+
+      this.logger.LogWarning("Failed to get notes for patient {PatientId} with status: {StatusCode}", patientId, response.StatusCode);
+      return Array.Empty<NoteDto>();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting notes for patient: {PatientId}", patientId);
+      return Array.Empty<NoteDto>();
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<IReadOnlyList<GoalDto>> GetPatientGoalsAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting goals for patient: {PatientId}", patientId);
+
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("patients", patientId.ToString(), "goals"), cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var goals = await response.Content.ReadFromJsonAsync<IReadOnlyList<GoalDto>>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved {Count} goals for patient: {PatientId}", goals?.Count ?? 0, patientId);
+        return goals ?? Array.Empty<GoalDto>();
+      }
+
+      this.logger.LogWarning("Failed to get goals for patient {PatientId} with status: {StatusCode}", patientId, response.StatusCode);
+      return Array.Empty<GoalDto>();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting goals for patient: {PatientId}", patientId);
+      return Array.Empty<GoalDto>();
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<IReadOnlyList<OutcomeMeasureScoreDto>> GetPatientOutcomesAsync(Guid patientId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting outcome measures for patient: {PatientId}", patientId);
+
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("patients", patientId.ToString(), "outcomes"), cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var outcomes = await response.Content.ReadFromJsonAsync<IReadOnlyList<OutcomeMeasureScoreDto>>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved {Count} outcome measures for patient: {PatientId}", outcomes?.Count ?? 0, patientId);
+        return outcomes ?? Array.Empty<OutcomeMeasureScoreDto>();
+      }
+
+      this.logger.LogWarning("Failed to get outcome measures for patient {PatientId} with status: {StatusCode}", patientId, response.StatusCode);
+      return Array.Empty<OutcomeMeasureScoreDto>();
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting outcome measures for patient: {PatientId}", patientId);
+      return Array.Empty<OutcomeMeasureScoreDto>();
+    }
+  }
+
+  /// <inheritdoc/>
+  public async Task<NoteDtoDetail?> GetNoteByIdAsync(Guid noteId, CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      this.logger.LogInformation("Getting note details for note: {NoteId}", noteId);
+
+      var response = await this.httpClient.GetAsync(ApiRoutes.Combine("notes", noteId.ToString()), cancellationToken);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var note = await response.Content.ReadFromJsonAsync<NoteDtoDetail>(this.jsonOptions, cancellationToken);
+        this.logger.LogInformation("Retrieved note details for note: {NoteId}", noteId);
+        return note;
+      }
+
+      if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+      {
+        this.logger.LogWarning("Note not found: {NoteId}", noteId);
+        return null;
+      }
+
+      this.logger.LogWarning("Failed to get note {NoteId} with status: {StatusCode}", noteId, response.StatusCode);
+      return null;
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError(ex, "Error getting note: {NoteId}", noteId);
+      return null;
+    }
+  }
 }

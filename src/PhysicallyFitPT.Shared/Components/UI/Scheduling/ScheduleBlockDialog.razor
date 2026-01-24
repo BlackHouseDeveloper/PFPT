@@ -1,0 +1,192 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+@inject PhysicallyFitPT.Shared.Components.UI.Toaster.ToastService ToastService
+
+<Dialog Open="@Open">
+    @DialogBody
+</Dialog>
+
+@code {
+    private readonly List<BlockType> blockTypes = new()
+    {
+        new("admin", "Administrative Time", "#ca8a04"),
+        new("break", "Break/Lunch", "#10b981"),
+        new("meeting", "Staff Meeting", "#64748b"),
+        new("training", "Training/Education", "#8b5cf6"),
+        new("blocked", "Blocked/Unavailable", "#ef4444")
+    };
+
+    private readonly List<int> durationOptions = new() { 15, 30, 45, 60, 90, 120 };
+
+    private string selectedBlockType = string.Empty;
+    private string title = string.Empty;
+    private int duration = 30;
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter]
+    public string Day { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Time { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<ScheduleBlockResult> OnSave { get; set; }
+
+    private BlockType? SelectedBlock => blockTypes.FirstOrDefault(b => b.Value == selectedBlockType);
+
+    private RenderFragment DialogBody => @<div class="block-dialog">
+        <div class="dialog-header">
+            <div class="dialog-title-row">
+                <span class="icon">BLK</span>
+                <div>
+                    <p class="title">Create Schedule Block</p>
+                    <p class="subtitle">@Day at @Time</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-body">
+            <div class="field">
+                <Label CssClass="field-label">
+                    Block Type *
+                </Label>
+                <Select @bind-Value="selectedBlockType" @bind-Value:after="OnBlockTypeChanged">
+                    <SelectTrigger Placeholder="Select block type..." Class="input-lg" />
+                    <SelectContent>
+                        @foreach (var bt in blockTypes)
+                        {
+                            <SelectItem Value="@bt.Value" Label="@bt.Label">
+                                <div class="block-option">
+                                    <span class="dot" style=$"background-color:{bt.Color}"></span>
+                                    <span>@bt.Label</span>
+                                </div>
+                            </SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <div class="field">
+                <Label CssClass="field-label">Title *</Label>
+                <Input @bind-Value="title" Placeholder="Enter block title..." Class="input-lg" />
+            </div>
+
+            <div class="field">
+                <Label CssClass="field-label">
+                    <span class="icon-inline">TIME</span>
+                    Duration *
+                </Label>
+                <Select Value="@duration.ToString()" 
+                        ValueChanged="@((string val) => { if (int.TryParse(val, out var dur)) { duration = dur; OnDurationChanged(); } })">
+                    <SelectTrigger Placeholder="Select duration..." Class="input-lg" />
+                    <SelectContent>
+                        @foreach (var dur in durationOptions)
+                        {
+                            <SelectItem Value="@dur.ToString()" Label="@($"{dur} minutes")" />
+                        }
+                    </SelectContent>
+                </Select>
+            </div>
+
+            @if (SelectedBlock is not null)
+            {
+                <div class="preview" style=$"background-color:{ToAlpha(SelectedBlock.Color, "15")};border-color:{SelectedBlock.Color}">
+                    <p class="preview-label">Preview:</p>
+                    <div class="preview-content">
+                        <div class="preview-block">
+                            <p class="preview-title">@(string.IsNullOrWhiteSpace(title) ? SelectedBlock.Label : title)</p>
+                            <p class="preview-time">@Time - @duration minutes</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="dialog-footer">
+            <Button Variant="outline" OnClick="Close">Cancel</Button>
+            <Button Class="primary" OnClick="Save">Create Block</Button>
+        </div>
+    </div>;
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(selectedBlockType) || string.IsNullOrWhiteSpace(title))
+        {
+            ToastService.Error("Please fill in all required fields", "Missing details");
+            return;
+        }
+
+        var selected = SelectedBlock;
+        var result = new ScheduleBlockResult
+        {
+            Id = $"block-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            Type = selectedBlockType,
+            Title = title,
+            StartTime = Time,
+            DurationMinutes = duration,
+            Color = selected?.Color ?? "#64748b"
+        };
+
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync(result);
+        }
+
+        ToastService.Success("Schedule block created successfully", "Saved");
+        await Close();
+    }
+
+    private void OnBlockTypeChanged()
+    {
+        // Auto-populate title if not set
+        if (string.IsNullOrWhiteSpace(title) && SelectedBlock is not null)
+        {
+            title = SelectedBlock.Label;
+        }
+    }
+
+    private void OnDurationChanged()
+    {
+        // Duration change handled by two-way binding
+    }
+
+    private async Task Close()
+    {
+        await HandleOpenChange(false);
+    }
+
+    private async Task HandleOpenChange(bool open)
+    {
+        Open = open;
+        if (OpenChanged.HasDelegate)
+        {
+            await OpenChanged.InvokeAsync(open);
+        }
+    }
+
+    private static string ToAlpha(string hex, string alphaSuffix)
+    {
+        if (hex.Length == 7)
+        {
+            return $"{hex}{alphaSuffix}";
+        }
+
+        return hex;
+    }
+
+    private sealed record BlockType(string Value, string Label, string Color);
+
+    public sealed class ScheduleBlockResult
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string StartTime { get; set; } = string.Empty;
+        public int DurationMinutes { get; set; }
+        public string Color { get; set; } = string.Empty;
+    }
+}

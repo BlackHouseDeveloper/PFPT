@@ -1,0 +1,35 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="@RootClass"
+     role="progressbar"
+     aria-valuemin="0"
+     aria-valuemax="100"
+     aria-valuenow="@ClampedValue"
+     @attributes="AdditionalAttributes">
+    <div class="@IndicatorCss" style="@IndicatorStyle"></div>
+</div>
+
+@code {
+    [Parameter]
+    public double? Value { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? IndicatorClass { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private double ClampedValue => Math.Clamp(Value ?? 0, 0, 100);
+
+    private string RootClass =>
+        $"bg-primary/20 relative h-2 w-full overflow-hidden rounded-full {Class}".Trim();
+
+    private string IndicatorCss =>
+        $"bg-primary h-full w-full flex-1 transition-all {IndicatorClass}".Trim();
+
+    private string IndicatorStyle =>
+        $"transform: translateX(-{(100 - ClampedValue).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%);";
+}

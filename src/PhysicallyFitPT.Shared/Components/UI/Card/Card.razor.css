@@ -1,0 +1,159 @@
+/* Card component styles */
+
+/* Base card */
+.card {
+    background-color: white;
+    color: #111827;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+}
+
+/* Card header */
+.card-header {
+    display: grid;
+    grid-auto-rows: min-content;
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 0.375rem;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+/* When CardAction is present, create two columns */
+.card-header:has(.card-action) {
+    grid-template-columns: 1fr auto;
+}
+
+/* Card header with border-b needs bottom padding */
+.card-header.border-b {
+    padding-bottom: 1.5rem;
+}
+
+/* Card title */
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1;
+    margin: 0;
+    color: #111827;
+}
+
+/* Card description */
+.card-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Card action */
+.card-action {
+    grid-column-start: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    justify-self: end;
+}
+
+/* Card content */
+.card-content {
+    padding: 0 1.5rem;
+}
+
+/* Last card-content gets bottom padding */
+.card-content:last-child {
+    padding-bottom: 1.5rem;
+}
+
+/* Card footer */
+.card-footer {
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* Card footer with border-t needs top padding */
+.card-footer.border-t {
+    padding-top: 1.5rem;
+}
+
+/* Border utilities */
+.border-b {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.border-t {
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Utility classes */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.text-gray-500 {
+    color: #6b7280;
+}
+
+.text-gray-600 {
+    color: #4b5563;
+}
+
+.text-gray-700 {
+    color: #374151;
+}
+
+.text-gray-900 {
+    color: #111827;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.space-y-2 > * + * {
+    margin-top: 0.5rem;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}

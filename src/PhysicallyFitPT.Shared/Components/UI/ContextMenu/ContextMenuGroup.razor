@@ -1,0 +1,14 @@
+@* Context menu group *@
+@namespace PhysicallyFitPT.Shared.Components.UI.ContextMenu
+
+<div class="context-menu-group" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,0 +1,1033 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+<Tabs DefaultValue="permissions" Class="w-full">
+    <TabsList Class="grid w-full grid-cols-2 md:grid-cols-4 mb-6">
+        <TabsTrigger Value="permissions" Class="flex items-center gap-2">
+            SH Permissions
+        </TabsTrigger>
+        <TabsTrigger Value="unit-validation" Class="flex items-center gap-2">
+            CA Unit Validation
+        </TabsTrigger>
+        <TabsTrigger Value="auto-codes" Class="flex items-center gap-2">
+            FT Auto Codes
+        </TabsTrigger>
+        <TabsTrigger Value="authorization" Class="flex items-center gap-2">
+            CC Authorization
+        </TabsTrigger>
+    </TabsList>
+
+    <!-- Permissions Tab -->
+    <TabsContent Value="permissions" Class="space-y-6">
+        <Card Class="border-2 border-blue-200 bg-blue-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5">SH</div>
+                    <div>
+                        <p class="font-semibold text-blue-900 mb-1">Role-Based CPT & ICD-10 Permissions</p>
+                        <p class="text-sm text-blue-800">
+                            Control which user roles can add, edit, or delete billing codes and diagnosis codes.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- CPT Code Permissions Table -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    $ CPT Code Permissions
+                </CardTitle>
+                <CardDescription>
+                    Control who can manage billing codes
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-border">
+                                <th class="text-left p-3 font-semibold">Role</th>
+                                <th class="text-center p-3 font-semibold">Add</th>
+                                <th class="text-center p-3 font-semibold">Edit</th>
+                                <th class="text-center p-3 font-semibold">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-border hover:bg-muted/50">
+                                <td class="p-3">
+                                    <div>
+                                        <p class="font-semibold">PT / DPT</p>
+                                        <p class="text-xs text-muted-foreground">Physical Therapist</p>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtCanAddCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtCanAddCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtCanEditCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtCanEditCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtCanDeleteCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtCanDeleteCPT), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-border hover:bg-muted/50">
+                                <td class="p-3">
+                                    <div>
+                                        <p class="font-semibold">PTA</p>
+                                        <p class="text-xs text-muted-foreground">Physical Therapist Assistant</p>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtaCanAddCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtaCanAddCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtaCanEditCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtaCanEditCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtaCanDeleteCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtaCanDeleteCPT), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-border hover:bg-muted/50">
+                                <td class="p-3">
+                                    <div>
+                                        <p class="font-semibold">Billing Specialist</p>
+                                        <p class="text-xs text-muted-foreground">Billing & coding staff</p>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.BillingCanAddCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BillingCanAddCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.BillingCanEditCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BillingCanEditCPT), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.BillingCanDeleteCPT"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BillingCanDeleteCPT), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-muted/50">
+                                <td class="p-3">
+                                    <div>
+                                        <p class="font-semibold">Front Desk</p>
+                                        <p class="text-xs text-muted-foreground">Patient care coordinator</p>
+                                    </div>
+                                </td>
+                                <td colspan="3" class="p-3 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <Switch
+                                            Checked="@settings.FrontDeskCanViewCPT"
+                                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.FrontDeskCanViewCPT), isChecked))"
+                                        />
+                                        <span class="text-sm text-muted-foreground">View Only</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- ICD-10 Code Permissions Table -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FT ICD-10 Code Permissions
+                </CardTitle>
+                <CardDescription>
+                    Control who can manage diagnosis codes
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-border">
+                                <th class="text-left p-3 font-semibold">Role</th>
+                                <th class="text-center p-3 font-semibold">Add</th>
+                                <th class="text-center p-3 font-semibold">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-border hover:bg-muted/50">
+                                <td class="p-3">
+                                    <p class="font-semibold">PT / DPT</p>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtCanAddICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtCanAddICD), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtCanEditICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtCanEditICD), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+
+                            <tr class="border-b border-border hover:bg-muted/50">
+                                <td class="p-3">
+                                    <p class="font-semibold">PTA</p>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtaCanAddICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtaCanAddICD), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.PtaCanEditICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.PtaCanEditICD), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-muted/50">
+                                <td class="p-3">
+                                    <p class="font-semibold">Billing Specialist</p>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.BillingCanAddICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BillingCanAddICD), isChecked))"
+                                    />
+                                </td>
+                                <td class="p-3 text-center">
+                                    <Switch
+                                        Checked="@settings.BillingCanEditICD"
+                                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.BillingCanEditICD), isChecked))"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Unit Validation Tab -->
+    <TabsContent Value="unit-validation" Class="space-y-6">
+        <Card Class="border-2 border-green-200 bg-green-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5">CA</div>
+                    <div>
+                        <p class="font-semibold text-green-900 mb-1">8-Minute Rule & Unit Validation</p>
+                        <p class="text-sm text-green-800">
+                            Enforce Medicare 8-minute rule and payer-specific billing logic to ensure compliant unit calculations.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CA Unit Calculation Method
+                </CardTitle>
+                <CardDescription>
+                    Configure how billing units are calculated from time
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable 8-Minute Rule</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Use Medicare's 8-minute rule for unit calculations
+                        </p>
+                    </div>
+                        <Switch
+                            Checked="@settings.Enable8MinuteRule"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.Enable8MinuteRule), isChecked))"
+                        />
+                </div>
+
+                @if (settings.Enable8MinuteRule)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-3">Validation Method</Label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                                <input
+                                    type="radio"
+                                    name="unitValidationMethod"
+                                    value="8-minute"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.UnitValidationMethod), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.UnitValidationMethod == "8-minute")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">8-Minute Rule (Medicare Standard)</p>
+                                    <p class="text-sm text-muted-foreground">
+                                        1 unit = 8-22 min, 2 units = 23-37 min, etc.
+                                    </p>
+                                </div>
+                                <Badge Variant="outline" Class="bg-primary text-primary-foreground">
+                                    Recommended
+                                </Badge>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="unitValidationMethod"
+                                    value="midpoint"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.UnitValidationMethod), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.UnitValidationMethod == "midpoint")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Midpoint Rule</p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Round to nearest 15-minute increment
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50">
+                                <input
+                                    type="radio"
+                                    name="unitValidationMethod"
+                                    value="payer-specific"
+                                    @onchange="@((ChangeEventArgs e) => UpdateSetting(nameof(settings.UnitValidationMethod), e.Value?.ToString() ?? ""))"
+                                    checked="@(settings.UnitValidationMethod == "payer-specific")"
+                                    class="w-4 h-4 text-primary"
+                                />
+                                <div class="flex-1">
+                                    <p class="font-semibold">Payer-Specific Logic</p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Use different rules based on insurance type
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Enforce 8-Minute Rule</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Block submission if time doesn't meet minimum threshold
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.Enforce8MinuteRule"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.Enforce8MinuteRule), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Warn Below 8 Minutes</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Show warning when timed code has less than 8 minutes
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.WarnBelow8Minutes"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.WarnBelow8Minutes), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Allow Manual Unit Override</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Let clinicians manually adjust calculated units
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AllowManualUnitOverride"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowManualUnitOverride), isChecked))"
+                        />
+                    </div>
+
+                    @if (settings.AllowManualUnitOverride)
+                    {
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                            <div class="flex-1">
+                                <Label Class="font-semibold">Require Override Justification</Label>
+                                <p class="text-sm text-muted-foreground mt-1">
+                                    Require reason when manually changing unit count
+                                </p>
+                            </div>
+                            <Switch
+                                Checked="@settings.RequireOverrideJustification"
+                                OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireOverrideJustification), isChecked))"
+                            />
+                        </div>
+                    }
+                }
+            </CardContent>
+        </Card>
+
+        @if (settings.UnitValidationMethod == "payer-specific")
+        {
+            <Card Class="border-2">
+                <CardHeader>
+                    <CardTitle Class="flex items-center gap-2">
+                        CL Payer-Specific Rules
+                    </CardTitle>
+                    <CardDescription>
+                        Configure billing logic by insurance type
+                    </CardDescription>
+                </CardHeader>
+                <CardContent Class="space-y-4">
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Medicare Uses Substantial Portion</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Apply Medicare's substantial portion methodology
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.MedicareUsesSubstantialPortion"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.MedicareUsesSubstantialPortion), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Commercial Uses Standard 8-Minute</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Commercial payers follow Medicare 8-minute rule
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.CommercialUsesStandard8Minute"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.CommercialUsesStandard8Minute), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Workers Comp Requires Detail</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Require detailed time documentation for WC claims
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.WorkersCompRequiresDetail"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.WorkersCompRequiresDetail), isChecked))"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        }
+
+        <!-- 8-Minute Rule Reference Table -->
+        <Card Class="border-2 border-green-200">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CC 8-Minute Rule Quick Reference
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-border bg-green-50">
+                                <th class="text-left p-3 font-semibold">Total Time</th>
+                                <th class="text-center p-3 font-semibold">Billable Units</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-border">
+                                <td class="p-3">8 - 22 minutes</td>
+                                <td class="p-3 text-center font-semibold">1 unit</td>
+                            </tr>
+                            <tr class="border-b border-border">
+                                <td class="p-3">23 - 37 minutes</td>
+                                <td class="p-3 text-center font-semibold">2 units</td>
+                            </tr>
+                            <tr class="border-b border-border">
+                                <td class="p-3">38 - 52 minutes</td>
+                                <td class="p-3 text-center font-semibold">3 units</td>
+                            </tr>
+                            <tr class="border-b border-border">
+                                <td class="p-3">53 - 67 minutes</td>
+                                <td class="p-3 text-center font-semibold">4 units</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">68 - 82 minutes</td>
+                                <td class="p-3 text-center font-semibold">5 units</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Auto Codes Tab -->
+    <TabsContent Value="auto-codes" Class="space-y-6">
+        <Card Class="border-2 border-purple-200 bg-purple-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5">FT</div>
+                    <div>
+                        <p class="font-semibold text-purple-900 mb-1">Auto-Populated CPT Codes</p>
+                        <p class="text-sm text-purple-800">
+                            Automatically add CPT codes based on documented exercises, manual therapy, and patient education.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Exercise-Based Codes -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    DB Exercise-Based Auto-Population
+                </CardTitle>
+                <CardDescription>
+                    Automatically add codes when exercises are documented
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Populate From Exercises</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Add CPT code when therapeutic exercises are documented
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoPopulateFromExercises"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoPopulateFromExercises), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AutoPopulateFromExercises)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Default Exercise CPT Code</Label>
+                        <select
+                            @bind="settings.ExerciseCode"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="97110">97110 - Therapeutic Exercise</option>
+                            <option value="97530">97530 - Therapeutic Activities</option>
+                        </select>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            This code will be automatically added when exercises are documented in the note
+                        </p>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Manual Therapy Codes -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    HA Manual Therapy Auto-Population
+                </CardTitle>
+                <CardDescription>
+                    Automatically add codes for manual therapy techniques
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Populate From Manual Therapy</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Add CPT code when manual therapy is documented
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoPopulateFromManualTherapy"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoPopulateFromManualTherapy), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AutoPopulateFromManualTherapy)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Default Manual Therapy CPT Code</Label>
+                        <select
+                            @bind="settings.ManualTherapyCode"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="97140">97140 - Manual Therapy Techniques</option>
+                            <option value="97112">97112 - Neuromuscular Re-education</option>
+                        </select>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Adaptive Equipment & Education -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    GC Patient Education & Equipment
+                </CardTitle>
+                <CardDescription>
+                    Automatically add codes for education and adaptive equipment
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Populate From Adaptive Equipment</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Add CPT code when equipment training is documented
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoPopulateFromAdaptiveEquipment"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoPopulateFromAdaptiveEquipment), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AutoPopulateFromAdaptiveEquipment)
+                {
+                    <div class="p-4 border-2 border-border rounded-lg">
+                        <Label Class="block mb-2">Default Equipment/Education CPT Code</Label>
+                        <select
+                            @bind="settings.AdaptiveEquipmentCode"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        >
+                            <option value="97530">97530 - Therapeutic Activities</option>
+                            <option value="97535">97535 - Self-care/Home Management Training</option>
+                        </select>
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        <!-- Special Education Codes -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    GC Special Education Codes
+                </CardTitle>
+                <CardDescription>
+                    Enable specific education and training codes
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable 97535 (Self-Care Training)</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Self-care/home management training (ADL training)
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.Enable97535"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.Enable97535), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable 97353 (Group Adaptive Behavior)</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Adaptive behavior treatment with protocol modification (group)
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.Enable97353"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.Enable97353), isChecked))"
+                    />
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Auto-Suggest Education Codes</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Show suggestions for education codes based on note content
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AutoSuggestEducationCodes"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoSuggestEducationCodes), isChecked))"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Manual CPT Entry -->
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    FT Manual CPT Code Entry
+                </CardTitle>
+                <CardDescription>
+                    Allow clinicians to manually enter additional codes
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Allow Manual CPT Entry</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Let clinicians add codes not auto-populated from documentation
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.AllowManualCPTEntry"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AllowManualCPTEntry), isChecked))"
+                    />
+                </div>
+
+                @if (settings.AllowManualCPTEntry)
+                {
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Show Manual CPT in Plan Section</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Display manual code entry option in the Plan section
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.ShowManualCPTInPlan"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ShowManualCPTInPlan), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Require Manual CPT Justification</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Require explanation when manually adding non-standard codes
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.RequireManualCPTJustification"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.RequireManualCPTJustification), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+    </TabsContent>
+
+    <!-- Authorization Tab -->
+    <TabsContent Value="authorization" Class="space-y-6">
+        <Card Class="border-2 border-orange-200 bg-orange-50">
+            <CardContent Class="p-4">
+                <div class="flex items-start gap-3">
+                    <div class="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5">CC</div>
+                    <div>
+                        <p class="font-semibold text-orange-900 mb-1">Authorization Tracking Logic</p>
+                        <p class="text-sm text-orange-800">
+                            Configure how scheduled visits, cancellations, and no-shows affect authorization counts.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card Class="border-2">
+            <CardHeader>
+                <CardTitle Class="flex items-center gap-2">
+                    CA Visit Counting Rules
+                </CardTitle>
+                <CardDescription>
+                    Configure which appointments count toward authorization
+                </CardDescription>
+            </CardHeader>
+            <CardContent Class="space-y-4">
+                <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                    <div class="flex-1">
+                        <Label Class="font-semibold">Enable Authorization Tracking</Label>
+                        <p class="text-sm text-muted-foreground mt-1">
+                            Track visit counts against insurance authorizations
+                        </p>
+                    </div>
+                    <Switch
+                        Checked="@settings.EnableAuthTracking"
+                        OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.EnableAuthTracking), isChecked))"
+                    />
+                </div>
+
+                @if (settings.EnableAuthTracking)
+                {
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Scheduled Visits Count Toward Auth</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Decrement authorization when visit is scheduled (not just completed)
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.ScheduledVisitsCountTowardAuth"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.ScheduledVisitsCountTowardAuth), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Removing No-Show Decrements Auth</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                When a no-show is removed, return the visit to authorization count
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.NoShowDecrementsAuth"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.NoShowDecrementsAuth), isChecked))"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Canceled Visits Do Not Count</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Canceled appointments don't use up authorization visits
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.CanceledVisitsDoNotCount"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.CanceledVisitsDoNotCount), isChecked))"
+                        />
+                    </div>
+                }
+            </CardContent>
+        </Card>
+
+        @if (settings.EnableAuthTracking)
+        {
+            <Card Class="border-2">
+                <CardHeader>
+                    <CardTitle Class="flex items-center gap-2">
+                        AT Authorization Warnings
+                    </CardTitle>
+                    <CardDescription>
+                        Configure alerts for low authorization counts
+                    </CardDescription>
+                </CardHeader>
+                <CardContent Class="space-y-4">
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Warn When Auth Low</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Show warning when authorization visits are running low
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.WarnWhenAuthLow"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.WarnWhenAuthLow), isChecked))"
+                        />
+                    </div>
+
+                    @if (settings.WarnWhenAuthLow)
+                    {
+                        <div class="p-4 border-2 border-border rounded-lg">
+                            <Label Class="block mb-2">Warning Threshold (Visits Remaining)</Label>
+                            <select
+                                @bind="settings.AuthWarningThreshold"
+                                class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            >
+                                <option value="1">1 visit remaining</option>
+                                <option value="2">2 visits remaining</option>
+                                <option value="3">3 visits remaining (Recommended)</option>
+                                <option value="5">5 visits remaining</option>
+                                <option value="7">7 visits remaining</option>
+                            </select>
+                            <p class="text-xs text-muted-foreground mt-2">
+                                Display warning badge when authorization is below this threshold
+                            </p>
+                        </div>
+                    }
+
+                    <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                        <div class="flex-1">
+                            <Label Class="font-semibold">Auto-Block When Auth Exhausted</Label>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Prevent scheduling when no authorization visits remain
+                            </p>
+                        </div>
+                        <Switch
+                            Checked="@settings.AutoBlockWhenAuthExhausted"
+                            OnCheckedChange="@((bool isChecked) => UpdateSetting(nameof(settings.AutoBlockWhenAuthExhausted), isChecked))"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card Class="border-2 border-orange-200">
+                <CardHeader>
+                    <CardTitle Class="flex items-center gap-2">
+                        CC Authorization Tracking Example
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Total Authorized Visits:</span>
+                                    <span class="font-semibold">20 visits</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Scheduled Visits:</span>
+                                    <span class="font-semibold">15 visits</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Completed Visits:</span>
+                                    <span class="font-semibold">12 visits</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">No Shows (removed):</span>
+                                    <span class="font-semibold">1 visit</span>
+                                </div>
+                                <div class="flex justify-between pt-2 border-t border-orange-300">
+                                    <span class="text-muted-foreground font-semibold">Remaining Auth:</span>
+                                    <Badge Class="bg-orange-600">5 visits</Badge>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                            <div class="flex gap-2">
+                                <span class="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5">!</span>
+                                <div class="text-sm text-blue-800">
+                                    <p class="font-semibold mb-1">How It Works:</p>
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>Scheduling a visit uses 1 from authorization</li>
+                                        <li>Removing a no-show returns 1 to authorization</li>
+                                        <li>Canceled visits are automatically returned</li>
+                                        <li>Warning appears at @settings.AuthWarningThreshold visits remaining</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        }
+    </TabsContent>
+</Tabs>
+
+@code {
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool HasUnsavedChanges { get; set; }
+
+    [Parameter]
+    public EventCallback HasUnsavedChangesChanged { get; set; }
+
+    private Settings settings = new();
+
+    private void UpdateSetting(string key, object value)
+    {
+        var property = settings.GetType().GetProperty(key);
+        if (property != null)
+        {
+            if (property.PropertyType == typeof(int) && value is string strValue)
+            {
+                property.SetValue(settings, int.Parse(strValue));
+            }
+            else
+            {
+                property.SetValue(settings, value);
+            }
+        }
+        HasUnsavedChanges = true;
+        HasUnsavedChangesChanged.InvokeAsync(true);
+    }
+
+    private class Settings
+    {
+        // CPT/ICD Permissions
+        public bool PtCanAddCPT { get; set; } = true;
+        public bool PtCanEditCPT { get; set; } = true;
+        public bool PtCanDeleteCPT { get; set; } = true;
+        public bool PtaCanAddCPT { get; set; } = true;
+        public bool PtaCanEditCPT { get; set; } = false;
+        public bool PtaCanDeleteCPT { get; set; } = false;
+        public bool BillingCanAddCPT { get; set; } = true;
+        public bool BillingCanEditCPT { get; set; } = true;
+        public bool BillingCanDeleteCPT { get; set; } = true;
+        public bool FrontDeskCanViewCPT { get; set; } = true;
+        
+        public bool PtCanAddICD { get; set; } = true;
+        public bool PtCanEditICD { get; set; } = true;
+        public bool PtaCanAddICD { get; set; } = false;
+        public bool PtaCanEditICD { get; set; } = false;
+        public bool BillingCanAddICD { get; set; } = true;
+        public bool BillingCanEditICD { get; set; } = true;
+        
+        // Unit Validation
+        public bool Enable8MinuteRule { get; set; } = true;
+        public string UnitValidationMethod { get; set; } = "8-minute";
+        public bool Enforce8MinuteRule { get; set; } = true;
+        public bool WarnBelow8Minutes { get; set; } = true;
+        public bool AllowManualUnitOverride { get; set; } = true;
+        public bool RequireOverrideJustification { get; set; } = true;
+        
+        // Payer-Specific
+        public bool MedicareUsesSubstantialPortion { get; set; } = true;
+        public bool CommercialUsesStandard8Minute { get; set; } = true;
+        public bool WorkersCompRequiresDetail { get; set; } = true;
+        
+        // Auto-Populate Codes
+        public bool AutoPopulateFromExercises { get; set; } = true;
+        public string ExerciseCode { get; set; } = "97110";
+        public bool AutoPopulateFromManualTherapy { get; set; } = true;
+        public string ManualTherapyCode { get; set; } = "97140";
+        public bool AutoPopulateFromAdaptiveEquipment { get; set; } = true;
+        public string AdaptiveEquipmentCode { get; set; } = "97530";
+        
+        // Manual CPT
+        public bool AllowManualCPTEntry { get; set; } = true;
+        public bool ShowManualCPTInPlan { get; set; } = true;
+        public bool RequireManualCPTJustification { get; set; } = false;
+        
+        // Special Codes
+        public bool Enable97535 { get; set; } = true;
+        public bool Enable97353 { get; set; } = true;
+        public bool AutoSuggestEducationCodes { get; set; } = true;
+        
+        // Authorization
+        public bool EnableAuthTracking { get; set; } = true;
+        public bool ScheduledVisitsCountTowardAuth { get; set; } = true;
+        public bool NoShowDecrementsAuth { get; set; } = false;
+        public bool CanceledVisitsDoNotCount { get; set; } = true;
+        public bool WarnWhenAuthLow { get; set; } = true;
+        public int AuthWarningThreshold { get; set; } = 3;
+        public bool AutoBlockWhenAuthExhausted { get; set; } = false;
+    }
+}

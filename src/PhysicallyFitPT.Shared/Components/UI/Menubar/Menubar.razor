@@ -1,0 +1,55 @@
+@* Menubar - top-level horizontal menu bar *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="menubar @CssClass" @onmouseleave="CloseAllMenus" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private readonly List<MenubarMenu> menus = new();
+
+    internal void RegisterMenu(MenubarMenu menu)
+    {
+        if (!menus.Contains(menu))
+        {
+            menus.Add(menu);
+        }
+    }
+
+    internal void UnregisterMenu(MenubarMenu menu)
+    {
+        menus.Remove(menu);
+    }
+
+    internal bool AnyMenuOpen => menus.Any(m => m.IsOpen);
+
+    internal async Task OpenMenuAsync(MenubarMenu menu)
+    {
+        foreach (var other in menus)
+        {
+            if (!ReferenceEquals(other, menu))
+            {
+                other.CloseInternal();
+            }
+        }
+
+        menu.OpenInternal();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CloseAllMenus()
+    {
+        foreach (var menu in menus)
+        {
+            menu.CloseInternal();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,20 @@
+@* Dropdown menu content - the floating panel *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="dropdown-content" style="left: @(positionX)px; top: @(positionY)px;" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public DropdownMenu? ParentMenu { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private double positionX => ParentMenu?.PositionX ?? 0;
+    private double positionY => ParentMenu?.PositionY ?? 0;
+}

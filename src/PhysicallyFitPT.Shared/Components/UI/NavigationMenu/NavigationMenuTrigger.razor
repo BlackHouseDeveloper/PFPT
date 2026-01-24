@@ -1,0 +1,42 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<button type="button"
+        class="navigation-menu-trigger @Class"
+        data-state="@(ParentItem?.IsOpen == true ? "open" : "closed")"
+        aria-expanded="@(ParentItem?.IsOpen == true ? "true" : "false")"
+        @onclick="Toggle"
+        @attributes="AdditionalAttributes">
+    <span class="navigation-menu-trigger-label">@ChildContent</span>
+    <ChevronDownIcon Width="14" Height="14" CssClass="navigation-menu-trigger-icon" />
+</button>
+
+@code {
+    [CascadingParameter]
+    public NavigationMenuItem? ParentItem { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task Toggle()
+    {
+        if (ParentItem == null)
+        {
+            return;
+        }
+
+        if (ParentItem.IsOpen)
+        {
+            await ParentItem.CloseAsync();
+        }
+        else
+        {
+            await ParentItem.OpenAsync();
+        }
+    }
+}

@@ -1,0 +1,463 @@
+@using PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.UI.Dialog
+@using PhysicallyFitPT.Shared.Components.UI.Alert
+@using PhysicallyFitPT.Shared.Components.UI.Icons
+
+<Dialog Open="IsOpen">
+    <DialogContent Class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+            <DialogTitle Class="flex items-center gap-2">
+                <Icon Name="filetext" Width="20" Height="20" CssClass="text-primary" />
+                Change Note Type
+            </DialogTitle>
+            <DialogDescription>
+                Convert this note to a different visit type with automatic data migration.
+            </DialogDescription>
+        </DialogHeader>
+
+        <div class="space-y-6 py-4">
+            <div class="p-4 bg-gray-50 border-2 border-gray-200 rounded-lg">
+                <Label Class="text-sm text-muted-foreground">Current Note Type</Label>
+                <div class="flex items-center gap-3 mt-2">
+                    <div class="w-4 h-4 rounded-full" style="background-color: @CurrentType?.Color"></div>
+                    <div>
+                        <p class="font-semibold">@CurrentType?.Name</p>
+                        <p class="text-xs text-muted-foreground">Code: @CurrentType?.Code</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center">
+                <Icon Name="arrowright" Width="24" Height="24" CssClass="text-gray-400" />
+            </div>
+
+            <div class="space-y-2">
+                <Label>Select New Note Type</Label>
+                <Select Value="@selectedNoteType" OnValueChanged="HandleNoteTypeSelected">
+                    <SelectTrigger Class="h-11">
+                        <SelectValue Placeholder="Choose note type..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        @foreach (var option in VisitTypeOptions.Where(vt => vt.Id != CurrentNoteType && vt.AllowChange))
+                        {
+                            <SelectItem Value="@option.Id">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: @option.Color"></div>
+                                    @option.Name (@option.Code)
+                                    @if (option.RequiresPoc)
+                                    {
+                                        <span class="text-xs text-orange-600">• Requires POC</span>
+                                    }
+                                </div>
+                            </SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+                @if (!string.IsNullOrEmpty(validationMessage))
+                {
+                    <p class="text-xs text-red-600">@validationMessage</p>
+                }
+            </div>
+
+            @if (showMigrationPreview && migrationWarnings.Count > 0)
+            {
+                <Alert Class="border-2 border-orange-200 bg-orange-50">
+                    <AlertIcon>
+                        <Icon Name="alertcircle" Width="16" Height="16" CssClass="text-orange-600" />
+                    </AlertIcon>
+                    <AlertDescription Class="text-orange-900">
+                        <p class="font-semibold mb-2">Data Migration Warnings:</p>
+                        <ul class="text-sm space-y-1">
+                            @foreach (var warning in migrationWarnings)
+                            {
+                                <li>• @warning</li>
+                            }
+                        </ul>
+                    </AlertDescription>
+                </Alert>
+            }
+
+            @if (TargetType?.RequiresPoc == true)
+            {
+                <Alert Class="border-2 border-red-200 bg-red-50">
+                    <AlertIcon>
+                        <Icon Name="alertcircle" Width="16" Height="16" CssClass="text-red-600" />
+                    </AlertIcon>
+                    <AlertDescription Class="text-red-900">
+                        <p class="font-semibold">POC Information Required</p>
+                        <p class="text-sm mt-1">
+                            This note type requires complete Plan of Care information. Please complete frequency, duration, and treatment goals before saving.
+                        </p>
+                    </AlertDescription>
+                </Alert>
+            }
+
+            @if (!string.IsNullOrEmpty(selectedNoteType))
+            {
+                <div class="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                    <div class="flex items-start gap-2">
+                        <Icon Name="checkcircle" Width="20" Height="20" CssClass="text-blue-600 mt-0.5" />
+                        <div>
+                            <p class="font-semibold text-blue-900">Data Migration</p>
+                            <p class="text-sm text-blue-800 mt-1">The following data will be automatically transferred:</p>
+                            <ul class="text-sm text-blue-800 mt-2 space-y-1">
+                                <li>• Subjective information (chief complaint, symptoms, pain scales)</li>
+                                <li>• Objective findings (ROM, MMT, special tests)</li>
+                                <li>• Assessment and clinical impressions</li>
+                                @if (!string.Equals(selectedNoteType, "daily-note", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <li>• Treatment plan and HEP</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <DialogFooter Class="gap-2">
+            <Button Variant="outline" OnClick="HandleClose">Cancel</Button>
+            @if (!showMigrationPreview)
+            {
+                <Button OnClick="HandlePreviewMigration" Disabled="@string.IsNullOrEmpty(selectedNoteType)" Class="bg-blue-600 hover:bg-blue-700">
+                    Preview Changes
+                </Button>
+            }
+            else
+            {
+                <Button OnClick="HandleConfirmChange" Class="bg-primary hover:bg-primary/90">
+                    Confirm Change
+                </Button>
+            }
+        </DialogFooter>
+    </DialogContent>
+</Dialog>
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter]
+    public string CurrentNoteType { get; set; } = "daily-note";
+
+    [Parameter]
+    public NoteData CurrentNoteData { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<NoteTypeChangeResult> OnNoteTypeChange { get; set; }
+
+    private string? selectedNoteType;
+    private bool showMigrationPreview;
+    private readonly List<string> migrationWarnings = new();
+    private string? validationMessage;
+
+    private static IReadOnlyList<VisitTypeOption> VisitTypeOptions => new[]
+    {
+        new VisitTypeOption("initial-eval", "Initial Evaluation", "IE", "#16a34a", false, true),
+        new VisitTypeOption("daily-note", "Daily Note", "DN", "#7c3aed", true, false),
+        new VisitTypeOption("progress-note", "Progress Note", "PN", "#2563eb", true, true),
+        new VisitTypeOption("re-eval", "Re-evaluation", "RE", "#0891b2", true, true),
+        new VisitTypeOption("discharge", "Discharge Note", "DC", "#dc2626", false, false),
+        new VisitTypeOption("dry-needling", "Dry Needling", "DNL", "#ea580c", true, false)
+    };
+
+    private VisitTypeOption? CurrentType => VisitTypeOptions.FirstOrDefault(x => string.Equals(x.Id, CurrentNoteType, StringComparison.OrdinalIgnoreCase));
+    private VisitTypeOption? TargetType => VisitTypeOptions.FirstOrDefault(x => string.Equals(x.Id, selectedNoteType, StringComparison.OrdinalIgnoreCase));
+
+    private void HandleNoteTypeSelected(string? value)
+    {
+        selectedNoteType = value;
+        validationMessage = null;
+        showMigrationPreview = false;
+        migrationWarnings.Clear();
+    }
+
+    private void HandlePreviewMigration()
+    {
+        if (string.IsNullOrEmpty(selectedNoteType))
+        {
+            validationMessage = "Please select a note type.";
+            return;
+        }
+
+        var mapping = GetMigrationMapping(CurrentNoteType, selectedNoteType);
+        migrationWarnings.Clear();
+        migrationWarnings.AddRange(mapping.Warnings);
+        showMigrationPreview = true;
+    }
+
+    private async Task HandleConfirmChange()
+    {
+        if (string.IsNullOrEmpty(selectedNoteType))
+        {
+            validationMessage = "Please select a note type.";
+            return;
+        }
+
+        var mapping = GetMigrationMapping(CurrentNoteType, selectedNoteType);
+        var migrated = MigrateData(mapping, CurrentNoteData);
+
+        if (OnNoteTypeChange.HasDelegate)
+        {
+            await OnNoteTypeChange.InvokeAsync(new NoteTypeChangeResult(selectedNoteType, migrated, mapping.Warnings));
+        }
+
+        await HandleClose();
+    }
+
+    private async Task HandleClose()
+    {
+        selectedNoteType = null;
+        showMigrationPreview = false;
+        migrationWarnings.Clear();
+        validationMessage = null;
+
+        if (OnOpenChange.HasDelegate)
+        {
+            await OnOpenChange.InvokeAsync(false);
+        }
+    }
+
+    private Task HandleDialogToggle(bool open)
+    {
+        if (!open)
+        {
+            return HandleClose();
+        }
+
+        return OnOpenChange.HasDelegate ? OnOpenChange.InvokeAsync(open) : Task.CompletedTask;
+    }
+
+    private static DataMigrationMapping GetMigrationMapping(string from, string to)
+    {
+        var mappings = new Dictionary<string, DataMigrationMapping>(StringComparer.OrdinalIgnoreCase)
+        {
+            {
+                "daily-note_to_progress-note",
+                new DataMigrationMapping(
+                    From: "daily-note",
+                    To: "progress-note",
+                    Fields: new List<FieldMapping>
+                    {
+                        new("subjective", "subjective"),
+                        new("objective.rom", "objective.rom"),
+                        new("objective.mmt", "objective.mmt"),
+                        new("assessment.clinicalImpression", "assessment.clinicalImpression"),
+                        new("plan.hep", "plan.hep")
+                    },
+                    Warnings: new List<string>
+                    {
+                        "Progress Notes require full POC information (frequency, duration)",
+                        "You will need to complete Goals section",
+                        "CPT codes must be added"
+                    })
+            },
+            {
+                "progress-note_to_daily-note",
+                new DataMigrationMapping(
+                    From: "progress-note",
+                    To: "daily-note",
+                    Fields: new List<FieldMapping>
+                    {
+                        new("subjective", "subjective"),
+                        new("objective.rom", "objective.rom"),
+                        new("objective.mmt", "objective.mmt"),
+                        new("plan.hep", "plan.hep")
+                    },
+                    Warnings: new List<string>
+                    {
+                        "CPT codes will be removed (Daily Notes are not coded)",
+                        "POC information will be hidden",
+                        "Goals section will be read-only"
+                    })
+            },
+            {
+                "daily-note_to_re-eval",
+                new DataMigrationMapping(
+                    From: "daily-note",
+                    To: "re-eval",
+                    Fields: new List<FieldMapping>
+                    {
+                        new("subjective", "subjective"),
+                        new("objective", "objective"),
+                        new("assessment", "assessment")
+                    },
+                    Warnings: new List<string>
+                    {
+                        "Re-evaluation requires comprehensive assessment",
+                        "You must complete updated POC information",
+                        "Outcome measures should be re-administered"
+                    })
+            }
+        };
+
+        var key = $"{from}_to_{to}";
+        if (mappings.TryGetValue(key, out var mapping))
+        {
+            return mapping;
+        }
+
+        return new DataMigrationMapping(
+            From: from,
+            To: to,
+            Fields: new List<FieldMapping>
+            {
+                new("subjective", "subjective"),
+                new("objective", "objective"),
+                new("assessment", "assessment")
+            },
+            Warnings: new List<string> { "General note type change - please review all sections" });
+    }
+
+    private static NoteData MigrateData(DataMigrationMapping mapping, NoteData current)
+    {
+        var migrated = new NoteData();
+
+        foreach (var field in mapping.Fields)
+        {
+            var sourceValue = GetNestedValue(current, field.SourcePathParts);
+            if (sourceValue is null)
+            {
+                continue;
+            }
+
+            var finalValue = field.Transform is not null ? field.Transform(sourceValue) : sourceValue;
+            SetNestedValue(migrated, field.TargetPathParts, finalValue);
+        }
+
+        return migrated;
+    }
+
+    private static object? GetNestedValue(object? root, IReadOnlyList<string> pathParts)
+    {
+        object? current = root;
+        foreach (var part in pathParts)
+        {
+            if (current is NoteData nd)
+            {
+                current = nd.GetSection(part);
+            }
+            else if (current is IDictionary<string, object?> dict && dict.TryGetValue(part, out var value))
+            {
+                current = value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        return current;
+    }
+
+    private static void SetNestedValue(NoteData root, IReadOnlyList<string> pathParts, object? value)
+    {
+        object current = root;
+        for (var i = 0; i < pathParts.Count; i++)
+        {
+            var part = pathParts[i];
+            var isLast = i == pathParts.Count - 1;
+
+            if (isLast)
+            {
+                if (current is NoteData nd)
+                {
+                    nd.SetSectionValue(part, value);
+                }
+                else if (current is IDictionary<string, object?> dict)
+                {
+                    dict[part] = value;
+                }
+
+                return;
+            }
+
+            if (current is NoteData noteData)
+            {
+                var section = noteData.GetOrCreateSection(part);
+                current = section;
+            }
+            else if (current is IDictionary<string, object?> dict)
+            {
+                if (!dict.TryGetValue(part, out var next) || next is not IDictionary<string, object?> nested)
+                {
+                    nested = new Dictionary<string, object?>();
+                    dict[part] = nested;
+                }
+
+                current = nested;
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    public sealed record NoteData
+    {
+        public Dictionary<string, object?> Subjective { get; init; } = new();
+        public Dictionary<string, object?> Objective { get; init; } = new();
+        public Dictionary<string, object?> Assessment { get; init; } = new();
+        public Dictionary<string, object?> Plan { get; init; } = new();
+
+        public object? GetSection(string name) => name.ToLowerInvariant() switch
+        {
+            "subjective" => Subjective,
+            "objective" => Objective,
+            "assessment" => Assessment,
+            "plan" => Plan,
+            _ => null
+        };
+
+        public IDictionary<string, object?> GetOrCreateSection(string name) => name.ToLowerInvariant() switch
+        {
+            "subjective" => Subjective,
+            "objective" => Objective,
+            "assessment" => Assessment,
+            "plan" => Plan,
+            _ => Subjective
+        };
+
+        public void SetSectionValue(string name, object? value)
+        {
+            switch (name.ToLowerInvariant())
+            {
+                case "subjective":
+                    Subjective.Clear();
+                    Subjective["value"] = value;
+                    break;
+                case "objective":
+                    Objective.Clear();
+                    Objective["value"] = value;
+                    break;
+                case "assessment":
+                    Assessment.Clear();
+                    Assessment["value"] = value;
+                    break;
+                case "plan":
+                    Plan.Clear();
+                    Plan["value"] = value;
+                    break;
+                default:
+                    Subjective[name] = value;
+                    break;
+            }
+        }
+    }
+
+    public sealed record VisitTypeOption(string Id, string Name, string Code, string Color, bool AllowChange, bool RequiresPoc);
+
+    public sealed record FieldMapping(string Source, string Target, Func<object?, object?>? Transform = null)
+    {
+        public IReadOnlyList<string> SourcePathParts => Source.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        public IReadOnlyList<string> TargetPathParts => Target.Split('.', StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    public sealed record DataMigrationMapping(string From, string To, IReadOnlyList<FieldMapping> Fields, IReadOnlyList<string> Warnings);
+
+    public sealed record NoteTypeChangeResult(string NewNoteType, NoteData MigratedData, IReadOnlyList<string> Warnings);
+}

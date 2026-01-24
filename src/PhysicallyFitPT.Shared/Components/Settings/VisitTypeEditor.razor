@@ -1,0 +1,308 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+@if (IsOpen)
+{
+    <div class="visit-type-editor-overlay">
+        <Card Class="visit-type-editor-card">
+            <CardHeader>
+                <div class="flex items-center justify-between">
+                    <CardTitle>
+                        @if (VisitTypeValue != null)
+                        {
+                            <text>ED Edit Visit Type</text>
+                        }
+                        else
+                        {
+                            <text>AD Add Visit Type</text>
+                        }
+                    </CardTitle>
+                    <Button Variant="ghost" Size="sm" OnClick="@OnCancel">
+                        XC
+                    </Button>
+                </div>
+                <CardDescription>
+                    Configure appointment type settings
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form @onsubmit="@HandleSubmit" class="space-y-6">
+                    <!-- Visit Type Name -->
+                    <div>
+                        <Label Class="block mb-2">Visit Type Name *</Label>
+                        <input
+                            type="text"
+                            @bind="FormData.Name"
+                            placeholder="e.g., Initial Evaluation"
+                            required
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+
+                    <!-- Duration -->
+                    <div>
+                        <Label Class="block mb-2">Duration (minutes) *</Label>
+                        <select
+                            @bind="FormData.Duration"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            required
+                        >
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">60 minutes</option>
+                            <option value="75">75 minutes</option>
+                            <option value="90">90 minutes</option>
+                            <option value="120">120 minutes</option>
+                        </select>
+                    </div>
+
+                    <!-- Color -->
+                    <div>
+                        <Label Class="block mb-2">Color *</Label>
+                        <div class="space-y-3">
+                            <div class="visit-type-color-grid">
+                                @foreach (var color in PresetColors)
+                                {
+                                    <button
+                                        type="button"
+                                        @onclick="@(() => FormData.Color = color)"
+                                        class="@("visit-type-color-button " + (FormData.Color == color ? "visit-type-color-button-selected" : ""))"
+                                        style="background-color: @color;"
+                                        title="@color"
+                                    >
+                                    </button>
+                                }
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <Label Class="text-sm">CS Custom:</Label>
+                                <input
+                                    type="color"
+                                    @bind="FormData.Color"
+                                    class="w-20 h-10 border-2 border-border rounded-lg cursor-pointer"
+                                />
+                                <input
+                                    type="text"
+                                    @bind="FormData.Color"
+                                    class="flex-1 px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                    placeholder="#3b82f6"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Default Note Type -->
+                    <div>
+                        <Label Class="block mb-2">Default Note Type *</Label>
+                        <select
+                            @bind="FormData.DefaultNoteType"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            required
+                        >
+                            @foreach (var noteType in NoteTypes)
+                            {
+                                <option value="@noteType.Value">@noteType.Label</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Switches -->
+                    <div class="space-y-3">
+                        <!-- Billable -->
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                            <div>
+                                <Label Class="font-semibold">BL Billable</Label>
+                                <p class="text-sm text-muted-foreground mt-1">
+                                    This visit type can be billed to insurance
+                                </p>
+                            </div>
+                            <Switch
+                                Checked="@FormData.Billable"
+                                OnCheckedChange="@((bool isChecked) => FormData.Billable = isChecked)"
+                            />
+                        </div>
+
+                        <!-- Requires Intake -->
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                            <div>
+                                <Label Class="font-semibold">RI Requires Intake</Label>
+                                <p class="text-sm text-muted-foreground mt-1">
+                                    Patient must complete intake forms before this visit
+                                </p>
+                            </div>
+                            <Switch
+                                Checked="@FormData.RequiresIntake"
+                                OnCheckedChange="@((bool isChecked) => FormData.RequiresIntake = isChecked)"
+                            />
+                        </div>
+
+                        <!-- PTA Allowed -->
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                            <div>
+                                <Label Class="font-semibold">PA PTA Allowed</Label>
+                                <p class="text-sm text-muted-foreground mt-1">
+                                    Physical Therapist Assistants can perform this visit type
+                                </p>
+                            </div>
+                            <Switch
+                                Checked="@FormData.AllowsPTA"
+                                OnCheckedChange="@((bool isChecked) => FormData.AllowsPTA = isChecked)"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-2 justify-end pt-4 border-t">
+                        <Button Type="button" Variant="outline" OnClick="@OnCancel">
+                            CN Cancel
+                        </Button>
+                        <Button Type="submit" Class="bg-primary">
+                            SV Save Visit Type
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public VisitType? VisitTypeValue { get; set; }
+
+    [Parameter]
+    public bool IsOpen { get; set; } = true;
+
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private VisitTypeData FormData = new();
+
+    private List<NoteTypeInfo> NoteTypes = new();
+    private List<string> PresetColors = new();
+
+    private class VisitTypeData
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Duration { get; set; } = 45;
+        public string Color { get; set; } = "#3b82f6";
+        public bool Billable { get; set; } = true;
+        public string DefaultNoteType { get; set; } = "daily";
+        public bool AllowsPTA { get; set; }
+        public bool RequiresIntake { get; set; }
+    }
+
+    private class NoteTypeInfo
+    {
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
+    }
+
+    protected override void OnInitialized()
+    {
+        InitializeNoteTypes();
+        InitializeColors();
+        InitializeFormData();
+    }
+
+    private void InitializeNoteTypes()
+    {
+        NoteTypes = new()
+        {
+            new() { Value = "eval", Label = "Initial Evaluation" },
+            new() { Value = "re-eval", Label = "Re-Evaluation" },
+            new() { Value = "daily", Label = "Daily Note" },
+            new() { Value = "progress", Label = "Progress Note" },
+            new() { Value = "discharge", Label = "Discharge Note" },
+            new() { Value = "dry-needling", Label = "Dry Needling Note" },
+            new() { Value = "note", Label = "General Note" },
+            new() { Value = "none", Label = "No Note Required" }
+        };
+    }
+
+    private void InitializeColors()
+    {
+        PresetColors = new()
+        {
+            "#3b82f6", // blue
+            "#8b5cf6", // purple
+            "#10b981", // green
+            "#f97316", // orange
+            "#ef4444", // red
+            "#06b6d4", // cyan
+            "#ec4899", // pink
+            "#14b8a6", // teal
+            "#6366f1", // indigo
+            "#f59e0b", // amber
+            "#6b7280", // gray
+            "#9ca3af"  // light gray
+        };
+    }
+
+    private void InitializeFormData()
+    {
+        if (VisitTypeValue != null)
+        {
+            FormData = new()
+            {
+                Id = VisitTypeValue.Id,
+                Name = VisitTypeValue.Name,
+                Duration = VisitTypeValue.Duration,
+                Color = VisitTypeValue.Color,
+                Billable = VisitTypeValue.Billable,
+                DefaultNoteType = VisitTypeValue.DefaultNoteType,
+                AllowsPTA = VisitTypeValue.AllowsPTA,
+                RequiresIntake = VisitTypeValue.RequiresIntake
+            };
+        }
+        else
+        {
+            FormData = new()
+            {
+                Id = DateTime.UtcNow.Ticks.ToString(),
+                Name = "",
+                Duration = 45,
+                Color = "#3b82f6",
+                Billable = true,
+                DefaultNoteType = "daily",
+                AllowsPTA = false,
+                RequiresIntake = false
+            };
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(FormData.Name))
+            return;
+
+        var visitType = new VisitType
+        {
+            Id = FormData.Id,
+            Name = FormData.Name,
+            Duration = FormData.Duration,
+            Color = FormData.Color,
+            Billable = FormData.Billable,
+            DefaultNoteType = FormData.DefaultNoteType,
+            AllowsPTA = FormData.AllowsPTA,
+            RequiresIntake = FormData.RequiresIntake
+        };
+
+        await OnSave.InvokeAsync(visitType);
+    }
+
+    public class VisitType
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Duration { get; set; }
+        public string Color { get; set; } = "";
+        public bool Billable { get; set; }
+        public string DefaultNoteType { get; set; } = "";
+        public bool AllowsPTA { get; set; }
+        public bool RequiresIntake { get; set; }
+    }
+}

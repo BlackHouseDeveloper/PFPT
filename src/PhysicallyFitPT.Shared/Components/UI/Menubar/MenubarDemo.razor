@@ -1,0 +1,171 @@
+@* Menubar Demo - Clinical actions *@
+@page "/demo/menubar"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Menubar</h1>
+    <p class="demo-description">
+        Top-level navigation for clinical workflows: notes, patients, billing, and preferences. Supports submenus, checkboxes, radio groups, and shortcuts.
+    </p>
+
+    <div class="demo-section">
+        <h2>Clinical Actions Menubar</h2>
+        <div class="demo-example">
+            <Menubar>
+                <MenubarMenu>
+                    <MenubarTrigger>File</MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarItem OnSelect="CreateNote">
+                            <Icon Name="filetext" Width="16" Height="16" />
+                            New Note
+                            <MenubarShortcut>Ctrl+N</MenubarShortcut>
+                        </MenubarItem>
+                        <MenubarItem OnSelect="CreatePatient">
+                            <Icon Name="user" Width="16" Height="16" />
+                            New Patient
+                            <MenubarShortcut>Ctrl+P</MenubarShortcut>
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarCheckboxItem Checked="@autoSave" CheckedChanged="v => autoSave = v">
+                            Autosave notes
+                        </MenubarCheckboxItem>
+                        <MenubarCheckboxItem Checked="@shareWithPortal" CheckedChanged="v => shareWithPortal = v">
+                            Share to patient portal
+                        </MenubarCheckboxItem>
+                        <MenubarSeparator />
+                        <MenubarSub>
+                            <MenubarSubTrigger>
+                                Export
+                            </MenubarSubTrigger>
+                            <MenubarSubContent>
+                                <MenubarItem OnSelect="ExportPdf">
+                                    <Icon Name="file" Width="16" Height="16" />
+                                    PDF (clinician)
+                                </MenubarItem>
+                                <MenubarItem OnSelect="ExportSummary">
+                                    <Icon Name="filetext" Width="16" Height="16" />
+                                    Visit summary
+                                </MenubarItem>
+                                <MenubarItem OnSelect="ExportBilling">
+                                    <Icon Name="save" Width="16" Height="16" />
+                                    Billing packet
+                                </MenubarItem>
+                            </MenubarSubContent>
+                        </MenubarSub>
+                        <MenubarSeparator />
+                        <MenubarItem OnSelect="SignOut" Variant="destructive">
+                            <Icon Name="x" Width="16" Height="16" />
+                            Sign out
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+                <MenubarMenu>
+                    <MenubarTrigger>Patients</MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarRadioGroup Value="@patientStatus" ValueChanged="OnPatientStatusChanged">
+                            <MenubarLabel>Current status</MenubarLabel>
+                            <MenubarRadioItem Value="active">
+                                Active caseload
+                            </MenubarRadioItem>
+                            <MenubarRadioItem Value="hold">
+                                On hold
+                            </MenubarRadioItem>
+                            <MenubarRadioItem Value="discharged">
+                                Discharged
+                            </MenubarRadioItem>
+                        </MenubarRadioGroup>
+                        <MenubarSeparator />
+                        <MenubarItem OnSelect="ScheduleFollowUp">
+                            <Icon Name="calendar" Width="16" Height="16" />
+                            Schedule follow-up
+                        </MenubarItem>
+                        <MenubarItem OnSelect="OpenTasks">
+                            <Icon Name="clipboardcheck" Width="16" Height="16" />
+                            Open tasks
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+                <MenubarMenu>
+                    <MenubarTrigger>View</MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarCheckboxItem Checked="@showAppointments" CheckedChanged="v => showAppointments = v">
+                            Show appointments pane
+                        </MenubarCheckboxItem>
+                        <MenubarCheckboxItem Checked="@showLabs" CheckedChanged="v => showLabs = v">
+                            Show labs
+                        </MenubarCheckboxItem>
+                        <MenubarCheckboxItem Checked="@darkMode" CheckedChanged="v => darkMode = v">
+                            Enable dark mode
+                        </MenubarCheckboxItem>
+                        <MenubarSeparator />
+                        <MenubarItem OnSelect="ToggleHighContrast">
+                            High contrast
+                            <MenubarShortcut>Alt+H</MenubarShortcut>
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+                <MenubarMenu>
+                    <MenubarTrigger>Billing</MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarItem OnSelect="GenerateInvoice">
+                            Generate invoice
+                            <MenubarShortcut>Ctrl+I</MenubarShortcut>
+                        </MenubarItem>
+                        <MenubarItem OnSelect="SubmitClaim">
+                            Submit claim
+                        </MenubarItem>
+                        <MenubarItem OnSelect="VerifyCoverage">
+                            Verify coverage
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem OnSelect="DownloadSuperbill">
+                            Download superbill
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+            </Menubar>
+        </div>
+        <p class="demo-note">Autosave: @StatusText(autoSave), Portal Sharing: @StatusText(shareWithPortal), Dark Mode: @StatusText(darkMode)</p>
+        <p class="demo-note">Patient status: @patientStatus</p>
+    </div>
+</div>
+
+@code {
+    private bool autoSave = true;
+    private bool shareWithPortal = false;
+    private bool showAppointments = true;
+    private bool showLabs = false;
+    private bool darkMode = false;
+    private string patientStatus = "active";
+
+    private string StatusText(bool value) => value ? "On" : "Off";
+
+    private Task CreateNote() => Log("Create new note");
+    private Task CreatePatient() => Log("Create patient");
+    private Task ExportPdf() => Log("Export clinician PDF");
+    private Task ExportSummary() => Log("Export visit summary");
+    private Task ExportBilling() => Log("Export billing packet");
+    private Task SignOut() => Log("Sign out");
+    private Task ScheduleFollowUp() => Log("Schedule follow-up");
+    private Task OpenTasks() => Log("Open tasks");
+    private Task ToggleHighContrast() => Log("Toggle high contrast");
+    private Task GenerateInvoice() => Log("Generate invoice");
+    private Task SubmitClaim() => Log("Submit claim");
+    private Task VerifyCoverage() => Log("Verify coverage");
+    private Task DownloadSuperbill() => Log("Download superbill");
+
+    private Task OnPatientStatusChanged(string? value)
+    {
+        patientStatus = value ?? "active";
+        return Task.CompletedTask;
+    }
+
+    private Task Log(string message)
+    {
+        Console.WriteLine(message);
+        return Task.CompletedTask;
+    }
+}

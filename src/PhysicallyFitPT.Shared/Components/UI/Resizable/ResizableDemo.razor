@@ -1,0 +1,110 @@
+@* Resizable Panels Demo *@
+@page "/demo/resizable"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Resizable Panels</h1>
+    <p class="demo-description">
+        Adjust workspace layouts for charting, task triage, and dashboards while keeping content accessible.
+    </p>
+
+    <div class="demo-section">
+        <h2>Patient List + Note Editor</h2>
+        <p>Resize between queue and documentation pane.</p>
+        <div class="demo-example" style="height: 360px;">
+            <ResizablePanelGroup @bind-PrimarySize="chartSplit" Class="shadow-sm">
+                <ResizablePanel Class="bg-gray-50">
+                    <div class="space-y-3">
+                        <h3 class="font-semibold text-gray-900">Today's visits</h3>
+                        @foreach (var patient in todaysVisits)
+                        {
+                            <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2">
+                                <div>
+                                    <p class="font-semibold text-gray-900">@patient.Name</p>
+                                    <p class="text-xs text-gray-500">@patient.VisitType - @patient.Time</p>
+                                </div>
+                                <Badge Variant="secondary" Class="bg-primary/10 text-primary border-primary/20">@patient.Status</Badge>
+                            </div>
+                        }
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle WithHandle="true" />
+                <ResizablePanel>
+                    <div class="space-y-2 h-full">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Progress Note</p>
+                                <p class="text-xs text-gray-500">Visit 10/12 - Focus: knee rehab</p>
+                            </div>
+                            <Badge>Draft</Badge>
+                        </div>
+                        <div class="h-full rounded-lg border border-gray-200 bg-white p-4 overflow-auto">
+                            <p class="text-sm text-gray-700"><strong>Subjective:</strong> Reports improved stair tolerance, mild soreness after HEP.</p>
+                            <p class="text-sm text-gray-700 mt-3"><strong>Objective:</strong> Knee flexion 132 deg, quad strength 4+/5, no effusion.</p>
+                            <p class="text-sm text-gray-700 mt-3"><strong>Plan:</strong> Progress to step-downs, continue manual therapy, reassess in 1 week.</p>
+                        </div>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Split: @chartSplit:0% left pane</p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Task Triage (Vertical)</h2>
+        <p>Prioritize tasks while expanding details when needed.</p>
+        <div class="demo-example" style="height: 320px;">
+            <ResizablePanelGroup Direction="vertical" @bind-PrimarySize="taskSplit" Class="shadow-sm">
+                <ResizablePanel>
+                    <div class="space-y-2">
+                        <h3 class="font-semibold text-gray-900">Open tasks</h3>
+                        @foreach (var task in triageTasks)
+                        {
+                            <div class="rounded-md border border-gray-200 bg-white px-3 py-2">
+                                <p class="text-sm font-semibold text-gray-900">@task.Title</p>
+                                <p class="text-xs text-gray-500">@task.Detail</p>
+                            </div>
+                        }
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle WithHandle="true" />
+                <ResizablePanel Class="bg-gray-50">
+                    <div class="space-y-3">
+                        <h3 class="font-semibold text-gray-900">Task details</h3>
+                        <p class="text-sm text-gray-700">Select a task above to view context, files, and comments. Keep this area larger when reviewing attachments.</p>
+                        <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-2">
+                            <p class="text-sm text-gray-700"><strong>Next action:</strong> Call patient to confirm insurance auth.</p>
+                            <p class="text-sm text-gray-700"><strong>Due:</strong> Today 4:00 PM</p>
+                            <p class="text-sm text-gray-700"><strong>Owner:</strong> Front desk</p>
+                        </div>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Split: @taskSplit:0% top pane</p>
+    </div>
+</div>
+
+@code {
+    private double chartSplit = 58;
+    private double taskSplit = 50;
+
+    private record VisitRow(string Name, string VisitType, string Time, string Status);
+    private record TriageTask(string Title, string Detail);
+
+    private List<VisitRow> todaysVisits = new()
+    {
+        new("Alexis Harper", "Progress note", "9:00 AM", "Arrived"),
+        new("Jamal Patel", "Follow-up", "9:45 AM", "Waiting"),
+        new("Cara Nguyen", "Initial eval", "10:30 AM", "Checked in"),
+        new("Samir Cole", "Post-op", "11:15 AM", "Confirmed")
+    };
+
+    private List<TriageTask> triageTasks = new()
+    {
+        new("Authorization expiring", "Re-submit PA for next 6 visits"),
+        new("Interpreter request", "Spanish interpreter needed for 2 PM"),
+        new("Upload MRI", "Add imaging to patient media tab"),
+        new("Return call", "Patient returning missed call re: schedule change")
+    };
+}

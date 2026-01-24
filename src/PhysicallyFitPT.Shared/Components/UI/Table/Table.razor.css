@@ -1,0 +1,295 @@
+/* Table Container & Semantics */
+::deep .table-container {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+::deep table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background-color: var(--card-background, #ffffff);
+}
+
+/* Table Header */
+::deep .table-header {
+    background-color: var(--muted-background, #f9fafb);
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+::deep .table-head {
+    padding: 0.75rem;
+    height: 2.5rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted-foreground, #6b7280);
+    white-space: nowrap;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Table Body */
+::deep .table-body {
+    background-color: var(--card-background, #ffffff);
+}
+
+::deep .table-row {
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    transition: background-color 0.2s ease;
+}
+
+::deep .table-row:hover {
+    background-color: var(--accent-background, #f0f9ff);
+}
+
+::deep .table-row:last-child {
+    border-bottom: none;
+}
+
+/* Selected row state */
+::deep .table-row[data-selected="true"] {
+    background-color: var(--selected-background, #dbeafe);
+}
+
+/* Table Cell */
+::deep .table-cell {
+    padding: 0.75rem;
+    text-align: left;
+    vertical-align: middle;
+    color: var(--foreground, #1f2937);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+::deep .table-cell:first-child {
+    padding-left: 1rem;
+}
+
+::deep .table-cell:last-child {
+    padding-right: 1rem;
+}
+
+/* Allow text wrapping in specific columns */
+::deep .table-cell[data-wrap="true"] {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Table Footer */
+::deep .table-footer {
+    background-color: var(--muted-background, #f9fafb);
+    border-top: 1px solid var(--border-color, #e5e7eb);
+    font-weight: 500;
+}
+
+::deep .table-footer .table-cell {
+    color: var(--muted-foreground, #6b7280);
+    font-size: 0.875rem;
+}
+
+/* Table Caption */
+::deep .table-caption {
+    caption-side: bottom;
+    font-size: 0.875rem;
+    color: var(--muted-foreground, #6b7280);
+    margin-top: 0.75rem;
+    text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    ::deep table {
+        font-size: 0.8125rem;
+    }
+
+    ::deep .table-head {
+        padding: 0.5rem;
+        height: 2rem;
+        font-size: 0.65rem;
+    }
+
+    ::deep .table-cell {
+        padding: 0.5rem;
+    }
+
+    ::deep .table-cell:first-child {
+        padding-left: 0.75rem;
+    }
+
+    ::deep .table-cell:last-child {
+        padding-right: 0.75rem;
+    }
+
+    /* Hide certain columns on mobile */
+    ::deep .table-cell[data-hide-mobile="true"],
+    ::deep .table-head[data-hide-mobile="true"] {
+        display: none;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    ::deep table {
+        background-color: var(--card-background, #1f2937);
+    }
+
+    ::deep .table-header {
+        background-color: var(--muted-background, #111827);
+        border-bottom-color: var(--border-color, #374151);
+    }
+
+    ::deep .table-head {
+        color: var(--muted-foreground, #9ca3af);
+    }
+
+    ::deep table-container {
+        border-color: var(--border-color, #374151);
+    }
+
+    ::deep .table-row {
+        border-bottom-color: var(--border-color, #374151);
+    }
+
+    ::deep .table-row:hover {
+        background-color: var(--accent-background, #1e3a8a);
+    }
+
+    ::deep .table-row[data-selected="true"] {
+        background-color: var(--selected-background, #1e40af);
+    }
+
+    ::deep .table-cell {
+        color: var(--foreground, #f3f4f6);
+    }
+
+    ::deep .table-footer {
+        background-color: var(--muted-background, #111827);
+        border-top-color: var(--border-color, #374151);
+    }
+
+    ::deep .table-footer .table-cell {
+        color: var(--muted-foreground, #9ca3af);
+    }
+
+    ::deep .table-caption {
+        color: var(--muted-foreground, #9ca3af);
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+    ::deep table {
+        border: 2px solid var(--border-color, #000);
+    }
+
+    ::deep .table-header,
+    ::deep .table-footer {
+        border-width: 2px;
+    }
+
+    ::deep .table-row {
+        border-width: 1.5px;
+    }
+
+    ::deep .table-head {
+        font-weight: 700;
+    }
+
+    ::deep .table-footer .table-cell {
+        font-weight: 700;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    ::deep .table-row {
+        transition: none;
+    }
+}
+
+/* Striped Rows (optional variant) */
+::deep table[data-striped="true"] tbody tr:nth-child(odd) {
+    background-color: var(--muted-background, #f9fafb);
+}
+
+@media (prefers-color-scheme: dark) {
+    ::deep table[data-striped="true"] tbody tr:nth-child(odd) {
+        background-color: var(--muted-background, #111827);
+    }
+}
+
+/* Sortable Column Indicator */
+::deep .table-head[data-sortable="true"] {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+::deep .table-head[data-sortable="true"]:hover {
+    color: var(--primary-color, #3b82f6);
+}
+
+::deep .table-head[data-sorted="asc"]::after {
+    content: "↑";
+    font-size: 0.75rem;
+}
+
+::deep .table-head[data-sorted="desc"]::after {
+    content: "↓";
+    font-size: 0.75rem;
+}
+
+/* Action Column Styling */
+::deep .table-cell[data-column="actions"] {
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Status Badge in Table */
+::deep .table-cell [class*="badge"] {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Vertical Alignment Utilities */
+::deep .table-cell[data-align="center"] {
+    text-align: center;
+}
+
+::deep .table-cell[data-align="right"] {
+    text-align: right;
+}
+
+::deep .table-cell[data-align="right"]:last-child {
+    padding-right: 1rem;
+}
+
+/* Loading State */
+::deep .table-row[data-loading="true"] {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Empty State */
+::deep .table-empty {
+    display: table-cell;
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted-foreground, #6b7280);
+    font-size: 0.875rem;
+}

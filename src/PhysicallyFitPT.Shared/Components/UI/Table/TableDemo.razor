@@ -1,0 +1,413 @@
+@page "/components/table"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PageTitle>Table Component Demo</PageTitle>
+
+<div class="component-demo">
+    <div class="demo-header">
+        <h1>Table Component</h1>
+        <p>Semantic HTML table with header, body, footer, and cell components for displaying tabular data in clinical contexts.</p>
+    </div>
+
+    <!-- Basic Table -->
+    <section class="demo-section">
+        <h2>Basic Table</h2>
+        <p>Simple table with headers, rows, and cells for displaying patient appointment data.</p>
+        <div class="demo-box">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Patient Name</TableHead>
+                        <TableHead>Appointment Date</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Status</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>John Davis</TableCell>
+                        <TableCell>2024-02-15</TableCell>
+                        <TableCell>10:00 AM</TableCell>
+                        <TableCell>Confirmed</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Sarah Johnson</TableCell>
+                        <TableCell>2024-02-15</TableCell>
+                        <TableCell>11:30 AM</TableCell>
+                        <TableCell>Pending</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Michael Brown</TableCell>
+                        <TableCell>2024-02-16</TableCell>
+                        <TableCell>2:00 PM</TableCell>
+                        <TableCell>Confirmed</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+        <pre><code>&lt;Table&gt;
+    &lt;TableHeader&gt;
+        &lt;TableRow&gt;
+            &lt;TableHead&gt;Column Header&lt;/TableHead&gt;
+        &lt;/TableRow&gt;
+    &lt;/TableHeader&gt;
+    &lt;TableBody&gt;
+        &lt;TableRow&gt;
+            &lt;TableCell&gt;Cell Content&lt;/TableCell&gt;
+        &lt;/TableRow&gt;
+    &lt;/TableBody&gt;
+&lt;/Table&gt;</code></pre>
+    </section>
+
+    <!-- SOAP Note Summary Table -->
+    <section class="demo-section">
+        <h2>SOAP Note Assessment Table</h2>
+        <p>Table displaying SOAP note assessment findings with measurements and clinical observations.</p>
+        <div class="demo-box">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Assessment Item</TableHead>
+                        <TableHead>Left Side</TableHead>
+                        <TableHead>Right Side</TableHead>
+                        <TableHead>Notes</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>Range of Motion (Shoulder)</TableCell>
+                        <TableCell>160°</TableCell>
+                        <TableCell>145°</TableCell>
+                        <TableCell>Mild restriction</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Strength Grade</TableCell>
+                        <TableCell>5/5</TableCell>
+                        <TableCell>4+/5</TableCell>
+                        <TableCell>Right side weakness</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Pain Level</TableCell>
+                        <TableCell>0/10</TableCell>
+                        <TableCell>3/10</TableCell>
+                        <TableCell>Right shoulder pain</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Swelling</TableCell>
+                        <TableCell>None</TableCell>
+                        <TableCell>Minimal</TableCell>
+                        <TableCell>Post-activity</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </section>
+
+    <!-- Patient Goals Progress Table -->
+    <section class="demo-section">
+        <h2>Patient Goals Progress</h2>
+        <p>Track patient's therapy goals with target dates and current status.</p>
+        <div class="demo-box">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Goal</TableHead>
+                        <TableHead>Target Date</TableHead>
+                        <TableHead>Progress</TableHead>
+                        <TableHead>Status</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>Return to running 5K</TableCell>
+                        <TableCell>2024-04-01</TableCell>
+                        <TableCell>75%</TableCell>
+                        <TableCell><span class="badge badge-success">In Progress</span></TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Improve shoulder ROM to 180°</TableCell>
+                        <TableCell>2024-03-15</TableCell>
+                        <TableCell>85%</TableCell>
+                        <TableCell><span class="badge badge-success">In Progress</span></TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Pain-free ADLs</TableCell>
+                        <TableCell>2024-03-01</TableCell>
+                        <TableCell>95%</TableCell>
+                        <TableCell><span class="badge badge-info">Nearly Complete</span></TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Walk 30 minutes without pain</TableCell>
+                        <TableCell>2024-02-28</TableCell>
+                        <TableCell>100%</TableCell>
+                        <TableCell><span class="badge badge-success">Completed</span></TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </section>
+
+    <!-- Table with Footer -->
+    <section class="demo-section">
+        <h2>Table with Footer</h2>
+        <p>Summary statistics shown in table footer row.</p>
+        <div class="demo-box">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Therapy Session</TableHead>
+                        <TableHead>Duration (min)</TableHead>
+                        <TableHead>Pain Score</TableHead>
+                        <TableHead>Compliance</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>Week 1 - Session 1</TableCell>
+                        <TableCell>45</TableCell>
+                        <TableCell>6/10</TableCell>
+                        <TableCell>100%</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Week 1 - Session 2</TableCell>
+                        <TableCell>50</TableCell>
+                        <TableCell>5/10</TableCell>
+                        <TableCell>100%</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Week 2 - Session 1</TableCell>
+                        <TableCell>50</TableCell>
+                        <TableCell>4/10</TableCell>
+                        <TableCell>100%</TableCell>
+                    </TableRow>
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell><strong>Totals</strong></TableCell>
+                        <TableCell><strong>145</strong></TableCell>
+                        <TableCell><strong>5.0 avg</strong></TableCell>
+                        <TableCell><strong>100%</strong></TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </div>
+    </section>
+
+    <!-- Table with Caption -->
+    <section class="demo-section">
+        <h2>Table with Caption</h2>
+        <p>Tables can include captions for additional context.</p>
+        <div class="demo-box">
+            <Table>
+                <TableCaption>Patient CPT Codes Utilized in Current Episode</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>CPT Code</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Units Used</TableHead>
+                        <TableHead>Frequency</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>97161</TableCell>
+                        <TableCell>PT Evaluation - Low Complexity</TableCell>
+                        <TableCell>1</TableCell>
+                        <TableCell>1x (Initial)</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>97162</TableCell>
+                        <TableCell>PT Evaluation - Moderate Complexity</TableCell>
+                        <TableCell>2</TableCell>
+                        <TableCell>2x (Re-evaluation)</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>97110</TableCell>
+                        <TableCell>Therapeutic Exercises</TableCell>
+                        <TableCell>15</TableCell>
+                        <TableCell>Each Session</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>97116</TableCell>
+                        <TableCell>Neuromuscular Reeducation</TableCell>
+                        <TableCell>8</TableCell>
+                        <TableCell>Per Week</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="demo-section">
+        <h2>Table Features</h2>
+        <ul class="features-list">
+            <li><strong>Semantic HTML</strong> — Proper table structure with thead, tbody, tfoot, th, td elements</li>
+            <li><strong>Responsive Design</strong> — Horizontal scrolling on mobile with hidden columns option</li>
+            <li><strong>Hover States</strong> — Subtle background change on row hover for better UX</li>
+            <li><strong>Selection Support</strong> — Can add data-selected="true" attribute for selected rows</li>
+            <li><strong>Dark Mode</strong> — Automatic color adjustment in dark mode</li>
+            <li><strong>Accessibility</strong> — Proper contrast, keyboard navigation, screen reader support</li>
+            <li><strong>Flexible Sizing</strong> — Works with any number of columns and rows</li>
+            <li><strong>Caption Support</strong> — TableCaption component for table context and accessibility</li>
+            <li><strong>Footer Rows</strong> — TableFooter for summary statistics or totals</li>
+            <li><strong>Custom Classes</strong> — All components accept Class parameter for custom styling</li>
+        </ul>
+    </section>
+</div>
+
+<style>
+    .component-demo {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .demo-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .demo-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-header p {
+        font-size: 1.0625rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+    }
+
+    .demo-section {
+        margin-bottom: 3rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-section > p {
+        color: var(--muted-foreground, #6b7280);
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .demo-box {
+        background-color: var(--card-background, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        overflow: auto;
+    }
+
+    pre {
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        color: var(--foreground, #1f2937);
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .features-list li {
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-info {
+        background-color: #dbeafe;
+        color: #0c4a6e;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .demo-box {
+            background-color: var(--card-background, #1f2937);
+            border-color: var(--border-color, #374151);
+        }
+
+        .demo-header {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .demo-header h1 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-header p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-section h2 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-section > p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        pre {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        code {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .features-list li {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        .badge-success {
+            background-color: #064e3b;
+            color: #d1fae5;
+        }
+
+        .badge-info {
+            background-color: #0c2d48;
+            color: #dbeafe;
+        }
+    }
+</style>

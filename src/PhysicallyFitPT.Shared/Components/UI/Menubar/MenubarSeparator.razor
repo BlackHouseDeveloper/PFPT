@@ -1,0 +1,9 @@
+@* MenubarSeparator - divider *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="menubar-separator @CssClass" role="separator" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

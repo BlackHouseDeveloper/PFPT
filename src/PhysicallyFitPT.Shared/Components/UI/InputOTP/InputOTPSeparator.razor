@@ -1,0 +1,11 @@
+@* InputOTPSeparator - Visual separator between OTP groups *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="input-otp-separator @CssClass" role="separator" @attributes="AdditionalAttributes">
+    <Icon Name="minus" Width="16" Height="16" />
+</div>
+
+@code {
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

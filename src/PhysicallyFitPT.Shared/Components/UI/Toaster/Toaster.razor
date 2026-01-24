@@ -1,0 +1,112 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Toaster
+@using PhysicallyFitPT.Shared.Components.UI.Toaster
+@implements IAsyncDisposable
+
+<div class="toaster-container" role="region" aria-label="Notifications" aria-live="polite">
+    @foreach (var toast in CurrentToasts)
+    {
+        <div class="@GetToastClass(toast)" role="status">
+            <div class="toast-content">
+                @if (!string.IsNullOrEmpty(toast.Title))
+                {
+                    <div class="toast-title">@toast.Title</div>
+                }
+                @if (!string.IsNullOrEmpty(toast.Description))
+                {
+                    <div class="toast-description">@toast.Description</div>
+                }
+                @if (string.IsNullOrEmpty(toast.Description) && !string.IsNullOrEmpty(toast.Message))
+                {
+                    <div class="toast-message">@toast.Message</div>
+                }
+            </div>
+            @if (toast.Type != ToastType.Loading)
+            {
+                <button class="toast-close" 
+                        @onclick="() => ToastService?.Remove(toast.Id)"
+                        aria-label="Close notification">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Inject]
+    public ToastService? ToastService { get; set; }
+
+    private List<Toast> CurrentToasts = new();
+    private Dictionary<string, Task?> AutoCloseTasks = new();
+
+    protected override void OnInitialized()
+    {
+        if (ToastService != null)
+        {
+            ToastService.OnToastAdded += OnToastAdded;
+            ToastService.OnToastRemoved += OnToastRemoved;
+            ToastService.OnToastsClear += OnToastsClear;
+        }
+    }
+
+    private void OnToastAdded()
+    {
+        CurrentToasts = ToastService?.Toasts.ToList() ?? new();
+        
+        // Set up auto-close for individual toasts
+        foreach (var toast in CurrentToasts)
+        {
+            if (toast.AutoClose && toast.Duration > 0 && !AutoCloseTasks.ContainsKey(toast.Id))
+            {
+                AutoCloseTasks[toast.Id] = Task.Delay((int)toast.Duration).ContinueWith(_ =>
+                {
+                    ToastService?.Remove(toast.Id);
+                });
+            }
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnToastRemoved()
+    {
+        CurrentToasts = ToastService?.Toasts.ToList() ?? new();
+        StateHasChanged();
+    }
+
+    private void OnToastsClear()
+    {
+        CurrentToasts.Clear();
+        AutoCloseTasks.Clear();
+        StateHasChanged();
+    }
+
+    private string GetToastClass(Toast toast)
+    {
+        var baseClass = "toast";
+        var typeClass = toast.Type switch
+        {
+            ToastType.Success => "toast-success",
+            ToastType.Error => "toast-error",
+            ToastType.Info => "toast-info",
+            ToastType.Warning => "toast-warning",
+            ToastType.Loading => "toast-loading",
+            _ => "toast-default"
+        };
+        return $"{baseClass} {typeClass}";
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (ToastService != null)
+        {
+            ToastService.OnToastAdded -= OnToastAdded;
+            ToastService.OnToastRemoved -= OnToastRemoved;
+            ToastService.OnToastsClear -= OnToastsClear;
+        }
+        await ValueTask.CompletedTask;
+    }
+}

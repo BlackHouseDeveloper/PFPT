@@ -1,0 +1,35 @@
+@* Semi-transparent backdrop overlay *@
+
+@if (Parent?.Open == true)
+{
+    <div class="@CombinedClass"
+         data-state="@State"
+         @onclick="HandleOverlayClick"
+         @attributes="AdditionalAttributes">
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public AlertDialog? Parent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string State => Parent?.Open == true ? "open" : "closed";
+
+    private string CombinedClass => 
+        $"fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 {Class}".Trim();
+
+    private async Task HandleOverlayClick()
+    {
+        // Overlay click closes dialog
+        if (Parent != null)
+        {
+            await Parent.CloseDialog();
+        }
+    }
+}

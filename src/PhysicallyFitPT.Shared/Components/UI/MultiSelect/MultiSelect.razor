@@ -1,0 +1,153 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<Popover Open="@isOpen" OnOpenChange="HandleOpenChange">
+    <PopoverTrigger>
+        <Button Variant="outline" Class="@($"w-full justify-between border-2 border-input hover:border-ring min-h-[44px] h-auto text-left {Class}")">
+            <div class="flex flex-wrap gap-1 flex-1 items-center">
+                @if (!SelectedValues.Any())
+                {
+                    <span class="text-gray-500">@Placeholder</span>
+                }
+                else
+                {
+                    foreach (var item in SelectedValues.Take(MaxDisplay))
+                    {
+                        <Badge Variant="secondary" Class="mr-1 bg-primary/10 text-primary border-primary/20 flex items-center gap-1">
+                            <span>@item</span>
+                            <span role="button"
+                                  tabindex="0"
+                                  aria-label=$"Remove @item"
+                                  class="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                  @onclick="@(() => RemoveOption(item))"
+                                  @onclick:stopPropagation="true"
+                                  @onkeydown="@((KeyboardEventArgs e) => HandleRemoveKey(e, item))">
+                                <XIcon Width="12" Height="12" CssClass="h-3 w-3" />
+                            </span>
+                        </Badge>
+                    }
+                    if (RemainingCount > 0)
+                    {
+                        <Badge Variant="secondary" Class="bg-gray-100 text-gray-700 border-gray-200">
+                            +@RemainingCount more
+                        </Badge>
+                    }
+                }
+            </div>
+            <ChevronDownIcon Width="16" Height="16" CssClass="ml-2 h-4 w-4 shrink-0 opacity-60" />
+        </Button>
+    </PopoverTrigger>
+    
+        <PopoverContent Align="start" class="w-full p-0" style="min-width: 260px;">
+            <Command @ref="commandRef">
+                <CommandInput Placeholder="Search options..." />
+                <CommandEmpty>
+                    <div class="px-3 py-2 text-sm text-gray-500">No options found.</div>
+                </CommandEmpty>
+                <CommandGroup>
+                    @foreach (var option in FilteredOptions)
+                    {
+                        var isSelected = SelectedValues.Contains(option);
+                        <CommandItem Value="@option"
+                                     OnSelect="@(_ => ToggleOption(option))"
+                                     class="cursor-pointer flex items-center">
+                            <CheckIcon Width="16" Height="16" CssClass="@($"mr-2 h-4 w-4 {(isSelected ? "opacity-100" : "opacity-0")}")" />
+                            <span>@option</span>
+                        </CommandItem>
+                    }
+                </CommandGroup>
+            </Command>
+        </PopoverContent>
+    
+</Popover>
+
+@code {
+    [Parameter]
+    public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+
+    [Parameter]
+    public List<string>? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<List<string>> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<List<string>> OnChange { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Select options...";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public int MaxDisplay { get; set; } = 3;
+
+    private PhysicallyFitPT.Shared.Components.UI.Command.Command? commandRef;
+    private bool isOpen;
+
+    private IEnumerable<string> SelectedValues => Value ?? new List<string>();
+
+    private int RemainingCount => Math.Max(SelectedValues.Count() - MaxDisplay, 0);
+
+    private IEnumerable<string> FilteredOptions
+    {
+        get
+        {
+            var search = commandRef?.GetSearchQuery() ?? string.Empty;
+            var source = Options ?? Array.Empty<string>();
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                return source;
+            }
+
+            return source.Where(option => option.Contains(search, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    private async Task ToggleOption(string option)
+    {
+        var updated = SelectedValues.ToList();
+        if (updated.Contains(option))
+        {
+            updated.Remove(option);
+        }
+        else
+        {
+            updated.Add(option);
+        }
+
+        await NotifyValueChanged(updated);
+    }
+
+    private async Task RemoveOption(string option)
+    {
+        var updated = SelectedValues.Where(v => v != option).ToList();
+        await NotifyValueChanged(updated);
+    }
+
+    private Task HandleRemoveKey(KeyboardEventArgs args, string option)
+    {
+        if (args.Key == "Enter" || args.Key == " ")
+        {
+            return RemoveOption(option);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task NotifyValueChanged(List<string> updated)
+    {
+        Value = updated;
+        await ValueChanged.InvokeAsync(updated);
+        if (OnChange.HasDelegate)
+        {
+            await OnChange.InvokeAsync(updated);
+        }
+    }
+
+    private Task HandleOpenChange(bool open)
+    {
+        isOpen = open;
+        return Task.CompletedTask;
+    }
+}

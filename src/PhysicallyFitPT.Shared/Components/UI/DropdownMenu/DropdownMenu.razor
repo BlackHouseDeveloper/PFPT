@@ -1,0 +1,104 @@
+@* Dropdown menu root component *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="dropdown-menu" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@if (isOpen)
+{
+    <div class="dropdown-overlay" @onclick="Close"></div>
+    <div class="dropdown-portal" style="@GetPositionStyle()">
+        @ContentChildContent
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ContentChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnOpenChange { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool isOpen;
+    private double positionX;
+    private double positionY;
+    private List<string>? items = new();
+    private int selectedIndex = -1;
+
+    /// <summary>
+    /// Gets the X position for the dropdown content.
+    /// </summary>
+    public double PositionX => positionX;
+
+    /// <summary>
+    /// Gets the Y position for the dropdown content.
+    /// </summary>
+    public double PositionY => positionY;
+
+    protected override void OnParametersSet()
+    {
+        if (Open != isOpen)
+        {
+            isOpen = Open;
+        }
+    }
+
+    public async Task SetOpen(bool open)
+    {
+        isOpen = open;
+        await OnOpenChange.InvokeAsync(open);
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        OnOpenChange.InvokeAsync(false);
+    }
+
+    public void SetPosition(double x, double y)
+    {
+        positionX = x;
+        positionY = y;
+    }
+
+    public void RegisterItem(string item)
+    {
+        items?.Add(item);
+    }
+
+    public void UnregisterItem(string item)
+    {
+        items?.Remove(item);
+    }
+
+    public bool IsItemSelected(string item)
+    {
+        if (items == null) return false;
+        return items.IndexOf(item) == selectedIndex;
+    }
+
+    private string GetPositionStyle()
+    {
+        return $"left: {positionX}px; top: {positionY}px;";
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        items?.Clear();
+        await ValueTask.CompletedTask;
+    }
+}

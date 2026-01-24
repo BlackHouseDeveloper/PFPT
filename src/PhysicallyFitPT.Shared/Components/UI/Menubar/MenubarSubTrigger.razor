@@ -1,0 +1,46 @@
+@* MenubarSubTrigger - opens submenu *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+@using PhysicallyFitPT.Shared.Components.UI.Icons
+
+<div class="menubar-sub-trigger @(Inset ? "inset" : string.Empty) @CssClass" 
+     role="menuitem"
+     tabindex="0"
+     @onclick="Toggle"
+     @onmouseenter="Open"
+     @attributes="AdditionalAttributes">
+    <div class="menubar-item-content">
+        @ChildContent
+    </div>
+    <ChevronRightIcon Width="16" Height="16" class="chevron-icon" />
+</div>
+
+@code {
+    [CascadingParameter] public MenubarMenu? ParentMenu { get; set; }
+    [CascadingParameter] public MenubarSub? ParentSub { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool Inset { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private void Open(MouseEventArgs _)
+    {
+        ParentSub?.Open();
+    }
+
+    private void Toggle()
+    {
+        if (ParentSub == null)
+        {
+            return;
+        }
+
+        if (ParentSub.IsOpen)
+        {
+            ParentSub.Close();
+        }
+        else
+        {
+            ParentSub.Open();
+        }
+    }
+}

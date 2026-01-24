@@ -1,0 +1,9 @@
+@* Separator between command groups *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<div class="command-separator" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,0 +1,256 @@
+@* Calendar date picker component *@
+
+<div class="@CombinedClass" @attributes="AdditionalAttributes">
+    <div class="flex flex-col gap-4">
+        <!-- Calendar Header -->
+        <div class="flex justify-center pt-1 relative items-center w-full">
+            <button type="button" 
+                    class="absolute left-1 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-gray-300 bg-transparent hover:bg-gray-50 size-7 p-0 opacity-50 hover:opacity-100"
+                    @onclick="PreviousMonth"
+                    disabled="@(!CanNavigatePrevious)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            
+            <div class="text-sm font-medium">
+                @CurrentMonth.ToString("MMMM yyyy")
+            </div>
+            
+            <button type="button"
+                    class="absolute right-1 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-gray-300 bg-transparent hover:bg-gray-50 size-7 p-0 opacity-50 hover:opacity-100"
+                    @onclick="NextMonth"
+                    disabled="@(!CanNavigateNext)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="flex">
+                    @foreach (var day in DayNames)
+                    {
+                        <th class="text-gray-600 rounded-md w-8 font-normal text-xs">@day</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var week in GetCalendarWeeks())
+                {
+                    <tr class="flex w-full mt-2">
+                        @foreach (var day in week)
+                        {
+                            <td class="relative p-0 text-center text-sm">
+                                <button type="button"
+                                        class="@GetDayClasses(day)"
+                                        @onclick="() => SelectDate(day)"
+                                        disabled="@(IsDisabled(day) || day.IsOutsideMonth)">
+                                    @day.Date.Day
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public DateTime? SelectedDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> SelectedDateChanged { get; set; }
+
+    [Parameter]
+    public DateTime? RangeStart { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> RangeStartChanged { get; set; }
+
+    [Parameter]
+    public DateTime? RangeEnd { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> RangeEndChanged { get; set; }
+
+    [Parameter]
+    public string Mode { get; set; } = "single"; // single, range
+
+    [Parameter]
+    public bool ShowOutsideDays { get; set; } = true;
+
+    [Parameter]
+    public DateTime? MinDate { get; set; }
+
+    [Parameter]
+    public DateTime? MaxDate { get; set; }
+
+    [Parameter]
+    public Func<DateTime, bool>? DisabledDates { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private DateTime CurrentMonth { get; set; } = DateTime.Now;
+    private string[] DayNames = { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" };
+
+    private string CombinedClass => $"p-3 {Class}".Trim();
+
+    private bool CanNavigatePrevious => MinDate == null || CurrentMonth.AddMonths(-1) >= MinDate.Value.Date;
+    private bool CanNavigateNext => MaxDate == null || CurrentMonth.AddMonths(1) <= MaxDate.Value.Date;
+
+    protected override void OnInitialized()
+    {
+        if (SelectedDate.HasValue)
+            CurrentMonth = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, 1);
+        else if (RangeStart.HasValue)
+            CurrentMonth = new DateTime(RangeStart.Value.Year, RangeStart.Value.Month, 1);
+    }
+
+    private void PreviousMonth() => CurrentMonth = CurrentMonth.AddMonths(-1);
+    private void NextMonth() => CurrentMonth = CurrentMonth.AddMonths(1);
+
+    private List<List<CalendarDay>> GetCalendarWeeks()
+    {
+        var weeks = new List<List<CalendarDay>>();
+        var firstDayOfMonth = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+        
+        var startDate = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek);
+        var endDate = lastDayOfMonth.AddDays(6 - (int)lastDayOfMonth.DayOfWeek);
+
+        var currentDate = startDate;
+        while (currentDate <= endDate)
+        {
+            var week = new List<CalendarDay>();
+            for (int i = 0; i < 7; i++)
+            {
+                week.Add(new CalendarDay 
+                { 
+                    Date = currentDate,
+                    IsOutsideMonth = currentDate.Month != CurrentMonth.Month
+                });
+                currentDate = currentDate.AddDays(1);
+            }
+            weeks.Add(week);
+        }
+
+        return weeks;
+    }
+
+    private string GetDayClasses(CalendarDay day)
+    {
+        var classes = new List<string> 
+        { 
+            "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors",
+            "size-8 p-0 font-normal hover:bg-gray-100"
+        };
+
+        if (day.IsOutsideMonth)
+        {
+            classes.Add("text-gray-400");
+            if (!ShowOutsideDays) classes.Add("invisible");
+        }
+        else
+        {
+            classes.Add("text-gray-900");
+        }
+
+        // Selected state
+        if (Mode == "single" && SelectedDate.HasValue && day.Date.Date == SelectedDate.Value.Date)
+        {
+            classes.Add("bg-primary text-white hover:bg-primary hover:text-white");
+        }
+
+        // Range selection
+        if (Mode == "range")
+        {
+            if (RangeStart.HasValue && day.Date.Date == RangeStart.Value.Date)
+            {
+                classes.Add("bg-primary text-white hover:bg-primary rounded-l-md");
+            }
+            else if (RangeEnd.HasValue && day.Date.Date == RangeEnd.Value.Date)
+            {
+                classes.Add("bg-primary text-white hover:bg-primary rounded-r-md");
+            }
+            else if (RangeStart.HasValue && RangeEnd.HasValue && 
+                     day.Date.Date > RangeStart.Value.Date && day.Date.Date < RangeEnd.Value.Date)
+            {
+                classes.Add("bg-gray-100 text-gray-900");
+            }
+        }
+
+        // Today
+        if (day.Date.Date == DateTime.Today && !classes.Any(c => c.Contains("bg-primary")))
+        {
+            classes.Add("bg-gray-100 font-semibold");
+        }
+
+        // Disabled
+        if (IsDisabled(day))
+        {
+            classes.Add("opacity-50 cursor-not-allowed");
+        }
+
+        return string.Join(" ", classes);
+    }
+
+    private bool IsDisabled(CalendarDay day)
+    {
+        if (day.IsOutsideMonth) return false;
+        if (MinDate.HasValue && day.Date.Date < MinDate.Value.Date) return true;
+        if (MaxDate.HasValue && day.Date.Date > MaxDate.Value.Date) return true;
+        if (DisabledDates != null && DisabledDates(day.Date)) return true;
+        return false;
+    }
+
+    private async Task SelectDate(CalendarDay day)
+    {
+        if (day.IsOutsideMonth || IsDisabled(day)) return;
+
+        if (Mode == "single")
+        {
+            SelectedDate = day.Date;
+            await SelectedDateChanged.InvokeAsync(SelectedDate);
+        }
+        else if (Mode == "range")
+        {
+            if (!RangeStart.HasValue || (RangeStart.HasValue && RangeEnd.HasValue))
+            {
+                // Start new range
+                RangeStart = day.Date;
+                RangeEnd = null;
+                await RangeStartChanged.InvokeAsync(RangeStart);
+                await RangeEndChanged.InvokeAsync(null);
+            }
+            else if (day.Date >= RangeStart.Value)
+            {
+                // Complete range
+                RangeEnd = day.Date;
+                await RangeEndChanged.InvokeAsync(RangeEnd);
+            }
+            else
+            {
+                // Reset to new start
+                RangeStart = day.Date;
+                RangeEnd = null;
+                await RangeStartChanged.InvokeAsync(RangeStart);
+                await RangeEndChanged.InvokeAsync(null);
+            }
+        }
+    }
+
+    private class CalendarDay
+    {
+        public DateTime Date { get; set; }
+        public bool IsOutsideMonth { get; set; }
+    }
+}

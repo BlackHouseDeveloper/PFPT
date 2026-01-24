@@ -1,0 +1,219 @@
+@page "/components/toaster"
+@namespace PhysicallyFitPT.Shared.Components.Pages
+@inject PhysicallyFitPT.Shared.Components.UI.Toaster.ToastService ToastService
+
+<div class="component-demo">
+    <h1>Toaster Component</h1>
+    <p>Toast notification system for displaying alerts, success messages, errors, and loading states with auto-dismiss.</p>
+
+    <hr class="my-6" />
+
+    <h2>Basic Toasts</h2>
+    <p>Trigger different types of toast notifications.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <Button OnClick="@(() => ToastService.Show("This is a default toast message"))" Class="w-full">
+                Default Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Success("Your changes have been saved successfully!"))" Class="w-full">
+                Success Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Error("An error occurred. Please try again."))" Class="w-full">
+                Error Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Info("Here is some helpful information."))" Class="w-full">
+                Info Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Warning("Please be careful with this action."))" Class="w-full">
+                Warning Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Loading("Processing your request..."))" Class="w-full">
+                Loading Toast
+            </Button>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Custom Titles & Descriptions</h2>
+    <p>Toasts with custom titles and multi-line content.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <Button OnClick="@ShowPatientSavedToast" Class="w-full">
+                Patient Saved
+            </Button>
+            <Button OnClick="@ShowNoteCreatedToast" Class="w-full">
+                Note Created
+            </Button>
+            <Button OnClick="@ShowAppointmentToast" Class="w-full">
+                Appointment Scheduled
+            </Button>
+            <Button OnClick="@ShowValidationErrorToast" Class="w-full">
+                Validation Error
+            </Button>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Custom Durations</h2>
+    <p>Control how long toasts display before auto-dismissing.</p>
+
+    <div class="demo-container rounded-lg border border-gray-200 bg-white p-4">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <Button OnClick="@(() => ToastService.Info("This will disappear in 2 seconds...", "Short Duration", 2000))" Class="w-full">
+                2 Second Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Info("This will disappear in 5 seconds...", "Medium Duration", 5000))" Class="w-full">
+                5 Second Toast
+            </Button>
+            <Button OnClick="@(() => ToastService.Warning("This persists until closed", "Persistent", 0))" Class="w-full">
+                Persistent Toast
+            </Button>
+        </div>
+    </div>
+
+    <hr class="my-6" />
+
+    <h2>Features</h2>
+    <ul class="component-feature-list">
+        <li><strong>Multiple Types:</strong> Default, Success, Error, Info, Warning, and Loading toasts</li>
+        <li><strong>Auto-Dismiss:</strong> Toasts automatically close after configurable duration</li>
+        <li><strong>Manual Close:</strong> Users can close toasts manually with the close button</li>
+        <li><strong>Customizable Content:</strong> Support for title, description, and message fields</li>
+        <li><strong>Theme-Aware:</strong> Color-coded based on toast type with proper contrast</li>
+        <li><strong>Global Service:</strong> Accessible from anywhere via dependency injection</li>
+        <li><strong>Smooth Animations:</strong> Slide-in and fade animations for polished UX</li>
+        <li><strong>Accessible:</strong> ARIA labels and live regions for screen readers</li>
+        <li><strong>Responsive:</strong> Adapts to mobile screens with full-width display</li>
+        <li><strong>Loading State:</strong> Special loading toast that persists without close button</li>
+    </ul>
+
+    <hr class="my-6" />
+
+    <h2>Usage Example</h2>
+    <pre class="code-block"><code>@@inject ToastService ToastService
+
+&lt;button @onclick="SavePatient"&gt;Save&lt;/button&gt;
+
+@@code {
+    private async Task SavePatient()
+    {
+        try 
+        {
+            var toastId = ToastService.Loading("Saving patient...");
+            await PatientService.SaveAsync(patient);
+            ToastService.Remove(toastId);
+            ToastService.Success("Patient saved successfully!");
+        }
+        catch (Exception ex)
+        {
+            ToastService.Error(ex.Message, "Save Failed");
+        }
+    }
+}</code></pre>
+</div>
+
+<style>
+    .component-demo {
+        padding: 2rem;
+    }
+
+    .component-demo h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .component-demo h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+    }
+
+    .component-demo p {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .demo-container {
+        overflow: hidden;
+    }
+
+    .component-feature-list {
+        list-style: disc;
+        margin-left: 1.5rem;
+        color: #6b7280;
+    }
+
+    .component-feature-list li {
+        margin-bottom: 0.75rem;
+    }
+
+    .my-6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .code-block {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        font-family: 'Courier New', monospace;
+    }
+
+    .code-block code {
+        color: inherit;
+    }
+
+    .w-full {
+        width: 100%;
+    }
+</style>
+
+@code {
+    private void ShowPatientSavedToast()
+    {
+        ToastService.Success(
+            "Patient record has been updated and saved to the system.",
+            "Patient Saved",
+            4000
+        );
+    }
+
+    private void ShowNoteCreatedToast()
+    {
+        ToastService.Success(
+            "SOAP note created and linked to patient appointment.",
+            "Note Created",
+            4000
+        );
+    }
+
+    private void ShowAppointmentToast()
+    {
+        ToastService.Success(
+            "Appointment scheduled for January 25, 2026 at 2:00 PM.",
+            "Appointment Scheduled",
+            4000
+        );
+    }
+
+    private void ShowValidationErrorToast()
+    {
+        ToastService.Error(
+            "Please check the following fields: Phone number, Insurance ID.",
+            "Validation Error",
+            5000
+        );
+    }
+}

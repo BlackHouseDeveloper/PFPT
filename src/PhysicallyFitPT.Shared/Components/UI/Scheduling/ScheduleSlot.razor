@@ -1,0 +1,142 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Scheduling
+
+<div class="schedule-slot @SlotClass" style="@SlotStyle">
+    @if (IsAppointment && Appointment is not null)
+    {
+        <div class="badge" aria-label="Intake status">
+            @if (Appointment.IntakeComplete)
+            {
+                <span class="badge-pill success">Complete</span>
+            }
+            else
+            {
+                <span class="badge-pill pending">Pending</span>
+            }
+        </div>
+
+        <div class="header">
+            <div class="patient">@Appointment.PatientName</div>
+            <div class="visit">
+                <span class="dot" style=$"background-color:{Appointment.VisitColor}"></span>
+                <span class="visit-type">@Appointment.VisitType</span>
+            </div>
+        </div>
+
+        <div class="meta">
+            <div class="meta-item">
+                <span class="meta-icon">TIME</span>
+                <span>@Appointment.StartTime (@Appointment.DurationMinutes min)</span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Appointment.Location))
+            {
+                <div class="meta-item">
+                    <span class="meta-icon">LOC</span>
+                    <span>@Appointment.Location</span>
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Appointment.Notes))
+        {
+            <div class="notes">@Appointment.Notes</div>
+        }
+    }
+    else if (IsBlock && Block is not null)
+    {
+        <div class="badge">
+            <span class="badge-pill block" style=$"background-color:{Block.Color}">@Block.Type.ToUpperInvariant()</span>
+        </div>
+
+        <div class="header">
+            <div class="patient">@Block.Title</div>
+        </div>
+
+        <div class="meta">
+            <div class="meta-item">
+                <span class="meta-icon">TIME</span>
+                <span>@Block.StartTime (@Block.DurationMinutes min)</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private const string DefaultColor = "#2563eb";
+
+    [Parameter]
+    public string Type { get; set; } = "appointment"; // appointment | block
+
+    [Parameter]
+    public AppointmentSlot? Appointment { get; set; }
+
+    [Parameter]
+    public ScheduleBlockSlot? Block { get; set; }
+
+    private bool IsAppointment => string.Equals(Type, "appointment", StringComparison.OrdinalIgnoreCase);
+    private bool IsBlock => string.Equals(Type, "block", StringComparison.OrdinalIgnoreCase);
+
+    private string SlotStyle
+    {
+        get
+        {
+            if (IsAppointment && Appointment is not null)
+            {
+                var color = NormalizeColor(Appointment.VisitColor);
+                return $"border-color:{color};background-color:{ToAlpha(color, "20")};";
+            }
+
+            if (IsBlock && Block is not null)
+            {
+                var color = NormalizeColor(Block.Color);
+                return $"border-color:{color};background-color:{ToAlpha(color, "15")};border-style:dashed;";
+            }
+
+            return $"border-color:{DefaultColor};background-color:{ToAlpha(DefaultColor, "15")};";
+        }
+    }
+
+    private string SlotClass => IsBlock ? "block-slot" : "appointment-slot";
+
+    private static string NormalizeColor(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color))
+        {
+            return DefaultColor;
+        }
+
+        return color.StartsWith('#') ? color : $"#{color}";
+    }
+
+    private static string ToAlpha(string hex, string alphaSuffix)
+    {
+        if (hex.Length == 7)
+        {
+            return $"{hex}{alphaSuffix}";
+        }
+
+        return hex;
+    }
+
+    public sealed class AppointmentSlot
+    {
+        public string Id { get; set; } = string.Empty;
+        public string PatientName { get; set; } = string.Empty;
+        public string VisitType { get; set; } = string.Empty;
+        public string VisitColor { get; set; } = DefaultColor;
+        public int DurationMinutes { get; set; }
+        public string StartTime { get; set; } = string.Empty;
+        public bool IntakeComplete { get; set; }
+        public string? Location { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    public sealed class ScheduleBlockSlot
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Type { get; set; } = "block"; // admin | break | meeting
+        public string Title { get; set; } = string.Empty;
+        public string StartTime { get; set; } = string.Empty;
+        public int DurationMinutes { get; set; }
+        public string Color { get; set; } = "#6b7280";
+    }
+}

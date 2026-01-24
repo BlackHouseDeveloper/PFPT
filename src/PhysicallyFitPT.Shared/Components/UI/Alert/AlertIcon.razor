@@ -1,0 +1,10 @@
+@namespace PhysicallyFitPT.Shared.Components.UI.Alert
+
+<div class="alert-icon" aria-hidden="true">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

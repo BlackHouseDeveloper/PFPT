@@ -18,4 +18,14 @@ public class Icd10Code : Entity
   /// Gets or sets the description of the diagnosis or condition.
   /// </summary>
   public string Description { get; set; } = null!;
+
+  /// <summary>
+  /// Gets or sets the list of body parts affected by this diagnosis.
+  /// </summary>
+  public List<string>? BodyPart { get; set; }
+
+  /// <summary>
+  /// Gets or sets the list of keywords associated with this diagnosis for search purposes.
+  /// </summary>
+  public List<string>? Keywords { get; set; }
 }

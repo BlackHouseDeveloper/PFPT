@@ -1,0 +1,169 @@
+@* Intake Workflow - Multi-step form with patient data collection, medical history, and insurance verification *@
+@namespace PhysicallyFitPT.Shared.Components.Workflow
+@using PhysicallyFitPT.Core.Intake
+@using PhysicallyFitPT.Shared.Components.Workflow
+@implements IAsyncDisposable
+
+<div class="intake-workflow" data-step="@CurrentStep">
+    <div class="intake-header">
+        <h2>Patient Intake Form</h2>
+        <p class="step-indicator">Step @CurrentStep of @TotalSteps</p>
+    </div>
+
+    <div class="intake-progress">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: @((CurrentStep / (double)TotalSteps) * 100)%"></div>
+        </div>
+    </div>
+
+    <div class="intake-container">
+        @switch (CurrentStep)
+        {
+            case 1:
+                <PatientDemographicsStep Data="intakeData.PatientInfo" OnNext="GoToNextStep" />
+                break;
+            case 2:
+                <MedicalHistoryStep Data="intakeData.MedicalHistory" OnNext="GoToNextStep" OnPrevious="GoToPreviousStep" />
+                break;
+            case 3:
+                <InsuranceVerificationStep Data="intakeData.Insurance" OnNext="GoToNextStep" OnPrevious="GoToPreviousStep" />
+                break;
+            case 4:
+                <ConsentsStep @bind-Consents="intakeData.Consents" OnSubmit="SubmitIntake" OnPrevious="GoToPreviousStep" IsSubmitting="isSubmitting" />
+                break;
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-error" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (successMessage)
+    {
+        <div class="alert alert-success" role="alert">
+            Intake completed successfully!
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<IntakeData> OnIntakeComplete { get; set; }
+
+    [Parameter]
+    public string? PatientId { get; set; }
+
+    [Parameter]
+    public int TotalSteps { get; set; } = 4;
+
+    [Inject]
+    private NavigationManager? NavigationManager { get; set; }
+
+    private IntakeData intakeData = new();
+    private int CurrentStep { get; set; } = 1;
+    private string? errorMessage;
+    private bool successMessage;
+    private bool isSubmitting;
+
+    protected override void OnInitialized()
+    {
+        intakeData = new IntakeData
+        {
+            PatientId = PatientId,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    private void GoToNextStep()
+    {
+        if (ValidateCurrentStep())
+        {
+            if (CurrentStep < TotalSteps)
+            {
+                CurrentStep++;
+                errorMessage = null;
+            }
+        }
+    }
+
+    private void GoToPreviousStep()
+    {
+        if (CurrentStep > 1)
+        {
+            CurrentStep--;
+            errorMessage = null;
+        }
+    }
+
+    private bool ValidateCurrentStep() => CurrentStep switch
+    {
+        1 => ValidatePatientInfo(),
+        2 => ValidateMedicalHistory(),
+        3 => ValidateInsurance(),
+        _ => true
+    };
+
+    private bool ValidatePatientInfo()
+    {
+        if (string.IsNullOrWhiteSpace(intakeData.PatientInfo?.FirstName) ||
+            string.IsNullOrWhiteSpace(intakeData.PatientInfo?.LastName) ||
+            string.IsNullOrWhiteSpace(intakeData.PatientInfo?.DateOfBirth.ToString()))
+        {
+            errorMessage = "Please complete all required demographic fields.";
+            return false;
+        }
+        return true;
+    }
+
+    private bool ValidateMedicalHistory()
+    {
+        if (intakeData.MedicalHistory?.ChiefComplaints?.Count == 0)
+        {
+            errorMessage = "Please select at least one chief complaint.";
+            return false;
+        }
+        return true;
+    }
+
+    private bool ValidateInsurance()
+    {
+        if (intakeData.Insurance?.HasInsurance == true &&
+            string.IsNullOrWhiteSpace(intakeData.Insurance?.PolicyNumber))
+        {
+            errorMessage = "Please provide insurance policy number.";
+            return false;
+        }
+        return true;
+    }
+
+    private async Task SubmitIntake()
+    {
+        try
+        {
+            isSubmitting = true;
+            errorMessage = null;
+
+            await OnIntakeComplete.InvokeAsync(intakeData);
+            successMessage = true;
+
+            await Task.Delay(1500);
+            NavigationManager?.NavigateTo($"/patients/{PatientId}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to save intake: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await ValueTask.CompletedTask;
+    }
+}

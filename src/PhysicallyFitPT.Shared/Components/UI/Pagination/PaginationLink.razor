@@ -1,0 +1,46 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<a class="@ComputedClass"
+   href="@Href"
+   role="link"
+   aria-current="@(IsActive ? "page" : null)"
+   data-active="@IsActive"
+   @onclick="OnClick"
+   @onclick:preventDefault="PreventDefault && OnClick.HasDelegate"
+   @attributes="AdditionalAttributes">
+    @ChildContent
+</a>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Href { get; set; } = "#";
+
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    [Parameter]
+    public string Size { get; set; } = "icon"; // icon or default
+
+    [Parameter]
+    public bool PreventDefault { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ComputedClass => string.Join(" ", new[]
+    {
+        "pagination-link",
+        IsActive ? "active" : "",
+        Size == "default" ? "pagination-link-default" : "pagination-link-icon",
+        Class ?? string.Empty
+    }.Where(c => !string.IsNullOrWhiteSpace(c)));
+}

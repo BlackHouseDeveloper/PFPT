@@ -1,0 +1,83 @@
+/* Chart component styles */
+
+/* Base chart container */
+.chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.aspect-video {
+    aspect-ratio: 16 / 9;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+/* Legend styles */
+.chart-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding-top: 0.75rem;
+}
+
+.gap-1\.5 {
+    gap: 0.375rem;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.pt-3 {
+    padding-top: 0.75rem;
+}
+
+.h-2 {
+    height: 0.5rem;
+}
+
+.w-2 {
+    width: 0.5rem;
+}
+
+.shrink-0 {
+    flex-shrink: 0;
+}
+
+.rounded-sm {
+    border-radius: 0.125rem;
+}
+
+.text-gray-600 {
+    color: #4b5563;
+}
+
+/* Canvas sizing */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .chart-legend {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

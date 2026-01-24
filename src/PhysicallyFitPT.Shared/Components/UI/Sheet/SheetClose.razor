@@ -1,0 +1,21 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<button type="button" @onclick="HandleClick" @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    private Sheet? ParentSheet { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Task HandleClick()
+    {
+        return ParentSheet?.CloseAsync() ?? Task.CompletedTask;
+    }
+}

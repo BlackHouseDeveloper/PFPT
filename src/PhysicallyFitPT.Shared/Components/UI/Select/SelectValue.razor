@@ -1,0 +1,11 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (!string.IsNullOrEmpty(Placeholder))
+{
+    <span class="text-muted-foreground">@Placeholder</span>
+}
+
+@code {
+    [Parameter]
+    public string? Placeholder { get; set; }
+}

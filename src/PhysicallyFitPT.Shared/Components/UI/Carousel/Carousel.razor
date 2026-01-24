@@ -1,0 +1,104 @@
+@* Carousel container component *@
+
+<CascadingValue Value="this">
+    <div class="carousel relative @Class" 
+         role="region" 
+         aria-roledescription="carousel"
+         tabindex="0"
+         @onkeydown="HandleKeyDown"
+         @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Orientation { get; set; } = "horizontal"; // horizontal, vertical
+
+    [Parameter]
+    public bool Loop { get; set; } = false;
+
+    [Parameter]
+    public int CurrentIndex { get; set; } = 0;
+
+    [Parameter]
+    public EventCallback<int> CurrentIndexChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private int _itemCount = 0;
+
+    public void RegisterItem()
+    {
+        _itemCount++;
+        StateHasChanged();
+    }
+
+    public bool CanScrollPrev => Loop || CurrentIndex > 0;
+    public bool CanScrollNext => Loop || CurrentIndex < _itemCount - 1;
+
+    public async Task ScrollPrev()
+    {
+        if (CanScrollPrev)
+        {
+            if (CurrentIndex > 0)
+            {
+                CurrentIndex--;
+            }
+            else if (Loop)
+            {
+                CurrentIndex = _itemCount - 1;
+            }
+            await CurrentIndexChanged.InvokeAsync(CurrentIndex);
+        }
+    }
+
+    public async Task ScrollNext()
+    {
+        if (CanScrollNext)
+        {
+            if (CurrentIndex < _itemCount - 1)
+            {
+                CurrentIndex++;
+            }
+            else if (Loop)
+            {
+                CurrentIndex = 0;
+            }
+            await CurrentIndexChanged.InvokeAsync(CurrentIndex);
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (Orientation == "horizontal")
+        {
+            if (e.Key == "ArrowLeft")
+            {
+                await ScrollPrev();
+            }
+            else if (e.Key == "ArrowRight")
+            {
+                await ScrollNext();
+            }
+        }
+        else
+        {
+            if (e.Key == "ArrowUp")
+            {
+                await ScrollPrev();
+            }
+            else if (e.Key == "ArrowDown")
+            {
+                await ScrollNext();
+            }
+        }
+    }
+}

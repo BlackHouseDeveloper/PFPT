@@ -1,0 +1,41 @@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<button type="button"
+        class="select-trigger"
+        aria-haspopup="listbox"
+        aria-expanded="@(Select?.IsOpen == true ? "true" : "false")"
+        aria-controls="@Select?.ListboxId"
+        @onclick="HandleClick"
+        @attributes="AdditionalAttributes">
+    <span class="select-value">
+        @if (!string.IsNullOrEmpty(Select?.SelectedLabel))
+        {
+            <span>@Select!.SelectedLabel</span>
+        }
+        else if (!string.IsNullOrEmpty(Placeholder))
+        {
+            <span class="select-placeholder">@Placeholder</span>
+        }
+        else
+        {
+            <span class="select-placeholder">Select an option</span>
+        }
+    </span>
+    <ChevronDownIcon Width="16" Height="16" CssClass="select-icon" />
+</button>
+
+@code {
+    [CascadingParameter]
+    private Select? Select { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Task HandleClick()
+    {
+        return Select?.ToggleOpenAsync() ?? Task.CompletedTask;
+    }
+}

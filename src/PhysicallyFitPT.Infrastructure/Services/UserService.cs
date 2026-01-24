@@ -15,8 +15,8 @@ namespace PhysicallyFitPT.Infrastructure.Services
   /// </summary>
   public class UserService : BaseService, IUserService
   {
-    private const string DemoUsername = "clinician@demo.com";
-    private const string DemoPassword = "demo123";
+    // PIN-based demo auth for parity with Login UI
+    private const string DemoPin = "1234";
     private const string DemoDisplayName = "Dr. Demo Clinician";
     private ClaimsPrincipal? currentUser;
 
@@ -44,11 +44,12 @@ namespace PhysicallyFitPT.Infrastructure.Services
     /// <inheritdoc/>
     public Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
     {
-      if (username == DemoUsername && password == DemoPassword)
+      // Use the same 4-digit PIN for both username and password inputs to align with the login screen
+      if (username == DemoPin && password == DemoPin)
       {
         var claims = new[]
         {
-          new Claim(ClaimTypes.Email, DemoUsername),
+          new Claim(ClaimTypes.Email, $"{DemoPin}@demo.pin"),
           new Claim(ClaimTypes.Name, DemoDisplayName),
           new Claim(ClaimTypes.Role, "Clinician"),
         };
@@ -62,6 +63,26 @@ namespace PhysicallyFitPT.Infrastructure.Services
 
       this.Logger.LogWarning("Failed login attempt for username: {Username}", username);
       return Task.FromResult(false);
+    }
+
+    /// <inheritdoc/>
+    public Task<bool> RegisterAsync(
+      string fullName,
+      string email,
+      DateTime dateOfBirth,
+      string licenseType,
+      string licenseNumber,
+      string licenseState,
+      CancellationToken cancellationToken = default)
+    {
+      // Stub implementation for Week 2 demo
+      // In production, this would create user in database, verify license, etc.
+      this.Logger.LogInformation(
+        "Registration attempted: {FullName} ({Email}), License: {LicenseType} {LicenseNumber} ({LicenseState})",
+        fullName, email, licenseType, licenseNumber, licenseState);
+
+      // For demo purposes, always return success
+      return Task.FromResult(true);
     }
 
     /// <inheritdoc/>

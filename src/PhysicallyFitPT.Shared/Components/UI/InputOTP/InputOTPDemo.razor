@@ -1,0 +1,271 @@
+@* InputOTP Demo - Clinical verification and security codes *@
+@page "/demo/input-otp"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Input OTP</h1>
+    <p class="demo-description">
+        One-Time Password (OTP) input component for verification codes, PIN entry, and multi-factor authentication.
+        Supports keyboard navigation, paste operation, and validation states.
+    </p>
+
+    <div class="demo-section">
+        <h2>Basic OTP Input</h2>
+        <p>Standard 6-digit verification code entry.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        Enter verification code
+                    </label>
+                    <InputOTP MaxLength="6" @bind-Value="basicCode">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                            <InputOTPSlot Index="3" />
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    @if (!string.IsNullOrEmpty(basicCode))
+                    {
+                        <p style="margin-top: 8px; font-size: 14px; color: #6b7280;">
+                            Entered code: <strong>@basicCode</strong>
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Grouped Format</h2>
+        <p>OTP with separator for better readability (e.g., 123-456).</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        Patient portal access code
+                    </label>
+                    <InputOTP MaxLength="6" @bind-Value="groupedCode">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="3" />
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+                        Enter the 6-digit code sent to your email
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>PIN Entry</h2>
+        <p>4-digit PIN for secure access.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        Clinician PIN
+                    </label>
+                    <InputOTP MaxLength="4" @bind-Value="pinCode">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                            <InputOTPSlot Index="3" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+                        Enter your 4-digit PIN to approve treatment plan
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Multi-Factor Authentication</h2>
+        <p>6-digit authenticator code with grouped format.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        Two-factor authentication code
+                    </label>
+                    <InputOTP MaxLength="6" @bind-Value="mfaCode">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="2" />
+                            <InputOTPSlot Index="3" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+                        Enter the code from your authenticator app
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Error State</h2>
+        <p>Display validation errors for incorrect codes.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        Verification code
+                    </label>
+                    <InputOTP MaxLength="6" @bind-Value="errorCode" HasError="@hasError">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                            <InputOTPSlot Index="3" />
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    @if (hasError)
+                    {
+                        <p style="margin-top: 4px; font-size: 12px; color: #dc2626;">
+                            Invalid verification code. Please try again.
+                        </p>
+                    }
+                    <button @onclick="() => hasError = !hasError" 
+                            style="margin-top: 8px; padding: 6px 12px; background: #0B2545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Toggle Error State
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled State</h2>
+        <p>Prevent interaction when verification is processing.</p>
+        <div class="demo-example">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+                        SMS verification code
+                    </label>
+                    <InputOTP MaxLength="6" Value="123456" Disabled="true">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                            <InputOTPSlot Index="3" />
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+                        Verifying code...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Clinical Workflow Example</h2>
+        <p>Complete verification flow for prescription authorization.</p>
+        <div class="demo-example">
+            <div style="max-width: 400px; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb;">
+                <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #111827;">
+                    Authorize Prescription
+                </h3>
+                <p style="margin: 0 0 16px 0; font-size: 14px; color: #6b7280;">
+                    Patient: Sarah Johnson
+                </p>
+                <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 16px;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 500;">
+                        Prescription Details
+                    </p>
+                    <p style="margin: 0; font-size: 13px; color: #6b7280;">
+                        Medication: Cyclobenzaprine 10mg<br />
+                        Quantity: 30 tablets<br />
+                        Refills: 2
+                    </p>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">
+                        Enter authorization code
+                    </label>
+                    <InputOTP MaxLength="6" @bind-Value="authCode">
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="0" />
+                            <InputOTPSlot Index="1" />
+                            <InputOTPSlot Index="2" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                            <InputOTPSlot Index="3" />
+                            <InputOTPSlot Index="4" />
+                            <InputOTPSlot Index="5" />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">
+                        Code sent to your registered phone number
+                    </p>
+                </div>
+                <button @onclick="HandleAuthorize"
+                        disabled="@(string.IsNullOrEmpty(authCode) || authCode.Length < 6)"
+                        style="width: 100%; margin-top: 16px; padding: 10px; background: #9BE000; color: #0B2545; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; opacity: @(string.IsNullOrEmpty(authCode) || authCode.Length < 6 ? "0.5" : "1");">
+                    Authorize Prescription
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Features</h2>
+        <ul style="line-height: 1.8; color: #4b5563;">
+            <li><strong>Keyboard navigation:</strong> Arrow keys to move between slots</li>
+            <li><strong>Backspace/Delete:</strong> Remove characters</li>
+            <li><strong>Paste support:</strong> Paste full code from clipboard</li>
+            <li><strong>Auto-advance:</strong> Automatically move to next slot after input</li>
+            <li><strong>Caret animation:</strong> Blinking caret shows active slot</li>
+            <li><strong>Validation:</strong> Error state for invalid codes</li>
+            <li><strong>Disabled state:</strong> Prevent input during processing</li>
+            <li><strong>Flexible grouping:</strong> Customize layout with separators</li>
+        </ul>
+    </div>
+</div>
+
+@code {
+    private string basicCode = string.Empty;
+    private string groupedCode = string.Empty;
+    private string pinCode = string.Empty;
+    private string mfaCode = string.Empty;
+    private string errorCode = string.Empty;
+    private bool hasError = true;
+    private string authCode = string.Empty;
+
+    private void HandleAuthorize()
+    {
+        // Simulate authorization
+        Console.WriteLine($"Authorizing with code: {authCode}");
+    }
+}

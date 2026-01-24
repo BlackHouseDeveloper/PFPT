@@ -1,0 +1,12 @@
+@* MenubarShortcut - right-aligned shortcut text *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<span class="menubar-shortcut @CssClass" @attributes="AdditionalAttributes">
+    @ChildContent
+</span>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

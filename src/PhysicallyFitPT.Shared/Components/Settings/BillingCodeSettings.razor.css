@@ -1,0 +1,272 @@
+/* BillingCodeSettings.razor.css */
+
+/* Permission tables */
+:deep(.billing-table) {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:deep(.billing-table thead) {
+    background-color: #f9fafb;
+}
+
+:deep(.billing-table th) {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+:deep(.billing-table td) {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.billing-table tbody tr:hover) {
+    background-color: rgba(249, 250, 251, 0.5);
+}
+
+/* Setting rows */
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+.setting-row:hover {
+    background-color: #fafbfc;
+}
+
+.setting-row-content {
+    flex: 1;
+}
+
+.setting-row-label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.setting-row-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 0.25rem;
+}
+
+/* Toggle switches */
+:deep(.switch) {
+    flex-shrink: 0;
+}
+
+/* Select dropdowns */
+.settings-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background-color: white;
+    font-size: 0.875rem;
+}
+
+.settings-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Radio button groups */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.radio-option:hover {
+    background-color: #f9fafb;
+}
+
+.radio-option.selected {
+    border-color: #2563eb;
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.radio-option input[type="radio"] {
+    margin: 0;
+}
+
+/* Card sections */
+.card-header-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-header-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+/* Info boxes */
+.info-box {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.info-box.blue {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.info-box.green {
+    border-color: #16a34a;
+    background-color: #f0fdf4;
+}
+
+.info-box.orange {
+    border-color: #ea580c;
+    background-color: #fff7ed;
+}
+
+.info-box-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.info-box-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-box-item {
+    padding: 0.25rem 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Reference tables */
+.reference-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.reference-table thead {
+    background-color: #f0fdf4;
+}
+
+.reference-table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.reference-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.reference-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Authorization example */
+.auth-example {
+    padding: 1rem;
+    background-color: #fff7ed;
+    border-radius: 0.5rem;
+    border: 2px solid #fed7aa;
+}
+
+.auth-example-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+}
+
+.auth-example-row.total {
+    padding-top: 0.5rem;
+    border-top: 1px solid #fdba74;
+    font-weight: 600;
+}
+
+/* Badges */
+:deep(.badge) {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+:deep(.badge.primary) {
+    background-color: #2563eb;
+    color: white;
+}
+
+:deep(.badge.orange) {
+    background-color: #ea580c;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .setting-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .setting-row-content {
+        width: 100%;
+    }
+
+    .radio-group {
+        gap: 0.75rem;
+    }
+
+    .radio-option {
+        gap: 1rem;
+    }
+
+    .auth-example-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+@media (max-width: 640px) {
+    :deep(.billing-table) {
+        font-size: 0.8rem;
+    }
+
+    :deep(.billing-table th),
+    :deep(.billing-table td) {
+        padding: 0.5rem;
+    }
+
+    .info-box {
+        padding: 0.75rem;
+    }
+
+    .info-box-item {
+        font-size: 0.8rem;
+    }
+}

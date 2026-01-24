@@ -1,0 +1,14 @@
+@* Drawer title *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Drawer
+
+<h2 class="drawer-title" @attributes="AdditionalAttributes">
+    @ChildContent
+</h2>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,0 +1,372 @@
+/* VisitTypeEditor.razor.css - Visit type editor modal dialog styling */
+
+/* Modal Overlay */
+.visit-type-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+  animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Card */
+.visit-type-editor-card {
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 2px solid var(--border-color, #e5e7eb);
+  background-color: var(--background, #ffffff);
+  border-radius: 0.5rem;
+  animation: slideInCard 0.3s ease;
+}
+
+@keyframes slideInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Form Styling */
+:deep(.visit-type-editor-card) .visit-type-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Input Styling */
+:deep(.visit-type-editor-card) input[type="text"],
+:deep(.visit-type-editor-card) input[type="color"],
+:deep(.visit-type-editor-card) select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--foreground, #000000);
+  transition: border-color 0.2s ease;
+}
+
+:deep(.visit-type-editor-card) input[type="text"]:focus,
+:deep(.visit-type-editor-card) input[type="color"]:focus,
+:deep(.visit-type-editor-card) select:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+@media (max-width: 768px) {
+  :deep(.visit-type-editor-card) input[type="text"],
+  :deep(.visit-type-editor-card) select {
+    font-size: 1rem;
+  }
+}
+
+/* Visit Type Name Input */
+.visit-type-name-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.visit-type-name-input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* Duration Select */
+.visit-type-duration-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.visit-type-duration-select:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* Color Picker Grid */
+.visit-type-color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .visit-type-color-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.visit-type-color-button {
+  width: 100%;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.visit-type-color-button:hover {
+  transform: scale(1.05);
+}
+
+.visit-type-color-button-selected {
+  border-color: var(--primary, #3b82f6);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+/* Custom Color Input */
+.visit-type-custom-color {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.visit-type-custom-color-picker {
+  width: 5rem;
+  height: 2.5rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.125rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.visit-type-custom-color-picker:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+.visit-type-custom-color-hex {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.visit-type-custom-color-hex:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* Note Type Select */
+.visit-type-note-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.visit-type-note-select:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* Toggle Settings */
+.visit-type-toggle-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--background, #ffffff);
+  transition: background-color 0.2s ease;
+}
+
+.visit-type-toggle-setting:hover {
+  background-color: rgb(245 245 245 / 50%);
+}
+
+.visit-type-toggle-label {
+  flex: 1;
+}
+
+.visit-type-toggle-label-title {
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.visit-type-toggle-label-description {
+  font-size: 0.75rem;
+  color: rgb(107 114 128);
+  margin-top: 0.25rem;
+}
+
+.visit-type-toggle-control {
+  flex-shrink: 0;
+}
+
+/* Form Button Group */
+.visit-type-form-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.visit-type-form-buttons button {
+  transition: all 0.2s ease;
+}
+
+.visit-type-form-buttons button:hover {
+  transform: translateY(-1px);
+}
+
+/* Labels */
+.visit-type-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--foreground, #000000);
+}
+
+.visit-type-label-small {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .visit-type-editor-overlay {
+    padding: 0.5rem;
+  }
+
+  .visit-type-editor-card {
+    max-width: 100%;
+  }
+
+  .visit-type-form-buttons {
+    flex-direction: column-reverse;
+  }
+
+  .visit-type-form-buttons button {
+    width: 100%;
+  }
+
+  .visit-type-toggle-setting {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .visit-type-toggle-control {
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+
+  .visit-type-custom-color {
+    flex-direction: column;
+  }
+
+  .visit-type-custom-color-picker {
+    width: 100%;
+  }
+}
+
+/* CSS Variables for Theme Support */
+:root {
+  --border-color: #e5e7eb;
+  --background: #ffffff;
+  --foreground: #000000;
+  --primary: #3b82f6;
+  --muted-foreground: #6b7280;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border-color: #374151;
+    --background: #1f2937;
+    --foreground: #ffffff;
+    --primary: #60a5fa;
+    --muted-foreground: #9ca3af;
+  }
+
+  .visit-type-toggle-setting:hover {
+    background-color: rgb(31 41 55 / 50%);
+  }
+
+  :deep(.visit-type-editor-card) input,
+  :deep(.visit-type-editor-card) select {
+    background-color: rgb(31 41 55);
+    color: white;
+  }
+}
+
+/* Card Header Styling */
+:deep(.visit-type-editor-card) :deep(.card-header) {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+/* Card Content Styling */
+:deep(.visit-type-editor-card) :deep(.card-content) {
+  padding: 1.5rem;
+}
+
+/* Button Styling */
+:deep(.visit-type-editor-card) :deep(button) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Space Between Form Groups */
+.visit-type-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Select Styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}

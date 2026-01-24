@@ -1,0 +1,24 @@
+@* MenubarContent - menu popover content *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (ParentMenu?.IsOpen == true)
+{
+    <div class="menubar-content @CssClass" @onmouseleave="HandleMouseLeave" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter] public MenubarMenu? ParentMenu { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleMouseLeave()
+    {
+        if (ParentMenu?.Root != null)
+        {
+            await ParentMenu.Root.CloseAllMenus();
+        }
+    }
+}

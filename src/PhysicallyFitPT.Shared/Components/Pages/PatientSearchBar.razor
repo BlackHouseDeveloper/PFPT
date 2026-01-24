@@ -1,0 +1,46 @@
+@namespace PhysicallyFitPT.Shared.Components.Pages
+
+<div class="pfp-search-section">
+  <div class="pfp-input-group">
+    <input @bind="SearchQuery" @onkeypress="OnKeyPress" 
+           placeholder="Search patients by name..." 
+           class="pfp-input" />
+    <button @onclick="OnSearchClick" class="pfp-btn pfp-btn-primary" disabled="@IsLoading">
+      @if (IsLoading)
+      {
+        <span>Searching...</span>
+      }
+      else
+      {
+        <span>🔍 Search</span>
+      }
+    </button>
+  </div>
+</div>
+
+@code {
+    [Parameter]
+    public string SearchQuery { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> SearchQueryChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnSearch { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; } = false;
+
+    private async Task OnSearchClick()
+    {
+        await OnSearch.InvokeAsync();
+    }
+
+    private async Task OnKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OnSearch.InvokeAsync();
+        }
+    }
+}

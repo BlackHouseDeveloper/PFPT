@@ -1,0 +1,62 @@
+/* Alert component styles */
+
+/* Base alert styles */
+[role="alert"] {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Default variant */
+[data-variant="default"] {
+    border-color: #e5e7eb;
+    background-color: white;
+    color: #111827;
+}
+
+/* Destructive variant */
+[data-variant="destructive"] {
+    border-color: #fecaca;
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+[data-variant="destructive"] [data-slot="alert-description"] {
+    color: rgba(220, 38, 38, 0.9);
+}
+
+/* Icon sizing and positioning */
+[role="alert"] > svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/* Line clamp for title */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+/* Minimum height */
+.min-h-4 {
+    min-height: 1rem;
+}
+
+/* CSS Grid columns with has() support fallback */
+.grid-cols-\[0_1fr\] {
+    grid-template-columns: 0 1fr;
+}
+
+.has-\[\>svg\]\:grid-cols-\[calc\(1rem\)_1fr\]:has(> svg) {
+    grid-template-columns: calc(1rem) 1fr;
+}
+
+.has-\[\>svg\]\:gap-x-3:has(> svg) {
+    column-gap: 0.75rem;
+}
+
+/* Icon translation */
+[role="alert"] > svg {
+    transform: translateY(0.125rem);
+}

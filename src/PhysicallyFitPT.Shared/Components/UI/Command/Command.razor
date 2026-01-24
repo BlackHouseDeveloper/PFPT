@@ -1,0 +1,83 @@
+@* Command palette / command menu root component *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<CascadingValue Value="this">
+    <div class="command" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private List<CommandItem>? items = new();
+    private int selectedIndex = -1;
+    private string searchQuery = string.Empty;
+
+    /// <summary>
+    /// Register a command item
+    /// </summary>
+    public void RegisterItem(CommandItem item)
+    {
+        items?.Add(item);
+    }
+
+    /// <summary>
+    /// Unregister a command item
+    /// </summary>
+    public void UnregisterItem(CommandItem item)
+    {
+        items?.Remove(item);
+    }
+
+    /// <summary>
+    /// Set the search query
+    /// </summary>
+    public void SetSearchQuery(string query)
+    {
+        searchQuery = query;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Get the current search query
+    /// </summary>
+    public string GetSearchQuery() => searchQuery;
+
+    /// <summary>
+    /// Select an item by index
+    /// </summary>
+    public void SelectItem(int index)
+    {
+        if (index >= 0 && index < items?.Count)
+        {
+            selectedIndex = index;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Get the currently selected item index
+    /// </summary>
+    public int GetSelectedIndex() => selectedIndex;
+
+    /// <summary>
+    /// Check if an item is selected
+    /// </summary>
+    public bool IsItemSelected(CommandItem item)
+    {
+        if (items == null) return false;
+        return items.IndexOf(item) == selectedIndex;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        items?.Clear();
+        await ValueTask.CompletedTask;
+    }
+}

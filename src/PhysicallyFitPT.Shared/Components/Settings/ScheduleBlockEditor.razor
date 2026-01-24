@@ -1,0 +1,321 @@
+@namespace PhysicallyFitPT.Shared.Components.Settings
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <Card Class="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+                <div class="flex items-center justify-between">
+                    <CardTitle Class="flex items-center gap-2">
+                        @GetTypeIcon(FormData.Type)
+                        @(ScheduleBlock != null ? "Edit Schedule Block" : "Add Schedule Block")
+                    </CardTitle>
+                    <Button Variant="ghost" Size="sm" OnClick="@OnCancel">
+                        X
+                    </Button>
+                </div>
+                <CardDescription>
+                    Configure non-patient time blocks for the calendar
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form @onsubmit="@HandleSubmit" class="space-y-6">
+                    <!-- Name -->
+                    <div>
+                        <Label Class="block mb-2">Block Name *</Label>
+                        <input
+                            type="text"
+                            @bind="FormData.Name"
+                            placeholder="e.g., Lunch Break, Team Meeting"
+                            required
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                        />
+                    </div>
+
+                    <!-- Type -->
+                    <div>
+                        <Label Class="block mb-2">Block Type *</Label>
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach (var blockType in BlockTypes)
+                            {
+                                var isSelected = FormData.Type == blockType.Value;
+                                <button
+                                    type="button"
+                                    @onclick="@(() => FormData.Type = blockType.Value)"
+                                    class="@(isSelected ? "p-4 border-2 border-primary bg-primary/5 rounded-lg flex items-center gap-3 transition-all" : "p-4 border-2 border-border hover:border-primary/50 rounded-lg flex items-center gap-3 transition-all")"
+                                >
+                                    <div class="@(isSelected ? "h-5 w-5 text-primary" : "h-5 w-5 text-muted-foreground")">@blockType.IconCode</div>
+                                    <span class="font-semibold text-sm">@blockType.Label</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Duration -->
+                    <div>
+                        <Label Class="block mb-2">Duration (minutes) *</Label>
+                        <select
+                            @bind="FormData.Duration"
+                            class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                            required
+                        >
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">60 minutes</option>
+                            <option value="90">90 minutes</option>
+                            <option value="120">120 minutes</option>
+                        </select>
+                    </div>
+
+                    <!-- Color -->
+                    <div>
+                        <Label Class="block mb-2">Color *</Label>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-4 gap-2">
+                                @foreach (var color in PresetColors)
+                                {
+                                    var isSelected = FormData.Color == color;
+                                    <button
+                                        type="button"
+                                        @onclick="@(() => FormData.Color = color)"
+                                        class="@(isSelected ? "w-full h-12 rounded-lg border-2 border-primary scale-110 transition-all" : "w-full h-12 rounded-lg border-2 border-border transition-all")"
+                                        style="background-color: @color;"
+                                    />
+                                }
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <Label Class="text-sm">Custom:</Label>
+                                <input
+                                    type="color"
+                                    @bind="FormData.Color"
+                                    class="w-20 h-10 border-2 border-border rounded-lg"
+                                />
+                                <input
+                                    type="text"
+                                    @bind="FormData.Color"
+                                    class="flex-1 px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                    placeholder="#a78bfa"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recurring -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 border-2 border-border rounded-lg">
+                            <div>
+                                <Label Class="font-semibold">Recurring Block</Label>
+                                <p class="text-sm text-muted-foreground mt-1">
+                                    Automatically create this block on a schedule
+                                </p>
+                            </div>
+                            <Switch
+                                Checked="@FormData.Recurring"
+                                OnCheckedChange="@((bool isChecked) => FormData.Recurring = isChecked)"
+                            />
+                        </div>
+
+                        @if (FormData.Recurring)
+                        {
+                            <div>
+                                <Label Class="block mb-2">Recurrence Pattern *</Label>
+                                <select
+                                    @bind="FormData.RecurrencePattern"
+                                    class="w-full px-3 py-2 border-2 border-border rounded-lg bg-background"
+                                >
+                                    @foreach (var pattern in RecurrencePatterns)
+                                    {
+                                        <option value="@pattern.Value">@pattern.Label</option>
+                                    }
+                                </select>
+                                <p class="text-xs text-muted-foreground mt-2">
+                                    This block will automatically appear on the calendar according to the pattern
+                                </p>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="p-4 bg-muted rounded-lg border-2 border-border">
+                        <Label Class="block mb-2 text-sm font-semibold">Preview</Label>
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-16 h-12 rounded-lg"
+                                style="background-color: @FormData.Color;"
+                            />
+                            <div>
+                                <p class="font-semibold">@(string.IsNullOrEmpty(FormData.Name) ? "Block Name" : FormData.Name)</p>
+                                <p class="text-sm text-muted-foreground">
+                                    @FormData.Duration minutes
+                                    @if (FormData.Recurring)
+                                    {
+                                        <span>• Recurring</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-2 justify-end pt-4 border-t">
+                        <Button Variant="outline" OnClick="@OnCancel">
+                            Cancel
+                        </Button>
+                        <Button Type="submit" Class="bg-primary">
+                            SV Save Block
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public ScheduleBlockData? ScheduleBlock { get; set; }
+
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public bool IsOpen { get; set; } = true;
+
+    private ScheduleBlockData FormData = new();
+
+    private class BlockTypeInfo
+    {
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string IconCode { get; set; } = "";
+    }
+
+    private class RecurrencePatternInfo
+    {
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
+    }
+
+    private List<BlockTypeInfo> BlockTypes = new();
+    private List<string> PresetColors = new();
+    private List<RecurrencePatternInfo> RecurrencePatterns = new();
+
+    protected override void OnInitialized()
+    {
+        InitializeBlockTypes();
+        InitializeColors();
+        InitializeRecurrencePatterns();
+        InitializeFormData();
+    }
+
+    private void InitializeBlockTypes()
+    {
+        BlockTypes = new()
+        {
+            new() { Value = "admin", Label = "Admin Time", IconCode = "BR" },
+            new() { Value = "lunch", Label = "Lunch Break", IconCode = "CF" },
+            new() { Value = "meeting", Label = "Meeting", IconCode = "US" },
+            new() { Value = "break", Label = "Break", IconCode = "CK" },
+            new() { Value = "training", Label = "Training", IconCode = "BO" },
+            new() { Value = "other", Label = "Other", IconCode = "MH" }
+        };
+    }
+
+    private void InitializeColors()
+    {
+        PresetColors = new()
+        {
+            "#fbbf24", // yellow
+            "#a78bfa", // purple
+            "#60a5fa", // blue
+            "#34d399", // green
+            "#f472b6", // pink
+            "#fb923c", // orange
+            "#94a3b8", // slate
+            "#e879f9"  // fuchsia
+        };
+    }
+
+    private void InitializeRecurrencePatterns()
+    {
+        RecurrencePatterns = new()
+        {
+            new() { Value = "daily-morning", Label = "Daily - Morning (8:00 AM)" },
+            new() { Value = "daily-noon", Label = "Daily - Noon (12:00 PM)" },
+            new() { Value = "daily-afternoon", Label = "Daily - Afternoon (2:00 PM)" },
+            new() { Value = "daily-end", Label = "Daily - End of Day (5:00 PM)" },
+            new() { Value = "weekly-monday", Label = "Weekly - Monday Morning" },
+            new() { Value = "weekly-friday", Label = "Weekly - Friday Afternoon" },
+            new() { Value = "biweekly", Label = "Bi-weekly" },
+            new() { Value = "monthly", Label = "Monthly - First Monday" },
+            new() { Value = "custom", Label = "Custom Pattern" }
+        };
+    }
+
+    private void InitializeFormData()
+    {
+        if (ScheduleBlock != null)
+        {
+            FormData = new()
+            {
+                Id = ScheduleBlock.Id,
+                Name = ScheduleBlock.Name,
+                Type = ScheduleBlock.Type,
+                Color = ScheduleBlock.Color,
+                Duration = ScheduleBlock.Duration,
+                Recurring = ScheduleBlock.Recurring,
+                RecurrencePattern = ScheduleBlock.RecurrencePattern ?? "daily-morning"
+            };
+        }
+        else
+        {
+            FormData = new()
+            {
+                Id = DateTime.Now.Ticks.ToString(),
+                Name = "",
+                Type = "admin",
+                Color = "#a78bfa",
+                Duration = 30,
+                Recurring = false,
+                RecurrencePattern = "daily-morning"
+            };
+        }
+    }
+
+    private string GetTypeIcon(string type)
+    {
+        return type switch
+        {
+            "admin" => "BR",
+            "lunch" => "CF",
+            "meeting" => "US",
+            "break" => "CK",
+            "training" => "BO",
+            "other" => "MH",
+            _ => "XX"
+        };
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(FormData.Name))
+            return;
+
+        await OnSave.InvokeAsync(FormData);
+    }
+
+    public class ScheduleBlockData
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Type { get; set; } = "admin";
+        public string Color { get; set; } = "#a78bfa";
+        public int Duration { get; set; } = 30;
+        public bool Recurring { get; set; } = false;
+        public string RecurrencePattern { get; set; } = "daily-morning";
+    }
+}

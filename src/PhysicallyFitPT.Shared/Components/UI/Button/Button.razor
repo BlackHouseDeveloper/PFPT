@@ -1,0 +1,76 @@
+@* Button component with variants and sizes *@
+
+@if (AsLink && !string.IsNullOrEmpty(Href))
+{
+    <a href="@Href"
+       class="@CombinedClass"
+       @attributes="AdditionalAttributes">
+        @ChildContent
+    </a>
+}
+else
+{
+    <button type="@Type"
+            class="@CombinedClass"
+            disabled="@Disabled"
+            @onclick="OnClick"
+            @attributes="AdditionalAttributes">
+        @ChildContent
+    </button>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "default"; // default, destructive, outline, secondary, ghost, link
+
+    [Parameter]
+    public string Size { get; set; } = "default"; // default, sm, lg, icon
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public string Type { get; set; } = "button"; // button, submit, reset
+
+    [Parameter]
+    public bool AsLink { get; set; } = false;
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"{BaseClass} {VariantClass} {SizeClass} {Class}".Trim();
+
+    private string BaseClass => 
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 shrink-0 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+
+    private string VariantClass => Variant switch
+    {
+        "destructive" => "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600/50",
+        "outline" => "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 focus-visible:ring-gray-400/50",
+        "secondary" => "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-400/50",
+        "ghost" => "hover:bg-gray-100 text-gray-900 focus-visible:ring-gray-400/50",
+        "link" => "text-primary underline-offset-4 hover:underline focus-visible:ring-primary/50",
+        _ => "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/50"
+    };
+
+    private string SizeClass => Size switch
+    {
+        "sm" => "h-8 px-3 py-1.5 text-xs has-[>svg]:px-2.5",
+        "lg" => "h-10 px-6 py-2.5 has-[>svg]:px-4",
+        "icon" => "h-9 w-9 p-0",
+        _ => "h-9 px-4 py-2 has-[>svg]:px-3"
+    };
+}

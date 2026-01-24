@@ -1,0 +1,462 @@
+/* Notification Message Settings Component Styles */
+
+:deep(.notification-settings-tabs) {
+    width: 100%;
+}
+
+/* Tab trigger styling */
+:deep(.tabs-trigger) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Tab content spacing */
+:deep(.tabs-content) {
+    margin-top: 1.5rem;
+}
+
+/* Clinical alerts styling */
+:deep(.clinical-alert-container) {
+    border: 2px solid;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.clinical-alert-precaution) {
+    border-color: rgb(234, 179, 8);
+    background-color: rgb(254, 252, 232);
+}
+
+:deep(.clinical-alert-warning) {
+    border-color: rgb(249, 115, 22);
+    background-color: rgb(255, 247, 237);
+}
+
+:deep(.clinical-alert-contraindication) {
+    border-color: rgb(239, 68, 68);
+    background-color: rgb(254, 242, 242);
+}
+
+/* Alert badge styling */
+:deep(.alert-badge) {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid;
+}
+
+:deep(.alert-badge-precaution) {
+    border-color: rgb(234, 179, 8);
+    background-color: rgb(254, 252, 232);
+    color: rgb(180, 83, 9);
+}
+
+:deep(.alert-badge-warning) {
+    border-color: rgb(249, 115, 22);
+    background-color: rgb(255, 247, 237);
+    color: rgb(180, 83, 9);
+}
+
+:deep(.alert-badge-contraindication) {
+    border-color: rgb(239, 68, 68);
+    background-color: rgb(254, 242, 242);
+    color: rgb(220, 38, 38);
+}
+
+/* Clinical alerts tab styling */
+:deep(.clinical-alerts-alert) {
+    border: 2px solid rgb(254, 226, 226);
+    background-color: rgb(254, 240, 240);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.clinical-alerts-alert-icon) {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(220, 38, 38);
+    margin-top: 0.125rem;
+}
+
+/* Pre-visit prompt styling */
+:deep(.pre-visit-alert) {
+    border: 2px solid rgb(219, 234, 254);
+    background-color: rgb(240, 249, 255);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.pre-visit-alert-icon) {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(30, 144, 255);
+    margin-top: 0.125rem;
+}
+
+/* Post-visit feedback styling */
+:deep(.post-visit-alert) {
+    border: 2px solid rgb(233, 213, 255);
+    background-color: rgb(250, 240, 255);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.post-visit-alert-icon) {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(147, 51, 234);
+    margin-top: 0.125rem;
+}
+
+/* Internal messaging styling */
+:deep(.internal-alert) {
+    border: 2px solid rgb(220, 252, 231);
+    background-color: rgb(240, 253, 244);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.internal-alert-icon) {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(34, 197, 94);
+    margin-top: 0.125rem;
+}
+
+/* Setting row styling */
+:deep(.setting-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: 0.5rem;
+    gap: 1.5rem;
+}
+
+:deep(.setting-row:hover) {
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: background-color 0.2s ease-in-out;
+}
+
+:deep(.setting-row-content) {
+    flex: 1;
+}
+
+/* Select and input styling */
+:deep(.settings-select),
+:deep(.settings-input),
+:deep(.settings-textarea) {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: 0.5rem;
+    background-color: var(--background-color, #ffffff);
+    font-size: 0.875rem;
+}
+
+:deep(.settings-select:focus),
+:deep(.settings-input:focus),
+:deep(.settings-textarea:focus) {
+    outline: none;
+    border-color: var(--primary-color, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Range slider styling */
+:deep(.settings-range) {
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background: linear-gradient(to right, var(--primary-color, #3b82f6) 0%, var(--primary-color, #3b82f6) var(--value), #e5e7eb var(--value), #e5e7eb 100%);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+:deep(.settings-range::-webkit-slider-thumb) {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--primary-color, #3b82f6);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.settings-range::-moz-range-thumb) {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--primary-color, #3b82f6);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Radio button group styling */
+:deep(.radio-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+:deep(.radio-option) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+:deep(.radio-option:hover) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+:deep(.radio-option input[type="radio"]) {
+    cursor: pointer;
+    accent-color: var(--primary-color, #3b82f6);
+}
+
+:deep(.radio-option.selected) {
+    border-color: var(--primary-color, #3b82f6);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Checkbox styling */
+:deep(.checkbox-option) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+:deep(.checkbox-option:hover) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+:deep(.checkbox-option input[type="checkbox"]) {
+    cursor: pointer;
+    accent-color: var(--primary-color, #3b82f6);
+}
+
+/* Label styling */
+:deep(.settings-label) {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+:deep(.settings-label-description) {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* Feedback example styling */
+:deep(.feedback-example) {
+    border: 2px solid rgb(219, 197, 255);
+    background-color: rgb(250, 240, 255);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.star-icon) {
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+:deep(.star-icon:hover) {
+    transform: scale(1.1);
+}
+
+:deep(.star-filled) {
+    color: rgb(250, 204, 21);
+    fill: rgb(250, 204, 21);
+}
+
+:deep(.star-empty) {
+    color: rgb(209, 213, 219);
+}
+
+/* Negative feedback alert styling */
+:deep(.negative-feedback-alert) {
+    border: 2px solid rgb(253, 224, 71);
+    background-color: rgb(254, 252, 232);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+:deep(.negative-feedback-icon) {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgb(180, 83, 9);
+    margin-top: 0.125rem;
+}
+
+/* Example boxes */
+:deep(.example-box) {
+    padding: 1rem;
+    background-color: rgb(240, 249, 255);
+    border: 2px solid rgb(219, 234, 254);
+    border-radius: 0.5rem;
+}
+
+:deep(.example-blue) {
+    background-color: rgb(240, 249, 255);
+    border: 2px solid rgb(219, 234, 254);
+}
+
+:deep(.example-green) {
+    background-color: rgb(240, 253, 244);
+    border: 2px solid rgb(220, 252, 231);
+}
+
+:deep(.example-purple) {
+    background-color: rgb(250, 240, 255);
+    border: 2px solid rgb(219, 197, 255);
+}
+
+/* Badge styling */
+:deep(.badge) {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--primary-color, #3b82f6);
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+:deep(.badge-outline) {
+    background-color: transparent;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+}
+
+:deep(.badge-recommended) {
+    background-color: var(--primary-color, #3b82f6);
+    color: white;
+}
+
+/* Patient example styling */
+:deep(.patient-card) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+:deep(.patient-avatar) {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    background-color: var(--muted, #f3f4f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+:deep(.patient-info) {
+    flex: 1;
+}
+
+:deep(.patient-name) {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+:deep(.patient-meta) {
+    font-size: 0.875rem;
+    color: var(--muted-foreground, #6b7280);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    :deep(.setting-row) {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    :deep(.checkbox-option) {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    :deep(.radio-group) {
+        gap: 0.5rem;
+    }
+
+    :deep(.settings-select),
+    :deep(.settings-input),
+    :deep(.settings-textarea) {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    :deep(.tabs-trigger) {
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    :deep(.star-icon) {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    :deep(.feedback-example) {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation for content transitions */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+:deep(.tabs-content) {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Alert animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+:deep(.clinical-alert-container) {
+    animation: slideIn 0.3s ease-in-out;
+}

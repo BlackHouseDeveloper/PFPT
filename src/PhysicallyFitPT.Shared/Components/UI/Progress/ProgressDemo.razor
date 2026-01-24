@@ -1,0 +1,113 @@
+@* Progress Demo - Care plan, documentation, and job tracking *@
+@page "/demo/progress"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<div class="demo-container">
+    <h1>Progress</h1>
+    <p class="demo-description">
+        Track completion of care plans, documentation, and background tasks with animated bars and clear labels.
+    </p>
+
+    <div class="demo-section">
+        <h2>Care Plan + Adherence</h2>
+        <p>Surface completion at a glance for clinicians and support staff.</p>
+        <div class="demo-example space-y-4">
+            @foreach (var metric in carePlanMetrics)
+            {
+                <div class="rounded-lg border border-gray-200 p-4 space-y-2 bg-white">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">@metric.Title</p>
+                            <p class="text-xs text-gray-500">@metric.Description</p>
+                        </div>
+                        <span class="text-sm font-mono text-gray-800">@($"{metric.Value:0}%")</span>
+                    </div>
+                    <Progress Value="@metric.Value" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Documentation Throughput</h2>
+        <p>Show how close today's notes are to being signed off.</p>
+        <div class="demo-example bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900">Notes signed</p>
+                    <p class="text-xs text-gray-500">@signedNotes of @totalNotes notes completed</p>
+                </div>
+                <span class="text-sm font-mono text-primary">@($"{DocumentationProgress:0}%")</span>
+            </div>
+            <Progress Value="DocumentationProgress" />
+            <div class="flex items-center gap-2 flex-wrap">
+                <Button Variant="outline" OnClick="@(() => AdjustSignedNotes(-1))" Disabled="signedNotes <= 0">-1</Button>
+                <Button OnClick="@(() => AdjustSignedNotes(1))" Disabled="signedNotes >= totalNotes">+1</Button>
+                <span class="text-xs text-gray-500">Update progress as notes are signed.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Background Job Progress</h2>
+        <p>Communicate behind-the-scenes work like claim batches or exports.</p>
+        <div class="demo-example bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900">Claim batch upload</p>
+                    <p class="text-xs text-gray-500">@processedClaims of @totalClaims claims uploaded</p>
+                </div>
+                <span class="text-sm font-mono text-gray-800">@($"{ClaimUploadProgress:0}%")</span>
+            </div>
+            <Progress Value="ClaimUploadProgress" />
+            <div class="flex items-center gap-2 flex-wrap">
+                <Button Variant="outline" OnClick="ResetClaims" Disabled="processedClaims == 0">Reset</Button>
+                <Button OnClick="ProcessClaimBatch" Disabled="processedClaims >= totalClaims">Process next batch</Button>
+                <span class="text-xs text-gray-500">@StatusLabel</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private record CarePlanMetric(string Title, string Description, double Value);
+
+    private List<CarePlanMetric> carePlanMetrics = new()
+    {
+        new("Plan of care completion", "18 of 25 visits scheduled/seen", 72),
+        new("HEP adherence", "21 of 24 sessions logged this week", 88),
+        new("Outcome measures captured", "5 of 8 PROMs documented", 64)
+    };
+
+    private int totalNotes = 12;
+    private int signedNotes = 7;
+
+    private int totalClaims = 40;
+    private int processedClaims = 14;
+
+    private double DocumentationProgress => Math.Round(((double)signedNotes / totalNotes) * 100, 0);
+    private double ClaimUploadProgress => Math.Round(((double)processedClaims / totalClaims) * 100, 0);
+    private string StatusLabel => processedClaims >= totalClaims
+        ? "Batch complete"
+        : $"Processing in batches of 5 claims ({processedClaims}/{totalClaims})";
+
+    private void AdjustSignedNotes(int delta)
+    {
+        signedNotes = Math.Clamp(signedNotes + delta, 0, totalNotes);
+    }
+
+    private void ProcessClaimBatch()
+    {
+        if (processedClaims >= totalClaims)
+        {
+            return;
+        }
+
+        processedClaims = Math.Min(totalClaims, processedClaims + 5);
+    }
+
+    private void ResetClaims()
+    {
+        processedClaims = 0;
+    }
+}

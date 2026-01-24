@@ -1,0 +1,60 @@
+@* Individual command item with selection state *@
+@implements IAsyncDisposable
+@namespace PhysicallyFitPT.Shared.Components.UI.Command
+
+<button 
+    type="button"
+    class="command-item @(IsSelected ? "selected" : "")"
+    @onclick="HandleClick"
+    disabled="@Disabled"
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public Command? ParentCommand { get; set; }
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsSelected
+    {
+        get
+        {
+            if (ParentCommand == null) return false;
+            return ParentCommand.IsItemSelected(this);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        ParentCommand?.RegisterItem(this);
+    }
+
+    private async Task HandleClick()
+    {
+        if (!Disabled && OnSelect.HasDelegate)
+        {
+            await OnSelect.InvokeAsync(Value ?? string.Empty);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        ParentCommand?.UnregisterItem(this);
+        await ValueTask.CompletedTask;
+    }
+}

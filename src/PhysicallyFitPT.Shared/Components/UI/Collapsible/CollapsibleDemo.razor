@@ -1,0 +1,161 @@
+@* Demo page showing Collapsible usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic collapsible -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Collapsible</h3>
+        <Collapsible>
+            <CollapsibleTrigger>
+                <span>What is PFPT?</span>
+                <span aria-hidden="true">▸</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+                <p class="text-sm text-gray-600">
+                    Physically Fit PT is a clinician-focused documentation and patient management platform
+                    with web and MAUI surfaces sharing a common component library.
+                </p>
+            </CollapsibleContent>
+        </Collapsible>
+    </div>
+
+    <!-- Collapsible with cards -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Collapsible with Card Content</h3>
+        <Collapsible>
+            <CollapsibleTrigger>
+                <span class="font-medium">Release Notes</span>
+                <Badge Variant="secondary">v1.6.0</Badge>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+                <Card>
+                    <CardContent>
+                        <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                            <li>New component ports: Carousel, Chart, Checkbox, Collapsible</li>
+                            <li>Improved accessibility states and focus styles</li>
+                            <li>Updated clinical demos for scheduling and ROM tracking</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            </CollapsibleContent>
+        </Collapsible>
+    </div>
+
+    <!-- Clinical Use Case: SOAP Plan Details -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: SOAP Plan Details</h3>
+        <Card Class="max-w-2xl">
+            <CardHeader Class="border-b">
+                <CardTitle>Plan - Visit 6</CardTitle>
+                <CardDescription>Expand sections to review today's plan</CardDescription>
+            </CardHeader>
+            <CardContent class="space-y-3">
+                <Collapsible>
+                    <CollapsibleTrigger>
+                        <span class="font-medium">Therapeutic Exercise</span>
+                        <span class="text-xs text-gray-600">3 items</span>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                            <li>Bike warm-up - 5 minutes</li>
+                            <li>Squat to chair - 3x12</li>
+                            <li>Side steps with band - 3x20 ft</li>
+                        </ul>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible>
+                    <CollapsibleTrigger>
+                        <span class="font-medium">Manual Therapy</span>
+                        <span class="text-xs text-gray-600">2 items</span>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                            <li>PA mobilizations L3-L5, grade II-III</li>
+                            <li>Soft tissue mobilization lumbar paraspinals</li>
+                        </ul>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible>
+                    <CollapsibleTrigger>
+                        <span class="font-medium">Modalities</span>
+                        <span class="text-xs text-gray-600">1 item</span>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                            <li>Ice pack, 10 minutes, supine</li>
+                        </ul>
+                    </CollapsibleContent>
+                </Collapsible>
+            </CardContent>
+            <CardFooter Class="justify-between">
+                <span class="text-xs text-gray-500">Tap each section to expand</span>
+                <Button Size="sm">Save Plan</Button>
+            </CardFooter>
+        </Card>
+    </div>
+</div>
+
+<style>
+    .space-y-8 > * + * {
+        margin-top: 2rem;
+    }
+
+    .space-y-3 > * + * {
+        margin-top: 0.75rem;
+    }
+
+    .space-y-2 > * + * {
+        margin-top: 0.5rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+
+    .text-xs {
+        font-size: 0.75rem;
+        line-height: 1rem;
+    }
+
+    .font-medium {
+        font-weight: 500;
+    }
+
+    .text-gray-500 {
+        color: #6b7280;
+    }
+
+    .text-gray-600 {
+        color: #4b5563;
+    }
+
+    .text-gray-700 {
+        color: #374151;
+    }
+
+    .list-disc {
+        list-style-type: disc;
+    }
+
+    .list-inside {
+        list-style-position: inside;
+    }
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.75rem;
+    }
+
+    .space-y-1 > * + * {
+        margin-top: 0.25rem;
+    }
+</style>
+
+@code {
+    // Demo only; no additional code required
+}

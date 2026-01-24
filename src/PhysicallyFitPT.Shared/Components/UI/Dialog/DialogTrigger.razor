@@ -1,0 +1,25 @@
+@* Dialog trigger - button that opens the dialog *@
+@namespace PhysicallyFitPT.Shared.Components.UI.Dialog
+
+<div @onclick="HandleClick" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public Dialog? ParentDialog { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleClick()
+    {
+        if (ParentDialog != null)
+        {
+            await ParentDialog.SetOpen(true);
+        }
+    }
+}

@@ -1,0 +1,26 @@
+@* MenubarSubContent - submenu content *@
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+@if (ParentSub?.IsOpen == true)
+{
+    <div class="menubar-sub-content @CssClass" @onmouseleave="HandleMouseLeave" @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter] public MenubarSub? ParentSub { get; set; }
+    [CascadingParameter] public MenubarMenu? ParentMenu { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleMouseLeave()
+    {
+        ParentSub?.Close();
+        if (ParentMenu?.Root != null)
+        {
+            await ParentMenu.Root.CloseAllMenus();
+        }
+    }
+}

@@ -1,0 +1,441 @@
+@page "/components/textarea"
+@namespace PhysicallyFitPT.Shared.Components.UI
+
+<PageTitle>Textarea Component Demo</PageTitle>
+
+<div class="component-demo">
+    <div class="demo-header">
+        <h1>Textarea Component</h1>
+        <p>Multi-line text input for longer-form content with support for various states, sizes, and clinical documentation use cases.</p>
+    </div>
+
+    <!-- Basic Textarea -->
+    <section class="demo-section">
+        <h2>Basic Textarea</h2>
+        <p>Standard textarea with default styling and behavior.</p>
+        <div class="demo-box">
+            <div class="textarea-group">
+                <label class="textarea-label">Patient Notes</label>
+                <Textarea 
+                    Placeholder="Enter patient notes here..." 
+                    Rows="4" />
+            </div>
+        </div>
+        <pre><code>&lt;Textarea 
+    Placeholder="Enter text here..."
+    Rows="4"
+    @@bind-Value="noteText" /&gt;</code></pre>
+    </section>
+
+    <!-- Textarea Sizes -->
+    <section class="demo-section">
+        <h2>Textarea Sizes</h2>
+        <p>Different size variants for various contexts.</p>
+        <div class="demo-box">
+            <div class="form-group">
+                <h3>Small</h3>
+                <Textarea 
+                    Placeholder="Small textarea..." 
+                    Rows="2"
+                    Class="textarea-sm" />
+            </div>
+            <div class="form-group">
+                <h3>Medium (Default)</h3>
+                <Textarea 
+                    Placeholder="Medium textarea..." 
+                    Rows="4" />
+            </div>
+            <div class="form-group">
+                <h3>Large</h3>
+                <Textarea 
+                    Placeholder="Large textarea..." 
+                    Rows="6"
+                    Class="textarea-lg" />
+            </div>
+        </div>
+    </section>
+
+    <!-- SOAP Note Documentation -->
+    <section class="demo-section">
+        <h2>SOAP Note Example</h2>
+        <p>Clinical use case for documenting patient visit findings and observations.</p>
+        <div class="demo-box">
+            <div class="soap-form">
+                <div class="soap-section">
+                    <label class="textarea-label">Subjective (S) - Patient Report</label>
+                    <Textarea 
+                        Placeholder="Patient's description of symptoms, functional limitations, and medical history..."
+                        Rows="4"
+                        @bind-Value="soapSubjective" />
+                </div>
+
+                <div class="soap-section">
+                    <label class="textarea-label">Objective (O) - Physical Findings</label>
+                    <Textarea 
+                        Placeholder="Examination findings, measurements, special tests, and clinical observations..."
+                        Rows="4"
+                        @bind-Value="soapObjective" />
+                </div>
+
+                <div class="soap-section">
+                    <label class="textarea-label">Assessment (A) - Clinical Impression</label>
+                    <Textarea 
+                        Placeholder="Diagnosis, contributing factors, prognosis, and rehabilitation potential..."
+                        Rows="4"
+                        @bind-Value="soapAssessment" />
+                </div>
+
+                <div class="soap-section">
+                    <label class="textarea-label">Plan (P) - Treatment Plan</label>
+                    <Textarea 
+                        Placeholder="Intervention plan, frequency, home exercise program, patient education..."
+                        Rows="4"
+                        @bind-Value="soapPlan" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Textarea States -->
+    <section class="demo-section">
+        <h2>Textarea States</h2>
+        <p>Various states and visual feedback options.</p>
+        <div class="demo-box">
+            <div class="form-group">
+                <h3>Normal</h3>
+                <Textarea Placeholder="Normal state..." Rows="3" />
+            </div>
+
+            <div class="form-group">
+                <h3>Disabled</h3>
+                <Textarea 
+                    Placeholder="This textarea is disabled..." 
+                    Rows="3"
+                    Disabled="true"
+                    Value="Disabled content cannot be edited." />
+            </div>
+
+            <div class="form-group">
+                <h3>Read-only</h3>
+                <Textarea 
+                    Placeholder="Read-only content..."
+                    Rows="3"
+                    Class="readonly"
+                    Value="This content is read-only and cannot be modified." />
+            </div>
+
+            <div class="form-group">
+                <h3>With Error</h3>
+                <Textarea 
+                    Placeholder="This field has an error..."
+                    Rows="3"
+                    Class="error"
+                    Value="Please correct the issue in this field." />
+                <div class="helper-text error">This field contains an error. Please review and correct.</div>
+            </div>
+
+            <div class="form-group">
+                <h3>With Success</h3>
+                <Textarea 
+                    Placeholder="Success state..."
+                    Rows="3"
+                    Class="success"
+                    Value="Changes have been saved successfully." />
+                <div class="helper-text success">Your changes have been saved.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clinical Assessment Notes -->
+    <section class="demo-section">
+        <h2>Clinical Assessment Notes</h2>
+        <p>Example of clinical assessment documentation with structured information.</p>
+        <div class="demo-box">
+            <div class="textarea-group">
+                <label class="textarea-label" data-required="true">Assessment and Clinical Impression</label>
+                <Textarea 
+                    Placeholder="Document your clinical assessment, findings, and clinical impression..."
+                    Rows="5"
+                    Value="Based on comprehensive evaluation, patient demonstrates:
+- Significant restriction in right shoulder ROM (40° loss in flexion)
+- Weakness in rotator cuff muscles (Grade 4+)
+- Positive impingement signs (Neer's, Hawkins Kennedy tests)
+- Postural imbalances contributing to symptoms
+
+Differential considerations ruled out: Rotator cuff tear (negative lag signs), AC joint arthropathy (negative cross-body adduction), cervical radiculopathy (negative upper limb tension test).
+
+Primary diagnosis: Subacromial impingement syndrome with associated rotator cuff tendinitis." />
+                <div class="helper-text">Provide comprehensive clinical assessment based on objective findings.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Treatment Response Notes -->
+    <section class="demo-section">
+        <h2>Treatment Response Documentation</h2>
+        <p>Track patient response to treatment and progress notes.</p>
+        <div class="demo-box">
+            <div class="textarea-group">
+                <label class="textarea-label">Session Progress Notes</label>
+                <Textarea 
+                    Placeholder="Document patient progress, treatment response, and changes from previous session..."
+                    Rows="5"
+                    Value="Session 3 of 6 - Significant improvement noted from initial evaluation.
+
+Improvements:
+- Shoulder flexion increased to 170° (+10° from session 1)
+- Pain reduced to 3/10 at rest, 4/10 with activity
+- Improved tolerance to overhead activities
+- Better postural control during seated work simulation
+
+Treatment tolerance: Excellent. Patient performing HEP with good form.
+
+Modifications: Advanced scapular stabilization exercises, progressed resistance band intensity.
+
+Plan: Continue current protocol. Schedule re-evaluation at session 6." />
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="demo-section">
+        <h2>Textarea Features</h2>
+        <ul class="features-list">
+            <li><strong>Flexible Sizing</strong> — Customizable rows and columns with CSS-based size variants</li>
+            <li><strong>Two-way Binding</strong> — @bind-Value for reactive state management</li>
+            <li><strong>Placeholder Support</strong> — Default placeholder text for user guidance</li>
+            <li><strong>Disabled State</strong> — Prevent user input with visual feedback</li>
+            <li><strong>Read-only Support</strong> — Display content without allowing edits</li>
+            <li><strong>Error States</strong> — Visual feedback for validation errors with helper text</li>
+            <li><strong>Success States</strong> — Confirmation states for successful data entry</li>
+            <li><strong>Warning States</strong> — Highlight important considerations</li>
+            <li><strong>Keyboard Navigation</strong> — Full keyboard support with proper focus management</li>
+            <li><strong>Customizable Resize</strong> — Control resize behavior (vertical, horizontal, none, both)</li>
+            <li><strong>Dark Mode</strong> — Automatic color adjustment in dark mode</li>
+            <li><strong>High Contrast</strong> — Enhanced borders and text weight for accessibility</li>
+            <li><strong>Reduced Motion</strong> — Respects prefers-reduced-motion preference</li>
+            <li><strong>Custom Scrollbar</strong> — Themed scrollbar styling for better UX</li>
+        </ul>
+    </section>
+</div>
+
+@code {
+    private string soapSubjective = "";
+    private string soapObjective = "";
+    private string soapAssessment = "";
+    private string soapPlan = "";
+}
+
+<style>
+    .component-demo {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .demo-header {
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .demo-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-header p {
+        font-size: 1.0625rem;
+        color: var(--muted-foreground, #6b7280);
+        margin: 0;
+    }
+
+    .demo-section {
+        margin-bottom: 3rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .demo-section > p {
+        color: var(--muted-foreground, #6b7280);
+        margin: 0 0 1rem 0;
+        font-size: 0.9375rem;
+    }
+
+    .demo-box {
+        background-color: var(--card-background, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .textarea-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .textarea-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--foreground, #1f2937);
+    }
+
+    .textarea-label[data-required="true"]::after {
+        content: " *";
+        color: #ef4444;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem 0;
+        color: var(--foreground, #1f2937);
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .soap-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .soap-section {
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .soap-section:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .soap-section .textarea-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .helper-text {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground, #6b7280);
+        margin-top: 0.25rem;
+    }
+
+    .helper-text.error {
+        color: #ef4444;
+    }
+
+    .helper-text.success {
+        color: #10b981;
+    }
+
+    .helper-text.warning {
+        color: #f59e0b;
+    }
+
+    pre {
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        color: var(--foreground, #1f2937);
+    }
+
+    .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .features-list li {
+        padding: 1rem;
+        background-color: var(--muted-background, #f9fafb);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .demo-header {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .demo-header h1 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-header p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-section h2 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .demo-section > p {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        .demo-box {
+            background-color: var(--card-background, #1f2937);
+            border-color: var(--border-color, #374151);
+        }
+
+        .textarea-label {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .form-group h3 {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .soap-section {
+            border-bottom-color: var(--border-color, #374151);
+        }
+
+        .helper-text {
+            color: var(--muted-foreground, #9ca3af);
+        }
+
+        pre {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+
+        code {
+            color: var(--foreground, #f3f4f6);
+        }
+
+        .features-list li {
+            background-color: var(--muted-background, #111827);
+            border-color: var(--border-color, #374151);
+        }
+    }
+</style>

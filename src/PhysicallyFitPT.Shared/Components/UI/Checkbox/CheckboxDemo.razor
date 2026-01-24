@@ -1,0 +1,180 @@
+@* Demo page showing Checkbox usage examples *@
+
+<div class="space-y-8">
+    <!-- Basic checkboxes -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Checkboxes</h3>
+        <div class="flex flex-col gap-3">
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <Checkbox @bind-Value="basicA" />
+                Receive appointment reminders
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <Checkbox @bind-Value="basicB" />
+                Enable email notifications
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <Checkbox @bind-Value="basicC" />
+                Agree to terms and conditions
+            </label>
+        </div>
+    </div>
+
+    <!-- Disabled & Indeterminate -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Disabled and Indeterminate</h3>
+        <div class="flex flex-col gap-3">
+            <label class="flex items-center gap-2 text-sm text-gray-500">
+                <Checkbox Value="true" Disabled="true" />
+                Completed (locked)
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <Checkbox Value="@indeterminate" OnChanged="SetIndeterminate" />
+                Partial selection (click to toggle)
+            </label>
+        </div>
+    </div>
+
+    <!-- Clinical Use Case: Intake Checklist -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Intake Checklist</h3>
+        <Card Class="max-w-xl">
+            <CardHeader Class="border-b">
+                <CardTitle>New Patient Intake</CardTitle>
+                <CardDescription>Ensure all required items are completed before evaluation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="flex flex-col gap-3">
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <Checkbox @bind-Value="intakeHistory" />
+                        Medical history reviewed
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <Checkbox @bind-Value="intakeConsent" />
+                        Consent forms signed
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <Checkbox @bind-Value="intakeInsurance" />
+                        Insurance verified
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <Checkbox @bind-Value="intakePainScale" />
+                        Pain scale recorded
+                    </label>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    Completed: <span class="font-medium">@CompletedIntakeCount/4</span>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Clinical Use Case: Home Exercise Adherence -->
+    <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">Clinical Use Case: Home Exercise Adherence</h3>
+        <Card Class="max-w-xl">
+            <CardHeader Class="border-b">
+                <CardTitle>Weekly HEP Tasks</CardTitle>
+                <CardDescription>Track patient-reported completion for this week</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="space-y-2 text-sm text-gray-700">
+                    <div class="flex items-center gap-2">
+                        <Checkbox @bind-Value="hepStretch" />
+                        Morning stretching (5x/week)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Checkbox @bind-Value="hepStrength" />
+                        Strength exercises (3x/week)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Checkbox @bind-Value="hepIce" />
+                        Ice after activity (as needed)
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    Tasks completed: <span class="font-medium">@HepCompleted/3</span>
+                </div>
+            </CardContent>
+            <CardFooter Class="justify-between">
+                <span class="text-xs text-gray-500">Patient self-reported</span>
+                <Button Size="sm" Variant="outline">Export summary</Button>
+            </CardFooter>
+        </Card>
+    </div>
+</div>
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    .flex-col {
+        flex-direction: column;
+    }
+
+    .gap-2 {
+        gap: 0.5rem;
+    }
+
+    .gap-3 {
+        gap: 0.75rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+
+    .text-gray-500 {
+        color: #6b7280;
+    }
+
+    .text-gray-600 {
+        color: #4b5563;
+    }
+
+    .text-gray-700 {
+        color: #374151;
+    }
+
+    .max-w-xl {
+        max-width: 36rem;
+    }
+
+    .mt-4 {
+        margin-top: 1rem;
+    }
+
+    .space-y-2 > * + * {
+        margin-top: 0.5rem;
+    }
+</style>
+
+@code {
+    private bool? basicA = true;
+    private bool? basicB = false;
+    private bool? basicC = false;
+
+    private bool? indeterminate = null;
+
+    private bool? intakeHistory = false;
+    private bool? intakeConsent = false;
+    private bool? intakeInsurance = false;
+    private bool? intakePainScale = false;
+
+    private bool? hepStretch = false;
+    private bool? hepStrength = false;
+    private bool? hepIce = false;
+
+    private int CompletedIntakeCount => CountTrue(intakeHistory, intakeConsent, intakeInsurance, intakePainScale);
+    private int HepCompleted => CountTrue(hepStretch, hepStrength, hepIce);
+
+    private Task SetIndeterminate(bool? value)
+    {
+        indeterminate = value;
+        return Task.CompletedTask;
+    }
+
+    private static int CountTrue(params bool?[] values) => values.Count(v => v == true);
+}

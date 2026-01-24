@@ -1,0 +1,144 @@
+@* Patient Consents & Acknowledgments Step *@
+@namespace PhysicallyFitPT.Shared.Components.Workflow
+@using PhysicallyFitPT.Core.Intake
+@using PhysicallyFitPT.Shared.Components.UI
+
+<div class="intake-step consents">
+    <h3>Consents & Acknowledgments</h3>
+
+    <div class="consents-form">
+        <div class="consent-section">
+            <details>
+                <summary class="consent-header">
+                    <input type="checkbox" 
+                           id="consent_treatment"
+                           @onchange="e => Data.ConsentTreatment = (bool?)e.Value ?? false"
+                           checked="@Data.ConsentTreatment" />
+                    <label for="consent_treatment">Consent to Treatment</label>
+                </summary>
+                <div class="consent-content">
+                    <p>I consent to physical therapy treatment and evaluation as recommended by my healthcare provider. I understand that:</p>
+                    <ul>
+                        <li>Treatment may involve exercise, manual therapy, or other therapeutic modalities</li>
+                        <li>I may experience temporary discomfort during or after treatment</li>
+                        <li>I am responsible for reporting any concerns or adverse reactions</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <div class="consent-section">
+            <details>
+                <summary class="consent-header">
+                    <input type="checkbox" 
+                           id="consent_privacy"
+                           @onchange="e => Data.ConsentPrivacy = (bool?)e.Value ?? false"
+                           checked="@Data.ConsentPrivacy" />
+                    <label for="consent_privacy">Privacy & HIPAA Notice</label>
+                </summary>
+                <div class="consent-content">
+                    <p>I acknowledge that I have received and read the Notice of Privacy Practices. I understand that:</p>
+                    <ul>
+                        <li>My health information is protected under HIPAA regulations</li>
+                        <li>My information will only be shared with authorized healthcare providers</li>
+                        <li>I have rights regarding access to and amendment of my health records</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <div class="consent-section">
+            <details>
+                <summary class="consent-header">
+                    <input type="checkbox" 
+                           id="consent_communication"
+                           @onchange="e => Data.ConsentCommunication = (bool?)e.Value ?? false"
+                           checked="@Data.ConsentCommunication" />
+                    <label for="consent_communication">Communication & Follow-up Consent</label>
+                </summary>
+                <div class="consent-content">
+                    <p>I consent to being contacted regarding:</p>
+                    <ul>
+                        <li>Appointment reminders via phone, email, or text</li>
+                        <li>Treatment updates and progress reports</li>
+                        <li>Follow-up care recommendations</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <div class="consent-section">
+            <details>
+                <summary class="consent-header">
+                    <input type="checkbox" 
+                           id="consent_financial"
+                           @onchange="e => Data.ConsentFinancialResponsibility = (bool?)e.Value ?? false"
+                           checked="@Data.ConsentFinancialResponsibility" />
+                    <label for="consent_financial">Financial Responsibility Agreement</label>
+                </summary>
+                <div class="consent-content">
+                    <p>I agree to the following financial terms:</p>
+                    <ul>
+                        <li>I am responsible for any deductibles, copays, and coinsurance amounts</li>
+                        <li>I authorize my insurance to be billed for services rendered</li>
+                        <li>I understand my responsibility for any amounts not covered by insurance</li>
+                        <li>I agree to payment arrangements if needed</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="consents-validation">
+        @{
+            var allConsented = Data.ConsentTreatment && Data.ConsentPrivacy && 
+                              Data.ConsentCommunication && Data.ConsentFinancialResponsibility;
+        }
+
+        @if (!allConsented)
+        {
+            <Alert class="alert-warning" role="alert">
+                <p>Please review and accept all consent items to proceed.</p>
+            </Alert>
+        }
+    </div>
+
+    <div class="form-actions">
+        <Button @onclick="HandlePrevious" Variant="outline">Previous</Button>
+        <Button @onclick="HandleSubmit" 
+                Variant="default" 
+                Size="lg"
+                Disabled="!allConsented || IsSubmitting">
+            @if (IsSubmitting)
+            {
+                <span>Submitting...</span>
+            }
+            else
+            {
+                <span>Complete Intake</span>
+            }
+        </Button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ConsentsData Data { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<ConsentsData> DataChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnPrevious { get; set; }
+
+    [Parameter]
+    public bool IsSubmitting { get; set; }
+
+    private async Task HandleNext() => await OnSubmit.InvokeAsync();
+    private async Task HandlePrevious() => await OnPrevious.InvokeAsync();
+    private async Task HandleSubmit() => await OnSubmit.InvokeAsync();
+
+}

@@ -2,14 +2,18 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Http;
 using Microsoft.FeatureManagement;
 using PhysicallyFitPT.Shared;
+using PhysicallyFitPT.Shared.Services;
 using PhysicallyFitPT.Web.Services;
 using Polly;
 using Polly.Extensions.Http;
+using WebPlatformInfoImpl = PhysicallyFitPT.Web.Services.WebPlatformInfo;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -26,7 +30,7 @@ builder.Services.Configure<ApiConfiguration>(
 builder.Services.AddFeatureManagement();
 
 // Platform services
-builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfo>();
+builder.Services.AddSingleton<IPlatformInfo, WebPlatformInfoImpl>();
 
 // Week 2: Authentication and AI services
 builder.Services.AddSingleton<IUserService, DemoUserService>();
@@ -70,3 +74,5 @@ static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
           onReset: () =>
             Console.WriteLine("Circuit breaker reset"));
 }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

@@ -1,0 +1,51 @@
+@* Badge component - small label with variants *@
+
+@if (AsLink && !string.IsNullOrEmpty(Href))
+{
+    <a href="@Href"
+       class="@CombinedClass"
+       @attributes="AdditionalAttributes">
+        @ChildContent
+    </a>
+}
+else
+{
+    <span class="@CombinedClass"
+          @attributes="AdditionalAttributes">
+        @ChildContent
+    </span>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Variant { get; set; } = "default"; // default, secondary, destructive, outline
+
+    [Parameter]
+    public bool AsLink { get; set; } = false;
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => 
+        $"{BaseClass} {VariantClass} {Class}".Trim();
+
+    private string BaseClass => 
+        "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1";
+
+    private string VariantClass => Variant switch
+    {
+        "secondary" => "border-transparent bg-gray-100 text-gray-900 hover:bg-gray-200",
+        "destructive" => "border-transparent bg-red-600 text-white hover:bg-red-700",
+        "outline" => "border-gray-300 bg-transparent text-gray-900 hover:bg-gray-50",
+        _ => "border-transparent bg-primary text-white hover:bg-primary/90"
+    };
+}

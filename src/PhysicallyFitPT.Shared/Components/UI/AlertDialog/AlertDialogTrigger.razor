@@ -1,0 +1,32 @@
+@* Button that opens the alert dialog *@
+
+<button type="button"
+        class="@CombinedClass"
+        @onclick="HandleClick"
+        @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public AlertDialog? Parent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CombinedClass => string.IsNullOrEmpty(Class) ? "" : Class;
+
+    private async Task HandleClick()
+    {
+        if (Parent != null)
+        {
+            await Parent.SetOpen(true);
+        }
+    }
+}

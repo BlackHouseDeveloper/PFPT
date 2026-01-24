@@ -70,6 +70,7 @@ namespace PhysicallyFitPT
       builder.Services.AddScoped<IQuestionnaireService, QuestionnaireService>();
       builder.Services.AddScoped<IDashboardMetricsService, DashboardMetricsService>();
       builder.Services.AddScoped<IDataService, LocalDataService>();
+      builder.Services.AddSingleton<IUserService, UserService>();
       builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
       builder.Services.AddSingleton<IPlatformInfo, MauiPlatformInfo>();
       builder.Services.AddSingleton<IAppStatsService, AppStatsService>();
