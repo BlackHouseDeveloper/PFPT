@@ -1,14 +1,18 @@
 /* Minimal layout styles for authentication pages */
 
 .auth-layout {
-  width: 100%;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-background, #0f0f0f);
-  color: var(--color-text, #ffffff);
+  background: linear-gradient(to bottom, #262626, #3a3a3a);
+  color: #ffffff;
+  overflow: auto;
 }
 
 /* Hide developer debug bars inside auth flows to keep layout clean and centered */

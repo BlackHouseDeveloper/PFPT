@@ -43,6 +43,26 @@ namespace PhysicallyFitPT.Shared
     Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Registers a new user with the provided information.
+    /// </summary>
+    /// <param name="fullName">The user's full legal name.</param>
+    /// <param name="email">The user's professional email address.</param>
+    /// <param name="dateOfBirth">The user's date of birth.</param>
+    /// <param name="licenseType">The type of license (PT or PTA).</param>
+    /// <param name="licenseNumber">The user's license number.</param>
+    /// <param name="licenseState">The state where the license was issued.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+    /// <returns>True if registration was successful, false otherwise.</returns>
+    Task<bool> RegisterAsync(
+      string fullName,
+      string email,
+      DateTime dateOfBirth,
+      string licenseType,
+      string licenseNumber,
+      string licenseState,
+      CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Logs out the current user.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>

@@ -70,6 +70,30 @@ public class DemoUserService : IUserService
   }
 
   /// <inheritdoc/>
+  public Task<bool> RegisterAsync(
+    string fullName,
+    string email,
+    DateTime dateOfBirth,
+    string licenseType,
+    string licenseNumber,
+    string licenseState,
+    CancellationToken cancellationToken = default)
+  {
+    // Stub implementation for Week 2 demo
+    // In production, this would create user in database, verify license, etc.
+    this.logger.LogInformation(
+      "Registration attempted: {FullName} ({Email}), License: {LicenseType} {LicenseNumber} ({LicenseState})",
+      fullName,
+      email,
+      licenseType,
+      licenseNumber,
+      licenseState);
+
+    // For demo purposes, always return success
+    return Task.FromResult(true);
+  }
+
+  /// <inheritdoc/>
   public Task LogoutAsync(CancellationToken cancellationToken = default)
   {
     this.currentUser = null;
