@@ -2,9 +2,9 @@
 
 _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. ✅ indicates success._
 ## CI Outcome Summary
-- Success: 26
-- Failed/Cancelled/Timed out: 5
-- Other/No runs: 111
+- Success: 28
+- Failed/Cancelled/Timed out: 3
+- Other/No runs: 113
 
 
 - 2025-09-06 `9c85b1f` (misc) — scaffolded with errors — CI: no runs
@@ -109,8 +109,8 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-09-24 `0f11cd8` (misc) — Add comprehensive seeder testing, Docker support, and CI integration — CI: no runs
 - 2025-09-25 `6cb3832` (misc) — Add script to synchronize seeded SQLite database with MAUI targets — CI: no runs
 - 2025-09-25 `fa5c9ab` (misc) — Update tests/PhysicallyFitPT.Seeder.Tests/SeedRunIntegrationTests.cs — CI: no runs
-- 2025-09-25 `422dda1` (misc) — Update tests/PhysicallyFitPT.Seeder.Tests/HashChangeReplayTests.cs — CI: failure — jobs: Seeder Integration Tests:failure, Seeder Verification Workflow:skipped, Seeder Verification Summary:failure, Docker Container Verification:skipped
-- 2025-09-25 `13da21e` (feat) — feat(gitignore): add entries for ACT files and build output — CI: failure — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Auto-Request Review:skipped, Unit Tests (Consolidated with iOS build):skipped, Diff Summary:skipped, Notify on Failure:skipped
+- 2025-09-25 `422dda1` (misc) — Update tests/PhysicallyFitPT.Seeder.Tests/HashChangeReplayTests.cs — CI: no runs
+- 2025-09-25 `13da21e` (feat) — feat(gitignore): add entries for ACT files and build output — CI: no runs
 - 2025-09-25 `441712b` (misc) — Fix dotnet-ef tool installation in CI and devcontainer — CI: no runs
 - 2025-09-25 `17fb98b` (misc) — Complete dotnet-ef tool installation fix with comprehensive testing — CI: failure — jobs: StyleCop Formatting:failure, Post-Merge Changelog Generation:success, Roslynator Static Analysis:skipped, Build & Guardrails (${{ matrix.tfm }}):skipped, Unit Tests (Consolidated with iOS build):skipped, Auto-Request Review:skipped, Notify on Failure:skipped, Diff Summary:skipped
 - 2025-09-25 `1a012c0` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
@@ -148,4 +148,6 @@ _Auto-generated post-merge by CI. Commits are annotated with workflow outcomes. 
 - 2025-10-05 `2877d64` (misc) — ✅ **Enhance SQLite data source logging, improve AppStatsService metrics initialization, and update polling mechanism in DebugStatBar component** — CI: success — jobs: Automated Issue Triage:success
 - 2025-10-05 `9a7b91b` (fix) — ✅ **fix: rename HttpMessageHandler to HttpClientHandler in CreateHttpMessageHandler method** — CI: success — jobs: Auto-format Code:success
 - 2025-10-05 `b632fd6` (misc) — Main/Development Merge (#161) — CI: no runs
-- 2025-10-05 `3c25511` (misc) — Merge branch 'development' into main — CI: in_progress — jobs: Verify Database Targets:success, Guard Developer Diagnostics Override:success, StyleCop Formatting:in_progress, Post-Merge Changelog Generation:skipped
+- 2025-10-05 `3c25511` (misc) — ✅ **Merge branch 'development' into main** — CI: success — jobs: Verify Database Targets:success, Guard Developer Diagnostics Override:success, StyleCop Formatting:success, Post-Merge Changelog Generation:skipped, Roslynator Static Analysis:success, Build & Guardrails (net8.0-android):success, Build & Guardrails (net8.0-maccatalyst):success, Build & Guardrails (net8.0):success, Build & Guardrails (net8.0-ios):success, Diff Summary:success, Unit Tests:success, Auto-Request Review:success, Notify on Failure:skipped, CI Summary:success
+- 2025-10-05 `90c2752` (docs) — ✅ **docs: update CHANGELOG.md post-merge [skip ci]** — CI: success — jobs: Auto-Fix CI Failures:success
+- 2026-01-24 `e0c39fd` (misc) — Dev ci (#178) — CI: in_progress — jobs: Documentation Generation - auto:failure
