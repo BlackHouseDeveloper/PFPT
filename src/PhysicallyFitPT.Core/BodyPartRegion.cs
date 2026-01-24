@@ -9,43 +9,43 @@ namespace PhysicallyFitPT.Core;
 /// </summary>
 public enum BodyPartRegion
 {
-    /// <summary>
-    /// Shoulder complex.
-    /// </summary>
-    Shoulder,
+  /// <summary>
+  /// Shoulder complex.
+  /// </summary>
+  Shoulder,
 
-    /// <summary>
-    /// Knee joint.
-    /// </summary>
-    Knee,
+  /// <summary>
+  /// Knee joint.
+  /// </summary>
+  Knee,
 
-    /// <summary>
-    /// Hip joint.
-    /// </summary>
-    Hip,
+  /// <summary>
+  /// Hip joint.
+  /// </summary>
+  Hip,
 
-    /// <summary>
-    /// Lower back/lumbar spine.
-    /// </summary>
-    Back,
+  /// <summary>
+  /// Lower back/lumbar spine.
+  /// </summary>
+  Back,
 
-    /// <summary>
-    /// Cervical spine/neck.
-    /// </summary>
-    Neck,
+  /// <summary>
+  /// Cervical spine/neck.
+  /// </summary>
+  Neck,
 
-    /// <summary>
-    /// Ankle and foot.
-    /// </summary>
-    Ankle,
+  /// <summary>
+  /// Ankle and foot.
+  /// </summary>
+  Ankle,
 
-    /// <summary>
-    /// Elbow joint.
-    /// </summary>
-    Elbow,
+  /// <summary>
+  /// Elbow joint.
+  /// </summary>
+  Elbow,
 
-    /// <summary>
-    /// Wrist and hand.
-    /// </summary>
-    Wrist,
+  /// <summary>
+  /// Wrist and hand.
+  /// </summary>
+  Wrist,
 }

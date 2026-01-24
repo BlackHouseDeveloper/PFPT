@@ -9,10 +9,10 @@ namespace PhysicallyFitPT.Core;
 /// </summary>
 public static class GaitDeviations
 {
-    /// <summary>
-    /// Gets all standard gait deviation descriptions.
-    /// </summary>
-    public static readonly List<string> All = new()
+  /// <summary>
+  /// Gets all standard gait deviation descriptions.
+  /// </summary>
+  public static readonly List<string> All = new()
     {
         "Antalgic gait",
         "Trendelenburg gait",

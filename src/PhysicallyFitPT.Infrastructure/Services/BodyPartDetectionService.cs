@@ -11,12 +11,12 @@ namespace PhysicallyFitPT.Infrastructure.Services;
 /// </summary>
 public class BodyPartDetectionService
 {
-    private static readonly Dictionary<BodyPartRegion, BodyPartData> BodyPartDatabase = new()
+  private static readonly Dictionary<BodyPartRegion, BodyPartData> BodyPartDatabase = new()
+  {
+    [BodyPartRegion.Shoulder] = new BodyPartData
     {
-        [BodyPartRegion.Shoulder] = new BodyPartData
-        {
-            Name = "Shoulder",
-            PainLocations = new List<string>
+      Name = "Shoulder",
+      PainLocations = new List<string>
             {
                 "Anterior shoulder",
                 "Posterior shoulder",
@@ -27,7 +27,7 @@ public class BodyPartDetectionService
                 "Radiating to neck",
                 "Glenohumeral joint"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Overhead reaching",
                 "Reaching behind back",
@@ -40,7 +40,7 @@ public class BodyPartDetectionService
                 "Work-related activities",
                 "Sports activities"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion: 0-180°",
                 "Extension: 0-60°",
@@ -50,7 +50,7 @@ public class BodyPartDetectionService
                 "Horizontal adduction",
                 "Horizontal abduction"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Deltoid (anterior/middle/posterior)",
                 "Rotator cuff (SITS)",
@@ -65,7 +65,7 @@ public class BodyPartDetectionService
                 "Rhomboids",
                 "Pectoralis major"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Empty can test (Supraspinatus)",
                 "Drop arm test",
@@ -78,11 +78,11 @@ public class BodyPartDetectionService
                 "Lift-off test (subscapularis)",
                 "External rotation lag sign"
             }
-        },
-        [BodyPartRegion.Knee] = new BodyPartData
-        {
-            Name = "Knee",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Knee] = new BodyPartData
+    {
+      Name = "Knee",
+      PainLocations = new List<string>
             {
                 "Anterior knee",
                 "Posterior knee",
@@ -94,7 +94,7 @@ public class BodyPartDetectionService
                 "Lateral joint line",
                 "Popliteal fossa"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Stair climbing",
                 "Stair descending",
@@ -108,7 +108,7 @@ public class BodyPartDetectionService
                 "Getting up from chair",
                 "Getting in/out of car"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion: 0-135°",
                 "Extension: 0-5°",
@@ -116,7 +116,7 @@ public class BodyPartDetectionService
                 "Active flexion",
                 "Extension lag"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Quadriceps",
                 "Hamstrings",
@@ -127,7 +127,7 @@ public class BodyPartDetectionService
                 "Gastrocnemius",
                 "Tibialis anterior"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Lachmans test (ACL)",
                 "Anterior drawer (ACL)",
@@ -140,11 +140,11 @@ public class BodyPartDetectionService
                 "Clarkes test (patellofemoral)",
                 "Noble compression (IT band)"
             }
-        },
-        [BodyPartRegion.Hip] = new BodyPartData
-        {
-            Name = "Hip",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Hip] = new BodyPartData
+    {
+      Name = "Hip",
+      PainLocations = new List<string>
             {
                 "Anterior hip/groin",
                 "Lateral hip",
@@ -154,7 +154,7 @@ public class BodyPartDetectionService
                 "Radiating to knee",
                 "Deep hip joint"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Walking",
                 "Stair climbing",
@@ -168,7 +168,7 @@ public class BodyPartDetectionService
                 "Prolonged sitting",
                 "Running"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion: 0-120°",
                 "Extension: 0-20°",
@@ -177,7 +177,7 @@ public class BodyPartDetectionService
                 "Internal rotation: 0-45°",
                 "External rotation: 0-45°"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Hip flexors (iliopsoas)",
                 "Hip extensors (glutes)",
@@ -189,7 +189,7 @@ public class BodyPartDetectionService
                 "Hamstrings",
                 "TFL"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "FABER test (Patrick test)",
                 "FADIR test",
@@ -201,11 +201,11 @@ public class BodyPartDetectionService
                 "Stinchfield test",
                 "Straight leg raise"
             }
-        },
-        [BodyPartRegion.Back] = new BodyPartData
-        {
-            Name = "Lower Back",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Back] = new BodyPartData
+    {
+      Name = "Lower Back",
+      PainLocations = new List<string>
             {
                 "Central lumbar spine",
                 "Left lumbar paraspinals",
@@ -216,7 +216,7 @@ public class BodyPartDetectionService
                 "Radiating to calf",
                 "Radiating to foot"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Bending forward",
                 "Bending backward",
@@ -230,7 +230,7 @@ public class BodyPartDetectionService
                 "Sleeping positions",
                 "Driving"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion (finger-to-floor distance)",
                 "Extension",
@@ -240,7 +240,7 @@ public class BodyPartDetectionService
                 "Left rotation",
                 "Combined movements"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Erector spinae",
                 "Multifidus",
@@ -251,7 +251,7 @@ public class BodyPartDetectionService
                 "Gluteus maximus",
                 "Core stabilizers"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Straight leg raise (SLR)",
                 "Slump test",
@@ -263,11 +263,11 @@ public class BodyPartDetectionService
                 "Valsalva maneuver",
                 "Quadrant test"
             }
-        },
-        [BodyPartRegion.Neck] = new BodyPartData
-        {
-            Name = "Neck",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Neck] = new BodyPartData
+    {
+      Name = "Neck",
+      PainLocations = new List<string>
             {
                 "Central cervical spine",
                 "Left cervical paraspinals",
@@ -279,7 +279,7 @@ public class BodyPartDetectionService
                 "Occipital region",
                 "Interscapular region"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Looking over shoulder (driving)",
                 "Overhead activities",
@@ -292,7 +292,7 @@ public class BodyPartDetectionService
                 "Phone use",
                 "Hair care/grooming"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion: 0-50°",
                 "Extension: 0-60°",
@@ -301,7 +301,7 @@ public class BodyPartDetectionService
                 "Right lateral flexion: 0-45°",
                 "Left lateral flexion: 0-45°"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Cervical paraspinals",
                 "Upper trapezius",
@@ -313,7 +313,7 @@ public class BodyPartDetectionService
                 "Deep neck flexors",
                 "Rhomboids"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Spurlings test",
                 "Distraction test",
@@ -324,11 +324,11 @@ public class BodyPartDetectionService
                 "Shoulder abduction relief",
                 "Adson test"
             }
-        },
-        [BodyPartRegion.Ankle] = new BodyPartData
-        {
-            Name = "Ankle/Foot",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Ankle] = new BodyPartData
+    {
+      Name = "Ankle/Foot",
+      PainLocations = new List<string>
             {
                 "Anterior ankle",
                 "Posterior ankle",
@@ -340,7 +340,7 @@ public class BodyPartDetectionService
                 "Forefoot",
                 "Toes"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Walking",
                 "Stair climbing",
@@ -354,7 +354,7 @@ public class BodyPartDetectionService
                 "Getting up on toes",
                 "Prolonged standing"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Dorsiflexion: 0-20°",
                 "Plantarflexion: 0-50°",
@@ -364,7 +364,7 @@ public class BodyPartDetectionService
                 "First MTP extension",
                 "First MTP flexion"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Tibialis anterior",
                 "Gastrocnemius",
@@ -375,7 +375,7 @@ public class BodyPartDetectionService
                 "Toe extensors",
                 "Intrinsic foot muscles"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Anterior drawer (ankle)",
                 "Talar tilt test",
@@ -387,11 +387,11 @@ public class BodyPartDetectionService
                 "External rotation test",
                 "Kleiger test"
             }
-        },
-        [BodyPartRegion.Elbow] = new BodyPartData
-        {
-            Name = "Elbow",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Elbow] = new BodyPartData
+    {
+      Name = "Elbow",
+      PainLocations = new List<string>
             {
                 "Medial elbow",
                 "Lateral elbow",
@@ -401,7 +401,7 @@ public class BodyPartDetectionService
                 "Radiating to forearm",
                 "Radiating to wrist"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Gripping objects",
                 "Lifting",
@@ -414,14 +414,14 @@ public class BodyPartDetectionService
                 "Sports activities",
                 "Work-related tasks"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Flexion: 0-150°",
                 "Extension: 0-0°",
                 "Supination: 0-80°",
                 "Pronation: 0-80°"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Biceps brachii",
                 "Triceps brachii",
@@ -432,7 +432,7 @@ public class BodyPartDetectionService
                 "Supinator",
                 "Pronator teres"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Cozen test (lateral epicondylitis)",
                 "Mill test (lateral epicondylitis)",
@@ -441,11 +441,11 @@ public class BodyPartDetectionService
                 "Varus stress test",
                 "Tinel sign (ulnar nerve)"
             }
-        },
-        [BodyPartRegion.Wrist] = new BodyPartData
-        {
-            Name = "Wrist/Hand",
-            PainLocations = new List<string>
+    },
+    [BodyPartRegion.Wrist] = new BodyPartData
+    {
+      Name = "Wrist/Hand",
+      PainLocations = new List<string>
             {
                 "Dorsal wrist",
                 "Volar wrist",
@@ -456,7 +456,7 @@ public class BodyPartDetectionService
                 "Fingers",
                 "Palm"
             },
-            FunctionalLimitations = new List<string>
+      FunctionalLimitations = new List<string>
             {
                 "Gripping objects",
                 "Pinching",
@@ -470,7 +470,7 @@ public class BodyPartDetectionService
                 "Personal care activities",
                 "Work-related tasks"
             },
-            RomMeasurements = new List<string>
+      RomMeasurements = new List<string>
             {
                 "Wrist flexion: 0-80°",
                 "Wrist extension: 0-70°",
@@ -480,7 +480,7 @@ public class BodyPartDetectionService
                 "Finger flexion/extension",
                 "Grip strength"
             },
-            MmtMuscles = new List<string>
+      MmtMuscles = new List<string>
             {
                 "Wrist flexors",
                 "Wrist extensors",
@@ -491,7 +491,7 @@ public class BodyPartDetectionService
                 "Opponens pollicis",
                 "Lumbricals"
             },
-            SpecialTests = new List<string>
+      SpecialTests = new List<string>
             {
                 "Phalen test (carpal tunnel)",
                 "Reverse Phalen test",
@@ -502,112 +502,112 @@ public class BodyPartDetectionService
                 "Watson test (scaphoid)",
                 "Piano key test"
             }
-        }
-    };
+    }
+  };
 
-    /// <summary>
-    /// Detects the body part region from a chief complaint text using keyword matching.
-    /// </summary>
-    /// <param name="chiefComplaint">The patient's chief complaint text.</param>
-    /// <returns>The detected body part region, or null if no match found.</returns>
-    public BodyPartRegion? DetectBodyPart(string chiefComplaint)
+  /// <summary>
+  /// Detects the body part region from a chief complaint text using keyword matching.
+  /// </summary>
+  /// <param name="chiefComplaint">The patient's chief complaint text.</param>
+  /// <returns>The detected body part region, or null if no match found.</returns>
+  public BodyPartRegion? DetectBodyPart(string chiefComplaint)
+  {
+    if (string.IsNullOrWhiteSpace(chiefComplaint))
     {
-        if (string.IsNullOrWhiteSpace(chiefComplaint))
-        {
-            return null;
-        }
-
-        var text = chiefComplaint.ToLowerInvariant();
-
-        // Check for body parts in order of specificity
-        if (text.Contains("shoulder"))
-        {
-            return BodyPartRegion.Shoulder;
-        }
-
-        if (text.Contains("knee"))
-        {
-            return BodyPartRegion.Knee;
-        }
-
-        if (text.Contains("hip"))
-        {
-            return BodyPartRegion.Hip;
-        }
-
-        if (text.Contains("ankle") || text.Contains("foot"))
-        {
-            return BodyPartRegion.Ankle;
-        }
-
-        if (text.Contains("elbow"))
-        {
-            return BodyPartRegion.Elbow;
-        }
-
-        if (text.Contains("wrist") || text.Contains("hand"))
-        {
-            return BodyPartRegion.Wrist;
-        }
-
-        if (text.Contains("neck") || text.Contains("cervical"))
-        {
-            return BodyPartRegion.Neck;
-        }
-
-        if (text.Contains("back") || text.Contains("lumbar") || text.Contains("spine"))
-        {
-            return BodyPartRegion.Back;
-        }
-
-        return null;
+      return null;
     }
 
-    /// <summary>
-    /// Gets the clinical data for a specific body part region.
-    /// </summary>
-    /// <param name="region">The body part region.</param>
-    /// <returns>The clinical data, or null if region not found.</returns>
-    public BodyPartData? GetBodyPartData(BodyPartRegion region)
+    var text = chiefComplaint.ToLowerInvariant();
+
+    // Check for body parts in order of specificity
+    if (text.Contains("shoulder"))
     {
-        return BodyPartDatabase.TryGetValue(region, out var data) ? data : null;
+      return BodyPartRegion.Shoulder;
     }
 
-    /// <summary>
-    /// Gets all available body part regions.
-    /// </summary>
-    /// <returns>List of all supported body part regions.</returns>
-    public IEnumerable<BodyPartRegion> GetAllBodyPartRegions()
+    if (text.Contains("knee"))
     {
-        return BodyPartDatabase.Keys;
+      return BodyPartRegion.Knee;
     }
 
-    /// <summary>
-    /// Gets mock previous note data for a patient.
-    /// In production, this would query the database for the most recent note.
-    /// </summary>
-    /// <param name="patientId">The patient ID.</param>
-    /// <param name="noteType">The note type (e.g., "evaluation", "daily").</param>
-    /// <returns>Mock previous note data.</returns>
-    public PreviousNoteData GetPreviousNoteData(string patientId, string noteType)
+    if (text.Contains("hip"))
     {
-        // Mock data - in production, query database for previous note
-        return new PreviousNoteData
-        {
-            ChiefComplaint = "Right shoulder pain with limited overhead reaching",
-            PainLevel = new List<int> { 6 },
-            PainLocation = "Lateral shoulder",
-            PainDescription = "Sharp pain with overhead activities, dull ache at rest",
-            Limitations = "Overhead reaching, Lifting objects, Sleeping on affected side",
-            Rom = "Flexion: 160° (limited), Abduction: 140° (limited), External rotation: 70° (limited)",
-            Mmt = "Deltoid: 4/5, Rotator cuff: 3+/5, Biceps: 5/5",
-            Diagnosis = "Right shoulder impingement syndrome",
-            Goals = new List<string>
+      return BodyPartRegion.Hip;
+    }
+
+    if (text.Contains("ankle") || text.Contains("foot"))
+    {
+      return BodyPartRegion.Ankle;
+    }
+
+    if (text.Contains("elbow"))
+    {
+      return BodyPartRegion.Elbow;
+    }
+
+    if (text.Contains("wrist") || text.Contains("hand"))
+    {
+      return BodyPartRegion.Wrist;
+    }
+
+    if (text.Contains("neck") || text.Contains("cervical"))
+    {
+      return BodyPartRegion.Neck;
+    }
+
+    if (text.Contains("back") || text.Contains("lumbar") || text.Contains("spine"))
+    {
+      return BodyPartRegion.Back;
+    }
+
+    return null;
+  }
+
+  /// <summary>
+  /// Gets the clinical data for a specific body part region.
+  /// </summary>
+  /// <param name="region">The body part region.</param>
+  /// <returns>The clinical data, or null if region not found.</returns>
+  public BodyPartData? GetBodyPartData(BodyPartRegion region)
+  {
+    return BodyPartDatabase.TryGetValue(region, out var data) ? data : null;
+  }
+
+  /// <summary>
+  /// Gets all available body part regions.
+  /// </summary>
+  /// <returns>List of all supported body part regions.</returns>
+  public IEnumerable<BodyPartRegion> GetAllBodyPartRegions()
+  {
+    return BodyPartDatabase.Keys;
+  }
+
+  /// <summary>
+  /// Gets mock previous note data for a patient.
+  /// In production, this would query the database for the most recent note.
+  /// </summary>
+  /// <param name="patientId">The patient ID.</param>
+  /// <param name="noteType">The note type (e.g., "evaluation", "daily").</param>
+  /// <returns>Mock previous note data.</returns>
+  public PreviousNoteData GetPreviousNoteData(string patientId, string noteType)
+  {
+    // Mock data - in production, query database for previous note
+    return new PreviousNoteData
+    {
+      ChiefComplaint = "Right shoulder pain with limited overhead reaching",
+      PainLevel = new List<int> { 6 },
+      PainLocation = "Lateral shoulder",
+      PainDescription = "Sharp pain with overhead activities, dull ache at rest",
+      Limitations = "Overhead reaching, Lifting objects, Sleeping on affected side",
+      Rom = "Flexion: 160° (limited), Abduction: 140° (limited), External rotation: 70° (limited)",
+      Mmt = "Deltoid: 4/5, Rotator cuff: 3+/5, Biceps: 5/5",
+      Diagnosis = "Right shoulder impingement syndrome",
+      Goals = new List<string>
             {
                 "Increase shoulder flexion to 180° within 4 weeks",
                 "Reduce pain to 2/10 with overhead activities",
                 "Return to work duties without limitation"
             }
-        };
-    }
+    };
+  }
 }

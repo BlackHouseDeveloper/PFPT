@@ -9,10 +9,10 @@ namespace PhysicallyFitPT.Core;
 /// </summary>
 public static class PostureFindings
 {
-    /// <summary>
-    /// Gets all standard posture finding descriptions.
-    /// </summary>
-    public static readonly List<string> All = new()
+  /// <summary>
+  /// Gets all standard posture finding descriptions.
+  /// </summary>
+  public static readonly List<string> All = new()
     {
         "Forward head posture",
         "Rounded shoulders",

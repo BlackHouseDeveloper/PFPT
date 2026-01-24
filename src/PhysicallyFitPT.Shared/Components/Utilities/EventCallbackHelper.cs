@@ -13,68 +13,68 @@ using Microsoft.AspNetCore.Components;
 /// </summary>
 public static class EventCallbackHelper
 {
-    /// <summary>
-    /// Safely invoke an EventCallback&lt;object&gt; with the specified argument.
-    /// </summary>
-    /// <param name="callback">Callback to invoke.</param>
-    /// <param name="arg">Argument to pass to the callback.</param>
-    /// <returns>Task tracking the callback invocation.</returns>
-    public static async Task InvokeObjectAsync(EventCallback<object> callback, object? arg)
+  /// <summary>
+  /// Safely invoke an EventCallback&lt;object&gt; with the specified argument.
+  /// </summary>
+  /// <param name="callback">Callback to invoke.</param>
+  /// <param name="arg">Argument to pass to the callback.</param>
+  /// <returns>Task tracking the callback invocation.</returns>
+  public static async Task InvokeObjectAsync(EventCallback<object> callback, object? arg)
+  {
+    if (callback.HasDelegate)
     {
-        if (callback.HasDelegate)
-        {
-            await callback.InvokeAsync(arg);
-        }
+      await callback.InvokeAsync(arg);
     }
+  }
 
-    /// <summary>
-    /// Safely invoke an EventCallback&lt;bool&gt; with the specified argument.
-    /// </summary>
-    /// <param name="callback">Callback to invoke.</param>
-    /// <param name="arg">Argument to pass to the callback.</param>
-    /// <returns>Task tracking the callback invocation.</returns>
-    public static async Task InvokeBoolAsync(EventCallback<bool> callback, bool arg)
+  /// <summary>
+  /// Safely invoke an EventCallback&lt;bool&gt; with the specified argument.
+  /// </summary>
+  /// <param name="callback">Callback to invoke.</param>
+  /// <param name="arg">Argument to pass to the callback.</param>
+  /// <returns>Task tracking the callback invocation.</returns>
+  public static async Task InvokeBoolAsync(EventCallback<bool> callback, bool arg)
+  {
+    if (callback.HasDelegate)
     {
-        if (callback.HasDelegate)
-        {
-            await callback.InvokeAsync(arg);
-        }
+      await callback.InvokeAsync(arg);
     }
+  }
 
-    /// <summary>
-    /// Safely invoke an EventCallback&lt;T&gt; with the specified argument.
-    /// </summary>
-    /// <typeparam name="T">Callback argument type.</typeparam>
-    /// <param name="callback">Callback to invoke.</param>
-    /// <param name="arg">Argument to pass to the callback.</param>
-    /// <returns>Task tracking the callback invocation.</returns>
-    public static async Task InvokeAsync<T>(EventCallback<T> callback, T arg)
+  /// <summary>
+  /// Safely invoke an EventCallback&lt;T&gt; with the specified argument.
+  /// </summary>
+  /// <typeparam name="T">Callback argument type.</typeparam>
+  /// <param name="callback">Callback to invoke.</param>
+  /// <param name="arg">Argument to pass to the callback.</param>
+  /// <returns>Task tracking the callback invocation.</returns>
+  public static async Task InvokeAsync<T>(EventCallback<T> callback, T arg)
+  {
+    if (callback.HasDelegate)
     {
-        if (callback.HasDelegate)
-        {
-            await callback.InvokeAsync(arg);
-        }
+      await callback.InvokeAsync(arg);
     }
+  }
 
-    /// <summary>
-    /// Check if an EventCallback&lt;object&gt; has a delegate assigned.
-    /// </summary>
-    /// <param name="callback">Callback to inspect.</param>
-    /// <returns>True when a delegate is attached.</returns>
-    public static bool HasDelegate(EventCallback<object> callback) => callback.HasDelegate;
+  /// <summary>
+  /// Check if an EventCallback&lt;object&gt; has a delegate assigned.
+  /// </summary>
+  /// <param name="callback">Callback to inspect.</param>
+  /// <returns>True when a delegate is attached.</returns>
+  public static bool HasDelegate(EventCallback<object> callback) => callback.HasDelegate;
 
-    /// <summary>
-    /// Check if an EventCallback&lt;bool&gt; has a delegate assigned.
-    /// </summary>
-    /// <param name="callback">Callback to inspect.</param>
-    /// <returns>True when a delegate is attached.</returns>
-    public static bool HasDelegate(EventCallback<bool> callback) => callback.HasDelegate;
+  /// <summary>
+  /// Check if an EventCallback&lt;bool&gt; has a delegate assigned.
+  /// </summary>
+  /// <param name="callback">Callback to inspect.</param>
+  /// <returns>True when a delegate is attached.</returns>
+  public static bool HasDelegate(EventCallback<bool> callback) => callback.HasDelegate;
 
-    /// <summary>
-    /// Check if an EventCallback&lt;T&gt; has a delegate assigned.
-    /// </summary>
-    /// <typeparam name="T">Callback argument type.</typeparam>
-    /// <param name="callback">Callback to inspect.</param>
-    /// <returns>True when a delegate is attached.</returns>
-    public static bool HasDelegate<T>(EventCallback<T> callback) => callback.HasDelegate;
+  /// <summary>
+  /// Check if an EventCallback&lt;T&gt; has a delegate assigned.
+  /// </summary>
+  /// <typeparam name="T">Callback argument type.</typeparam>
+  /// <param name="callback">Callback to inspect.</param>
+  /// <returns>True when a delegate is attached.</returns>
+  public static bool HasDelegate<T>(EventCallback<T> callback) => callback.HasDelegate;
 }

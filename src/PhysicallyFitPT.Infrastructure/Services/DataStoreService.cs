@@ -13,376 +13,376 @@ namespace PhysicallyFitPT.Infrastructure.Services;
 /// </summary>
 public class DataStoreService
 {
-    private readonly IJSRuntime _jsRuntime;
+  private readonly IJSRuntime _jsRuntime;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DataStoreService"/> class.
-    /// </summary>
-    /// <param name="jsRuntime">JavaScript runtime for localStorage interop.</param>
-    public DataStoreService(IJSRuntime jsRuntime)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="DataStoreService"/> class.
+  /// </summary>
+  /// <param name="jsRuntime">JavaScript runtime for localStorage interop.</param>
+  public DataStoreService(IJSRuntime jsRuntime)
+  {
+    _jsRuntime = jsRuntime;
+  }
+
+  // ==================
+  // SOAP Note Functions
+  // ==================
+
+  /// <summary>
+  /// Saves SOAP note draft to localStorage.
+  /// </summary>
+  /// <param name="data">The SOAP note data to save.</param>
+  /// <param name="noteType">The type of note (e.g., "evaluation", "daily").</param>
+  /// <param name="patientId">Optional patient ID.</param>
+  /// <returns>True if save was successful.</returns>
+  public async Task<bool> SaveSoapDraftAsync(object data, string noteType, string? patientId = null)
+  {
+    try
     {
-        _jsRuntime = jsRuntime;
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.saveSOAPDraft", data, noteType, patientId);
     }
-
-    // ==================
-    // SOAP Note Functions
-    // ==================
-
-    /// <summary>
-    /// Saves SOAP note draft to localStorage.
-    /// </summary>
-    /// <param name="data">The SOAP note data to save.</param>
-    /// <param name="noteType">The type of note (e.g., "evaluation", "daily").</param>
-    /// <param name="patientId">Optional patient ID.</param>
-    /// <returns>True if save was successful.</returns>
-    public async Task<bool> SaveSoapDraftAsync(object data, string noteType, string? patientId = null)
+    catch (Exception ex)
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.saveSOAPDraft", data, noteType, patientId);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to save SOAP draft: {ex.Message}");
-            return false;
-        }
+      Debug.WriteLine($"Failed to save SOAP draft: {ex.Message}");
+      return false;
     }
+  }
 
-    /// <summary>
-    /// Loads SOAP note draft from localStorage.
-    /// </summary>
-    /// <returns>The stored SOAP data, or null if none exists.</returns>
-    public async Task<StoredSoapData?> LoadSoapDraftAsync()
+  /// <summary>
+  /// Loads SOAP note draft from localStorage.
+  /// </summary>
+  /// <returns>The stored SOAP data, or null if none exists.</returns>
+  public async Task<StoredSoapData?> LoadSoapDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<StoredSoapData?>("dataStore.loadSOAPDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to load SOAP draft: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<StoredSoapData?>("dataStore.loadSOAPDraft");
     }
-
-    /// <summary>
-    /// Clears SOAP note draft from localStorage.
-    /// </summary>
-    public async Task ClearSoapDraftAsync()
+    catch (Exception ex)
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.clearSOAPDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to clear SOAP draft: {ex.Message}");
-        }
+      Debug.WriteLine($"Failed to load SOAP draft: {ex.Message}");
+      return null;
     }
+  }
 
-    /// <summary>
-    /// Checks if a SOAP note draft exists.
-    /// </summary>
-    /// <returns>True if draft exists.</returns>
-    public async Task<bool> HasSoapDraftAsync()
+  /// <summary>
+  /// Clears SOAP note draft from localStorage.
+  /// </summary>
+  public async Task ClearSoapDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.hasSOAPDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check SOAP draft: {ex.Message}");
-            return false;
-        }
+      await _jsRuntime.InvokeVoidAsync("dataStore.clearSOAPDraft");
     }
-
-    // ==================
-    // Intake Form Functions
-    // ==================
-
-    /// <summary>
-    /// Saves intake form draft to localStorage.
-    /// </summary>
-    /// <param name="data">The intake form data to save.</param>
-    /// <param name="currentStep">The current step in the intake wizard.</param>
-    /// <returns>True if save was successful.</returns>
-    public async Task<bool> SaveIntakeDraftAsync(object data, int currentStep)
+    catch (Exception ex)
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.saveIntakeDraft", data, currentStep);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to save intake draft: {ex.Message}");
-            return false;
-        }
+      Debug.WriteLine($"Failed to clear SOAP draft: {ex.Message}");
     }
+  }
 
-    /// <summary>
-    /// Loads intake form draft from localStorage.
-    /// </summary>
-    /// <returns>The stored intake data, or null if none exists.</returns>
-    public async Task<StoredIntakeData?> LoadIntakeDraftAsync()
+  /// <summary>
+  /// Checks if a SOAP note draft exists.
+  /// </summary>
+  /// <returns>True if draft exists.</returns>
+  public async Task<bool> HasSoapDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<StoredIntakeData?>("dataStore.loadIntakeDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to load intake draft: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.hasSOAPDraft");
     }
-
-    /// <summary>
-    /// Clears intake form draft from localStorage.
-    /// </summary>
-    public async Task ClearIntakeDraftAsync()
+    catch (Exception ex)
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.clearIntakeDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to clear intake draft: {ex.Message}");
-        }
+      Debug.WriteLine($"Failed to check SOAP draft: {ex.Message}");
+      return false;
     }
+  }
 
-    /// <summary>
-    /// Checks if an intake form draft exists.
-    /// </summary>
-    /// <returns>True if draft exists.</returns>
-    public async Task<bool> HasIntakeDraftAsync()
+  // ==================
+  // Intake Form Functions
+  // ==================
+
+  /// <summary>
+  /// Saves intake form draft to localStorage.
+  /// </summary>
+  /// <param name="data">The intake form data to save.</param>
+  /// <param name="currentStep">The current step in the intake wizard.</param>
+  /// <returns>True if save was successful.</returns>
+  public async Task<bool> SaveIntakeDraftAsync(object data, int currentStep)
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.hasIntakeDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check intake draft: {ex.Message}");
-            return false;
-        }
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.saveIntakeDraft", data, currentStep);
     }
-
-    // ==================
-    // Goals & Interventions Functions
-    // ==================
-
-    /// <summary>
-    /// Saves goals and interventions draft to localStorage.
-    /// </summary>
-    /// <param name="data">The goals data to save.</param>
-    /// <param name="patientId">Optional patient ID.</param>
-    /// <returns>True if save was successful.</returns>
-    public async Task<bool> SaveGoalsDraftAsync(object data, string? patientId = null)
+    catch (Exception ex)
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.saveGoalsDraft", data, patientId);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to save goals draft: {ex.Message}");
-            return false;
-        }
+      Debug.WriteLine($"Failed to save intake draft: {ex.Message}");
+      return false;
     }
+  }
 
-    /// <summary>
-    /// Loads goals and interventions draft from localStorage.
-    /// </summary>
-    /// <returns>The stored goals data, or null if none exists.</returns>
-    public async Task<StoredGoalsData?> LoadGoalsDraftAsync()
+  /// <summary>
+  /// Loads intake form draft from localStorage.
+  /// </summary>
+  /// <returns>The stored intake data, or null if none exists.</returns>
+  public async Task<StoredIntakeData?> LoadIntakeDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<StoredGoalsData?>("dataStore.loadGoalsDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to load goals draft: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<StoredIntakeData?>("dataStore.loadIntakeDraft");
     }
-
-    /// <summary>
-    /// Clears goals and interventions draft from localStorage.
-    /// </summary>
-    public async Task ClearGoalsDraftAsync()
+    catch (Exception ex)
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.clearGoalsDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to clear goals draft: {ex.Message}");
-        }
+      Debug.WriteLine($"Failed to load intake draft: {ex.Message}");
+      return null;
     }
+  }
 
-    /// <summary>
-    /// Checks if a goals draft exists.
-    /// </summary>
-    /// <returns>True if draft exists.</returns>
-    public async Task<bool> HasGoalsDraftAsync()
+  /// <summary>
+  /// Clears intake form draft from localStorage.
+  /// </summary>
+  public async Task ClearIntakeDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.hasGoalsDraft");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check goals draft: {ex.Message}");
-            return false;
-        }
+      await _jsRuntime.InvokeVoidAsync("dataStore.clearIntakeDraft");
     }
-
-    // ==================
-    // App State Functions
-    // ==================
-
-    /// <summary>
-    /// Saves application state to localStorage.
-    /// </summary>
-    /// <param name="state">The app state to save.</param>
-    /// <returns>True if save was successful.</returns>
-    public async Task<bool> SaveAppStateAsync(object state)
+    catch (Exception ex)
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.saveAppState", state);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to save app state: {ex.Message}");
-            return false;
-        }
+      Debug.WriteLine($"Failed to clear intake draft: {ex.Message}");
     }
+  }
 
-    /// <summary>
-    /// Loads application state from localStorage.
-    /// </summary>
-    /// <returns>The stored app state, or null if none exists.</returns>
-    public async Task<object?> LoadAppStateAsync()
+  /// <summary>
+  /// Checks if an intake form draft exists.
+  /// </summary>
+  /// <returns>True if draft exists.</returns>
+  public async Task<bool> HasIntakeDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<object?>("dataStore.loadAppState");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to load app state: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.hasIntakeDraft");
     }
-
-    // ==================
-    // Auto-save Timestamp
-    // ==================
-
-    /// <summary>
-    /// Updates the auto-save timestamp to current time.
-    /// </summary>
-    public async Task UpdateAutoSaveTimestampAsync()
+    catch (Exception ex)
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.updateAutoSaveTimestamp");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to update auto-save timestamp: {ex.Message}");
-        }
+      Debug.WriteLine($"Failed to check intake draft: {ex.Message}");
+      return false;
     }
+  }
 
-    /// <summary>
-    /// Gets the last auto-save timestamp.
-    /// </summary>
-    /// <returns>Timestamp in milliseconds, or null if never saved.</returns>
-    public async Task<long?> GetAutoSaveTimestampAsync()
+  // ==================
+  // Goals & Interventions Functions
+  // ==================
+
+  /// <summary>
+  /// Saves goals and interventions draft to localStorage.
+  /// </summary>
+  /// <param name="data">The goals data to save.</param>
+  /// <param name="patientId">Optional patient ID.</param>
+  /// <returns>True if save was successful.</returns>
+  public async Task<bool> SaveGoalsDraftAsync(object data, string? patientId = null)
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<long?>("dataStore.getAutoSaveTimestamp");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to get auto-save timestamp: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.saveGoalsDraft", data, patientId);
     }
-
-    // ==================
-    // Utility Functions
-    // ==================
-
-    /// <summary>
-    /// Checks if localStorage is available in the browser.
-    /// </summary>
-    /// <returns>True if localStorage is available and working.</returns>
-    public async Task<bool> IsLocalStorageAvailableAsync()
+    catch (Exception ex)
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<bool>("dataStore.isLocalStorageAvailable");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check localStorage availability: {ex.Message}");
-            return false;
-        }
+      Debug.WriteLine($"Failed to save goals draft: {ex.Message}");
+      return false;
     }
+  }
 
-    /// <summary>
-    /// Gets storage usage information.
-    /// </summary>
-    /// <returns>Storage info with used bytes and availability status.</returns>
-    public async Task<StorageInfo?> GetStorageInfoAsync()
+  /// <summary>
+  /// Loads goals and interventions draft from localStorage.
+  /// </summary>
+  /// <returns>The stored goals data, or null if none exists.</returns>
+  public async Task<StoredGoalsData?> LoadGoalsDraftAsync()
+  {
+    try
     {
-        try
-        {
-            return await _jsRuntime.InvokeAsync<StorageInfo?>("dataStore.getStorageInfo");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to get storage info: {ex.Message}");
-            return null;
-        }
+      return await _jsRuntime.InvokeAsync<StoredGoalsData?>("dataStore.loadGoalsDraft");
     }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to load goals draft: {ex.Message}");
+      return null;
+    }
+  }
 
-    /// <summary>
-    /// Clears all PFPT data from localStorage.
-    /// </summary>
-    public async Task ClearAllDataAsync()
+  /// <summary>
+  /// Clears goals and interventions draft from localStorage.
+  /// </summary>
+  public async Task ClearGoalsDraftAsync()
+  {
+    try
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.clearAllData");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to clear all data: {ex.Message}");
-        }
+      await _jsRuntime.InvokeVoidAsync("dataStore.clearGoalsDraft");
     }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to clear goals draft: {ex.Message}");
+    }
+  }
 
-    /// <summary>
-    /// Manually triggers cleanup of old drafts (older than 7 days).
-    /// </summary>
-    public async Task ClearOldDraftsAsync()
+  /// <summary>
+  /// Checks if a goals draft exists.
+  /// </summary>
+  /// <returns>True if draft exists.</returns>
+  public async Task<bool> HasGoalsDraftAsync()
+  {
+    try
     {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("dataStore.clearOldDrafts");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to clear old drafts: {ex.Message}");
-        }
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.hasGoalsDraft");
     }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to check goals draft: {ex.Message}");
+      return false;
+    }
+  }
+
+  // ==================
+  // App State Functions
+  // ==================
+
+  /// <summary>
+  /// Saves application state to localStorage.
+  /// </summary>
+  /// <param name="state">The app state to save.</param>
+  /// <returns>True if save was successful.</returns>
+  public async Task<bool> SaveAppStateAsync(object state)
+  {
+    try
+    {
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.saveAppState", state);
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to save app state: {ex.Message}");
+      return false;
+    }
+  }
+
+  /// <summary>
+  /// Loads application state from localStorage.
+  /// </summary>
+  /// <returns>The stored app state, or null if none exists.</returns>
+  public async Task<object?> LoadAppStateAsync()
+  {
+    try
+    {
+      return await _jsRuntime.InvokeAsync<object?>("dataStore.loadAppState");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to load app state: {ex.Message}");
+      return null;
+    }
+  }
+
+  // ==================
+  // Auto-save Timestamp
+  // ==================
+
+  /// <summary>
+  /// Updates the auto-save timestamp to current time.
+  /// </summary>
+  public async Task UpdateAutoSaveTimestampAsync()
+  {
+    try
+    {
+      await _jsRuntime.InvokeVoidAsync("dataStore.updateAutoSaveTimestamp");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to update auto-save timestamp: {ex.Message}");
+    }
+  }
+
+  /// <summary>
+  /// Gets the last auto-save timestamp.
+  /// </summary>
+  /// <returns>Timestamp in milliseconds, or null if never saved.</returns>
+  public async Task<long?> GetAutoSaveTimestampAsync()
+  {
+    try
+    {
+      return await _jsRuntime.InvokeAsync<long?>("dataStore.getAutoSaveTimestamp");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to get auto-save timestamp: {ex.Message}");
+      return null;
+    }
+  }
+
+  // ==================
+  // Utility Functions
+  // ==================
+
+  /// <summary>
+  /// Checks if localStorage is available in the browser.
+  /// </summary>
+  /// <returns>True if localStorage is available and working.</returns>
+  public async Task<bool> IsLocalStorageAvailableAsync()
+  {
+    try
+    {
+      return await _jsRuntime.InvokeAsync<bool>("dataStore.isLocalStorageAvailable");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to check localStorage availability: {ex.Message}");
+      return false;
+    }
+  }
+
+  /// <summary>
+  /// Gets storage usage information.
+  /// </summary>
+  /// <returns>Storage info with used bytes and availability status.</returns>
+  public async Task<StorageInfo?> GetStorageInfoAsync()
+  {
+    try
+    {
+      return await _jsRuntime.InvokeAsync<StorageInfo?>("dataStore.getStorageInfo");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to get storage info: {ex.Message}");
+      return null;
+    }
+  }
+
+  /// <summary>
+  /// Clears all PFPT data from localStorage.
+  /// </summary>
+  public async Task ClearAllDataAsync()
+  {
+    try
+    {
+      await _jsRuntime.InvokeVoidAsync("dataStore.clearAllData");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to clear all data: {ex.Message}");
+    }
+  }
+
+  /// <summary>
+  /// Manually triggers cleanup of old drafts (older than 7 days).
+  /// </summary>
+  public async Task ClearOldDraftsAsync()
+  {
+    try
+    {
+      await _jsRuntime.InvokeVoidAsync("dataStore.clearOldDrafts");
+    }
+    catch (Exception ex)
+    {
+      Debug.WriteLine($"Failed to clear old drafts: {ex.Message}");
+    }
+  }
 }
 
 /// <summary>
@@ -390,25 +390,25 @@ public class DataStoreService
 /// </summary>
 public class StoredSoapData
 {
-    /// <summary>
-    /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
-    /// </summary>
-    public long Timestamp { get; set; }
+  /// <summary>
+  /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
+  /// </summary>
+  public long Timestamp { get; set; }
 
-    /// <summary>
-    /// Gets or sets the SOAP note data (deserialized as dynamic object).
-    /// </summary>
-    public object? Data { get; set; }
+  /// <summary>
+  /// Gets or sets the SOAP note data (deserialized as dynamic object).
+  /// </summary>
+  public object? Data { get; set; }
 
-    /// <summary>
-    /// Gets or sets the note type (e.g., "evaluation", "daily").
-    /// </summary>
-    public string? NoteType { get; set; }
+  /// <summary>
+  /// Gets or sets the note type (e.g., "evaluation", "daily").
+  /// </summary>
+  public string? NoteType { get; set; }
 
-    /// <summary>
-    /// Gets or sets the patient ID associated with this note.
-    /// </summary>
-    public string? PatientId { get; set; }
+  /// <summary>
+  /// Gets or sets the patient ID associated with this note.
+  /// </summary>
+  public string? PatientId { get; set; }
 }
 
 /// <summary>
@@ -416,20 +416,20 @@ public class StoredSoapData
 /// </summary>
 public class StoredIntakeData
 {
-    /// <summary>
-    /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
-    /// </summary>
-    public long Timestamp { get; set; }
+  /// <summary>
+  /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
+  /// </summary>
+  public long Timestamp { get; set; }
 
-    /// <summary>
-    /// Gets or sets the intake form data (deserialized as dynamic object).
-    /// </summary>
-    public object? Data { get; set; }
+  /// <summary>
+  /// Gets or sets the intake form data (deserialized as dynamic object).
+  /// </summary>
+  public object? Data { get; set; }
 
-    /// <summary>
-    /// Gets or sets the current step in the intake wizard.
-    /// </summary>
-    public int CurrentStep { get; set; }
+  /// <summary>
+  /// Gets or sets the current step in the intake wizard.
+  /// </summary>
+  public int CurrentStep { get; set; }
 }
 
 /// <summary>
@@ -437,20 +437,20 @@ public class StoredIntakeData
 /// </summary>
 public class StoredGoalsData
 {
-    /// <summary>
-    /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
-    /// </summary>
-    public long Timestamp { get; set; }
+  /// <summary>
+  /// Gets or sets the timestamp when data was saved (milliseconds since epoch).
+  /// </summary>
+  public long Timestamp { get; set; }
 
-    /// <summary>
-    /// Gets or sets the goals data (deserialized as dynamic object).
-    /// </summary>
-    public object? Data { get; set; }
+  /// <summary>
+  /// Gets or sets the goals data (deserialized as dynamic object).
+  /// </summary>
+  public object? Data { get; set; }
 
-    /// <summary>
-    /// Gets or sets the patient ID associated with these goals.
-    /// </summary>
-    public string? PatientId { get; set; }
+  /// <summary>
+  /// Gets or sets the patient ID associated with these goals.
+  /// </summary>
+  public string? PatientId { get; set; }
 }
 
 /// <summary>
@@ -458,13 +458,13 @@ public class StoredGoalsData
 /// </summary>
 public class StorageInfo
 {
-    /// <summary>
-    /// Gets or sets the number of bytes used in localStorage.
-    /// </summary>
-    public int Used { get; set; }
+  /// <summary>
+  /// Gets or sets the number of bytes used in localStorage.
+  /// </summary>
+  public int Used { get; set; }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether localStorage is available.
-    /// </summary>
-    public bool Available { get; set; }
+  /// <summary>
+  /// Gets or sets a value indicating whether localStorage is available.
+  /// </summary>
+  public bool Available { get; set; }
 }

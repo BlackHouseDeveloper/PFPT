@@ -12,7 +12,7 @@ namespace PhysicallyFitPT.Infrastructure.Services;
 /// </summary>
 public class ClinicalDataService
 {
-    private static readonly List<OutcomeMeasure> OutcomeMeasures = new()
+  private static readonly List<OutcomeMeasure> OutcomeMeasures = new()
     {
         new OutcomeMeasure
         {
@@ -116,7 +116,7 @@ public class ClinicalDataService
         }
     };
 
-    private static readonly List<Icd10Code> Icd10Codes = new()
+  private static readonly List<Icd10Code> Icd10Codes = new()
     {
         // Shoulder
         new Icd10Code { Code = "M25.511", Description = "Pain in right shoulder", BodyPart = new List<string> { "shoulder" }, Keywords = new List<string> { "shoulder", "pain", "right" } },
@@ -168,7 +168,7 @@ public class ClinicalDataService
         new Icd10Code { Code = "M65.4", Description = "De Quervain's tenosynovitis", BodyPart = new List<string> { "wrist" }, Keywords = new List<string> { "quervain", "tenosynovitis", "thumb" } }
     };
 
-    private static readonly List<CptCodeDetail> CptCodesDatabase = new()
+  private static readonly List<CptCodeDetail> CptCodesDatabase = new()
     {
         new CptCodeDetail { Code = "97110", Description = "Therapeutic Exercise", TimeMin = 15, Category = "Exercise", Keywords = new List<string> { "exercise", "strengthen", "stretch", "rom" } },
         new CptCodeDetail { Code = "97112", Description = "Neuromuscular Re-education", TimeMin = 15, Category = "Neuro", Keywords = new List<string> { "balance", "proprioception", "coordination", "neuro" } },
@@ -190,132 +190,132 @@ public class ClinicalDataService
         new CptCodeDetail { Code = "20561", Description = "Dry Needling 3+ Muscles", TimeMin = null, Category = "Dry Needling", Keywords = new List<string> { "dry", "needling", "trigger" } }
     };
 
-    /// <summary>
-    /// Searches ICD-10 codes by query text and optionally filters by body part.
-    /// </summary>
-    /// <param name="query">Search query (matches code, description, or keywords).</param>
-    /// <param name="bodyPart">Optional body part filter.</param>
-    /// <returns>List of matching ICD-10 codes (max 10 results).</returns>
-    public List<Icd10Code> SearchIcd10(string query, string? bodyPart = null)
+  /// <summary>
+  /// Searches ICD-10 codes by query text and optionally filters by body part.
+  /// </summary>
+  /// <param name="query">Search query (matches code, description, or keywords).</param>
+  /// <param name="bodyPart">Optional body part filter.</param>
+  /// <returns>List of matching ICD-10 codes (max 10 results).</returns>
+  public List<Icd10Code> SearchIcd10(string query, string? bodyPart = null)
+  {
+    if (string.IsNullOrWhiteSpace(query))
     {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return new List<Icd10Code>();
-        }
+      return new List<Icd10Code>();
+    }
 
-        var lowerQuery = query.ToLowerInvariant();
+    var lowerQuery = query.ToLowerInvariant();
 
-        var results = Icd10Codes.Where(code =>
+    var results = Icd10Codes.Where(code =>
+        code.Description.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
+        code.Code.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
+        (code.Keywords?.Any(keyword => keyword.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase)) ?? false));
+
+    if (!string.IsNullOrWhiteSpace(bodyPart))
+    {
+      results = results.Where(code => code.BodyPart?.Contains(bodyPart, StringComparer.OrdinalIgnoreCase) ?? false);
+    }
+
+    return results.Take(10).ToList();
+  }
+
+  /// <summary>
+  /// Searches CPT codes by query text.
+  /// </summary>
+  /// <param name="query">Search query (matches code, description, or keywords).</param>
+  /// <returns>List of matching CPT codes (max 10 results).</returns>
+  public List<CptCodeDetail> SearchCpt(string query)
+  {
+    if (string.IsNullOrWhiteSpace(query))
+    {
+      return new List<CptCodeDetail>();
+    }
+
+    var lowerQuery = query.ToLowerInvariant();
+
+    return CptCodesDatabase
+        .Where(code =>
             code.Description.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
             code.Code.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
-            (code.Keywords?.Any(keyword => keyword.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase)) ?? false));
+            code.Keywords.Any(keyword => keyword.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase)))
+        .Take(10)
+        .ToList();
+  }
 
-        if (!string.IsNullOrWhiteSpace(bodyPart))
-        {
-            results = results.Where(code => code.BodyPart?.Contains(bodyPart, StringComparer.OrdinalIgnoreCase) ?? false);
-        }
-
-        return results.Take(10).ToList();
-    }
-
-    /// <summary>
-    /// Searches CPT codes by query text.
-    /// </summary>
-    /// <param name="query">Search query (matches code, description, or keywords).</param>
-    /// <returns>List of matching CPT codes (max 10 results).</returns>
-    public List<CptCodeDetail> SearchCpt(string query)
+  /// <summary>
+  /// Gets recommended outcome measures for a specific body part.
+  /// </summary>
+  /// <param name="bodyPart">The body part to get measures for.</param>
+  /// <returns>List of applicable outcome measures.</returns>
+  public List<OutcomeMeasure> GetRecommendedOutcomeMeasures(string bodyPart)
+  {
+    if (string.IsNullOrWhiteSpace(bodyPart))
     {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return new List<CptCodeDetail>();
-        }
-
-        var lowerQuery = query.ToLowerInvariant();
-
-        return CptCodesDatabase
-            .Where(code =>
-                code.Description.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
-                code.Code.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase) ||
-                code.Keywords.Any(keyword => keyword.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase)))
-            .Take(10)
-            .ToList();
+      return new List<OutcomeMeasure>();
     }
 
-    /// <summary>
-    /// Gets recommended outcome measures for a specific body part.
-    /// </summary>
-    /// <param name="bodyPart">The body part to get measures for.</param>
-    /// <returns>List of applicable outcome measures.</returns>
-    public List<OutcomeMeasure> GetRecommendedOutcomeMeasures(string bodyPart)
+    return OutcomeMeasures
+        .Where(measure => measure.BodyPart.Contains(bodyPart, StringComparer.OrdinalIgnoreCase))
+        .ToList();
+  }
+
+  /// <summary>
+  /// Gets all available outcome measures.
+  /// </summary>
+  /// <returns>List of all outcome measures.</returns>
+  public List<OutcomeMeasure> GetAllOutcomeMeasures()
+  {
+    return OutcomeMeasures;
+  }
+
+  /// <summary>
+  /// Gets all available ICD-10 codes.
+  /// </summary>
+  /// <returns>List of all ICD-10 codes.</returns>
+  public List<Icd10Code> GetAllIcd10Codes()
+  {
+    return Icd10Codes;
+  }
+
+  /// <summary>
+  /// Gets all available CPT codes.
+  /// </summary>
+  /// <returns>List of all CPT codes.</returns>
+  public List<CptCodeDetail> GetAllCptCodes()
+  {
+    return CptCodesDatabase;
+  }
+
+  /// <summary>
+  /// Gets ICD-10 codes filtered by body part.
+  /// </summary>
+  /// <param name="bodyPart">The body part to filter by.</param>
+  /// <returns>List of ICD-10 codes for the specified body part.</returns>
+  public List<Icd10Code> GetIcd10CodesByBodyPart(string bodyPart)
+  {
+    if (string.IsNullOrWhiteSpace(bodyPart))
     {
-        if (string.IsNullOrWhiteSpace(bodyPart))
-        {
-            return new List<OutcomeMeasure>();
-        }
-
-        return OutcomeMeasures
-            .Where(measure => measure.BodyPart.Contains(bodyPart, StringComparer.OrdinalIgnoreCase))
-            .ToList();
+      return new List<Icd10Code>();
     }
 
-    /// <summary>
-    /// Gets all available outcome measures.
-    /// </summary>
-    /// <returns>List of all outcome measures.</returns>
-    public List<OutcomeMeasure> GetAllOutcomeMeasures()
+    return Icd10Codes
+        .Where(code => code.BodyPart?.Contains(bodyPart, StringComparer.OrdinalIgnoreCase) ?? false)
+        .ToList();
+  }
+
+  /// <summary>
+  /// Gets CPT codes filtered by category.
+  /// </summary>
+  /// <param name="category">The category to filter by (e.g., "Exercise", "Manual", "Eval").</param>
+  /// <returns>List of CPT codes in the specified category.</returns>
+  public List<CptCodeDetail> GetCptCodesByCategory(string category)
+  {
+    if (string.IsNullOrWhiteSpace(category))
     {
-        return OutcomeMeasures;
+      return new List<CptCodeDetail>();
     }
 
-    /// <summary>
-    /// Gets all available ICD-10 codes.
-    /// </summary>
-    /// <returns>List of all ICD-10 codes.</returns>
-    public List<Icd10Code> GetAllIcd10Codes()
-    {
-        return Icd10Codes;
-    }
-
-    /// <summary>
-    /// Gets all available CPT codes.
-    /// </summary>
-    /// <returns>List of all CPT codes.</returns>
-    public List<CptCodeDetail> GetAllCptCodes()
-    {
-        return CptCodesDatabase;
-    }
-
-    /// <summary>
-    /// Gets ICD-10 codes filtered by body part.
-    /// </summary>
-    /// <param name="bodyPart">The body part to filter by.</param>
-    /// <returns>List of ICD-10 codes for the specified body part.</returns>
-    public List<Icd10Code> GetIcd10CodesByBodyPart(string bodyPart)
-    {
-        if (string.IsNullOrWhiteSpace(bodyPart))
-        {
-            return new List<Icd10Code>();
-        }
-
-        return Icd10Codes
-            .Where(code => code.BodyPart?.Contains(bodyPart, StringComparer.OrdinalIgnoreCase) ?? false)
-            .ToList();
-    }
-
-    /// <summary>
-    /// Gets CPT codes filtered by category.
-    /// </summary>
-    /// <param name="category">The category to filter by (e.g., "Exercise", "Manual", "Eval").</param>
-    /// <returns>List of CPT codes in the specified category.</returns>
-    public List<CptCodeDetail> GetCptCodesByCategory(string category)
-    {
-        if (string.IsNullOrWhiteSpace(category))
-        {
-            return new List<CptCodeDetail>();
-        }
-
-        return CptCodesDatabase
-            .Where(code => code.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
-            .ToList();
-    }
+    return CptCodesDatabase
+        .Where(code => code.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+  }
 }

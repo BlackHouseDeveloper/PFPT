@@ -9,10 +9,10 @@ namespace PhysicallyFitPT.Core;
 /// </summary>
 public static class PalpationFindings
 {
-    /// <summary>
-    /// Gets all standard palpation finding descriptions.
-    /// </summary>
-    public static readonly List<string> All = new()
+  /// <summary>
+  /// Gets all standard palpation finding descriptions.
+  /// </summary>
+  public static readonly List<string> All = new()
     {
         "Tenderness",
         "Muscle spasm",
