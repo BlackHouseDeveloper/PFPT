@@ -97,11 +97,16 @@
             <span class="auth-info-icon" title="Enter your full legal name (first and last name) exactly as it appears on your professional license">ⓘ</span>
           </label>
           <InputText id="fullName"
-                     class="auth-input"
+                     class="@($"auth-input {(IsFieldValid(nameof(signUpModel.FullName)) ? "auth-input-valid" : "")}")"
                      placeholder="e.g., Sarah Johnson"
                      autocomplete="name"
-                     @bind-Value="signUpModel.FullName" />
+                     @bind-Value="signUpModel.FullName"
+                     @onfocusout="() => ValidateFullName(nameof(signUpModel.FullName))" />
           <ValidationMessage For="@(() => signUpModel.FullName)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.FullName)))
+          {
+            <div class="auth-success">✓ Valid name format</div>
+          }
         </div>
 
         <div class="auth-field">
@@ -111,10 +116,16 @@
             <span class="auth-info-icon" title="You must be at least 18 years old to create an account">ⓘ</span>
           </label>
           <InputDate id="dateOfBirth"
-                     class="auth-input"
+                     class="@($"auth-input {(IsFieldValid(nameof(signUpModel.DateOfBirth)) ? "auth-input-valid" : "")}")"
                      placeholder="Select your date of birth"
-                     @bind-Value="signUpModel.DateOfBirth" />
+                     @bind-Value="signUpModel.DateOfBirth"
+                     @onfocusout="() => ValidateDateOfBirth(nameof(signUpModel.DateOfBirth))" />
           <ValidationMessage For="@(() => signUpModel.DateOfBirth)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.DateOfBirth)) && signUpModel.DateOfBirth.HasValue)
+          {
+            var age = CalculateAge(signUpModel.DateOfBirth);
+            <div class="auth-success">✓ Age: @age years old</div>
+          }
         </div>
 
         <div class="auth-field">
@@ -124,11 +135,16 @@
           </label>
           <InputText id="email"
                      type="email"
-                     class="auth-input"
+                     class="@($"auth-input {(IsFieldValid(nameof(signUpModel.Email)) ? "auth-input-valid" : "")}")"
                      placeholder="email@example.com"
                      autocomplete="email"
-                     @bind-Value="signUpModel.Email" />
+                     @bind-Value="signUpModel.Email"
+                     @onfocusout="() => { touchedFields.Add(nameof(signUpModel.Email)); StateHasChanged(); }" />
           <ValidationMessage For="@(() => signUpModel.Email)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.Email)))
+          {
+            <div class="auth-success">✓ Valid email format</div>
+          }
         </div>
 
         <div class="auth-field">
@@ -138,13 +154,18 @@
             <span class="auth-info-icon" title="Select PT (Physical Therapist) or PTA (Physical Therapist Assistant)">ⓘ</span>
           </label>
           <InputSelect id="licenseType"
-                       class="auth-input auth-select"
-                       @bind-Value="signUpModel.LicenseType">
+                       class="@($"auth-input auth-select {(IsFieldValid(nameof(signUpModel.LicenseType)) ? "auth-input-valid" : "")}")"
+                       @bind-Value="signUpModel.LicenseType"
+                       @onfocusout="() => { touchedFields.Add(nameof(signUpModel.LicenseType)); StateHasChanged(); }">
             <option value="">Select license type</option>
             <option value="PT">PT (Physical Therapist)</option>
             <option value="PTA">PTA (Physical Therapist Assistant)</option>
           </InputSelect>
           <ValidationMessage For="@(() => signUpModel.LicenseType)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.LicenseType)))
+          {
+            <div class="auth-success">✓ License type selected</div>
+          }
         </div>
 
         <div class="auth-field">
@@ -154,10 +175,15 @@
             <span class="auth-info-icon" title="Enter your PT/PTA license number exactly as shown on your license">ⓘ</span>
           </label>
           <InputText id="licenseNumber"
-                     class="auth-input"
+                     class="@($"auth-input {(IsFieldValid(nameof(signUpModel.LicenseNumber)) ? "auth-input-valid" : "")}")"
                      placeholder="e.g., PT123456 or PTA-2024-001234"
-                     @bind-Value="signUpModel.LicenseNumber" />
+                     @bind-Value="signUpModel.LicenseNumber"
+                     @onfocusout="() => ValidateLicenseNumber(nameof(signUpModel.LicenseNumber))" />
           <ValidationMessage For="@(() => signUpModel.LicenseNumber)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.LicenseNumber)))
+          {
+            <div class="auth-success">✓ Valid license format</div>
+          }
         </div>
 
         <div class="auth-field">
@@ -167,8 +193,9 @@
             <span class="auth-info-icon" title="Select the U.S. state where your PT/PTA license was issued">ⓘ</span>
           </label>
           <InputSelect id="licenseState"
-                       class="auth-input auth-select"
-                       @bind-Value="signUpModel.LicenseState">
+                       class="@($"auth-input auth-select {(IsFieldValid(nameof(signUpModel.LicenseState)) ? "auth-input-valid" : "")}")"
+                       @bind-Value="signUpModel.LicenseState"
+                       @onfocusout="() => { touchedFields.Add(nameof(signUpModel.LicenseState)); StateHasChanged(); }">
             <option value="">Select state</option>
             @foreach (var state in UsStates)
             {
@@ -176,6 +203,10 @@
             }
           </InputSelect>
           <ValidationMessage For="@(() => signUpModel.LicenseState)" class="auth-validation" />
+          @if (IsFieldValid(nameof(signUpModel.LicenseState)))
+          {
+            <div class="auth-success">✓ State selected</div>
+          }
         </div>
 
         <div class="auth-info-alert">
@@ -186,7 +217,7 @@
           </div>
         </div>
 
-        <button type="submit" class="auth-primary" disabled="@isLoading">
+        <button type="submit" class="auth-primary" disabled="@(isLoading || !IsFormValid())">
           @if (isLoading)
           {
             <span>Creating Account...</span>
@@ -222,6 +253,9 @@
   private readonly SignUpModel signUpModel = new();
   private string? errorMessage;
   private bool isLoading;
+  private EditContext? signUpEditContext;
+  private ValidationMessageStore? signUpValidationMessages;
+  private HashSet<string> touchedFields = new();
 
   protected override void OnInitialized()
   {
@@ -230,6 +264,10 @@
     authMode = uri.AbsolutePath.Contains("/signup", StringComparison.OrdinalIgnoreCase)
       ? AuthMode.SignUp
       : AuthMode.Login;
+
+    // Initialize EditContext for Sign Up
+    signUpEditContext = new EditContext(signUpModel);
+    signUpValidationMessages = new ValidationMessageStore(signUpEditContext);
   }
 
   private void SwitchMode(AuthMode mode)
@@ -238,10 +276,140 @@
 
     authMode = mode;
     errorMessage = null;
+    touchedFields.Clear();
 
     // Update URL without navigation
     var targetUrl = mode == AuthMode.Login ? "/login" : "/signup";
     Navigation.NavigateTo(targetUrl, forceLoad: false);
+  }
+
+  private int? CalculateAge(DateTime? birthDate)
+  {
+    if (!birthDate.HasValue) return null;
+
+    var today = DateTime.Today;
+    var age = today.Year - birthDate.Value.Year;
+
+    if (birthDate.Value.Date > today.AddYears(-age))
+    {
+      age--;
+    }
+
+    return age;
+  }
+
+  private void ValidateFullName(string fieldName)
+  {
+    touchedFields.Add(fieldName);
+    if (signUpEditContext == null || signUpValidationMessages == null) return;
+
+    var fieldIdentifier = signUpEditContext.Field(fieldName);
+    signUpValidationMessages.Clear(fieldIdentifier);
+
+    if (string.IsNullOrWhiteSpace(signUpModel.FullName))
+    {
+      signUpValidationMessages.Add(fieldIdentifier, "Full legal name is required");
+    }
+    else if (signUpModel.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+    {
+      signUpValidationMessages.Add(fieldIdentifier, "Please enter both first and last name");
+    }
+
+    signUpEditContext.NotifyValidationStateChanged();
+  }
+
+  private void ValidateDateOfBirth(string fieldName)
+  {
+    touchedFields.Add(fieldName);
+    if (signUpEditContext == null || signUpValidationMessages == null) return;
+
+    var fieldIdentifier = signUpEditContext.Field(fieldName);
+    signUpValidationMessages.Clear(fieldIdentifier);
+
+    if (!signUpModel.DateOfBirth.HasValue)
+    {
+      signUpValidationMessages.Add(fieldIdentifier, "Date of birth is required");
+    }
+    else
+    {
+      var age = CalculateAge(signUpModel.DateOfBirth);
+      if (age < 18)
+      {
+        signUpValidationMessages.Add(fieldIdentifier, $"You must be at least 18 years old (currently {age} years old)");
+      }
+    }
+
+    signUpEditContext.NotifyValidationStateChanged();
+  }
+
+  private void ValidateLicenseNumber(string fieldName)
+  {
+    touchedFields.Add(fieldName);
+    if (signUpEditContext == null || signUpValidationMessages == null) return;
+
+    var fieldIdentifier = signUpEditContext.Field(fieldName);
+    signUpValidationMessages.Clear(fieldIdentifier);
+
+    if (string.IsNullOrWhiteSpace(signUpModel.LicenseNumber))
+    {
+      signUpValidationMessages.Add(fieldIdentifier, "License number is required");
+    }
+    else
+    {
+      var cleaned = signUpModel.LicenseNumber.Replace(" ", "").Replace("-", "");
+      if (cleaned.Length < 4 || cleaned.Length > 20)
+      {
+        signUpValidationMessages.Add(fieldIdentifier, "License number must be 4-20 alphanumeric characters");
+      }
+      else if (!System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^[A-Z0-9]+$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+      {
+        signUpValidationMessages.Add(fieldIdentifier, "License number must contain only letters and numbers");
+      }
+    }
+
+    signUpEditContext.NotifyValidationStateChanged();
+  }
+
+  private bool IsFieldValid(string fieldName)
+  {
+    if (!touchedFields.Contains(fieldName)) return false;
+    if (signUpEditContext == null) return false;
+
+    return !signUpEditContext.GetValidationMessages(signUpEditContext.Field(fieldName)).Any();
+  }
+
+  private bool IsFormValid()
+  {
+    if (signUpEditContext == null) return false;
+
+    // Check DataAnnotations validation
+    if (!signUpEditContext.Validate()) return false;
+
+    // Check custom validations
+    if (string.IsNullOrWhiteSpace(signUpModel.FullName) ||
+        signUpModel.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length < 2)
+    {
+      return false;
+    }
+
+    if (!signUpModel.DateOfBirth.HasValue || CalculateAge(signUpModel.DateOfBirth) < 18)
+    {
+      return false;
+    }
+
+    if (string.IsNullOrWhiteSpace(signUpModel.LicenseNumber))
+    {
+      return false;
+    }
+
+    var cleaned = signUpModel.LicenseNumber.Replace(" ", "").Replace("-", "");
+    if (cleaned.Length < 4 || cleaned.Length > 20 ||
+        !System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^[A-Z0-9]+$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+    {
+      return false;
+    }
+
+    return true;
   }
 
   private async Task HandleLogin()
@@ -301,8 +469,15 @@
       if (success)
       {
         Logger.LogInformation("Sign up successful for {Email}", signUpModel.Email);
-        // After successful registration, redirect to login
-        Navigation.NavigateTo("/login");
+
+        // Generate credentials
+        var username = GenerateUsername(signUpModel.FullName);
+        var pin = GenerateTemporaryPin();
+        var licenseInfo = $"{signUpModel.LicenseType} License #{signUpModel.LicenseNumber} ({signUpModel.LicenseState})";
+
+        // Navigate to confirmation page with credentials
+        var confirmationUrl = $"/signup/confirmation?username={Uri.EscapeDataString(username)}&pin={pin}&license={Uri.EscapeDataString(licenseInfo)}";
+        Navigation.NavigateTo(confirmationUrl);
       }
       else
       {
@@ -319,6 +494,23 @@
       isLoading = false;
       StateHasChanged();
     }
+  }
+
+  private string GenerateUsername(string fullName)
+  {
+    var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    if (parts.Length < 2) return fullName.ToLower().Replace(" ", "");
+
+    var firstInitial = parts[0][0].ToString().ToLower();
+    var lastName = parts[^1].ToLower().Replace(" ", "");
+
+    return $"{firstInitial}{lastName}";
+  }
+
+  private string GenerateTemporaryPin()
+  {
+    var random = new Random();
+    return random.Next(1000, 9999).ToString();
   }
 
   private sealed class LoginModel

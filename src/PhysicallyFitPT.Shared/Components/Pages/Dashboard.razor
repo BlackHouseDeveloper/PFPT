@@ -1,134 +1,998 @@
-@* Dashboard page with responsive layout *@
+@* Dashboard page - Full Figma Design Parity *@
 @page "/"
 @page "/dashboard"
 @layout ResponsiveMainLayout
 @inject IDataService DataService
 
-<DebugStatBar />
-
-<div class="pfp-dashboard">
-  <div class="pfp-page-header">
-    <h2>Dashboard</h2>
-    <p>Welcome to Physically Fit PT</p>
-  </div>
-
+<div class="dashboard-root">
   @if (isLoading)
   {
-    <div class="pfp-loading">Loading dashboard...</div>
+    <div class="dashboard-loading">Loading dashboard...</div>
   }
   else
   {
-    <div class="pfp-dashboard-grid">
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Today's Appointments</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.TodaysAppointments</span>
-            <span class="pfp-stat-label">Scheduled</span>
+    @* Error Banner *@
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+      <div class="alert-card alert-card-destructive dashboard-error-banner" role="alert">
+        <div class="alert-card-header">
+          <div class="alert-card-header-left">
+            <Icon Name="alertcircle" Width="18" Height="18" />
+            <div class="alert-card-content">
+              <div class="alert-card-title">@errorMessage</div>
+              <div class="alert-card-subtitle">Try refreshing the dashboard.</div>
+            </div>
           </div>
+          <button type="button" class="btn-retry" @onclick="RefreshDashboard">
+            <Icon Name="refreshcw" Width="16" Height="16" />
+            <span>Retry</span>
+          </button>
         </div>
       </div>
+    }
 
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Active Patients</h3>
+    @* Header *@
+    <header class="dashboard-header">
+      <div class="dashboard-header-content">
+        <div class="dashboard-header-text">
+          <h1>Dashboard</h1>
+          <p>Welcome back, Dr. Sarah Johnson • Today is @DateTime.Now.ToString("dddd, MMMM dd, yyyy")</p>
         </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.ActivePatients</span>
-            <span class="pfp-stat-label">Total</span>
-          </div>
+        <div class="dashboard-header-actions">
+          <button type="button" class="dashboard-header-btn" aria-label="Notifications" @onclick="@(() => showNotifications = !showNotifications)">
+            <Icon Name="bell" Width="20" Height="20" />
+            @if (notifications.Count(n => n.Priority == "high") > 0)
+            {
+              <span class="dashboard-notification-dot"></span>
+            }
+          </button>
         </div>
       </div>
+    </header>
 
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>Pending Notes</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.PendingNotes</span>
-            <span class="pfp-stat-label">To Complete</span>
+    <div class="dashboard-content">
+      @* Quick Action Buttons - Figma Design Parity *@
+      <section class="quick-actions-section">
+        <button type="button" class="quick-action-btn quick-action-btn-primary" @onclick="OpenAddPatientDialog" title="Add new patient">
+          <div class="quick-action-icon-wrapper">
+            <Icon Name="userplus" Width="20" Height="20" />
           </div>
-        </div>
-      </div>
+          <div class="quick-action-text">
+            <div class="quick-action-title">Add Patient</div>
+            <div class="quick-action-subtitle">Create new patient profile</div>
+          </div>
+          <Icon Name="zap" Width="18" Height="18" CssClass="quick-action-arrow" />
+        </button>
 
-      <div class="pfp-card">
-        <div class="pfp-card-header">
-          <h3>PN Due</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-stat">
-            <span class="pfp-stat-number">@dashboardStats.OverdueOutcomeMeasures</span>
-            <span class="pfp-stat-label">Overdue</span>
+        <button type="button" class="quick-action-btn quick-action-btn-info" @onclick="OpenSendIntakeDialog" title="Send intake form">
+          <div class="quick-action-icon-wrapper">
+            <Icon Name="send" Width="20" Height="20" />
           </div>
-        </div>
-      </div>
-      
-      <div class="pfp-card pfp-card-wide">
-        <div class="pfp-card-header">
-          <h3>Quick Actions</h3>
-        </div>
-        <div class="pfp-card-body">
-          <div class="pfp-quick-actions">
-            <NavLink href="/patients" class="pfp-btn pfp-btn-primary">
-              👥 View Patients
-            </NavLink>
-            <NavLink href="/appointments" class="pfp-btn pfp-btn-secondary">
-              📅 Schedule Appointment
-            </NavLink>
-            <NavLink href="/notes/eval" class="pfp-btn pfp-btn-secondary">
-              📝 New Eval Note
-            </NavLink>
+          <div class="quick-action-text">
+            <div class="quick-action-title">Send Intake</div>
+            <div class="quick-action-subtitle">Email intake form to patient</div>
           </div>
+          <Icon Name="mail" Width="18" Height="18" CssClass="quick-action-arrow" />
+        </button>
+      </section>
+
+      @* Main Layout Grid *@
+      <div class="dashboard-grid">
+        @* Left Column - Main Content *@
+        <div class="dashboard-main-column">
+          @* Overview Section *@
+          <section class="overview-section">
+            <h2 class="section-heading">
+              <Icon Name="activity" Width="20" Height="20" />
+              <span>Overview</span>
+            </h2>
+            <div class="overview-grid">
+              @* Patients Today *@
+              <div class="overview-card overview-card-success" @onclick="@(() => {})" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-success">
+                  <Icon Name="users" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Patients Today</div>
+                <div class="overview-card-value">@overviewData.PatientsToday</div>
+                <span class="overview-badge overview-badge-success">Scheduled</span>
+              </div>
+
+              @* Appointments *@
+              <div class="overview-card overview-card-default" @onclick="@(() => {})" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-default">
+                  <Icon Name="calendar" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Appointments</div>
+                <div class="overview-card-value">@overviewData.AppointmentsToday</div>
+                <div class="overview-card-sublabel">Today</div>
+              </div>
+
+              @* Notes Due *@
+              <div class="overview-card overview-card-warning @(noteFilter == "due" ? "overview-card-active" : "")" 
+                   @onclick="@(() => SetNoteFilter("due"))" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-notes-due">
+                  <Icon Name="filetext" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Notes Due</div>
+                <div class="overview-card-value">@overviewData.NotesDue</div>
+                <span class="overview-badge overview-badge-warning">Due Today</span>
+              </div>
+
+              @* Pending *@
+              <div class="overview-card overview-card-warning @(noteFilter == "pending" ? "overview-card-active" : "")" 
+                   @onclick="@(() => SetNoteFilter("pending"))" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-pending">
+                  <Icon Name="clipboardlist" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Pending</div>
+                <div class="overview-card-value">@overviewData.PendingNotes</div>
+                <div class="overview-card-sublabel">In Progress</div>
+              </div>
+
+              @* Drafts *@
+              <div class="overview-card overview-card-draft @(noteFilter == "draft" ? "overview-card-active" : "")" 
+                   @onclick="@(() => SetNoteFilter("draft"))" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-draft">
+                  <Icon Name="filepenline" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Drafts</div>
+                <div class="overview-card-value">@overviewData.DraftNotes</div>
+                <span class="overview-badge overview-badge-draft">Unsaved</span>
+              </div>
+
+              @* Unsigned *@
+              <div class="overview-card overview-card-destructive @(noteFilter == "unsigned" ? "overview-card-active" : "")" 
+                   @onclick="@(() => SetNoteFilter("unsigned"))" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-destructive">
+                  <Icon Name="lock" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Unsigned</div>
+                <div class="overview-card-value">@overviewData.UnsignedNotes</div>
+                <span class="overview-badge overview-badge-destructive">Need Signature</span>
+              </div>
+
+              @* Intakes *@
+              <div class="overview-card overview-card-warning" @onclick="@(() => {})" role="button" tabindex="0">
+                <div class="overview-card-icon overview-icon-intakes">
+                  <Icon Name="alerttriangle" Width="20" Height="20" />
+                </div>
+                <div class="overview-card-label">Intakes</div>
+                <div class="overview-card-value">@overviewData.IncompleteIntakes</div>
+                <span class="overview-badge overview-badge-intakes">Incomplete</span>
+              </div>
+            </div>
+          </section>
+
+          @* Precaution Alert *@
+          @if (overviewData.PatientsWithPrecautions > 0)
+          {
+            <div class="alert-card alert-card-warning">
+              <div class="alert-content">
+                <Icon Name="shield" Width="20" Height="20" />
+                <div>
+                  <div class="alert-title">⚠️ @overviewData.PatientsWithPrecautions patients with special precautions</div>
+                  <div class="alert-description">Review precaution details before treatment</div>
+                </div>
+              </div>
+            </div>
+          }
+
+          @* Unsigned Notes Alert *@
+          @if (overviewData.UnsignedNotes > 0)
+          {
+            <div class="alert-card alert-card-destructive" @onclick="HandleViewUnsignedNotes" style="cursor: pointer;">
+              <div class="alert-header">
+                <div class="alert-content">
+                  <Icon Name="lock" Width="20" Height="20" />
+                  <div>
+                    <div class="alert-title">🔒 Unsigned Notes: @overviewData.UnsignedNotes</div>
+                    <div class="alert-description">@unsignedNotes.Count note@(unsignedNotes.Count == 1 ? "" : "s") require@(unsignedNotes.Count == 1 ? "s" : "") clinician signature</div>
+                  </div>
+                </div>
+                <button type="button" class="btn-sign" @onclick:stopPropagation="true" @onclick="HandleViewUnsignedNotes">
+                  <Icon Name="filepenline" Width="16" Height="16" />
+                  <span>Sign</span>
+                </button>
+              </div>
+              @* Preview List *@
+              <div class="alert-preview-list">
+                @foreach (var note in unsignedNotes.Take(2))
+                {
+                  <div class="alert-preview-item">
+                    <div>
+                      <strong>@note.PatientName</strong> • @note.NoteType
+                      <div class="alert-preview-meta">@note.PatientId • @note.DaysAgo day@(note.DaysAgo == 1 ? "" : "s") ago</div>
+                    </div>
+                    <Icon Name="lock" Width="14" Height="14" />
+                  </div>
+                }
+                @if (unsignedNotes.Count > 2)
+                {
+                  <p class="alert-preview-more">+@(unsignedNotes.Count - 2) more unsigned note@(unsignedNotes.Count - 2 == 1 ? "" : "s")</p>
+                }
+              </div>
+            </div>
+          }
+
+          @* Notifications Panel *@
+          <section class="collapsible-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">
+                <Icon Name="bell" Width="20" Height="20" />
+                <span>Notifications & Alerts</span>
+              </h3>
+              @if (notifications.Count(n => n.Priority == "high") > 0)
+              {
+                <span class="panel-badge panel-badge-urgent">@notifications.Count(n => n.Priority == "high") Urgent</span>
+              }
+            </div>
+            <div class="panel-content">
+              @foreach (var notification in notifications.Where(n => dashboardFilters.Priority == "all" || n.Priority == dashboardFilters.Priority))
+              {
+                <div class="notification-card">
+                  <div class="notification-icon" data-priority="@notification.Priority">
+                    @if (notification.Type == "incomplete-intake")
+                    {
+                      <Icon Name="clipboardlist" Width="20" Height="20" />
+                    }
+                    else if (notification.Type == "overdue-note")
+                    {
+                      <Icon Name="alerttriangle" Width="20" Height="20" />
+                    }
+                    else
+                    {
+                      <Icon Name="clock" Width="20" Height="20" />
+                    }
+                  </div>
+                  <div class="notification-body">
+                    <div class="notification-header">
+                      <h4 class="notification-title">@notification.Title</h4>
+                      @GetPriorityBadge(notification.Priority)
+                    </div>
+                    <p class="notification-description">@notification.Description</p>
+                    <div class="notification-meta">
+                      <span class="notification-patient">@notification.PatientName</span>
+                      @if (!string.IsNullOrEmpty(notification.PatientId))
+                      {
+                        <span>ID: @notification.PatientId</span>
+                      }
+                      @if (!string.IsNullOrEmpty(notification.DueDate))
+                      {
+                        <span>Due: @notification.DueDate</span>
+                      }
+                      <span>• @GetTimeAgo(notification.Timestamp)</span>
+                    </div>
+                  </div>
+                  <div class="notification-actions">
+                    @if (notification.Type == "incomplete-intake")
+                    {
+                      <button type="button" class="btn-action" @onclick="@(() => OpenSendIntakeDialog())">
+                        <Icon Name="send" Width="16" Height="16" />
+                        <span>Resend</span>
+                      </button>
+                    }
+                    @if (notification.Type == "overdue-note")
+                    {
+                      <button type="button" class="btn-action btn-action-primary" @onclick="@(() => {})">
+                        <Icon Name="pluscircle" Width="16" Height="16" />
+                        <span>Start</span>
+                      </button>
+                    }
+                    <button type="button" class="btn-dismiss" @onclick="@(() => DismissNotification(notification.Id))">
+                      <Icon Name="x" Width="16" Height="16" />
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          @* Appointments Panel *@
+          <section class="collapsible-panel">
+            <div class="panel-header">
+              <h3 class="panel-title">
+                <Icon Name="calendar" Width="20" Height="20" />
+                <span>Today's Appointments</span>
+              </h3>
+              <button type="button" class="btn-secondary" @onclick="@(() => {})">View All</button>
+            </div>
+            <div class="panel-content">
+              @foreach (var appointment in upcomingAppointments)
+              {
+                <div class="appointment-card">
+                  <div class="appointment-header">
+                    <div>
+                      <h4 class="appointment-patient">@appointment.PatientName</h4>
+                      @if (appointment.ProgressNoteDue)
+                      {
+                        <span class="badge badge-primary">PN Due</span>
+                      }
+                      @if (appointment.IntakeStatus == "incomplete")
+                      {
+                        <span class="badge badge-destructive">❗Intake Pending</span>
+                      }
+                      else if (appointment.IntakeStatus == "pending")
+                      {
+                        <span class="badge badge-warning">⏳ Intake Pending</span>
+                      }
+                      else if (appointment.IntakeStatus == "complete")
+                      {
+                        <span class="badge badge-success">✓ Intake Complete</span>
+                      }
+                    </div>
+                    <div class="appointment-time">
+                      <div>@appointment.Time</div>
+                      <div>@appointment.Duration min</div>
+                    </div>
+                  </div>
+                  <div class="appointment-meta">ID: @appointment.PatientId</div>
+                </div>
+              }
+            </div>
+          </section>
         </div>
+
+        @* Right Sidebar *@
+        <aside class="dashboard-sidebar">
+          @* Recent Notes *@
+          <section class="sidebar-card">
+            <div class="card-header">
+              <h3>Recent Notes</h3>
+              <button type="button" class="btn-text">View All</button>
+            </div>
+            <div class="card-body">
+              @foreach (var note in recentNotes)
+              {
+                <div class="sidebar-item">
+                  <div class="sidebar-item-header">
+                    <div class="sidebar-item-title">@note.PatientName</div>
+                    <span class="badge badge-success">@note.Status</span>
+                  </div>
+                  <div class="sidebar-item-type">@note.NoteType</div>
+                  <div class="sidebar-item-date">@DateTime.Parse(note.Date).ToString("M/d/yyyy")</div>
+                  <div class="sidebar-item-actions">
+                    <button type="button" class="btn-icon" @onclick="@(() => OpenNoteDialog(note))">
+                      <Icon Name="eye" Width="16" Height="16" />
+                    </button>
+                    <button type="button" class="btn-icon">
+                      <Icon Name="download" Width="16" Height="16" />
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          @* Activity *@
+          <section class="sidebar-card">
+            <h3 class="card-header">Recent Activity</h3>
+            <div class="card-body">
+              <div class="activity-item activity-success">
+                <div class="activity-dot"></div>
+                <div class="activity-text">SOAP note completed for Sarah Johnson</div>
+                <span class="activity-time">2 min</span>
+              </div>
+              <div class="activity-item activity-info">
+                <div class="activity-dot"></div>
+                <div class="activity-text">Appointment scheduled with Michael Chen</div>
+                <span class="activity-time">15 min</span>
+              </div>
+              <div class="activity-item activity-warning">
+                <div class="activity-dot"></div>
+                <div class="activity-text">Patient intake received from Emily Rodriguez</div>
+                <span class="activity-time">1 hr</span>
+              </div>
+            </div>
+          </section>
+
+          @* Incomplete Intakes *@
+          <section class="sidebar-card">
+            <div class="card-header">
+              <h3>Incomplete Intake Forms</h3>
+              <span class="card-badge">3</span>
+            </div>
+            <div class="card-body intake-list">
+              @* High Priority *@
+              <div class="intake-item intake-high">
+                <div class="intake-header">
+                  <span class="intake-patient">Lisa Martinez</span>
+                  <span class="badge badge-destructive">HIGH</span>
+                </div>
+                <div class="intake-id">ID: PT-2024-009</div>
+                <div class="intake-progress">
+                  <div class="progress-label">Completion <span>0%</span></div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              @* Medium Priority *@
+              <div class="intake-item intake-medium">
+                <div class="intake-header">
+                  <span class="intake-patient">Emily Rodriguez</span>
+                  <span class="badge badge-warning">MEDIUM</span>
+                </div>
+                <div class="intake-id">ID: PT-2024-005</div>
+                <div class="intake-progress">
+                  <div class="progress-label">Completion <span>33%</span></div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              @* Low Priority *@
+              <div class="intake-item intake-low">
+                <div class="intake-header">
+                  <span class="intake-patient">David Kim</span>
+                </div>
+                <div class="intake-id">ID: PT-2024-007</div>
+                <div class="intake-progress">
+                  <div class="progress-label">Completion <span>16%</span></div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 16%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="intake-footer">
+                <p>1 urgent • 1 medium • 1 low priority</p>
+                <button type="button" class="btn-text">View All Intakes →</button>
+              </div>
+            </div>
+          </section>
+
+          @* POCs *@
+          <section class="sidebar-card">
+            <div class="card-header">
+              <h3>Recently Edited POCs</h3>
+            </div>
+            <div class="card-body poc-list">
+              @* POC 1 *@
+              <div class="poc-item poc-active">
+                <div class="poc-header">
+                  <span class="poc-patient">Sarah Johnson</span>
+                  <span class="badge badge-success">active</span>
+                </div>
+                <div class="poc-meta">POC POC-2024-001 • 708 days ago</div>
+                <div class="poc-stats">
+                  <div class="stat">📅 <strong>7/12</strong></div>
+                  <div class="stat">📝 <strong>18/36</strong></div>
+                  <div class="stat">✓ <strong>2/3</strong></div>
+                  <div class="stat">🔤 <strong>2</strong></div>
+                </div>
+                <div class="poc-utilization">
+                  <div class="util-row">Utilization <span>50%</span></div>
+                  <div class="util-bar">
+                    <div class="util-fill" style="width: 50%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              @* POC 2 *@
+              <div class="poc-item poc-expiring">
+                <div class="poc-header">
+                  <span class="poc-patient">Michael Chen</span>
+                  <span class="badge badge-warning">Expiring</span>
+                </div>
+                <div class="poc-meta">POC POC-2024-002 • 710 days ago</div>
+                <div class="poc-stats">
+                  <div class="stat">📅 <strong>10/12</strong></div>
+                  <div class="stat">📝 <strong>28/30</strong></div>
+                  <div class="stat">✓ <strong>3/4</strong></div>
+                  <div class="stat">🔤 <strong>3</strong></div>
+                </div>
+                <div class="poc-utilization">
+                  <div class="util-row">Utilization <span>93%</span></div>
+                  <div class="util-bar">
+                    <div class="util-fill" style="width: 93%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
-  }
 
-  @if (errorMessage != null)
-  {
-    <div class="pfp-alert pfp-alert-error">
-      @errorMessage
-      <button class="pfp-btn pfp-btn-text" @onclick="RefreshDashboard">🔄 Retry</button>
-    </div>
+    @* Dialogs *@
+    @if (showAddPatientDialog)
+    {
+      <div class="modal-overlay" @onclick="@(() => showAddPatientDialog = false)">
+        <div class="modal-content" @onclick:stopPropagation="true">
+          <div class="modal-header">
+            <h3>Add New Patient</h3>
+            <button type="button" class="btn-close" @onclick="@(() => showAddPatientDialog = false)">
+              <Icon Name="x" Width="20" Height="20" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" class="form-input" value="@newPatientData.FirstName" @onchange="@((ChangeEventArgs e) => newPatientData.FirstName = e.Value?.ToString() ?? "")" />
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" class="form-input" value="@newPatientData.LastName" @onchange="@((ChangeEventArgs e) => newPatientData.LastName = e.Value?.ToString() ?? "")" />
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" class="form-input" value="@newPatientData.Email" @onchange="@((ChangeEventArgs e) => newPatientData.Email = e.Value?.ToString() ?? "")" />
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" class="form-input" value="@newPatientData.Phone" @onchange="@((ChangeEventArgs e) => newPatientData.Phone = e.Value?.ToString() ?? "")" />
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" class="form-input" value="@newPatientData.DateOfBirth" @onchange="@((ChangeEventArgs e) => newPatientData.DateOfBirth = e.Value?.ToString() ?? "")" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" @onclick="@(() => showAddPatientDialog = false)">Cancel</button>
+            <button type="button" class="btn-primary" @onclick="ConfirmAddPatient">
+              <Icon Name="userplus" Width="18" Height="18" />
+              <span>Add Patient</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showSendIntakeDialog)
+    {
+      <div class="modal-overlay" @onclick="@(() => showSendIntakeDialog = false)">
+        <div class="modal-content" @onclick:stopPropagation="true">
+          <div class="modal-header">
+            <h3>Send Intake Form</h3>
+            <button type="button" class="btn-close" @onclick="@(() => showSendIntakeDialog = false)">
+              <Icon Name="x" Width="20" Height="20" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Select Patient</label>
+              <select class="form-input" @onchange="@((ChangeEventArgs e) => intakeData.PatientId = e.Value?.ToString() ?? "")">
+                <option>Select a patient</option>
+                <option value="pt001">Sarah Johnson (PT001)</option>
+                <option value="pt002">Michael Chen (PT002)</option>
+                <option value="pt003">Emily Rodriguez (PT003)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" class="form-input" value="@intakeData.Email" @onchange="@((ChangeEventArgs e) => intakeData.Email = e.Value?.ToString() ?? "")" />
+            </div>
+            <div class="form-group">
+              <label>Phone Number (Optional)</label>
+              <input type="tel" class="form-input" value="@intakeData.PhoneNumber" @onchange="@((ChangeEventArgs e) => intakeData.PhoneNumber = e.Value?.ToString() ?? "")" />
+              <p class="form-hint">We'll send an SMS reminder if phone number is provided</p>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" @onclick="@(() => showSendIntakeDialog = false)">Cancel</button>
+            <button type="button" class="btn-primary" @onclick="ConfirmSendIntake">
+              <Icon Name="send" Width="18" Height="18" />
+              <span>Send Intake Form</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showNoteDialog && selectedNote != null)
+    {
+      <div class="modal-overlay" @onclick="@(() => showNoteDialog = false)">
+        <div class="modal-content modal-large" @onclick:stopPropagation="true">
+          <div class="modal-header">
+            <h3>@selectedNote.NoteType - @selectedNote.PatientName</h3>
+            <button type="button" class="btn-close" @onclick="@(() => showNoteDialog = false)">
+              <Icon Name="x" Width="20" Height="20" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="note-section">
+              <h4>Subjective</h4>
+              <p>@selectedNote.Subjective</p>
+            </div>
+            <div class="note-section">
+              <h4>Objective</h4>
+              <p>@selectedNote.Objective</p>
+            </div>
+            <div class="note-section">
+              <h4>Assessment</h4>
+              <p>@selectedNote.Assessment</p>
+            </div>
+            <div class="note-section">
+              <h4>Plan</h4>
+              <p>@selectedNote.Plan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   }
 </div>
 
 @code {
-    private DashboardStatsDto dashboardStats = new();
-    private bool isLoading = true;
-    private string? errorMessage = null;
+  // Dialog states
+  private bool showNoteDialog = false;
+  private bool showAddPatientDialog = false;
+  private bool showSendIntakeDialog = false;
+  private bool showNotifications = true;
+  
+  // Selected items
+  private RecentNoteItem? selectedNote = null;
+  
+  // Filter state
+  private string noteFilter = "all";
+  private DashboardFilters dashboardFilters = new();
+  
+  // Form data
+  private PatientFormData newPatientData = new();
+  private IntakeFormData intakeData = new();
+  
+  // Loading and error state
+  private bool isLoading = true;
+  private string? errorMessage = null;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDashboardStats();
-    }
+  // Overview data
+  private readonly OverviewData overviewData = new()
+  {
+    PatientsToday = 3,
+    AppointmentsToday = 3,
+    DraftNotes = 1,
+    NotesDue = 2,
+    PendingNotes = 4,
+    IncompleteIntakes = 3,
+    OverdueNotes = 2,
+    PatientsWithPrecautions = 2,
+    UnsignedNotes = 3
+  };
 
-    private async Task LoadDashboardStats()
-    {
-        isLoading = true;
-        errorMessage = null;
-        
-        try
-        {
-            dashboardStats = await DataService.GetDashboardStatsAsync();
-        }
-        catch (Exception)
-        {
-            errorMessage = "Failed to load dashboard statistics. Please check your connection and try again.";
-        }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
+  // Notifications
+  private readonly List<NotificationItem> notifications = new()
+  {
+    new() {
+      Id = "1",
+      Type = "incomplete-intake",
+      Title = "Incomplete Intake Form",
+      Description = "Patient has not completed intake form",
+      PatientName = "Emily Rodriguez",
+      PatientId = "PT003",
+      Priority = "high",
+      Timestamp = DateTime.Now.AddHours(-2)
+    },
+    new() {
+      Id = "2",
+      Type = "overdue-note",
+      Title = "Overdue Progress Note",
+      Description = "Note due 2 days ago",
+      PatientName = "Michael Chen",
+      PatientId = "PT002",
+      DueDate = "Nov 15, 2025",
+      Priority = "high",
+      Timestamp = DateTime.Now.AddDays(-1)
+    },
+    new() {
+      Id = "3",
+      Type = "pending-action",
+      Title = "Re-evaluation Due",
+      Description = "Patient ready for re-evaluation",
+      PatientName = "Sarah Johnson",
+      PatientId = "PT001",
+      DueDate = "Nov 20, 2025",
+      Priority = "medium",
+      Timestamp = DateTime.Now.AddHours(-4)
+    },
+    new() {
+      Id = "4",
+      Type = "incomplete-intake",
+      Title = "Intake Form Started",
+      Description = "Patient started but did not complete intake",
+      PatientName = "David Kim",
+      PatientId = "PT006",
+      Priority = "medium",
+      Timestamp = DateTime.Now.AddHours(-6)
+    },
+    new() {
+      Id = "5",
+      Type = "pending-action",
+      Title = "Discharge Planning Needed",
+      Description = "Patient approaching visit limit",
+      PatientName = "Robert Lee",
+      PatientId = "PT008",
+      Priority = "low",
+      Timestamp = DateTime.Now.AddHours(-8)
     }
+  };
 
-    private async Task RefreshDashboard()
-    {
-        await LoadDashboardStats();
+  // Appointments
+  private readonly List<AppointmentItem> upcomingAppointments = new()
+  {
+    new() {
+      Id = "apt-1",
+      PatientName = "Sarah Johnson",
+      PatientId = "PT001",
+      Time = "09:00",
+      Date = DateTime.Today.ToString("yyyy-MM-dd"),
+      Type = "Follow-up",
+      Duration = 45,
+      LastNoteDate = "Nov 10, 2025",
+      LastNoteSummary = "Patient reports decreased pain (7/10 to 4/10). Good progress with core strengthening exercises.",
+      IntakeStatus = "complete",
+      ProgressNoteDue = true
+    },
+    new() {
+      Id = "apt-2",
+      PatientName = "Michael Chen",
+      PatientId = "PT002",
+      Time = "10:30",
+      Date = DateTime.Today.ToString("yyyy-MM-dd"),
+      Type = "Follow-up",
+      Duration = 45,
+      LastNoteDate = "Nov 14, 2025",
+      LastNoteSummary = "Improved ROM in all planes. Patient demonstrating proper exercise form.",
+      IntakeStatus = "pending",
+      ProgressNoteDue = true
+    },
+    new() {
+      Id = "apt-3",
+      PatientName = "Emily Rodriguez",
+      PatientId = "PT003",
+      Time = "14:00",
+      Date = DateTime.Today.ToString("yyyy-MM-dd"),
+      Type = "Initial Evaluation",
+      Duration = 60,
+      LastNoteSummary = "New patient - initial evaluation scheduled",
+      IntakeStatus = "incomplete"
     }
+  };
+
+  // Recent notes
+  private readonly List<RecentNoteItem> recentNotes = new()
+  {
+    new() {
+      Id = "1",
+      PatientName = "Sarah Johnson",
+      NoteType = "Progress Note",
+      Date = "2025-11-10",
+      Status = "Submitted",
+      Subjective = "Patient reports 40% improvement in pain levels",
+      Objective = "ROM improved from 45° to 60° in lumbar flexion",
+      Assessment = "Good progress, responding well to treatment",
+      Plan = "Continue current exercises, add core strengthening progression"
+    },
+    new() {
+      Id = "2",
+      PatientName = "Michael Chen",
+      NoteType = "Progress Note",
+      Date = "2025-11-14",
+      Status = "Submitted",
+      Subjective = "Shoulder pain reduced to 2/10",
+      Objective = "Active ROM: Flexion 165°, Abduction 170°",
+      Assessment = "Excellent progress",
+      Plan = "Progress to resistance training"
+    }
+  };
+
+  // Unsigned notes
+  private readonly List<UnsignedNoteItem> unsignedNotes = new()
+  {
+    new() {
+      Id = "note-101",
+      PatientName = "Jennifer Martinez",
+      PatientId = "PT005",
+      NoteType = "Progress Note",
+      Date = "2025-12-18",
+      DaysAgo = 3
+    },
+    new() {
+      Id = "note-102",
+      PatientName = "Robert Thompson",
+      PatientId = "PT007",
+      NoteType = "Initial Evaluation",
+      Date = "2025-12-19",
+      DaysAgo = 2
+    },
+    new() {
+      Id = "note-103",
+      PatientName = "Amanda Lee",
+      PatientId = "PT009",
+      NoteType = "Progress Note",
+      Date = "2025-12-20",
+      DaysAgo = 1
+    }
+  };
+
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadDashboard();
+  }
+
+  private async Task LoadDashboard()
+  {
+    isLoading = true;
+    errorMessage = null;
+    try
+    {
+      await Task.Delay(500);
+    }
+    catch (Exception)
+    {
+      errorMessage = "Failed to load dashboard";
+    }
+    finally
+    {
+      isLoading = false;
+      StateHasChanged();
+    }
+  }
+
+  private async Task RefreshDashboard()
+  {
+    await LoadDashboard();
+  }
+
+  private void OpenAddPatientDialog() => showAddPatientDialog = true;
+  private void OpenSendIntakeDialog() => showSendIntakeDialog = true;
+  
+  private void OpenNoteDialog(RecentNoteItem note)
+  {
+    selectedNote = note;
+    showNoteDialog = true;
+  }
+
+  private void SetNoteFilter(string filter)
+  {
+    noteFilter = filter;
+    StateHasChanged();
+  }
+
+  private void HandleViewUnsignedNotes()
+  {
+    // Navigate to notes view
+    StateHasChanged();
+  }
+
+  private void DismissNotification(string id)
+  {
+    // Handle dismissal
+    StateHasChanged();
+  }
+
+  private void ConfirmAddPatient()
+  {
+    showAddPatientDialog = false;
+    newPatientData = new();
+    StateHasChanged();
+  }
+
+  private void ConfirmSendIntake()
+  {
+    showSendIntakeDialog = false;
+    intakeData = new();
+    StateHasChanged();
+  }
+
+  private string GetTimeAgo(DateTime timestamp)
+  {
+    var diff = DateTime.Now - timestamp;
+    var hours = (int)diff.TotalHours;
+    var minutes = (int)diff.TotalMinutes;
+
+    if (hours >= 24)
+    {
+      var days = hours / 24;
+      return $"{days} day{(days > 1 ? "s" : "")} ago";
+    }
+    else if (hours > 0)
+    {
+      return $"{hours} hour{(hours > 1 ? "s" : "")} ago";
+    }
+    else
+    {
+      return $"{minutes} min ago";
+    }
+  }
+
+  private MarkupString GetPriorityBadge(string priority)
+  {
+    var classname = priority switch
+    {
+      "high" => "badge badge-destructive",
+      "medium" => "badge badge-warning",
+      "low" => "badge badge-info",
+      _ => "badge"
+    };
+
+    return new MarkupString($"<span class=\"{classname}\">{priority.ToUpper()}</span>");
+  }
+
+  // Supporting types
+  private class DashboardFilters
+  {
+    public string Priority { get; set; } = "all";
+  }
+
+  private class OverviewData
+  {
+    public int PatientsToday { get; set; }
+    public int AppointmentsToday { get; set; }
+    public int DraftNotes { get; set; }
+    public int NotesDue { get; set; }
+    public int PendingNotes { get; set; }
+    public int IncompleteIntakes { get; set; }
+    public int OverdueNotes { get; set; }
+    public int PatientsWithPrecautions { get; set; }
+    public int UnsignedNotes { get; set; }
+  }
+
+  private class NotificationItem
+  {
+    public string Id { get; set; } = "";
+    public string Type { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string PatientName { get; set; } = "";
+    public string? PatientId { get; set; }
+    public string? DueDate { get; set; }
+    public string Priority { get; set; } = "";
+    public DateTime Timestamp { get; set; }
+  }
+
+  private class AppointmentItem
+  {
+    public string Id { get; set; } = "";
+    public string PatientName { get; set; } = "";
+    public string PatientId { get; set; } = "";
+    public string Time { get; set; } = "";
+    public string Date { get; set; } = "";
+    public string Type { get; set; } = "";
+    public int Duration { get; set; }
+    public string? LastNoteSummary { get; set; }
+    public string? LastNoteDate { get; set; }
+    public string IntakeStatus { get; set; } = "";
+    public bool ProgressNoteDue { get; set; }
+  }
+
+  private class RecentNoteItem
+  {
+    public string Id { get; set; } = "";
+    public string PatientName { get; set; } = "";
+    public string NoteType { get; set; } = "";
+    public string Date { get; set; } = "";
+    public string Status { get; set; } = "";
+    public string Subjective { get; set; } = "";
+    public string Objective { get; set; } = "";
+    public string Assessment { get; set; } = "";
+    public string Plan { get; set; } = "";
+  }
+
+  private class UnsignedNoteItem
+  {
+    public string Id { get; set; } = "";
+    public string PatientName { get; set; } = "";
+    public string PatientId { get; set; } = "";
+    public string NoteType { get; set; } = "";
+    public string Date { get; set; } = "";
+    public int DaysAgo { get; set; }
+  }
+
+  private class PatientFormData
+  {
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string DateOfBirth { get; set; } = "";
+  }
+
+  private class IntakeFormData
+  {
+    public string PatientId { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string PhoneNumber { get; set; } = "";
+  }
 }

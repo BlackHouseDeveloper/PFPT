@@ -1,42 +1,74 @@
-/* Unified responsive layout styles */
-.pfp-layout {
-  --primary-color: #3498db;
-  --secondary-color: #2c3e50;
-  --background-color: #f8f9fa;
-  --text-color: #2c3e50;
-  --border-color: #dee2e6;
-  --header-height: 60px;
-  --sidebar-width: 250px;
+/* PTDoc v5 Unified Responsive Shell — Single layout, CSS-controlled responsive behavior */
+
+:root {
+  /* Layout Tokens (PTDoc v5) */
+  --pfp-header-height: 69px;
+  --pfp-sidebar-width: 216px;
+  --pfp-sidebar-collapsed-width: 60px;
+  --pfp-content-padding: 24px;
+  --pfp-mobile-header-height: 76px;
+  
+  /* Color Tokens (PTDoc v5 Dark Theme) */
+  --pfp-bg-primary: #0f1419;
+  --pfp-bg-secondary: #1a1f28;
+  --pfp-bg-tertiary: #25292f;
+  --pfp-text-primary: #e5e5e5;
+  --pfp-text-secondary: rgba(229, 229, 229, 0.7);
+  --pfp-border: rgba(34, 197, 94, 0.2);
+  --pfp-sidebar-bg: #000000;
+  --pfp-header-bg: #000000;
+  --pfp-card-bg: #25292f;
+  --pfp-accent: #4a9eff;
+  --pfp-accent-hover: #3a8ee0;
+  --pfp-success: #22c55e;
+  --pfp-success-light: #34d399;
+  --pfp-warning: #fbbf24;
+  --pfp-destructive: #ef4444;
+  --pfp-info: #60a5fa;
 }
 
-/* Desktop Layout */
-.pfp-layout-desktop {
-  display: flex;
-  min-height: 100vh;
+/* Global Layout Structure */
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.pfp-sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-}
-
-.pfp-main-content {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  display: flex;
-  flex-direction: column;
-}
+/* ============================================
+   HEADER — Fixed Top, Black Background
+   ============================================ */
 
 .pfp-header {
-  background: white;
-  border-bottom: 1px solid var(--border-color);
-  height: var(--header-height);
+  position: fixed;
+  top: 0;
+  left: var(--pfp-sidebar-width);
+  right: 0;
+  height: var(--pfp-header-height);
+  background: var(--pfp-header-bg);
+  border-bottom: 1px solid var(--pfp-success);
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  padding: 0 var(--pfp-content-padding);
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: left 0.3s ease;
+}
+
+/* Header adjusts when sidebar is collapsed */
+.pfp-sidebar-collapsed ~ * .pfp-header,
+body:has(.pfp-sidebar-collapsed) .pfp-header {
+  left: var(--pfp-sidebar-collapsed-width);
+}
+
+/* Mobile: Full width header */
+@media (max-width: 1023px) {
+  .pfp-header {
+    left: 0;
+  }
+  
+  body:has(.pfp-sidebar-collapsed) .pfp-header {
+    left: 0;
+  }
 }
 
 .pfp-header-content {
@@ -44,96 +76,234 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-}
-
-.pfp-app-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.pfp-header-actions {
-  display: flex;
-  align-items: center;
   gap: 1rem;
 }
 
-.pfp-user-info {
+/* Back Button */
+.pfp-back-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--background-color);
-  border-radius: 0.25rem;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--pfp-text-primary);
+  transition: opacity 0.2s ease;
+}
+
+.pfp-back-button:hover {
+  opacity: 0.7;
+}
+
+/* Header Center - Sync Info */
+.pfp-header-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+.pfp-sync-status {
   font-size: 0.875rem;
+  color: var(--pfp-text-secondary);
+  white-space: nowrap;
+}
+
+.pfp-sync-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid rgba(229, 229, 229, 0.2);
+  color: var(--pfp-text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pfp-sync-button:hover {
+  background: rgba(229, 229, 229, 0.05);
+  border-color: rgba(229, 229, 229, 0.3);
+}
+
+/* Header Right - Status Badge */
+.pfp-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.pfp-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pfp-status-online {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--pfp-success-light);
+}
+
+.pfp-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pfp-success-light);
+}
+
+/* ============================================
+   SIDEBAR — Desktop Fixed Left, Hidden Mobile
+   ============================================ */
+
+.pfp-sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--pfp-header-height);
+  width: var(--pfp-sidebar-width);
+  height: calc(100vh - var(--pfp-header-height));
+  background: #000000;
+  border-right: 1px solid rgba(34, 197, 94, 0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 500;
+  transition: width 0.3s ease;
+}
+
+/* Collapsed Sidebar State */
+.pfp-sidebar-collapsed {
+  width: var(--pfp-sidebar-collapsed-width);
+}
+
+/* Mobile: Sidebar becomes drawer overlay */
+@media (max-width: 1023px) {
+  .pfp-sidebar {
+    position: fixed;
+    top: var(--pfp-header-height);
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - var(--pfp-header-height));
+    background: var(--pfp-sidebar-bg);
+    transition: left 0.3s ease;
+    z-index: 999;
+  }
+
+  .pfp-sidebar.mobile-open {
+    left: 0;
+  }
+  
+  /* Don't apply collapsed state on mobile */
+  .pfp-sidebar-collapsed {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   MAIN CONTENT — Layout Wrapper
+   ============================================ */
+
+.pfp-layout-wrapper {
+  /* Desktop: Offset by sidebar width + header */
+  margin-left: var(--pfp-sidebar-width);
+  margin-top: var(--pfp-header-height);
+  min-height: calc(100vh - var(--pfp-header-height));
+  background: var(--pfp-bg-primary);
+  transition: margin-left 0.3s ease;
+}
+
+/* Collapsed Sidebar State - Less margin */
+.pfp-layout-sidebar-collapsed {
+  margin-left: var(--pfp-sidebar-collapsed-width);
+}
+
+@media (max-width: 1023px) {
+  .pfp-layout-wrapper {
+    /* Mobile: Full width, offset by header only */
+    margin-left: 0;
+  }
+  
+  /* No margin change on mobile */
+  .pfp-layout-sidebar-collapsed {
+    margin-left: 0;
+  }
+}
+
+.pfp-main-content {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--pfp-bg-primary);
 }
 
 .pfp-content {
   flex: 1;
-  padding: 2rem;
-  background: var(--background-color);
+  padding: var(--pfp-content-padding);
   overflow-y: auto;
 }
 
-/* Mobile Layout */
-.pfp-layout-mobile {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* ============================================
+   MOBILE BREAKPOINTS
+   ============================================ */
+
+@media (max-width: 1023px) {
+  /* Show menu toggle on mobile */
+  .pfp-menu-toggle {
+    display: flex;
+  }
+
+  /* Reduce header padding on small screens */
+  .pfp-header {
+    padding: 0 16px;
+  }
+
+  /* Hide user info details on very small screens */
+  @media (max-width: 640px) {
+    .pfp-user-info {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .pfp-sync-button {
+      display: none;
+    }
+  }
 }
 
-.pfp-mobile-header {
-  background: white;
-  border-bottom: 1px solid var(--border-color);
-  height: var(--header-height);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ============================================
+   ACCESSIBILITY & UTILITIES
+   ============================================ */
+
+.pfp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
-.pfp-mobile-header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
-  height: 100%;
-}
-
-.pfp-mobile-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-color);
-  flex: 1;
-  text-align: center;
-}
-
-.pfp-user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.pfp-mobile-main {
-  flex: 1;
-  background: var(--background-color);
-  overflow-y: auto;
-}
 
 .pfp-mobile-content {
   padding: 1rem;
 }
 
-/* Responsive breakpoints */
-@media (max-width: 768px) {
+/* Responsive breakpoints: Mobile (<768px), Tablet (768-1439px), Desktop (1440px+) */
+@media (max-width: 767px) {
+  /* Mobile adjustments */
   .pfp-mobile-header-content {
     padding: 0 0.75rem;
   }
@@ -143,13 +313,47 @@
   }
   
   .pfp-mobile-content {
-    padding: 0.75rem;
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  /* Tablet adjustments */
+  .pfp-sidebar {
+    width: 260px;
+  }
+  
+  .pfp-main-content {
+    margin-left: 260px;
+  }
+  
+  .pfp-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  /* Desktop adjustments */
+  .pfp-sidebar {
+    width: 280px;
+  }
+  
+  .pfp-main-content {
+    margin-left: 280px;
+  }
+  
+  .pfp-content {
+    padding: 2.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .pfp-mobile-content {
-    padding: 0.5rem;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .pfp-header {
+    padding: 0 1rem;
   }
 }
 

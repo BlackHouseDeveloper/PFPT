@@ -1,75 +1,82 @@
-@* Unified main layout that adapts to platform and screen size *@
+@* Unified PTDoc v5 responsive shell — Single layout, CSS-controlled breakpoints *@
 @using PhysicallyFitPT.Shared
 @inherits LayoutComponentBase
 
 @inject IPlatformInfo PlatformInfo
 
-<div class="pfp-layout" data-platform="@PlatformInfo.Platform.ToString().ToLower()" data-device="@PlatformInfo.Device.ToString().ToLower()">
-  
-  @if (ShouldShowSideNav())
-  {
-    <!-- Desktop layout with sidebar -->
-    <div class="pfp-layout-desktop">
-      <aside class="pfp-sidebar">
-        <ResponsiveNavMenu />
-      </aside>
-      
-      <main class="pfp-main-content">
-        <header class="pfp-header">
-          <div class="pfp-header-content">
-            <h1 class="pfp-app-title">Physically Fit PT</h1>
-            <div class="pfp-header-actions">
-              @if (ShowUserInfo)
-              {
-                <div class="pfp-user-info">
-                  <span>@UserDisplayName</span>
-                </div>
-              }
-            </div>
-          </div>
-        </header>
-        
-        <div class="pfp-content">
-          @Body
-        </div>
-      </main>
+<!-- Global Header -->
+<header class="pfp-header">
+  <div class="pfp-header-content">
+    <button class="pfp-back-button" @onclick="ToggleSidebar" aria-label="@(IsSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar")" title="@(IsSidebarCollapsed ? "Expand" : "Collapse")">
+      @if (IsSidebarCollapsed)
+      {
+        <!-- Hamburger Menu Icon -->
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      }
+      else
+      {
+        <!-- Chevron Left Icon -->
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      }
+    </button>
+    
+    <div class="pfp-header-center">
+      <span class="pfp-sync-status">Last sync: Just now</span>
+      <button class="pfp-sync-button" @onclick="SyncNow" title="Sync data">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.65 2.35C12.2 0.9 10.21 0 8 0C3.58 0 0.01 3.58 0.01 8C0.01 12.42 3.58 16 8 16C11.73 16 14.84 13.45 15.73 10H13.65C12.83 12.33 10.61 14 8 14C4.69 14 2 11.31 2 8C2 4.69 4.69 2 8 2C9.66 2 11.14 2.69 12.22 3.78L9 7H16V0L13.65 2.35Z" fill="currentColor"/>
+        </svg>
+        Sync Now
+      </button>
     </div>
-  }
-  else
-  {
-    <!-- Mobile layout with top navigation -->
-    <div class="pfp-layout-mobile">
-      <header class="pfp-mobile-header">
-        <div class="pfp-mobile-header-content">
-          <ResponsiveNavMenu />
-          <h1 class="pfp-mobile-title">Physically Fit PT</h1>
-          @if (ShowUserInfo)
-          {
-            <div class="pfp-user-avatar">
-              <span>@(UserDisplayName?.Substring(0, 1) ?? "U")</span>
-            </div>
-          }
-        </div>
-      </header>
-      
-      <main class="pfp-mobile-main">
-        <div class="pfp-mobile-content">
-          @Body
-        </div>
-      </main>
+    
+    <div class="pfp-header-right">
+      <div class="pfp-status-badge pfp-status-online">
+        <span class="pfp-status-indicator"></span>
+        Online
+      </div>
     </div>
-  }
-  
+  </div>
+</header>
+
+<!-- Sidebar (Desktop) + Drawer (Mobile) -->
+<aside class="pfp-sidebar @(IsSidebarCollapsed ? "pfp-sidebar-collapsed" : "")" role="navigation">
+  <ResponsiveNavMenu IsCollapsed="@IsSidebarCollapsed" />
+</aside>
+
+<!-- Main Content Container -->
+<div class="pfp-layout-wrapper @(IsSidebarCollapsed ? "pfp-layout-sidebar-collapsed" : "")">
+  <main class="pfp-main-content" role="main">
+    <div class="pfp-content">
+      @Body
+    </div>
+  </main>
 </div>
 
 @code {
   [Parameter] public bool ShowUserInfo { get; set; } = true;
   [Parameter] public string? UserDisplayName { get; set; } = "User";
 
-  private bool ShouldShowSideNav()
+  private bool ShowMobileMenu { get; set; } = false;
+  private bool IsSidebarCollapsed { get; set; } = false;
+
+  private void ToggleMobileMenu()
   {
-    // Show sidebar for desktop browsers and desktop MAUI apps
-    return PlatformInfo.Device == DeviceType.Desktop || 
-           (PlatformInfo.Platform == PlatformType.Web && (PlatformInfo.ScreenWidth ?? 0) >= 1024);
+    ShowMobileMenu = !ShowMobileMenu;
+  }
+
+  private void ToggleSidebar()
+  {
+    IsSidebarCollapsed = !IsSidebarCollapsed;
+  }
+
+  private void SyncNow()
+  {
+    // Sync functionality
   }
 }
+

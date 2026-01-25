@@ -44,7 +44,8 @@ This analysis compares the **Figma Make prototype** (175+ React/TypeScript compo
 
 **Assessment**: **3/7 = 43% Complete**  
 **Critical Gaps**: PIN recovery and 2FA infrastructure (setup/verification)  
-**Technical Debt**: Auth service covers login/signup; recovery and MFA workflows still absent
+**Technical Debt**: Auth service covers login/signup; recovery and MFA workflows still absent  
+**Recent Update**: Sign Up Confirmation now mirrors Figma (desktop 163:2, mobile 173:115) and reuses the shared auth shell/brand/tabs in [src/PhysicallyFitPT.Shared/Components/Pages/Auth/SignUpConfirmation.razor](src/PhysicallyFitPT.Shared/Components/Pages/Auth/SignUpConfirmation.razor)
 
 ---
 

@@ -3,144 +3,134 @@
 
 @inject IPlatformInfo PlatformInfo
 
-<nav class="pfp-nav" data-platform="@PlatformInfo.Platform.ToString().ToLower()" data-device="@PlatformInfo.Device.ToString().ToLower()">
-  @if (ShouldShowSideNav())
-  {
-    <div class="pfp-nav-sidebar">
-      @RenderNavItems()
+<!-- Navigation Menu (positioned by ResponsiveMainLayout CSS) -->
+<nav class="pfp-nav" role="navigation" aria-label="Main navigation">
+  <!-- Profile Section -->
+  <div class="pfp-nav-profile">
+    <div class="pfp-nav-brand">
+      <span class="pfp-nav-brand-text">PTDoc</span>
     </div>
-  }
-  else
-  {
-    <div class="pfp-nav-mobile">
-      <button class="pfp-nav-toggle" @onclick="ToggleMobileNav" aria-label="Toggle navigation">
-        <span class="pfp-hamburger"></span>
+    
+    <div class="pfp-nav-profile-info">
+      <div class="pfp-nav-profile-name">Dr. Sarah Johnson</div>
+      <div class="pfp-nav-profile-role">Physical Therapist</div>
+    </div>
+    
+    <div class="pfp-nav-profile-badge">
+      <span class="pfp-nav-badge-text">PT</span>
+    </div>
+    
+    <div class="pfp-nav-profile-actions">
+      <button class="pfp-nav-icon-button" aria-label="Notifications">
+        <span>🔔</span>
       </button>
-      
-      @if (showMobileNav)
-      {
-        <div class="pfp-nav-overlay" @onclick="CloseMobileNav"></div>
-        <div class="pfp-nav-drawer">
-          @RenderNavItems()
-        </div>
-      }
+      <button class="pfp-nav-icon-button" aria-label="Settings">
+        <span>⚙️</span>
+      </button>
     </div>
-  }
+    
+    <div class="pfp-nav-status-badge">
+      <span>✓ Synced</span>
+    </div>
+  </div>
+
+  <ul class="pfp-nav-list">
+    <li class="pfp-nav-section-label">Main</li>
+    
+    <!-- MAIN: Dashboard (Active by default on app load) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/" class="pfp-nav-link" Match="NavLinkMatch.All" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Dashboard</span>
+      </NavLink>
+    </li>
+    
+    <!-- MAIN: Appointments -->
+    <li class="pfp-nav-item">
+      <NavLink href="/appointments" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Appointments</span>
+      </NavLink>
+    </li>
+    
+    <!-- MAIN: Patients -->
+    <li class="pfp-nav-item">
+      <NavLink href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Patients</span>
+      </NavLink>
+    </li>
+    
+    <!-- MAIN: Intake (with badge support) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/intake" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Intake</span>
+        <span class="pfp-nav-badge pfp-nav-badge-destructive">1</span>
+      </NavLink>
+    </li>
+    
+    <!-- MAIN: Notes (with badge support) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Notes</span>
+        <span class="pfp-nav-badge pfp-nav-badge-destructive">3</span>
+      </NavLink>
+    </li>
+    
+    <!-- MAIN: Progress Tracking (NEW) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/progress-tracking" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Progress Tracking</span>
+      </NavLink>
+    </li>
+    
+    <li class="pfp-nav-divider"></li>
+    <li class="pfp-nav-section-label">Admin</li>
+    
+    <!-- ADMIN: Export Center (NEW) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/admin/export-center" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Export Center</span>
+      </NavLink>
+    </li>
+    
+    <!-- ADMIN: Reports (NEW) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/admin/reports" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Reports</span>
+      </NavLink>
+    </li>
+    
+    <!-- ADMIN: Role Management (NEW) -->
+    <li class="pfp-nav-item">
+      <NavLink href="/admin/role-management" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Role Management</span>
+      </NavLink>
+    </li>
+    
+    <!-- ADMIN: Settings -->
+    <li class="pfp-nav-item">
+      <NavLink href="/admin/settings" class="pfp-nav-link" @onclick="CloseMobileNav">
+        <span class="pfp-nav-text">Settings</span>
+      </NavLink>
+    </li>
+  </ul>
+  
+  <!-- Logout Footer -->
+  <div class="pfp-nav-footer">
+    <button class="pfp-nav-link pfp-nav-logout" @onclick="HandleLogout">
+      <span class="pfp-nav-text">Logout</span>
+    </button>
+  </div>
 </nav>
 
 @code {
-  private bool showMobileNav = false;
-
-  private bool ShouldShowSideNav()
-  {
-    // Show sidebar for desktop browsers and desktop MAUI apps
-    return PlatformInfo.Device == DeviceType.Desktop || 
-           (PlatformInfo.Platform == PlatformType.Web && (PlatformInfo.ScreenWidth ?? 0) >= 1024);
-  }
-
-  private void ToggleMobileNav()
-  {
-    showMobileNav = !showMobileNav;
-  }
-
+  [Parameter] public bool IsCollapsed { get; set; }
+  
   private void CloseMobileNav()
   {
-    showMobileNav = false;
+    // Mobile drawer is handled by ResponsiveMainLayout CSS
   }
-
-  private RenderFragment RenderNavItems() => __builder =>
+  
+  private void HandleLogout()
   {
-    <ul class="pfp-nav-list">
-      <li class="pfp-nav-item">
-        <NavLink href="/" class="pfp-nav-link" Match="NavLinkMatch.All" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">🏠</span>
-          Dashboard
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/login" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">🔐</span>
-          Login
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/patients" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">👥</span>
-          Patients
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/intake" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📋</span>
-          Patient Intake
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/appointments" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📅</span>
-          Appointments
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/notes/eval" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📝</span>
-          Eval Note
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/notes/daily" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📄</span>
-          Daily Note
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/notes/progress" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📈</span>
-          Progress Note
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/notes/discharge" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📋</span>
-          Discharge Note
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/ai/summary" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">🤖</span>
-          AI Summary
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/admin/settings" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">⚙️</span>
-          Settings
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/admin/users" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">👤</span>
-          User Management
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/admin/automessaging" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📨</span>
-          Auto Messaging
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/admin/export" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">📤</span>
-          Export Data
-        </NavLink>
-      </li>
-      <li class="pfp-nav-item">
-        <NavLink href="/ui-kit" class="pfp-nav-link" @onclick="CloseMobileNav">
-          <span class="pfp-nav-icon">🎨</span>
-          UI Kit
-        </NavLink>
-      </li>
-    </ul>
-  };
+    // Handle logout logic
+  }
 }

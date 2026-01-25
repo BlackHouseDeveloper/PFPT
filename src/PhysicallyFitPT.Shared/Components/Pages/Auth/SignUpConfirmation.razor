@@ -1,0 +1,106 @@
+@page "/signup/confirmation"
+@inject NavigationManager Navigation
+
+<div class="auth-shell">
+  <div class="auth-brand">PTDoc</div>
+
+  <div class="auth-card">
+    <header class="auth-card-header">
+      <p class="auth-welcome">Welcome</p>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab" role="tab" aria-selected="false" disabled>
+          Login
+        </button>
+        <button type="button" class="auth-tab active" role="tab" aria-selected="true" disabled>
+          Sign Up
+        </button>
+      </div>
+    </header>
+
+    <div class="auth-success-card">
+      <div class="auth-success-header">
+        <div class="auth-success-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M33.3327 10L14.9993 28.3333L6.66602 20" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="auth-success-title">Account Created Successfully!</h3>
+        <p class="auth-success-description">Your PTDoc account has been created and verified.</p>
+      </div>
+
+      <div class="auth-success-content">
+        @if (!string.IsNullOrEmpty(LicenseInfo))
+        {
+          <div class="auth-alert auth-alert-success">
+            <svg class="auth-alert-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.66669 10.6667L13.3334 4M6.66669 10.6667L3.33335 7.33333" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="auth-alert-content">
+              <strong>License Verified:</strong>
+              <p>@LicenseInfo</p>
+            </div>
+          </div>
+        }
+
+        <div class="auth-credentials-card">
+          <div class="auth-credential-field">
+            <label class="auth-credential-label">Your Username</label>
+            <div class="auth-credential-value">@Username</div>
+          </div>
+
+          <div class="auth-credential-field">
+            <label class="auth-credential-label">Temporary PIN</label>
+            <div class="auth-credential-value">@TemporaryPin</div>
+          </div>
+        </div>
+
+        <div class="auth-alert auth-alert-warning">
+          <svg class="auth-alert-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5.33333V8M8 10.6667H8.00667M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="auth-alert-content">
+            <strong>Important:</strong>
+            <p>Please save these credentials securely. You'll be required to change your PIN on first login.</p>
+          </div>
+        </div>
+
+        <button type="button" class="auth-secondary" @onclick="HandleCreateAnother">
+          Create Another Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="auth-footnote" aria-live="polite">
+    <span>🔒 HIPAA-compliant secure access</span>
+    <span>Protected health information</span>
+  </footer>
+</div>
+
+@code {
+  [Parameter]
+  [SupplyParameterFromQuery(Name = "username")]
+  public string? Username { get; set; }
+
+  [Parameter]
+  [SupplyParameterFromQuery(Name = "pin")]
+  public string? TemporaryPin { get; set; }
+
+  [Parameter]
+  [SupplyParameterFromQuery(Name = "license")]
+  public string? LicenseInfo { get; set; }
+
+  protected override void OnInitialized()
+  {
+    // If no username provided, redirect to sign up
+    if (string.IsNullOrEmpty(Username))
+    {
+      Navigation.NavigateTo("/signup");
+    }
+  }
+
+  private void HandleCreateAnother()
+  {
+    Navigation.NavigateTo("/signup");
+  }
+}

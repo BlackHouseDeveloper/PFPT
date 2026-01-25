@@ -426,6 +426,22 @@ input.auth-input:focus-visible {
   margin-top: 4px;
 }
 
+.auth-success {
+  color: #22c55e;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.auth-input-valid {
+  border-color: #22c55e;
+}
+
+.auth-input-valid:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
 @media (max-width: 600px) {
   .auth-shell {
     padding: 32px 12px 28px;

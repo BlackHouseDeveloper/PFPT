@@ -65,9 +65,9 @@
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[8.0.22, )",
-        "resolved": "8.0.22",
-        "contentHash": "GV/HnD1kutMd3pX6WqvL5ZhLATHWKTfWMKyWfLz50rJZ9iQzo3zr/F00tdk77/HDY0wpx028GpJ44YgKt1ML0A=="
+        "requested": "[8.0.20, )",
+        "resolved": "8.0.20",
+        "contentHash": "T8IgvEg6M4INrHw9K89JjslxP0D6fHYiogFvarNPSjfusHdV/KvwJU4YC1+lNOIIgpjslkb4WWSW9IuNxHdPLg=="
       },
       "Roslynator.Analyzers": {
         "type": "Direct",
@@ -242,9 +242,19 @@
       "physicallyfitpt.shared": {
         "type": "Project",
         "dependencies": {
+          "Blazor.Bootstrap": "[3.5.0, )",
           "Microsoft.AspNetCore.Components.Web": "[8.0.20, )",
           "Microsoft.AspNetCore.Components.WebAssembly": "[8.0.20, )",
           "PhysicallyFitPT.Core": "[1.0.0, )"
+        }
+      },
+      "Blazor.Bootstrap": {
+        "type": "CentralTransitive",
+        "requested": "[3.5.0, )",
+        "resolved": "3.5.0",
+        "contentHash": "26dwbF1z84v/e0zbUb+c58k7a4NBbdTselt5T766m0vqj7Pq0wWTokfu5C6svATCUppZm8eCS6+zIduaF7Wnwg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components.Web": "8.0.11"
         }
       },
       "Microsoft.AspNetCore.Components.Web": {

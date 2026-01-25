@@ -86,6 +86,7 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
   </ItemGroup>
