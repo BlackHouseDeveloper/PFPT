@@ -1,0 +1,77 @@
+:root {
+  /* ============================================================
+     COLOR TOKENS
+     ============================================================ */
+
+  /* Core surfaces */
+  --pfpt-bg: #121212;
+  --pfpt-surface: #1e1e1e;
+
+  /* Brand colors */
+  --pfpt-primary: #22c55e;
+  --pfpt-accent: #3b82f6;
+  --pfpt-danger: #ef4444;
+  --pfpt-warning: #f59e0b;
+
+  /* Semantic color tints (NO rgba in components) */
+  --pfpt-primary-soft: color-mix(in srgb, var(--pfpt-primary) 15%, transparent);
+  --pfpt-accent-soft: color-mix(in srgb, var(--pfpt-accent) 15%, transparent);
+  --pfpt-danger-soft: color-mix(in srgb, var(--pfpt-danger) 15%, transparent);
+  --pfpt-warning-soft: color-mix(in srgb, var(--pfpt-warning) 15%, transparent);
+
+  /* Borders / outlines */
+  --pfpt-border-subtle: color-mix(in srgb, white 8%, transparent);
+  --pfpt-border-strong: color-mix(in srgb, white 16%, transparent);
+
+  /* ============================================================
+     TYPOGRAPHY TOKENS
+     ============================================================ */
+
+  /* Body / UI text */
+  --font-xs: 11px;   /* badges, micro labels */
+  --font-sm: 12px;
+  --font-md: 14px;
+  --font-lg: 18px;
+  --font-xl: 24px;
+
+  /* ============================================================
+     SPACING TOKENS
+     ============================================================ */
+
+  /* Base grid (4px baseline) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Intermediate (explicitly approved, NOT derived) */
+  --space-3-5: 14px; /* tight gaps, badge padding */
+  --space-4-5: 18px; /* card padding per Figma */
+
+  /* ============================================================
+     RADIUS TOKENS
+     ============================================================ */
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-mdplus: 14px; /* matches Figma card + badge radius */
+  --radius-lg: 16px;
+
+  /* ============================================================
+     ICON & CONTROL SIZES
+     ============================================================ */
+
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 36px; /* dashboard metric icons */
+
+  /* ============================================================
+     BADGE TOKENS
+     ============================================================ */
+
+  --badge-padding-y: 3px;
+  --badge-padding-x: 8px;
+}
